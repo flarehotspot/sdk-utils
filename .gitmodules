@@ -7,3 +7,6 @@
 [submodule "interface"]
 	path = interface
 	url = git@github.com:flarehotspot/interface.git
+[submodule "goutils"]
+	path = goutils
+	url = git@github.com:flarehotspot/goutils.git

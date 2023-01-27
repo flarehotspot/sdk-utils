@@ -1,1 +1,8 @@
 go 1.19
+
+use (
+  ./base
+  ./core
+  ./interface
+  ./goutils
+)
