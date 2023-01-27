@@ -4,3 +4,6 @@
 [submodule "core"]
 	path = core
 	url = git@github.com:flarehotspot/core.git
+[submodule "interface"]
+	path = interface
+	url = git@github.com:flarehotspot/interface.git
