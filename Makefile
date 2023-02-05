@@ -1,2 +1,2 @@
 default:
-	go run -race -tags=dev main/main_dev.go
+	go run -tags=dev -race main/main_dev.go

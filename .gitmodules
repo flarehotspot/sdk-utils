@@ -1,9 +1,9 @@
 [submodule "core"]
 	path = core
 	url = git@github.com:flarehotspot/core.git
-[submodule "interface"]
-	path = interface
-	url = git@github.com:flarehotspot/interface.git
-[submodule "goutils"]
-	path = goutils
-	url = git@github.com:flarehotspot/goutils.git
+[submodule "sdk"]
+	path = sdk
+	url = git@github.com:flarehotspot/sdk.git
+[submodule "plugins/payment-component"]
+	path = plugins/payment-component
+	url = git@github.com:flarehotspot/payment-component.git

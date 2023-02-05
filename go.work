@@ -1,8 +1,8 @@
 go 1.19
 
 use (
-  ./core
-  ./goutils
-  ./interface
   ./main
+  ./core
+  ./sdk
+  ./plugins/payment-component
 )
