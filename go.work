@@ -4,5 +4,5 @@ use (
   ./main
   ./core
   ./sdk
-  ./plugins/payment-component
+  ./plugins/wired-coinslot
 )
