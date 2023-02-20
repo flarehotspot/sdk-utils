@@ -7,3 +7,6 @@
 [submodule "plugins/payment-component"]
 	path = plugins/payment-component
 	url = git@github.com:flarehotspot/payment-component.git
+[submodule "default-theme"]
+	path = default-theme
+	url = git@github.com:flarehotspot/default-theme.git
