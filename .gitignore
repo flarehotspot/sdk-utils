@@ -9,7 +9,6 @@
 /package-lock.json
 /main/app
 /translations
-/plugins
 
 .DS_Store
 *.so

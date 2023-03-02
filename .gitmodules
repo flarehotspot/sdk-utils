@@ -4,3 +4,9 @@
 [submodule "sdk"]
 	path = sdk
 	url = git@github.com:flarehotspot/sdk.git
+[submodule "plugins/default-theme"]
+	path = plugins/default-theme
+	url = git@github.com:flarehotspot/default-theme.git
+[submodule "plugins/wired-coinslot"]
+	path = plugins/wired-coinslot
+	url = git@github.com:flarehotspot/wired-coinslot.git
