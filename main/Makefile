@@ -1,2 +1,2 @@
-default:
-	go build -o
+prod:
+	go build -o app main.go
