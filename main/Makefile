@@ -1,2 +1,2 @@
 plugin:
-	go build -buildmode=plugin -o app
+	go build -o app
