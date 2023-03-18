@@ -1,11 +1,18 @@
 default: export CGO_ENABLED=0
 build: export CGO_ENABLED=0
+prod: export CGO_ENABLED=0
 
 default: clean
 	go run -tags="mono dev" main/main_mono.go
 
 build: clean
 	go build -o app -tags="mono dev" main/main_mono.go
+
+prod: clean
+	go build -o app -tags="mono" main/main_mono.go
+
+serve_prod: prod
+	./app
 
 plugin:
 	rm -rf .cache public
