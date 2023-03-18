@@ -1,6 +1,11 @@
-default:
-	rm -rf .cache public
+default: export CGO_ENABLED=0
+build: export CGO_ENABLED=0
+
+default: clean
 	go run -tags="mono dev" main/main_mono.go
+
+build: clean
+	go build -o app -tags="mono dev" main/main_mono.go
 
 plugin:
 	rm -rf .cache public
@@ -10,3 +15,6 @@ plugin:
 	cd ./plugins/wired-coinslot && make plugin
 	cd main && make plugin
 	./main/app
+
+clean:
+	rm -rf .cache public
