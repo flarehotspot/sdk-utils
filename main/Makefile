@@ -1,2 +1,2 @@
-prod:
-	go build -o app main.go
+plugin:
+	go build -buildmode=plugin -o app

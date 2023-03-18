@@ -1,17 +1,12 @@
 default:
-	rm -rf .cache
-	go run -tags=dev -race main/main_dev.go
-
-arm:
-	rm -rf .cache
-	go run -tags=dev main/main_dev.go
-
-prod:
 	rm -rf .cache public
-	cd core && make prod
-	cd main && make prod
-	cd ./plugins/default-theme && make prod
-	cd ./plugins/wifi-hotspot && make prod
-	cd ./plugins/wired-coinslot && make prod
-	cd main && make prod
+	go run -tags="mono dev" main/main_mono.go
+
+plugin:
+	rm -rf .cache public
+	cd core && make plugin
+	cd ./plugins/default-theme && make plugin
+	cd ./plugins/wifi-hotspot && make plugin
+	cd ./plugins/wired-coinslot && make plugin
+	cd main && make plugin
 	./main/app
