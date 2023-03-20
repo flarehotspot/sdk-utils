@@ -15,7 +15,7 @@ serve_prod: prod
 	./app
 
 newifi_d2:
-	go build -race -ldflags="-s -w" -o flarehotspot.app -tags="mono dev" main/main_mono.go
+	go build -ldflags="-s -w" -trimpath -o flarehotspot.app -tags="mono dev" main/main_mono.go
 	./flarehotspot.app
 
 plugin:
