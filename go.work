@@ -4,6 +4,7 @@ use (
   ./main
   ./core
   ./sdk
+  ./goutils
   ./plugins/wired-coinslot
   ./plugins/wifi-hotspot
   ./plugins/default-theme
