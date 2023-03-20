@@ -15,3 +15,11 @@ prod:
 	cd ./plugins/wired-coinslot && make prod
 	cd main && make prod
 	./main/app
+
+pull:
+	cd core && git pull &
+	cd sdk && git pull &
+	cd plugins/default-theme && git pull &
+	cd plugins/wifi-hotspot && git pull &
+	cd plugins/wired-coinslot && git pull &
+	git pull
