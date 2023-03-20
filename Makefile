@@ -1,20 +1,34 @@
-default:
-	rm -rf .cache
-	go run -tags=dev -race main/main_dev.go
+build: export CGO_ENABLED=0
+prod: export CGO_ENABLED=0
 
-arm:
-	rm -rf .cache
-	go run -tags=dev main/main_dev.go
+newifi_d2: export GOOS=linux
+newifi_d2: export GOARCH=mipsle
 
-prod:
+default: clean
+	go build -race -ldflags="-s -w" -o flarehotspot.app -tags="mono dev" main/main_mono.go
+	./flarehotspot.app
+
+build: clean
+	go build -ldflags="-s -w" -trimpath -o flarehotspot.app -tags="mono dev" main/main_mono.go
+
+serve_prod: prod
+	./app
+
+newifi_d2:
+	go build -ldflags="-s -w" -trimpath -o flarehotspot.app -tags="mono dev" main/main_mono.go
+	./flarehotspot.app
+
+plugin:
 	rm -rf .cache public
-	cd core && make prod
-	cd main && make prod
-	cd ./plugins/default-theme && make prod
-	cd ./plugins/wifi-hotspot && make prod
-	cd ./plugins/wired-coinslot && make prod
-	cd main && make prod
+	cd core && make plugin
+	cd ./plugins/default-theme && make plugin
+	cd ./plugins/wifi-hotspot && make plugin
+	cd ./plugins/wired-coinslot && make plugin
+	cd main && make plugin
 	./main/app
+
+clean:
+	rm -rf .cache public
 
 pull:
 	cd core && git pull &
