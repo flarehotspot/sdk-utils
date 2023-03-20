@@ -13,6 +13,3 @@
 [submodule "plugins/wifi-hotspot"]
 	path = plugins/wifi-hotspot
 	url = git@github.com:flarehotspot/wifi-hotspot.git
-[submodule "goutils"]
-	path = goutils
-	url = git@github.com:flarehotspot/goutils.git
