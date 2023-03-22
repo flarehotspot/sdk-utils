@@ -38,3 +38,11 @@ pull:
 	cd plugins/wifi-hotspot && git pull &
 	cd plugins/wired-coinslot && git pull &
 	git pull
+
+checkout_main:
+	cd core && git checkout main &
+	cd goutils && git checkout main &
+	cd sdk && git checkout main &
+	cd plugins/default-theme && git checkout main &
+	cd plugins/wifi-hotspot && git checkout main &
+	cd plugins/wired-coinslot && git checkout main &
