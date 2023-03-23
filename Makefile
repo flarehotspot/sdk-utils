@@ -4,12 +4,22 @@ prod: export CGO_ENABLED=0
 newifi_d2: export GOOS=linux
 newifi_d2: export GOARCH=mipsle
 
+# build_mips: export CGO_ENABLED=0
+build_mips: export GOOS=linux
+build_mips: export GOARCH=mips
+build_mips: export GCCGO=/usr/bin/mips-linux-gnu-gccgo
+build_mips: export LD_LIBRARY_PATH=/opt/gccgo/lib64
+
 default: clean
 	go build -race -ldflags="-s -w" -o flarehotspot.app -tags="mono dev" main/main_mono.go
 	./flarehotspot.app
 
 build: clean
 	go build -ldflags="-s -w" -trimpath -o flarehotspot.app -tags="mono dev" main/main_mono.go
+
+
+build_mips: clean
+	/opt/gccgo/bin/go build -tags="mono dev" -compiler=gccgo -gccgoflags -Wl,-R,/opt/gccgo/lib64 -o flarehotspot.app main/main_mono.go
 
 serve_prod: prod
 	./app
@@ -28,7 +38,8 @@ plugin:
 	./main/app
 
 clean:
-	rm -rf .cache public
+	rm -rf .cache public *.app
+	find . -name "*.so" -type f -delete
 
 pull:
 	cd core && git pull &
