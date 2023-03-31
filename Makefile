@@ -10,6 +10,8 @@ build_mips: export GOARCH=mips
 build_mips: export GCCGO=/usr/bin/mips-linux-gnu-gccgo
 build_mips: export LD_LIBRARY_PATH=/opt/gccgo/lib64
 
+openwrt_x86: export CGO_ENABLED=0
+
 default: clean
 	go build -race -ldflags="-s -w" -o flarehotspot.app -tags="mono dev" main/main_mono.go
 	./flarehotspot.app
@@ -25,6 +27,10 @@ serve_prod: prod
 	./app
 
 newifi_d2:
+	go build -ldflags="-s -w" -trimpath -o flarehotspot.app -tags="mono dev" main/main_mono.go
+	./flarehotspot.app
+
+openwrt_x86:
 	go build -ldflags="-s -w" -trimpath -o flarehotspot.app -tags="mono dev" main/main_mono.go
 	./flarehotspot.app
 
