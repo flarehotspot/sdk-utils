@@ -1,0 +1,5 @@
+---
+network_manager: basic-network-manager
+interface_configs:
+  lan:
+    traffic_control: true
