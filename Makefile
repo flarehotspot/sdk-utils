@@ -23,16 +23,21 @@ build: clean
 build_mips: clean
 	/opt/gccgo/bin/go build -tags="mono dev" -compiler=gccgo -gccgoflags -Wl,-R,/opt/gccgo/lib64 -o flarehotspot.app main/main_mono.go
 
-serve_prod: prod
-	./app
-
 newifi_d2:
 	go build -ldflags="-s -w" -trimpath -o flarehotspot.app -tags="mono dev" main/main_mono.go
 	./flarehotspot.app
 
-openwrt_x86:
+x86:
 	go build -ldflags="-s -w" -trimpath -o flarehotspot.app -tags="mono dev" main/main_mono.go
 	./flarehotspot.app
+
+sync:
+	scp -O -r $(PWD)/core root@$(remote):/root/flarehotspot
+	scp -O -r $(PWD)/goutils root@$(remote):/root/flarehotspot
+	scp -O -r $(PWD)/sdk root@$(remote):/root/flarehotspot
+
+sync_all:
+	scp -O -r $(PWD) root@$(remote):/root/flarehotspot
 
 plugin:
 	rm -rf .cache public
