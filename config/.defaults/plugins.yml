@@ -2,3 +2,7 @@
 plugins:
   - name: "default-theme"
     version: "1.0.0"
+  - name: "wired-coinslot"
+    version: "1.0.0"
+  - name: "wifi-hotspot"
+    version: "1.0.0"
