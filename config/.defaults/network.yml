@@ -1,5 +1,8 @@
 ---
 network_manager: basic-network-manager
-interface_configs:
+lan_interfaces:
   lan:
-    traffic_control: true
+    enable_captive_portal: true
+    enable_hfsc: true
+    download_mbits: 10
+    upload_mbits: 10

@@ -34,6 +34,12 @@ Run mysql install script by command:
 mysql_install_db --force
 ```
 
+Fix permission errors:
+
+```
+chown -R mariadb:mariadb /srv/mysql
+```
+
 Start and enable `mysqld` service:
 
 ```
