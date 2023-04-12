@@ -1,5 +1,4 @@
 ---
-network_manager: basic-network-manager
 lan_interfaces:
   lan:
     enable_captive_portal: true
