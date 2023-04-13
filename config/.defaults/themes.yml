@@ -1,5 +1,5 @@
 ---
-booting: "default-theme"
-login: "default-theme"
-captive-portal: "default-theme"
-web-admin: "default-theme"
+booting: "flarehotspot-theme"
+login: "flarehotspot-theme"
+captive-portal: "flarehotspot-theme"
+web-admin: "flarehotspot-theme"

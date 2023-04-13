@@ -1,8 +1,12 @@
 ---
-plugins:
-  - name: "default-theme"
-    version: "1.0.0"
-  - name: "wired-coinslot"
-    version: "1.0.0"
-  - name: "wifi-hotspot"
-    version: "1.0.0"
+- src: github
+  id: AdoPiSoft/flarehotspot-theme
+  branch: main
+
+- src: github
+  id: flarehotspot/wired-coinslot
+  branch: main
+
+- src: github
+  id: flarehotspot/wifi-hotspot
+  branch: main

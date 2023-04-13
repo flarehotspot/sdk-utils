@@ -6,7 +6,7 @@
 	url = git@github.com:flarehotspot/sdk.git
 [submodule "plugins/flarehotspot-theme"]
 	path = plugins/flarehotspot-theme
-	url = git@github.com:adopisoft/flarehotspot-theme.git
+	url = git@github.com:AdoPiSoft/flarehotspot-theme.git
 [submodule "plugins/wired-coinslot"]
 	path = plugins/wired-coinslot
 	url = git@github.com:flarehotspot/wired-coinslot.git

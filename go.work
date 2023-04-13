@@ -7,5 +7,5 @@ use (
   ./goutils
   ./plugins/wired-coinslot
   ./plugins/wifi-hotspot
-  ./plugins/default-theme
+  ./plugins/flarehotspot-theme
 )
