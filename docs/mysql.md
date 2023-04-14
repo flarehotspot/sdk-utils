@@ -1,3 +1,5 @@
+# Installing Mariadb On OpenWrt
+
 Install `mariadb-server` package:
 
 ```

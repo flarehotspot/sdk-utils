@@ -4,15 +4,6 @@
 [submodule "sdk"]
 	path = sdk
 	url = git@github.com:flarehotspot/sdk.git
-[submodule "plugins/flarehotspot-theme"]
-	path = plugins/flarehotspot-theme
-	url = git@github.com:AdoPiSoft/flarehotspot-theme.git
-[submodule "plugins/wired-coinslot"]
-	path = plugins/wired-coinslot
-	url = git@github.com:flarehotspot/wired-coinslot.git
-[submodule "plugins/wifi-hotspot"]
-	path = plugins/wifi-hotspot
-	url = git@github.com:flarehotspot/wifi-hotspot.git
 [submodule "goutils"]
 	path = goutils
 	url = git@github.com:flarehotspot/goutils.git
