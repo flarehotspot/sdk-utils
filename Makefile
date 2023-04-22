@@ -22,7 +22,7 @@ sync_all:
 plugin:
 	rm -rf .cache public
 	cd core && make plugin
-	cd ./plugins/default-theme && make plugin
+	cd ./plugins/flarehotspot-theme && make plugin
 	cd ./plugins/wifi-hotspot && make plugin
 	cd ./plugins/wired-coinslot && make plugin
 	cd main && make plugin
@@ -36,7 +36,7 @@ pull:
 	cd core && git pull &
 	cd sdk && git pull &
 	cd goutils && git pull &
-	cd plugins/default-theme && git pull &
+	cd plugins/flarehotspot-theme && git pull &
 	cd plugins/wifi-hotspot && git pull &
 	cd plugins/wired-coinslot && git pull &
 	git pull
@@ -45,6 +45,6 @@ checkout_main:
 	cd core && git checkout main &
 	cd goutils && git checkout main &
 	cd sdk && git checkout main &
-	cd plugins/default-theme && git checkout main &
+	cd plugins/flarehotspot-theme && git checkout main &
 	cd plugins/wifi-hotspot && git checkout main &
 	cd plugins/wired-coinslot && git checkout main &
