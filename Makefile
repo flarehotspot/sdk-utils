@@ -41,6 +41,15 @@ pull:
 	cd plugins/wired-coinslot && git pull &
 	git pull
 
+push:
+	cd core && git push &
+	cd sdk && git push &
+	cd goutils && git push &
+	cd plugins/flarehotspot-theme && git push &
+	cd plugins/wifi-hotspot && git push &
+	cd plugins/wired-coinslot && git push &
+	git push
+
 checkout_main:
 	cd core && git checkout main &
 	cd goutils && git checkout main &
