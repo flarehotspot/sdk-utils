@@ -1,5 +1,5 @@
 ---
 booting: "flarehotspot-theme"
-login: "flarehotspot-theme"
+auth: "flarehotspot-theme"
 captive-portal: "flarehotspot-theme"
 web-admin: "flarehotspot-theme"
