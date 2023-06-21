@@ -1,0 +1,30 @@
+---
+- uuid: 000
+  ip_start: "10.0.0.1"
+  ip_end: "10.0.15.254"
+  net_prefix: 20
+  session_type: 0
+  amount: 1
+  time_mins: 30
+  data_mbytes: 0
+  expiration_days: 1
+
+- uuid: 001
+  ip_start: "10.0.0.1"
+  ip_end: "10.0.15.254"
+  net_prefix: 20
+  session_type: 0
+  amount: 5
+  time_mins: 180
+  data_mbytes: 0
+  expiration_days: 1
+
+- uuid: 002
+  ip_start: "10.0.0.1"
+  ip_end: "10.0.15.254"
+  net_prefix: 20
+  session_type: 0
+  amount: 10
+  time_mins: 600
+  data_mbytes: 0
+  expiration_days: 1
