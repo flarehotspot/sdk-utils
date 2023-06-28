@@ -9,4 +9,5 @@ use (
   ./plugins/wifi-hotspot
   ./plugins/flarehotspot-theme
   ./plugins/basic-system-account
+  ./plugins/basic-net-mgr
 )
