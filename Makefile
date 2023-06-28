@@ -22,6 +22,7 @@ openwrt:
 	cd ./plugins/wifi-hotspot && make plugin
 	cd ./plugins/wired-coinslot && make plugin
 	cd ./plugins/basic-system-account && make plugin
+	cd ./plugins/basic-net-mgr && make plugin
 	cd main && make plugin
 	./main/app
 
@@ -40,6 +41,7 @@ plugin:
 	cd ./plugins/wifi-hotspot && make plugin
 	cd ./plugins/wired-coinslot && make plugin
 	cd ./plugins/basic-system-account && make plugin
+	cd ./plugins/basic-net-mgr && make plugin
 	cd main && make plugin
 	./main/app
 
@@ -55,6 +57,7 @@ pull:
 	cd plugins/wifi-hotspot && git pull &
 	cd plugins/wired-coinslot && git pull &
 	cd plugins/basic-system-account && git pull &
+	cd plugins/basic-net-mgr && git pull &
 	git pull
 
 push:
@@ -65,6 +68,7 @@ push:
 	cd plugins/wifi-hotspot && git push &
 	cd plugins/wired-coinslot && git push &
 	cd plugins/basic-system-account && git push &
+	cd plugins/basic-net-mgr && git push &
 	git push
 
 checkout_main:
@@ -75,3 +79,4 @@ checkout_main:
 	cd plugins/wifi-hotspot && git checkout main &
 	cd plugins/wired-coinslot && git checkout main &
 	cd plugins/basic-system-account && git checkout main &
+	cd plugins/basic-net-mgr && git checkout main &
