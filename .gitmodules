@@ -16,3 +16,6 @@
 [submodule "plugins/wifi-hotspot"]
 	path = plugins/wifi-hotspot
 	url = git@github.com:flarehotspot/wifi-hotspot.git
+[submodule "plugins/basic-system-account"]
+	path = plugins/basic-system-account
+	url = git@github.com:flarehotspot/basic-system-account.git

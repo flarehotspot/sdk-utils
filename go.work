@@ -8,5 +8,5 @@ use (
   ./plugins/wired-coinslot
   ./plugins/wifi-hotspot
   ./plugins/flarehotspot-theme
-  ./plugins/basic-system-accounts
+  ./plugins/basic-system-account
 )

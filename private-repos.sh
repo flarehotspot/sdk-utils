@@ -8,5 +8,5 @@ export GOPRIVATE="$GOPRIVATE,$ROOT_REPO/sdk"
 export GOPRIVATE="$GOPRIVATE,$ROOT_REPO/default-theme"
 export GOPRIVATE="$GOPRIVATE,$ROOT_REPO/wifi-hotspot"
 export GOPRIVATE="$GOPRIVATE,$ROOT_REPO/wired-coinslot"
-export GOPRIVATE="$GOPRIVATE,$ROOT_REPO/basic-system-accounts"
+export GOPRIVATE="$GOPRIVATE,$ROOT_REPO/basic-system-account"
 

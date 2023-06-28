@@ -21,7 +21,7 @@ openwrt:
 	cd ./plugins/flarehotspot-theme && make plugin
 	cd ./plugins/wifi-hotspot && make plugin
 	cd ./plugins/wired-coinslot && make plugin
-	cd ./plugins/basic-system-accounts && make plugin
+	cd ./plugins/basic-system-account && make plugin
 	cd main && make plugin
 	./main/app
 
@@ -39,7 +39,7 @@ plugin:
 	cd ./plugins/flarehotspot-theme && make plugin
 	cd ./plugins/wifi-hotspot && make plugin
 	cd ./plugins/wired-coinslot && make plugin
-	cd ./plugins/basic-system-accounts && make plugin
+	cd ./plugins/basic-system-account && make plugin
 	cd main && make plugin
 	./main/app
 
@@ -54,7 +54,7 @@ pull:
 	cd plugins/flarehotspot-theme && git pull &
 	cd plugins/wifi-hotspot && git pull &
 	cd plugins/wired-coinslot && git pull &
-	cd plugins/basic-system-accounts && git pull &
+	cd plugins/basic-system-account && git pull &
 	git pull
 
 push:
@@ -64,7 +64,7 @@ push:
 	cd plugins/flarehotspot-theme && git push &
 	cd plugins/wifi-hotspot && git push &
 	cd plugins/wired-coinslot && git push &
-	cd plugins/basic-system-accounts && git push &
+	cd plugins/basic-system-account && git push &
 	git push
 
 checkout_main:
@@ -74,4 +74,4 @@ checkout_main:
 	cd plugins/flarehotspot-theme && git checkout main &
 	cd plugins/wifi-hotspot && git checkout main &
 	cd plugins/wired-coinslot && git checkout main &
-	cd plugins/basic-system-accounts && git checkout main &
+	cd plugins/basic-system-account && git checkout main &
