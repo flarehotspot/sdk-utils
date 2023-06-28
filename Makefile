@@ -1,4 +1,5 @@
-openwrt: export CGO_ENABLED=0
+openwrt: export CGO_ENABLED=1
+plugin: export CGO_ENABLED=1
 
 default: clean
 	go build -race -ldflags="-s -w" -o flarehotspot.app -tags="mono dev" main/main_mono.go
@@ -7,9 +8,22 @@ default: clean
 build: clean
 	go build -ldflags="-s -w" -trimpath -o flarehotspot.app -tags="mono dev" main/main_mono.go
 
+# openwrt:
+	# go build -ldflags="-s -w" -trimpath -o flarehotspot.app -tags="mono prod" main/main_mono.go
+	# ./flarehotspot.app
+
 openwrt:
-	go build -ldflags="-s -w" -trimpath -o flarehotspot.app -tags="mono prod" main/main_mono.go
-	./flarehotspot.app
+	ar -rc /usr/lib/libpthread.a
+	ar -rc /usr/lib/libresolv.a
+	ar -rc /usr/lib/libdl.a
+	rm -rf .cache public
+	cd core && make plugin_prod
+	cd ./plugins/flarehotspot-theme && make plugin
+	cd ./plugins/wifi-hotspot && make plugin
+	cd ./plugins/wired-coinslot && make plugin
+	cd ./plugins/basic-system-accounts && make plugin
+	cd main && make plugin
+	./main/app
 
 sync:
 	scp -O -r $(PWD)/core root@$(remote):/root/flarehotspot
