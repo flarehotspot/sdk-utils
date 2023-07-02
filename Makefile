@@ -48,6 +48,7 @@ plugin:
 clean:
 	rm -rf .cache public *.app
 	find . -name "*.so" -type f -delete
+	find . -name "*.app" -type f -delete
 
 pull:
 	cd core && git pull &

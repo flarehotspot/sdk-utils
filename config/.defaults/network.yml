@@ -1,6 +1,10 @@
 ---
+wan_interfaces:
+  wan:
+
 lan_interfaces:
   lan:
+    internal_net: true
     enable_captive_portal: true
     enable_hfsc: true
     download_mbits: 10
