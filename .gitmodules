@@ -22,3 +22,6 @@
 [submodule "plugins/basic-net-mgr"]
 	path = plugins/basic-net-mgr
 	url = git@github.com:flarehotspot/basic-net-mgr.git
+[submodule "hardware-db"]
+	path = hardware-db
+	url = git@github.com:flarehotspot/hardware-db.git
