@@ -59,6 +59,7 @@ pull:
 	cd plugins/wired-coinslot && git pull &
 	cd plugins/basic-system-account && git pull &
 	cd plugins/basic-net-mgr && git pull &
+	cd hardware-db && git pull &
 	git pull
 
 push:
@@ -70,6 +71,7 @@ push:
 	cd plugins/wired-coinslot && git push &
 	cd plugins/basic-system-account && git push &
 	cd plugins/basic-net-mgr && git push &
+	cd hardware-db && git push &
 	git push
 
 checkout_main:
@@ -81,3 +83,4 @@ checkout_main:
 	cd plugins/wired-coinslot && git checkout main &
 	cd plugins/basic-system-account && git checkout main &
 	cd plugins/basic-net-mgr && git checkout main &
+	cd hardware-db && git checkout main
