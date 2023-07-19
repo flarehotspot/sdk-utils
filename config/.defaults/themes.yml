@@ -1,5 +1,5 @@
 ---
-booting: "com.adopisoft.flare-theme"
-auth: "com.adopisoft.flare-theme"
-captive-portal: "com.adopisoft.flare-theme"
-web-admin: "com.adopisoft.flare-theme"
+booting: "com.adopisoft.basic-flare-theme"
+auth: "com.adopisoft.basic-flare-theme"
+captive-portal: "com.adopisoft.basic-flare-theme"
+web-admin: "com.adopisoft.basic-flare-theme"

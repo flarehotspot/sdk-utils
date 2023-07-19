@@ -5,9 +5,9 @@ use (
   ./core
   ./sdk
   ./goutils
-  ./plugins/wired-coinslot
-  ./plugins/wifi-hotspot
-  ./plugins/flarehotspot-theme
-  ./plugins/basic-system-account
-  ./plugins/basic-net-mgr
+  ./plugins/com.adopisoft.basic-flare-theme
+  ./plugins/com.flarego.wired-coinslot
+  ./plugins/com.flarego.basic-net-mgr
+  ./plugins/com.flarego.basic-wifi-hotspot
+  ./plugins/com.flarego.basic-system-account
 )
