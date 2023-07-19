@@ -10,9 +10,6 @@
 [submodule "plugins/wired-coinslot"]
 	path = plugins/wired-coinslot
 	url = git@github.com:flarehotspot/wired-coinslot.git
-[submodule "plugins/wifi-hotspot"]
-	path = plugins/wifi-hotspot
-	url = git@github.com:flarehotspot/wifi-hotspot.git
 [submodule "hardware-db"]
 	path = hardware-db
 	url = git@github.com:flarehotspot/hardware-db.git
