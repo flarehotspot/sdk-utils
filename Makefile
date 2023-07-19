@@ -1,3 +1,5 @@
+PLUGINS = com.adopisoft.basic-flare-theme com.flarego.basic-net-mgr com.flarego.basic-system-account
+
 openwrt: export CGO_ENABLED=1
 plugin: export CGO_ENABLED=1
 
@@ -37,11 +39,7 @@ sync_all:
 plugin:
 	rm -rf .cache public
 	cd core && make plugin
-	cd ./plugins/flarehotspot-theme && make plugin
-	cd ./plugins/wifi-hotspot && make plugin
-	cd ./plugins/wired-coinslot && make plugin
-	cd ./plugins/basic-system-account && make plugin
-	cd ./plugins/basic-net-mgr && make plugin
+  ./plugin-action.sh "make plugin"
 	cd main && make plugin
 	./main/app
 
@@ -54,33 +52,21 @@ pull:
 	cd core && git pull &
 	cd sdk && git pull &
 	cd goutils && git pull &
-	cd plugins/flarehotspot-theme && git pull &
-	cd plugins/wifi-hotspot && git pull &
-	cd plugins/wired-coinslot && git pull &
-	cd plugins/basic-system-account && git pull &
-	cd plugins/basic-net-mgr && git pull &
 	cd hardware-db && git pull &
+	./plugin-action.sh "git pull"
 	git pull
 
 push:
 	cd core && git push &
 	cd sdk && git push &
 	cd goutils && git push &
-	cd plugins/flarehotspot-theme && git push &
-	cd plugins/wifi-hotspot && git push &
-	cd plugins/wired-coinslot && git push &
-	cd plugins/basic-system-account && git push &
-	cd plugins/basic-net-mgr && git push &
 	cd hardware-db && git push &
+	./plugin-action.sh "git push"
 	git push
 
 checkout_main:
 	cd core && git checkout main &
 	cd goutils && git checkout main &
 	cd sdk && git checkout main &
-	cd plugins/flarehotspot-theme && git checkout main &
-	cd plugins/wifi-hotspot && git checkout main &
-	cd plugins/wired-coinslot && git checkout main &
-	cd plugins/basic-system-account && git checkout main &
-	cd plugins/basic-net-mgr && git checkout main &
 	cd hardware-db && git checkout main
+	./plugin-action.sh "git checkout main"

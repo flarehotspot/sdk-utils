@@ -7,21 +7,21 @@
 [submodule "goutils"]
 	path = goutils
 	url = git@github.com:flarehotspot/goutils.git
-[submodule "plugins/flarehotspot-theme"]
-	path = plugins/flarehotspot-theme
-	url = git@github.com:AdoPiSoft/flarehotspot-theme.git
-[submodule "plugins/wired-coinslot"]
-	path = plugins/wired-coinslot
-	url = git@github.com:flarehotspot/wired-coinslot.git
-[submodule "plugins/wifi-hotspot"]
-	path = plugins/wifi-hotspot
-	url = git@github.com:flarehotspot/wifi-hotspot.git
-[submodule "plugins/basic-system-account"]
-	path = plugins/basic-system-account
-	url = git@github.com:flarehotspot/basic-system-account.git
-[submodule "plugins/basic-net-mgr"]
-	path = plugins/basic-net-mgr
-	url = git@github.com:flarehotspot/basic-net-mgr.git
 [submodule "hardware-db"]
 	path = hardware-db
 	url = git@github.com:flarehotspot/hardware-db.git
+[submodule "plugins/com.adopisoft.basic-flare-theme"]
+	path = plugins/com.adopisoft.basic-flare-theme
+	url = git@github.com:AdoPiSoft/com.adopisoft.basic-flare-theme.git
+[submodule "plugins/com.flarego.wired-coinslot"]
+	path = plugins/com.flarego.wired-coinslot
+	url = git@github.com:flarehotspot/com.flarego.wired-coinslot.git
+[submodule "plugins/com.flarego.basic-net-mgr"]
+	path = plugins/com.flarego.basic-net-mgr
+	url = git@github.com:flarehotspot/com.flarego.basic-net-mgr.git
+[submodule "plugins/com.flarego.basic-wifi-hotspot"]
+	path = plugins/com.flarego.basic-wifi-hotspot
+	url = git@github.com:flarehotspot/com.flarego.basic-wifi-hotspot.git
+[submodule "plugins/com.flarego.basic-system-account"]
+	path = plugins/com.flarego.basic-system-account
+	url = git@github.com:flarehotspot/com.flarego.basic-system-account.git
