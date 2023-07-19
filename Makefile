@@ -20,12 +20,8 @@ openwrt:
 	ar -rc /usr/lib/libdl.a
 	rm -rf .cache public
 	cd core && make plugin_prod
-	cd ./plugins/flarehotspot-theme && make plugin
-	cd ./plugins/wifi-hotspot && make plugin
-	cd ./plugins/wired-coinslot && make plugin
-	cd ./plugins/basic-system-account && make plugin
-	cd ./plugins/basic-net-mgr && make plugin
 	cd main && make plugin
+	bash ./plugin-action.sh "make plugin" &
 	./main/app
 
 sync:
@@ -53,20 +49,20 @@ pull:
 	cd sdk && git pull &
 	cd goutils && git pull &
 	cd hardware-db && git pull &
-	bash ./plugin-action.sh "git pull"
-	git pull
+	bash ./plugin-action.sh "git pull" &
+	git pull &
 
 push:
 	cd core && git push &
 	cd sdk && git push &
 	cd goutils && git push &
 	cd hardware-db && git push &
-	bash ./plugin-action.sh "git push"
-	git push
+	bash ./plugin-action.sh "git push" &
+	git push &
 
 checkout_main:
 	cd core && git checkout main &
 	cd goutils && git checkout main &
 	cd sdk && git checkout main &
 	cd hardware-db && git checkout main
-	bash ./plugin-action.sh "git checkout main"
+	bash ./plugin-action.sh "git checkout main" &
