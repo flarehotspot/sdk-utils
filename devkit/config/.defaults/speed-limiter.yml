@@ -1,0 +1,7 @@
+---
+- network: "10.0.0.0/20"
+  use_global: false
+  global_down_mbits: 100
+  global_up_mbits: 100
+  user_down_mbits: 3
+  user_up_mbits: 0

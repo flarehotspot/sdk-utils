@@ -10,6 +10,7 @@
 /package-lock.json
 /main/app
 /translations
+/devkit-release
 
 .DS_Store
 *.so

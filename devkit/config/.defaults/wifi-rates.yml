@@ -1,0 +1,18 @@
+---
+- uuid: 00000001
+  network: "10.0.0.0/20"
+  amount: 1
+  time_mins: 30
+  data_mbytes: 0
+
+- uuid: 00000002
+  network: "10.0.0.0/20"
+  amount: 5
+  time_mins: 180
+  data_mbytes: 0
+
+- uuid: 00000003
+  network: "10.0.0.0/20"
+  amount: 10
+  time_mins: 600
+  data_mbytes: 0
