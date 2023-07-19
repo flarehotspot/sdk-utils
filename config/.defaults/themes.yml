@@ -1,5 +1,5 @@
 ---
-booting: "flarehotspot-theme"
-auth: "flarehotspot-theme"
-captive-portal: "flarehotspot-theme"
-web-admin: "flarehotspot-theme"
+booting: "com.adopisoft.flare-theme"
+auth: "com.adopisoft.flare-theme"
+captive-portal: "com.adopisoft.flare-theme"
+web-admin: "com.adopisoft.flare-theme"
