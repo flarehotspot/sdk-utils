@@ -39,7 +39,7 @@ sync_all:
 plugin:
 	rm -rf .cache public
 	cd core && make plugin
-  ./plugin-action.sh "make plugin"
+	bash ./plugin-action.sh "make plugin"
 	cd main && make plugin
 	./main/app
 
@@ -53,7 +53,7 @@ pull:
 	cd sdk && git pull &
 	cd goutils && git pull &
 	cd hardware-db && git pull &
-	./plugin-action.sh "git pull"
+	bash ./plugin-action.sh "git pull"
 	git pull
 
 push:
@@ -61,7 +61,7 @@ push:
 	cd sdk && git push &
 	cd goutils && git push &
 	cd hardware-db && git push &
-	./plugin-action.sh "git push"
+	bash ./plugin-action.sh "git push"
 	git push
 
 checkout_main:
@@ -69,4 +69,4 @@ checkout_main:
 	cd goutils && git checkout main &
 	cd sdk && git checkout main &
 	cd hardware-db && git checkout main
-	./plugin-action.sh "git checkout main"
+	bash ./plugin-action.sh "git checkout main"
