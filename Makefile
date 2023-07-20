@@ -7,6 +7,12 @@ default: clean
 	go build -race -ldflags="-s -w" -o flarehotspot.app -tags="mono dev" main/main_mono.go
 	./flarehotspot.app
 
+plugin: clean
+	cd core && make plugin
+	cd main && make plugin
+	bash ./plugin-action.sh "make plugin" &
+	./main/app
+
 build: clean
 	go build -ldflags="-s -w" -trimpath -o flarehotspot.app -tags="mono dev" main/main_mono.go
 
