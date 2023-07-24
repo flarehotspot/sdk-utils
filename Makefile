@@ -46,7 +46,7 @@ plugin:
 	./main/app
 
 clean:
-	rm -rf .cache public *.app
+	rm -rf .tmp .cache public *.app
 	find . -name "*.so" -type f -delete
 	find . -name "*.app" -type f -delete
 

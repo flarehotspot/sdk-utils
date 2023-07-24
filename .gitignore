@@ -4,6 +4,7 @@
 /public
 /.cache
 /.tmp
+/.files
 /logs
 /node_modules
 /package.json
