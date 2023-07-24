@@ -23,7 +23,7 @@ openwrt:
 	rm -rf .cache public
 	cd core && make plugin_prod
 	cd main && make plugin
-	./plugins-action.sh "make plugin" &
+	ash ./plugins-action.sh "make plugin"
 	./main/app
 
 sync:
