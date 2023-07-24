@@ -16,10 +16,6 @@ plugin: clean
 build: clean
 	go build -ldflags="-s -w" -trimpath -o flarehotspot.app -tags="mono dev" main/main_mono.go
 
-# openwrt:
-	# go build -ldflags="-s -w" -trimpath -o flarehotspot.app -tags="mono prod" main/main_mono.go
-	# ./flarehotspot.app
-
 openwrt:
 	ar -rc /usr/lib/libpthread.a
 	ar -rc /usr/lib/libresolv.a
