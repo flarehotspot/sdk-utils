@@ -63,9 +63,9 @@ checkout_main:
 	./plugins-action.sh "git checkout main" &
 
 profile:
-	wrk -d10s http://localhost:3000 &
-	go tool pprof --seconds 5 -web http://localhost:3000/debug/pprof/profile &
+	wrk -d20s http://localhost:3000 &
+	go tool pprof --seconds 15 -web http://localhost:3000/debug/pprof/profile &
 
 heap:
-	wrk -d10s http://localhost:3000 &
-	go tool pprof --seconds 5 -web http://localhost:3000/debug/pprof/heap &
+	wrk -d20s http://localhost:3000 &
+	go tool pprof --seconds 15 -web http://localhost:3000/debug/pprof/heap &
