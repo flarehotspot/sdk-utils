@@ -2,8 +2,6 @@
 
 lans:
   lan:
-    enable_captive_portal: true
-    enable_hfsc: true
     use_global: false
     global_down_mbits: 100
     global_up_mbits: 100
