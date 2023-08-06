@@ -3,7 +3,7 @@
 package main
 
 import (
-	"github.com/flarehotspot/sdk/utils/paths"
+	"github.com/flarehotspot/sdk/v1/utils/paths"
 	"log"
 	"path/filepath"
 	"plugin"
