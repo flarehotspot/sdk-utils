@@ -3,8 +3,7 @@ PLUGINS = com.adopisoft.basic-flare-theme com.flarego.basic-net-mgr com.flarego.
 openwrt: export CGO_ENABLED=1
 plugin: export CGO_ENABLED=1
 
-default: clean
-	go build -race -ldflags="-s -w" -o flarehotspot.app -tags="mono dev" main/main_mono.go
+default: clean build
 	./flarehotspot.app
 
 build: clean
@@ -14,6 +13,8 @@ plugin: clean
 	cd core && make plugin
 	cd main && make plugin
 	./plugins-action.sh "make plugin"
+	rm -rf ./vendor && mkdir ./vendor
+	cp -r ./plugins/* ./vendor
 	./main/app
 
 openwrt:
@@ -24,6 +25,8 @@ openwrt:
 	cd core && make plugin_prod
 	cd main && make plugin
 	ash ./plugins-action.sh "make plugin"
+	rm -rf ./vendor && mkdir ./vendor
+	cp -r ./plugins/* ./vendor
 	./main/app
 
 sync:
