@@ -3,29 +3,27 @@ PLUGINS = com.adopisoft.basic-flare-theme com.flarego.basic-net-mgr com.flarego.
 openwrt: export CGO_ENABLED=1
 plugin: export CGO_ENABLED=1
 
-default: clean build
-	./flarehotspot.app
+default: clean devmono
 
-build: clean
-	go build -ldflags="-s -w" -trimpath -o flarehotspot.app -tags="mono dev" main/main_mono.go
+devmono: clean
+	cd main && make
+	cp -r ./plugins/* ./vendor
+	./main/app
 
 plugin: clean
 	cd core && make plugin
 	cd main && make plugin
 	./plugins-action.sh "make plugin"
-	rm -rf ./vendor && mkdir ./vendor
 	cp -r ./plugins/* ./vendor
 	./main/app
 
-openwrt:
+openwrt: clean
 	ar -rc /usr/lib/libpthread.a
 	ar -rc /usr/lib/libresolv.a
 	ar -rc /usr/lib/libdl.a
-	rm -rf .cache public
 	cd core && make plugin_prod
 	cd main && make plugin
 	ash ./plugins-action.sh "make plugin"
-	rm -rf ./vendor && mkdir ./vendor
 	cp -r ./plugins/* ./vendor
 	./main/app
 
@@ -39,6 +37,7 @@ sync_all:
 
 clean:
 	rm -rf .tmp .cache public *.app
+	rm -rf ./vendor && mkdir ./vendor
 	find . -name "*.so" -type f -delete
 	find . -name "*.app" -type f -delete
 
