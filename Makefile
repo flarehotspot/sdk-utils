@@ -8,6 +8,7 @@ default: clean devmono
 devmono: clean
 	cd main && make
 	cp -r ./plugins/* ./vendor
+	./link-resources.sh
 	./main/app
 
 dl: clean
@@ -20,6 +21,7 @@ plugin: clean
 	cd main && make plugin
 	./plugins-action.sh "make plugin"
 	cp -r ./plugins/* ./vendor
+	./link-resources.sh
 	./main/app
 
 openwrt: clean
@@ -30,6 +32,7 @@ openwrt: clean
 	cd main && make plugin
 	ash ./plugins-action.sh "make plugin"
 	cp -r ./plugins/* ./vendor
+	ash ./link-resources.sh
 	./main/app
 
 sync:
@@ -41,7 +44,7 @@ sync_all:
 	scp -O -r $(PWD) root@$(remote):/root/flarehotspot
 
 clean:
-	rm -rf .tmp .cache public *.app
+	rm -rf .tmp .cache/views public *.app
 	rm -rf ./vendor && mkdir ./vendor
 	find . -name "*.so" -type f -delete
 	find . -name "*.app" -type f -delete
