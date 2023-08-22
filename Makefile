@@ -11,11 +11,6 @@ devmono: clean
 	./link-resources.sh
 	./main/app
 
-dl: clean
-	cd main && make build_no_skip_dl
-	cp -r ./plugins/* ./vendor
-	./main/app
-
 plugin: clean
 	cd core && make plugin
 	cd main && make plugin
