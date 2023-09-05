@@ -32,7 +32,6 @@ openwrt: clean
 
 sync:
 	scp -O -r $(PWD)/core root@$(remote):/root/flarehotspot
-	scp -O -r $(PWD)/goutils root@$(remote):/root/flarehotspot
 
 sync_all:
 	scp -O -r $(PWD) root@$(remote):/root/flarehotspot
@@ -45,21 +44,18 @@ clean:
 
 pull:
 	cd core && git pull &
-	cd goutils && git pull &
 	cd hardware-db && git pull &
 	./plugins-action.sh "git pull" &
 	git pull &
 
 push:
 	cd core && git push &
-	cd goutils && git push &
 	cd hardware-db && git push &
 	./plugins-action.sh "git push" &
 	git push &
 
 checkout_main:
 	cd core && git checkout main &
-	cd goutils && git checkout main &
 	cd hardware-db && git checkout main
 	./plugins-action.sh "git checkout main" &
 
