@@ -10,6 +10,7 @@ cd $CORE_DIR && \
     cp -r $CWD/devkit/* $DEVKIT_RELEASE_DIR && \
     mkdir $DEVKIT_RELEASE_DIR/core && \
     cp $CORE_DIR/core.so $DEVKIT_RELEASE_DIR/core && \
-    cp -r $CORE_DIR/resources $DEVKIT_RELEASE_DIR/core && \
-    cp -r $CWD/main $DEVKIT_RELEASE_DIR/main && \
-    cp -r $CWD/sdk $DEVKIT_RELEASE_DIR/sdk
+    cp $CORE_DIR/package.yml $DEVKIT_RELEASE_DIR/core && \
+    cp -r $CORE_DIR/resources $DEVKIT_RELEASE_DIR/core/resources && \
+    cp -r $CORE_DIR/sdk $DEVKIT_RELEASE_DIR/core/sdk && \
+    cp -r $CWD/main $DEVKIT_RELEASE_DIR/main
