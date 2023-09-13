@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 WORKDIR=$(pwd)
 GO_VERSION=$(cat "${WORKDIR}/go-version")
@@ -30,3 +30,5 @@ echo "$GOWORK" > "$WORKDIR/go.work"
 echo "go.work file created."
 
 wait
+
+cd $WORKDIR

@@ -52,7 +52,7 @@ use (
 )
 
 go 1.19
-    `, filepath.Join(paths.AppDir, "sdk"), installPath)
+    `, filepath.Join(paths.AppDir, "core"), installPath)
 
 	err = os.WriteFile(filepath.Join(installPath, "go.work"), []byte(gowork), 0644)
 	if err != nil {

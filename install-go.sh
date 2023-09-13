@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 WORKDIR=$(pwd)
 CACHE_PATH="${WORKDIR}/.cache"
@@ -39,3 +39,5 @@ else
         rm -rf ${GO_PATH} && tar -C $(dirname $GO_PATH) -xzf "${DL_PATH}" && \
         echo "Installed Go ${GO_VERSION} to ${GO_PATH}" && usage
 fi
+
+cd $WORKDIR

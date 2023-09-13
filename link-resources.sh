@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 WORKDIR=$(pwd)
 
@@ -18,3 +18,5 @@ do
 done
 
 wait
+
+cd $WORKDIR

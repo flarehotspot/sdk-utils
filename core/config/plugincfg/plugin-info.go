@@ -52,8 +52,6 @@ func FindPluginSrc(dir string) (string, error) {
 		return dir, err
 	}
 
-    log.Println("Files from: " + dir, files)
-
 	for _, f := range files {
 		if filepath.Base(f) == "package.yml" {
 			return filepath.Dir(f), nil

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 DOCKER_IMAGE="devkit:latest"
 TMP_CONTAINER="devkit-tmp"
@@ -12,6 +12,7 @@ DEVKIT_FILES=(
     ./core/sdk
     ./core/resources
     ./core/package.yml
+    ./run.sh
     ./build-main.sh
     ./build-plugins.sh
     ./link-resources.sh
