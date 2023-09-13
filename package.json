@@ -1,0 +1,18 @@
+{
+  "name": "devkit",
+  "version": "0.0.1",
+  "description": "Flarehotspot Development Tool",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "flarehotspot",
+    "devkit"
+  ],
+  "author": "Flarego Technologies Corporation <support@flarego.ph>",
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^8.49.0"
+  }
+}
