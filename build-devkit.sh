@@ -3,7 +3,7 @@
 DOCKER_IMAGE="devkit:latest"
 TMP_CONTAINER="devkit-tmp"
 CORE_SO="/root/core.so"
-OUTFILE="devkit/core/core.so"
+OUTFILE="devkit-extras/core/core.so"
 RELEASE_DIR="devkit-release"
 DEVKIT_FILES=(
     ./main
@@ -24,7 +24,7 @@ DEVKIT_FILES=(
     ./.files
 )
 
-function copy_main_filess() {
+copy_main_filess() {
     mkdir -p $RELEASE_DIR/core
 
     for file in "${DEVKIT_FILES[@]}"; do
@@ -33,7 +33,7 @@ function copy_main_filess() {
     done
 }
 
-function default_configs() {
+default_configs() {
     secret=$(openssl rand -hex 16)
     mkdir -p $RELEASE_DIR/config
     cp -r ./config/.defaults/ $RELEASE_DIR/config/.defaults
@@ -48,13 +48,13 @@ EOF
         echo $(cat $RELEASE_DIR/config/application.yml)
 }
 
-function copy_devkit_files() {
+copy_devkit_files() {
     echo "Copying devkit files..."
-    cp -r ./devkit/* $RELEASE_DIR/
+    cp -r ./devkit-extras/* $RELEASE_DIR/
 }
 
 
-function prepare() {
+prepare() {
     rm -rf $RELEASE_DIR && \
         mkdir -p $RELEASE_DIR/plugins && \
         docker rm -f "$TMP_CONTAINER" || true

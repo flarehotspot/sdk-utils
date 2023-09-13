@@ -6,7 +6,7 @@ for d in vendor/*;
 do
     PLUGIN=$(basename "$d")
 
-    if [[ -e "$WORKDIR/plugins/$PLUGIN" ]]; then
+    if [ -e "$WORKDIR/plugins/$PLUGIN" ]; then
         VENDOR_RESOURCES="$WORKDIR/vendor/$PLUGIN/resources"
         PLUGIN_RESOURCES="$WORKDIR/plugins/$PLUGIN/resources"
 

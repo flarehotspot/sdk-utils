@@ -15,7 +15,7 @@ echo "GOOS: ${GOOS}"
 echo "GOARCH: ${GOARCH}"
 echo "GO_PATH: ${GO_PATH}"
 
-function usage() {
+usage() {
     echo
     echo "To use the newly installed go binary:"
     echo "  - add ${GO_PATH}/bin to your PATH environment variable."
@@ -27,7 +27,7 @@ function usage() {
     echo "      export GOROOT=\"${GO_PATH}\""
 }
 
-if [[ -d "${GO_PATH}" ]]; then
+if [ -d "${GO_PATH}" ]; then
     echo "Go is already installed" && usage
     exit 0
 else
