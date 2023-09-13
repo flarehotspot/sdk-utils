@@ -3,12 +3,12 @@
 DOCKER_IMAGE="devkit:latest"
 TMP_CONTAINER="devkit-tmp"
 CORE_SO="/root/core.so"
-OUTFILE="./core/core.so"
-RELEASE_DIR="./devkit-release"
+OUTFILE="devkit/core/core.so"
+RELEASE_DIR="devkit-release"
 DEVKIT_FILES=(
-    $OUTFILE
-    ./Makefile
     ./main
+    ./core/go.mod
+    ./core/go.sum
     ./core/sdk
     ./core/resources
     ./core/package.yml
@@ -23,7 +23,7 @@ DEVKIT_FILES=(
     ./.files
 )
 
-function copy_files() {
+function copy_main_filess() {
     mkdir -p $RELEASE_DIR/core
 
     for file in "${DEVKIT_FILES[@]}"; do
@@ -47,9 +47,14 @@ EOF
         echo $(cat $RELEASE_DIR/config/application.yml)
 }
 
+function copy_devkit_files() {
+    echo "Copying devkit files..."
+    cp -r ./devkit/* $RELEASE_DIR/
+}
+
+
 function prepare() {
     rm -rf $RELEASE_DIR && \
-        mkdir -p $RELEASE_DIR && \
         mkdir -p $RELEASE_DIR/plugins && \
         docker rm -f "$TMP_CONTAINER" || true
 }
@@ -58,5 +63,6 @@ prepare && \
     docker build -t "$DOCKER_IMAGE" . && \
     docker cp $(docker create --name ${TMP_CONTAINER} ${DOCKER_IMAGE}):${CORE_SO} $OUTFILE && \
     docker rm "$TMP_CONTAINER" && \
-    copy_files && \
-    default_configs
+    default_configs && \
+    copy_main_filess && \
+    copy_devkit_files
