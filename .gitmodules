@@ -1,0 +1,21 @@
+[submodule "core"]
+	path = core
+	url = git@github.com:flarehotspot/core.git
+[submodule "hardware-db"]
+	path = hardware-db
+	url = git@github.com:flarehotspot/hardware-db.git
+[submodule "plugins/com.adopisoft.basic-flare-theme"]
+	path = plugins/com.adopisoft.basic-flare-theme
+	url = git@github.com:AdoPiSoft/com.adopisoft.basic-flare-theme.git
+[submodule "plugins/com.flarego.wired-coinslot"]
+	path = plugins/com.flarego.wired-coinslot
+	url = git@github.com:flarehotspot/com.flarego.wired-coinslot.git
+[submodule "plugins/com.flarego.basic-net-mgr"]
+	path = plugins/com.flarego.basic-net-mgr
+	url = git@github.com:flarehotspot/com.flarego.basic-net-mgr.git
+[submodule "plugins/com.flarego.basic-wifi-hotspot"]
+	path = plugins/com.flarego.basic-wifi-hotspot
+	url = git@github.com:flarehotspot/com.flarego.basic-wifi-hotspot.git
+[submodule "plugins/com.flarego.basic-system-account"]
+	path = plugins/com.flarego.basic-system-account
+	url = git@github.com:flarehotspot/com.flarego.basic-system-account.git
