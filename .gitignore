@@ -5,17 +5,14 @@
 /.cache
 /.tmp
 /.files
-/logs
 /vendor
 /node_modules
-/package.json
-/package-lock.json
-/main/app
-/translations
+/go
 /devkit-release
 .null*
 
 .DS_Store
 *.so
 *.app
+*.work
 

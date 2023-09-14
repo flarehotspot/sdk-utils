@@ -1,0 +1,8 @@
+CREATE TABLE IF NOT EXISTS wallets (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    device_id INT NOT NULL,
+    balance DECIMAL(8, 2),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (device_id) REFERENCES devices (id) ON DELETE CASCADE
+);

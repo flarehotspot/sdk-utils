@@ -1,0 +1,8 @@
+{
+  "scripts": [
+    "../../assets/booting/js/booting.js"
+  ],
+  "styles": [
+    "../../assets/booting/css/style.css"
+  ]
+}

@@ -1,19 +1,22 @@
-#!/bin/bash
+#!/bin/sh
 
-WORKING_DIR=$(pwd)
+WORKDIR=$(pwd)
 
 for d in vendor/*;
 do
-    echo "\$d is: $d"
-    echo "basename: $(basename $d)"
-    PLUGIN="$(basename $d)"
-    VENDOR_RESOURCES="$WORKING_DIR/vendor/$PLUGIN/resources"
-    PLUGIN_RESOURCES="$WORKING_DIR/plugins/$PLUGIN/resources"
+    PLUGIN=$(basename "$d")
 
-    echo "Linking files $VENDOR_RESOURCES -> $PLUGIN_RESOURCES"
+    if [ -e "$WORKDIR/plugins/$PLUGIN" ]; then
+        VENDOR_RESOURCES="$WORKDIR/vendor/$PLUGIN/resources"
+        PLUGIN_RESOURCES="$WORKDIR/plugins/$PLUGIN/resources"
 
-    rm -rf "$VENDOR_RESOURCES"
-    ln -s $PLUGIN_RESOURCES $VENDOR_RESOURCES
+        echo "Linking files $VENDOR_RESOURCES -> $PLUGIN_RESOURCES"
+
+        rm -rf "$VENDOR_RESOURCES"
+        ln -s $PLUGIN_RESOURCES $VENDOR_RESOURCES
+    fi
 done
 
 wait
+
+cd $WORKDIR

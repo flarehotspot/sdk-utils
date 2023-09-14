@@ -1,0 +1,9 @@
+<h1>Installed Plugins</h1>
+
+<a class="btn btn-success btn-sm" href="{{ .Data.newPluginUrl }}">New Plugin</a>
+
+<ul>
+  {{ range $p := .Data.plugins }}
+  <li>{{ $p.Name }} - {{ $p.Description }}</li>
+  {{ end }}
+</ul>
