@@ -10,8 +10,9 @@ RUN apt-get update && apt-get install -y \
 
 COPY . .
 
-RUN ./install-go.sh
-RUN ./go-work.sh
+RUN ./install-go.sh && \
+        rm -rf plugins && \
+        ./go-work.sh
 
 ENV PATH=/build/go/bin:${PATH}
 ENV GOROOT=/build/go

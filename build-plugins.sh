@@ -1,7 +1,6 @@
 #!/bin/sh
 
 WORKDIR=$(pwd)
-PATH="$WORKDIR/go/bin:$PATH"
 
 echo "Using go from $(which go)..."
 
