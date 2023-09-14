@@ -24,7 +24,7 @@ DEVKIT_FILES=(
     ./.files
 )
 
-copy_main_filess() {
+copy_devkit_files() {
     mkdir -p $RELEASE_DIR/core
 
     for file in "${DEVKIT_FILES[@]}"; do
@@ -34,10 +34,11 @@ copy_main_filess() {
 }
 
 default_configs() {
-    secret=$(openssl rand -hex 16)
     mkdir -p $RELEASE_DIR/config
     cp -r ./config/.defaults/ $RELEASE_DIR/config/.defaults
 
+    # Generate application.yml with random secret
+    secret=$(openssl rand -hex 16)
     cat > $RELEASE_DIR/config/application.yml<<EOF
 ---
 secret: $secret
@@ -48,7 +49,7 @@ EOF
         echo $(cat $RELEASE_DIR/config/application.yml)
 }
 
-copy_devkit_files() {
+copy_extras_files() {
     echo "Copying devkit files..."
     cp -r ./devkit-extras/* $RELEASE_DIR/
 }
@@ -65,5 +66,5 @@ prepare && \
     docker cp $(docker create --name ${TMP_CONTAINER} ${DOCKER_IMAGE}):${CORE_SO} $OUTFILE && \
     docker rm "$TMP_CONTAINER" && \
     default_configs && \
-    copy_main_filess && \
-    copy_devkit_files
+    copy_devkit_files && \
+    copy_extras_files
