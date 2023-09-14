@@ -21,7 +21,6 @@ DEVKIT_FILES=(
     ./install-go.sh
     ./package.json
     ./package-lock.json
-    ./.files
 )
 
 copy_devkit_files() {

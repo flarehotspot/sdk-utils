@@ -2,6 +2,7 @@
 /config/plugins
 /config/*.yml
 /public
+/mock-files
 /.cache
 /.tmp
 /vendor
