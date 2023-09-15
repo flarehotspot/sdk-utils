@@ -29,15 +29,20 @@ usage() {
     echo "      export GOPATH=\"$(dirname $GO_CUSTOM_PATH)\""
 }
 
+download_go(){
+    if [ ! -e "${DL_PATH}" ]; then
+        mkdir -p "$(dirname $DL_PATH)" && \
+            wget --progress=bar:force:noscroll -O "${DL_PATH}" "${GO_SRC}"
+    fi
+}
+
 if [ -d "${GO_CUSTOM_PATH}" ] && [ "$GO_VERSION" = "$(cat $GO_CUSTOM_PATH/go-version)" ]; then
     echo "Go is already installed" && usage
     exit 0
 else
     echo "Downloading ${GO_SRC}..." && \
-        mkdir -p "$(dirname $DL_PATH)" && \
-        wget --progress=bar:force:noscroll -O "${DL_PATH}" "${GO_SRC}" && \
+        download_go && \
         echo "Extracting ${GO_TAR} to ${GO_CUSTOM_PATH}..." && \
-        mkdir -p "${GO_CUSTOM_PATH}" && \
         rm -rf ${GO_CUSTOM_PATH} && tar -C $(dirname $GO_CUSTOM_PATH) -xzf "${DL_PATH}" && \
         echo $GO_VERSION > "$GO_CUSTOM_PATH/go-version" && \
         echo "Installed Go ${GO_VERSION} to ${GO_CUSTOM_PATH}" && usage

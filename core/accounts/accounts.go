@@ -3,7 +3,6 @@ package accounts
 import (
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"sync"
@@ -46,7 +45,7 @@ func DefaultAdminAcct() Account {
 		Perms:  perms,
 	}
 
-	bytes, err := ioutil.ReadFile(f)
+	bytes, err := os.ReadFile(f)
 	if err != nil {
 		return defAcct
 	}
@@ -67,7 +66,7 @@ func EnsureAdminAcct() error {
 		if err != nil {
 			return err
 		}
-		err = ioutil.WriteFile(f, content, 0644)
+		err = os.WriteFile(f, content, 0644)
 		if err != nil {
 			return err
 		}
@@ -82,7 +81,7 @@ func All() (accounts []*Account, err error) {
 	}
 
 	for _, f := range files {
-		b, err := ioutil.ReadFile(f)
+		b, err := os.ReadFile(f)
 		if err != nil {
 			return nil, err
 		}
@@ -119,7 +118,7 @@ func Find(username string) (*Account, error) {
 	var acct Account
 	derr := errors.New(translate.Core(translate.Error, "account_not_exist"))
 	f := FilepathForUser(username)
-	b, err := ioutil.ReadFile(f)
+	b, err := os.ReadFile(f)
 	if err != nil {
 		return nil, derr
 	}
@@ -147,7 +146,7 @@ func Create(uname string, passwd string, perms []string) (*Account, error) {
 		return nil, fmt.Errorf("Account with username \"%s\" already exists", uname)
 	}
 
-	err = ioutil.WriteFile(f, b, 0644)
+	err = os.WriteFile(f, b, 0644)
 	if err != nil {
 		return nil, err
 	}
@@ -189,7 +188,7 @@ func Update(prevName string, newName string, pass string, perms []string) (*Acco
 	}
 
 	f := FilepathForUser(newName)
-	err = ioutil.WriteFile(f, b, 0644)
+	err = os.WriteFile(f, b, 0644)
 	if err != nil {
 		return nil, err
 	}

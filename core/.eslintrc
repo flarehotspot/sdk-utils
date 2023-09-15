@@ -1,7 +1,0 @@
-{
-  "extends": "es3",
-  "globals": {
-    "$": true,
-    "jQuery": true
-  }
-}

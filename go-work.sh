@@ -13,12 +13,13 @@ use (
     ./main"
 
     if [ -d ./plugins ]; then
-
         for d in ./plugins/*;
         do
             PLUGIN="$(basename $d)"
-            GOWORK="${GOWORK}
-            ${d}"
+            if [ ! -d "$d/package.yml" ];then
+                GOWORK="${GOWORK}
+                ${d}"
+            fi
         done
     fi
 
