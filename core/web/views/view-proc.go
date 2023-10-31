@@ -4,14 +4,14 @@ import (
 	"errors"
 	"fmt"
 	"html/template"
-	"io/ioutil"
 	"log"
+	"os"
 	stdstr "strings"
 
-	"github.com/flarehotspot/core/utils/crypt"
-	jobque "github.com/flarehotspot/core/utils/job-que"
 	"github.com/flarehotspot/core/sdk/utils/slices"
 	"github.com/flarehotspot/core/sdk/utils/strings"
+	"github.com/flarehotspot/core/utils/crypt"
+	jobque "github.com/flarehotspot/core/utils/job-que"
 )
 
 var viewQue = jobque.NewJobQues()
@@ -85,7 +85,7 @@ func ViewProc(fmap template.FuncMap, views ...*ViewInput) (*template.Template, e
 
 func getHtmlContents(views ...string) (string, error) {
 	if len(views) < 2 {
-		viewBytes, err := ioutil.ReadFile(views[0])
+		viewBytes, err := os.ReadFile(views[0])
 		if err != nil {
 			return "", err
 		}
@@ -102,12 +102,12 @@ func getHtmlContents(views ...string) (string, error) {
 }
 
 func insertContent(layoutFile string, viewFile string) (result string, err error) {
-	layoutBytes, err := ioutil.ReadFile(layoutFile)
+	layoutBytes, err := os.ReadFile(layoutFile)
 	if err != nil {
 		return "", err
 	}
 
-	contentBytes, err := ioutil.ReadFile(viewFile)
+	contentBytes, err := os.ReadFile(viewFile)
 	if err != nil {
 		return "", err
 	}

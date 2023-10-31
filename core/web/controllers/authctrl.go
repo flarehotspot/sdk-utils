@@ -7,7 +7,7 @@ import (
 	"github.com/flarehotspot/core/accounts"
 	"github.com/flarehotspot/core/config/appcfg"
 	"github.com/flarehotspot/core/globals"
-	"github.com/flarehotspot/core/themes"
+	"github.com/flarehotspot/core/utils/themes"
 	"github.com/flarehotspot/core/utils/jsonwebtoken"
 	"github.com/flarehotspot/core/web/response"
 	"github.com/flarehotspot/core/web/router"

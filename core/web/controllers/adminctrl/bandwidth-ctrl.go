@@ -2,19 +2,23 @@ package adminctrl
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"strconv"
 
 	"github.com/flarehotspot/core/config/bandwdcfg"
+	"github.com/flarehotspot/core/config/themecfg"
+	"github.com/flarehotspot/core/fci"
 	"github.com/flarehotspot/core/globals"
 	"github.com/flarehotspot/core/network"
 	"github.com/flarehotspot/core/plugins"
+	"github.com/flarehotspot/core/sdk/utils/flash"
+	"github.com/flarehotspot/core/sdk/utils/slices"
+	"github.com/flarehotspot/core/utils/themes"
 	"github.com/flarehotspot/core/utils/ubus"
 	"github.com/flarehotspot/core/web/response"
 	"github.com/flarehotspot/core/web/router"
 	"github.com/flarehotspot/core/web/routes/names"
-	"github.com/flarehotspot/core/sdk/utils/flash"
-	"github.com/flarehotspot/core/sdk/utils/slices"
 	"github.com/gorilla/mux"
 )
 
@@ -190,4 +194,19 @@ func (self *BandwidthCtrl) updateRunningSessions(ctx context.Context, ifname str
 	}
 
 	return self.g.ClientMgr.ReloadSessions(ctx, ifname)
+}
+
+func (self *BandwidthCtrl) Test(w http.ResponseWriter, r *http.Request) {
+	pkg := themecfg.Read().WebAdmin
+	cfg := fci.NewFciConfig(pkg, "bandwidth-test")
+	sec := cfg.Section("test name", "test description")
+	sec.Field("test field", "test label", "test value")
+
+	htm, err := themes.FciComposeView(cfg)
+	if err != nil {
+		self.Error(w, r, err)
+		return
+	}
+
+	fmt.Fprint(w, htm)
 }

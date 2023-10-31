@@ -20,4 +20,6 @@ func AdminRoutes(g *globals.CoreGlobals) {
 	r.HandleFunc("/plugins/upload", pluginsCtrl.Upload).Methods("POST").Name(names.RouteAdminPluginUpload)
 	r.HandleFunc("/bandwidth/index", bandwidthCtrl.Index).Methods("GET").Name(names.RouteAdminBandwidthIndex)
 	r.HandleFunc("/bandwidth/{ifname}/save", bandwidthCtrl.Save).Methods("POST").Name(names.RouteAdminBandwidthSave)
+
+	r.HandleFunc("/test", bandwidthCtrl.Test)
 }

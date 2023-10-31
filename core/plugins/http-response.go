@@ -4,13 +4,13 @@ import (
 	"net/http"
 	"path/filepath"
 
-	"github.com/flarehotspot/core/themes"
-	resp "github.com/flarehotspot/core/web/response"
-	v "github.com/flarehotspot/core/web/views"
 	"github.com/flarehotspot/core/sdk/api/http/response"
 	"github.com/flarehotspot/core/sdk/api/http/router"
 	"github.com/flarehotspot/core/sdk/api/http/views"
 	"github.com/flarehotspot/core/sdk/utils/flash"
+	"github.com/flarehotspot/core/utils/themes"
+	resp "github.com/flarehotspot/core/web/response"
+	v "github.com/flarehotspot/core/web/views"
 )
 
 type HttpResponse struct {

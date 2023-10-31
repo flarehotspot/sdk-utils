@@ -5,7 +5,7 @@ import (
 
 	"github.com/flarehotspot/core/globals"
 	"github.com/flarehotspot/core/plugins"
-	"github.com/flarehotspot/core/themes"
+	"github.com/flarehotspot/core/utils/themes"
 	"github.com/flarehotspot/core/web/helpers"
 	"github.com/flarehotspot/core/web/routes/urls"
 	"github.com/flarehotspot/core/sdk/utils/sse"

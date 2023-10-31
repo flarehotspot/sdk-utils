@@ -17,7 +17,7 @@ It will also create a new file called "main_mono.go" where the contents are from
 but it will use another build tag "go:build mono" instead and it will replace the package name with camel-case
 of the base name of the pluginPatha and returns the camel-case package name.
 */
-async function prepareMain(pluginPath) {
+async function preparePluginMain(pluginPath) {
   const mainpath = path.join(pluginPath, "main.go");
   const pathExists = await fileExists(mainpath);
   if (!pathExists) {
@@ -203,7 +203,7 @@ main function
 
   for (const pluginDir of pluginsPaths) {
     try {
-      const goPackage = await prepareMain(pluginDir);
+      const goPackage = await preparePluginMain(pluginDir);
       const mod = await goModule(pluginDir);
       const pkg = await pluginPackage(pluginDir);
 

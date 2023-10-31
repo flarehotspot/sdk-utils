@@ -7,7 +7,7 @@ rm -rf .tmp .cache/views public
 rm -rf ./vendor && mkdir ./vendor
 find . -name "*.app" -type f -delete
 
-# Build and run
+# Build .so files and run
 ./go-work.sh
 ./build-main.sh
 ./build-plugins.sh

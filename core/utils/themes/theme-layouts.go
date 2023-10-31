@@ -4,8 +4,8 @@ import (
 	"path/filepath"
 
 	"github.com/flarehotspot/core/config/themecfg"
-	"github.com/flarehotspot/core/web/views"
 	"github.com/flarehotspot/core/sdk/utils/paths"
+	"github.com/flarehotspot/core/web/views"
 )
 
 const (
