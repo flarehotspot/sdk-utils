@@ -1,7 +1,6 @@
 package themes
 
 import (
-	"errors"
 	"fmt"
 	"html/template"
 	"os"
@@ -11,32 +10,15 @@ import (
 	"github.com/flarehotspot/core/config/themecfg"
 	"github.com/flarehotspot/core/fci"
 	sdkfci "github.com/flarehotspot/core/sdk/api/fci"
-	"github.com/flarehotspot/core/sdk/utils/fs"
 	"github.com/flarehotspot/core/sdk/utils/paths"
 )
 
-func FciThemeView(v string) (f string, err error) {
-	themepkg := themecfg.Read().WebAdmin
-	viewdir := filepath.Join(paths.VendorDir, themepkg, "resources/views/fci")
-	file := filepath.Join(viewdir, v)
-
-	if !fs.Exists(file) {
-		return "", errors.New("file not found: " + file)
-	}
-
-	b, err := os.ReadFile(file)
-	if err != nil {
-		return "", err
-	}
-
-	return string(b), nil
-}
-
+// FciComposeView returns the html form as string
 func FciComposeView(cfg *fci.FciConfig) (htm string, err error) {
 	var builder strings.Builder
 
 	for _, sec := range cfg.Sections {
-		sechtml, err := FciThemeView("section.html")
+		sechtml, err := FciReadFile("section.html")
 		if err != nil {
 			return "", err
 		}
@@ -56,14 +38,15 @@ func FciComposeView(cfg *fci.FciConfig) (htm string, err error) {
 		builder.WriteString(result.String())
 
 		for _, input := range sec.Inputs {
-			viewfile, err := FciViewFile(input.Type())
-			inphtml, err := FciThemeView(viewfile)
+			t := input.Type()
+			f, err := FciViewFile(t)
+			htmlstr, err := FciReadFile(f)
 			if err != nil {
 				return "", err
 			}
 
 			tplname := fmt.Sprintf("input-%s-%s", input.Type(), input.Name())
-			tpl, err := template.New(tplname).Parse(inphtml)
+			tpl, err := template.New(tplname).Parse(htmlstr)
 			if err != nil {
 				return "", err
 			}
@@ -88,4 +71,17 @@ func FciViewFile(t sdkfci.IFciInputTypes) (v string, err error) {
 	}
 
 	return "", fmt.Errorf("invalid fci input type: %s", t)
+}
+
+func FciReadFile(v string) (f string, err error) {
+	themepkg := themecfg.Read().WebAdmin
+	viewdir := filepath.Join(paths.VendorDir, themepkg, "resources/views/fci")
+	file := filepath.Join(viewdir, v)
+
+	b, err := os.ReadFile(file)
+	if err != nil {
+		return "", err
+	}
+
+	return string(b), nil
 }
