@@ -124,6 +124,10 @@ func (sec *FciSection) Field(name string, label string, help string) fci.IFciInp
 		field = ifield.(*FciInputField)
 	}
 
+	field.Flabel = label
+	field.Fhelp = help
+    field.SetAttr("name", name)
+
 	return field
 }
 

@@ -1,6 +1,8 @@
 package fci
 
-import "github.com/flarehotspot/core/sdk/api/fci"
+import (
+	"github.com/flarehotspot/core/sdk/api/fci"
+)
 
 func NewFieldLsRow(cfg *FciConfig, fl *FciFieldList, m []map[string]any) *FciFieldLsRow {
 	return &FciFieldLsRow{
@@ -30,7 +32,7 @@ func (flrow *FciFieldLsRow) Field(col string, name string) fci.IFciInputField {
 		flrow.Fields[colidx] = field
 	}
 
-	field.Fname = name
+	field.SetAttr("name", name)
 
 	return nil
 }
@@ -43,7 +45,13 @@ func (flrow *FciFieldLsRow) GetField(col string) (input fci.IFciInputField, ok b
 func (flrow *FciFieldLsRow) Values() map[string]string {
 	m := map[string]string{}
 	for _, field := range flrow.Fields {
-		m[field.Fname] = field.Fvalue
+		name, ok := field.Fattrs["name"]
+		if !ok {
+			continue
+		}
+
+		value, ok := field.Fattrs["value"]
+		m[name] = value
 	}
 	return m
 }

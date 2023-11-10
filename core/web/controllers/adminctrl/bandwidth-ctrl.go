@@ -199,14 +199,16 @@ func (self *BandwidthCtrl) updateRunningSessions(ctx context.Context, ifname str
 func (self *BandwidthCtrl) Test(w http.ResponseWriter, r *http.Request) {
 	pkg := themecfg.Read().WebAdmin
 	cfg := fci.NewFciConfig(pkg, "bandwidth-test")
-	sec := cfg.Section("test name", "test description")
-	sec.Field("test field", "test label", "test value")
+	sec := cfg.Section("test section", "test description")
+	f := sec.Field("test field", "test label", "test help")
+	f.SetAttr("type", "text")
+	f.SetAttr("value", "same value")
 
-	htm, err := themes.FciComposeView(cfg)
+	html, err := themes.FciComposeView(cfg)
 	if err != nil {
 		self.Error(w, r, err)
 		return
 	}
 
-	fmt.Fprint(w, htm)
+	fmt.Fprint(w, html)
 }

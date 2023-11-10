@@ -3,18 +3,17 @@ package views
 import (
 	"encoding/json"
 	"errors"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
 	"sync"
 
-	"github.com/flarehotspot/core/utils/assets"
 	"github.com/flarehotspot/core/sdk/libs/slug"
 	"github.com/flarehotspot/core/sdk/utils/fs"
 	"github.com/flarehotspot/core/sdk/utils/paths"
 	"github.com/flarehotspot/core/sdk/utils/slices"
+	"github.com/flarehotspot/core/utils/assets"
 )
 
 type AssetBundle struct {
@@ -49,7 +48,7 @@ var emptyManifest = AssetsManifest{
 
 func ViewManifest(v string) (va AssetsManifest) {
 	f := v + ".assets.json"
-	fbytes, err := ioutil.ReadFile(f)
+	fbytes, err := os.ReadFile(f)
 	if err != nil {
 		return emptyManifest
 	}

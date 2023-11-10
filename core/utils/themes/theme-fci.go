@@ -37,27 +37,26 @@ func FciComposeView(cfg *fci.FciConfig) (htm string, err error) {
 
 		builder.WriteString(result.String())
 
-		for _, input := range sec.Inputs {
-			t := input.Type()
+		for _, ipt := range sec.Inputs {
+			t := ipt.Type()
 			f, err := FciViewFile(t)
 			htmlstr, err := FciReadFile(f)
 			if err != nil {
 				return "", err
 			}
 
-			tplname := fmt.Sprintf("input-%s-%s", input.Type(), input.Name())
+			tplname := fmt.Sprintf("input-%s-%s", ipt.Type(), ipt.Name())
 			tpl, err := template.New(tplname).Parse(htmlstr)
 			if err != nil {
 				return "", err
 			}
 
-			var result strings.Builder
-			err = tpl.Execute(&result, input)
+			result, err := FciExecInputTemplate(tpl, ipt)
 			if err != nil {
 				return "", err
 			}
 
-			builder.WriteString(result.String())
+			builder.WriteString(result)
 		}
 	}
 
@@ -84,4 +83,27 @@ func FciReadFile(v string) (f string, err error) {
 	}
 
 	return string(b), nil
+}
+
+func FciExecInputTemplate(tpl *template.Template, ipt sdkfci.IFciInput) (htm string, err error) {
+	var result strings.Builder
+
+	t := ipt.Type()
+	switch t {
+	case sdkfci.FciInputField:
+		data := ipt.(*fci.FciInputField)
+		err = tpl.Execute(&result, data)
+		if err != nil {
+			return "", err
+		}
+
+	case sdkfci.FciInputFieldLIst:
+		data := ipt.(*fci.FciInputField)
+		err = tpl.Execute(&result, data)
+		if err != nil {
+			return "", err
+		}
+	}
+
+	return result.String(), nil
 }
