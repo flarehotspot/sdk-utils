@@ -7,14 +7,14 @@ import (
 	"github.com/flarehotspot/core/accounts"
 	"github.com/flarehotspot/core/config/appcfg"
 	"github.com/flarehotspot/core/globals"
-	"github.com/flarehotspot/core/utils/themes"
+	"github.com/flarehotspot/core/sdk/utils/cookie"
+	"github.com/flarehotspot/core/sdk/utils/flash"
+	"github.com/flarehotspot/core/sdk/utils/translate"
 	"github.com/flarehotspot/core/utils/jsonwebtoken"
 	"github.com/flarehotspot/core/web/response"
 	"github.com/flarehotspot/core/web/router"
 	"github.com/flarehotspot/core/web/routes/names"
-	"github.com/flarehotspot/core/sdk/utils/cookie"
-	"github.com/flarehotspot/core/sdk/utils/flash"
-	"github.com/flarehotspot/core/sdk/utils/translate"
+	"github.com/flarehotspot/core/web/views"
 )
 
 const (
@@ -31,7 +31,7 @@ func NewAuthCtrl(g *globals.CoreGlobals) *AuthCtrl {
 
 func (ctrl *AuthCtrl) GetLogin(w http.ResponseWriter, r *http.Request) {
 	api := ctrl.g.PluginMgr.AdminPluginApi()
-	api.HttpApi().Respond().View(w, r, themes.LoginHtml, nil)
+	api.HttpApi().Respond().View(w, r, views.LoginHtml, nil)
 }
 
 func (ctrl *AuthCtrl) PostLogin(w http.ResponseWriter, r *http.Request) {

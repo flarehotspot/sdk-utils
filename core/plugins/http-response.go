@@ -8,7 +8,6 @@ import (
 	"github.com/flarehotspot/core/sdk/api/http/router"
 	"github.com/flarehotspot/core/sdk/api/http/views"
 	"github.com/flarehotspot/core/sdk/utils/flash"
-	"github.com/flarehotspot/core/utils/themes"
 	resp "github.com/flarehotspot/core/web/response"
 	v "github.com/flarehotspot/core/web/views"
 )
@@ -32,7 +31,7 @@ func (self *HttpResponse) AdminView(w http.ResponseWriter, r *http.Request, view
 	helpers := NewViewHelpers(self.api, w, r)
 	vdir := self.api.Resource("views/web-admin")
 	viewfile := filepath.Join(vdir, view)
-	layout := themes.WebAdminLayout()
+	layout := v.WebAdminLayout()
 	fmap := self.api.vfmap
 	vdata := &views.ViewData{Helpers: helpers, Data: data}
 	resp.ViewWithLayout(w, layout, viewfile, fmap, vdata)
@@ -45,7 +44,7 @@ func (self *HttpResponse) PortalView(w http.ResponseWriter, r *http.Request, vie
 	helpers := NewViewHelpers(self.api, w, r)
 	vdir := self.api.Resource("views/captive-portal")
 	viewfile := filepath.Join(vdir, view)
-	layout := themes.PortalLayout()
+	layout := v.PortalLayout()
 
 	fmap := self.api.vfmap
 	vdata := &views.ViewData{Helpers: helpers, Data: data}

@@ -1,11 +1,10 @@
-package themes
+package views
 
 import (
 	"path/filepath"
 
 	"github.com/flarehotspot/core/config/themecfg"
 	"github.com/flarehotspot/core/sdk/utils/paths"
-	"github.com/flarehotspot/core/web/views"
 )
 
 const (
@@ -19,23 +18,23 @@ const (
 	adminLayoutHtml  = "web-admin/layout.html"
 )
 
-func PortalLayout() *views.ViewInput {
+func PortalLayout() *ViewInput {
 	themepkg := themecfg.Read().CaptivePortal
-	extras := views.BundleExtras{
+	extras := BundleExtras{
 		ExtraJS: &[]string{
 			filepath.Join(paths.CoreDir, "resources/assets/portal/js/event-source.polyfill.js"),
 			filepath.Join(paths.CoreDir, "resources/assets/portal/js/events.js"),
 		},
 	}
 	view := filepath.Join(paths.VendorDir, themepkg, "resources/views", portalLayoutHtml)
-	return &views.ViewInput{File: view, Extras: &extras}
+	return &ViewInput{File: view, Extras: &extras}
 }
 
-func WebAdminLayout() *views.ViewInput {
-	extras := views.BundleExtras{
+func WebAdminLayout() *ViewInput {
+	extras := BundleExtras{
 		ExtraJS: &[]string{filepath.Join(paths.CoreDir, "resources/assets/admin/js/events.js")},
 	}
 	themepkg := themecfg.Read().WebAdmin
 	view := filepath.Join(paths.VendorDir, themepkg, "resources/views", adminLayoutHtml)
-	return &views.ViewInput{File: view, Extras: &extras}
+	return &ViewInput{File: view, Extras: &extras}
 }
