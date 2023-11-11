@@ -1,4 +1,4 @@
-package themes
+package fci
 
 import (
 	"fmt"
@@ -8,13 +8,12 @@ import (
 	"strings"
 
 	"github.com/flarehotspot/core/config/themecfg"
-	"github.com/flarehotspot/core/fci"
 	sdkfci "github.com/flarehotspot/core/sdk/api/fci"
 	"github.com/flarehotspot/core/sdk/utils/paths"
 )
 
 // FciComposeView returns the html form as string
-func FciComposeView(cfg *fci.FciConfig) (htm string, err error) {
+func FciComposeView(cfg *FciConfig) (htm string, err error) {
 	var builder strings.Builder
 
 	for _, sec := range cfg.Sections {
@@ -91,14 +90,14 @@ func FciExecInputTemplate(tpl *template.Template, ipt sdkfci.IFciInput) (htm str
 	t := ipt.Type()
 	switch t {
 	case sdkfci.FciInputField:
-		data := ipt.(*fci.FciInputField)
+		data := ipt.(*FciInputField)
 		err = tpl.Execute(&result, data)
 		if err != nil {
 			return "", err
 		}
 
 	case sdkfci.FciInputFieldLIst:
-		data := ipt.(*fci.FciInputField)
+		data := ipt.(*FciInputField)
 		err = tpl.Execute(&result, data)
 		if err != nil {
 			return "", err

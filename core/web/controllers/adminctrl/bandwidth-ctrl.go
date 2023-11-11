@@ -14,7 +14,6 @@ import (
 	"github.com/flarehotspot/core/plugins"
 	"github.com/flarehotspot/core/sdk/utils/flash"
 	"github.com/flarehotspot/core/sdk/utils/slices"
-	"github.com/flarehotspot/core/utils/themes"
 	"github.com/flarehotspot/core/utils/ubus"
 	"github.com/flarehotspot/core/web/response"
 	"github.com/flarehotspot/core/web/router"
@@ -204,7 +203,7 @@ func (self *BandwidthCtrl) Test(w http.ResponseWriter, r *http.Request) {
 	f.SetAttr("type", "text")
 	f.SetAttr("value", "same value")
 
-	html, err := themes.FciComposeView(cfg)
+	html, err := fci.FciComposeView(cfg)
 	if err != nil {
 		self.Error(w, r, err)
 		return
