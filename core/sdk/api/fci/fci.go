@@ -6,7 +6,7 @@ type IFciInputTypes string
 
 const (
 	FciInputField         IFciInputTypes = "field"
-	FciInputFieldLIst                    = "field-list"
+	FciInputFieldList                    = "field-list"
 	FciInputTextarea                     = "textarea"
 	FciInputSelect                       = "select"
 	FciInputCheckbox                     = "checkbox"

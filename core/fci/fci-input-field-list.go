@@ -6,7 +6,7 @@ func NewFciFieldList(cfg *FciConfig, m [][]map[string]any) *FciFieldList {
 	return &FciFieldList{
 		cfg:    cfg,
 		fmap:   m,
-		Fltype: fci.FciInputFieldLIst,
+		Fltype: fci.FciInputFieldList,
 	}
 }
 
@@ -25,15 +25,30 @@ func (fl *FciFieldList) Type() fci.IFciInputTypes {
 	return fl.Fltype
 }
 
+func (fl *FciFieldList) Name() string {
+	return fl.Flname
+}
+
+func (fl *FciFieldList) Label() string {
+	return fl.Fllabel
+}
+
 func (fl *FciFieldList) Cols(cols ...string) {
 	fl.Flcols = cols
 }
 
-func (fl *FciFieldList) Row(index int) (row fci.IFciInputLsRow, ok bool) {
+func (fl *FciFieldList) GetCols() []string {
+	return fl.Flcols
+}
+
+func (fl *FciFieldList) Row(index int) (row fci.IFciInputLsRow) {
 	if index < len(fl.Flrows) {
-		return fl.Flrows[index], true
+		return fl.Flrows[index]
 	}
-	return nil, false
+	m := make([]map[string]any, 0)
+	r := NewFieldLsRow(fl.cfg, fl, m)
+	fl.Flrows = append(fl.Flrows, r)
+	return r
 }
 
 func (fl *FciFieldList) Rows() []fci.IFciInputLsRow {

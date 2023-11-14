@@ -93,6 +93,7 @@ func (sec *FciSection) FieldList(name string, label string) fci.IFciFieldList {
 	if !ok {
 		m := [][]map[string]any{}
 		fl = NewFciFieldList(sec.cfg, m)
+        sec.Inputs = append(sec.Inputs, fl)
 	} else {
 		fl = ifl.(*FciFieldList)
 	}
@@ -104,7 +105,7 @@ func (sec *FciSection) FieldList(name string, label string) fci.IFciFieldList {
 
 func (sec *FciSection) GetFieldList(name string) (fl fci.IFciFieldList, ok bool) {
 	for _, input := range sec.Inputs {
-		if input.Type() == fci.FciInputFieldLIst && input.Name() == name {
+		if input.Type() == fci.FciInputFieldList && input.Name() == name {
 			return input.(fci.IFciFieldList), true
 		}
 	}

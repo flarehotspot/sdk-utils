@@ -9,7 +9,7 @@ func NewFieldLsRow(cfg *FciConfig, fl *FciFieldList, m []map[string]any) *FciFie
 		cfg:    cfg,
 		fl:     fl,
 		flmap:  m,
-		Fields: []*FciInputField{},
+		Fields: make([]*FciInputField, len(fl.Flcols)),
 	}
 }
 
@@ -24,9 +24,12 @@ func (flrow *FciFieldLsRow) Field(col string, name string) fci.IFciInputField {
 	var field *FciInputField
 
 	input, ok := flrow.GetField(col)
-	if !ok {
+	if ok {
 		field = input.(*FciInputField)
-	} else {
+		ok = field != nil
+	}
+
+	if !ok {
 		field = NewFciInputField(flrow.cfg, map[string]any{})
 		colidx := flrow.fl.GetColIdx(col)
 		flrow.Fields[colidx] = field
@@ -34,11 +37,22 @@ func (flrow *FciFieldLsRow) Field(col string, name string) fci.IFciInputField {
 
 	field.SetAttr("name", name)
 
-	return nil
+	return field
+}
+
+func (flrow *FciFieldLsRow) GetFields() []fci.IFciInputField {
+	fields := make([]fci.IFciInputField, len(flrow.Fields))
+	for i, field := range flrow.Fields {
+		fields[i] = field
+	}
+	return fields
 }
 
 func (flrow *FciFieldLsRow) GetField(col string) (input fci.IFciInputField, ok bool) {
 	colidx := flrow.fl.GetColIdx(col)
+	if len(flrow.Fields) <= colidx {
+		return nil, false
+	}
 	return flrow.Fields[colidx], colidx != -1
 }
 

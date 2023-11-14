@@ -66,6 +66,8 @@ func FciViewFile(t sdkfci.IFciInputTypes) (v string, err error) {
 	switch t {
 	case sdkfci.FciInputField:
 		return "input-field.html", nil
+	case sdkfci.FciInputFieldList:
+		return "input-field-list.html", nil
 	}
 
 	return "", fmt.Errorf("invalid fci input type: %s", t)
@@ -96,8 +98,8 @@ func FciExecInputTemplate(tpl *template.Template, ipt sdkfci.IFciInput) (htm str
 			return "", err
 		}
 
-	case sdkfci.FciInputFieldLIst:
-		data := ipt.(*FciInputField)
+	case sdkfci.FciInputFieldList:
+		data := ipt.(*FciFieldList)
 		err = tpl.Execute(&result, data)
 		if err != nil {
 			return "", err
