@@ -2,7 +2,6 @@ package plugins
 
 import (
 	"database/sql"
-	"html/template"
 	"log"
 	"path/filepath"
 
@@ -78,8 +77,8 @@ func (p *PluginApi) Translate(msgtype translate.MsgType, msgk string) string {
 	return p.trnslt(msgtype, msgk)
 }
 
-func (p *PluginApi) Resource(f string) (path string) {
-	return filepath.Join(p.dir, "resources", f)
+func (p *PluginApi) Resource(path string) string {
+	return filepath.Join(p.dir, "resources", path)
 }
 
 func (p *PluginApi) DbApi() *sql.DB {
@@ -90,7 +89,7 @@ func (p *PluginApi) ModelsApi() models.IModelsApi {
 	return p.models
 }
 
-func (p *PluginApi) FuncMap() template.FuncMap {
+func (p *PluginApi) FuncMap() map[string]func() {
 	return p.vfmap
 }
 

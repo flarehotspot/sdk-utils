@@ -32,6 +32,7 @@ var (
 	TmpDir      = filepath.Join(AppDir, ".tmp")
 )
 
+// Strip removes the project root directory prefix from absolute paths
 func Strip(p string) string {
 	return strings.Replace(p, AppDir+"/", "", 1)
 }

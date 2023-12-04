@@ -14,9 +14,11 @@ func viewFiles(views ...*ViewInput) (files []string) {
 			if extras.ExtraJS != nil {
 				files = append(files, *extras.ExtraJS...)
 			}
+
 			if extras.ExtraCSS != nil {
 				files = append(files, *extras.ExtraCSS...)
 			}
+
 			if extras.ExtraDirs != nil {
 				for _, extraDir := range *extras.ExtraDirs {
 					dirfiles, err := fs.LsFiles(extraDir.Src, true)

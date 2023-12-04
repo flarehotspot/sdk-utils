@@ -2,24 +2,37 @@ package views
 
 import (
 	"encoding/json"
-	"errors"
 	"log"
 	"os"
 	"path/filepath"
-	"strings"
 	"sync"
 
-	"github.com/flarehotspot/core/sdk/libs/slug"
 	"github.com/flarehotspot/core/sdk/utils/fs"
 	"github.com/flarehotspot/core/sdk/utils/paths"
-	"github.com/flarehotspot/core/sdk/utils/slices"
 	"github.com/flarehotspot/core/utils/assets"
+	jobque "github.com/flarehotspot/core/utils/job-que"
 )
 
-type AssetBundle struct {
-	mu        *sync.Mutex
-	ScriptSrc string
-	StyleSrc  string
+const (
+	PublicPrefix  = "/public"
+	TagTypeScript = "script"
+	TagTypeStyle  = "style"
+)
+
+var emptyManifest = AssetsManifest{
+	PublicPrefix: "",
+	Scripts:      []string{},
+	Styles:       []string{},
+}
+
+var (
+	assetsQue   = jobque.NewJobQues()
+	assetsCache = sync.Map{}
+)
+
+type AssetSources struct {
+	Scripts []string
+	Styles  []string
 }
 
 type AssetFolder struct {
@@ -40,102 +53,54 @@ type BundleExtras struct {
 	ExtraDirs *[]AssetFolder
 }
 
-var emptyManifest = AssetsManifest{
-	PublicPrefix: "",
-	Scripts:      []string{},
-	Styles:       []string{},
-}
-
-func ViewManifest(v string) (va AssetsManifest) {
-	f := v + ".assets.json"
+func ViewManifest(view string) (ma AssetsManifest) {
+	f := view + ".assets.json"
 	fbytes, err := os.ReadFile(f)
 	if err != nil {
 		return emptyManifest
 	}
 
-	var a AssetsManifest
-	err = json.Unmarshal(fbytes, &a)
+	err = json.Unmarshal(fbytes, &ma)
 	if err != nil {
 		return emptyManifest
 	}
 
-	return a
+	return ma
 }
 
-func AssetBundles(view string, opts *BundleExtras) (bundle AssetBundle, err error) {
-	m := ViewManifest(view)
-	ext := filepath.Ext(view)
-	fname := strings.ReplaceAll(strings.ReplaceAll(view, paths.AppDir, ""), "/", "-")
-	fname = slug.Make(strings.ReplaceAll(fname, ext, "")) + ext
-	if strings.HasPrefix(fname, "-") {
-		fname = strings.TrimPrefix(fname, "-")
-	}
-	dstDir := filepath.Join(PublicPrefix, m.PublicPrefix)
-	viewDir := filepath.Dir(view)
+func ViewAssets(view string) (sources AssetSources) {
+	manifest := ViewManifest(view)
 
-	jsSrcs := []string{}
-	cssSrcs := []string{}
-	dirSrcs := []AssetFolder{}
-
-	if opts != nil {
-		if opts.ExtraJS != nil {
-			jsSrcs = *opts.ExtraJS
-		}
-		if opts.ExtraCSS != nil {
-			cssSrcs = *opts.ExtraCSS
-		}
-		if opts.ExtraDirs != nil {
-			dirSrcs = *opts.ExtraDirs
-		}
+	jsSources := []string{}
+	for _, s := range manifest.Scripts {
+		jsSources = append(jsSources, filepath.Join(filepath.Dir(view), s))
 	}
 
-	// process js files
-	jsFile := filepath.Join(dstDir, "js", fname+".js")
-	if len(m.Scripts) > 0 {
-		srcs := slices.MapString(m.Scripts, func(s string) string {
-			return filepath.Join(viewDir, s)
-		})
-		jsSrcs = append(jsSrcs, srcs...)
+	cssSources := []string{}
+	for _, s := range manifest.Styles {
+		cssSources = append(cssSources, filepath.Join(filepath.Dir(view), s))
 	}
 
-	scriptSrc, err := assets.Bundle(jsFile, jsSrcs)
-	if err != nil {
-		if !errors.Is(err, assets.ErrNoAssets) {
-			return bundle, err
-		}
-		bundle.ScriptSrc = ""
-	} else {
-		bundle.ScriptSrc = scriptSrc
+	return AssetSources{
+		Scripts: jsSources,
+		Styles:  cssSources,
 	}
+}
 
-	// process css files
-	cssFile := filepath.Join(dstDir, "css", fname+".css")
-	if len(m.Styles) > 0 {
-		srcs := slices.MapString(m.Styles, func(s string) string {
-			return filepath.Join(viewDir, s)
-		})
-		cssSrcs = append(cssSrcs, srcs...)
-	}
+func BundleJS(filename string, src ...string) (outfile string, err error) {
+	return assets.Bundle(filepath.Join(paths.PublicDir, "js", filename), src)
+}
 
-	styleSrc, err := assets.Bundle(cssFile, cssSrcs)
-	if err != nil {
-		if !errors.Is(err, assets.ErrNoAssets) {
-			return bundle, err
-		}
-		bundle.StyleSrc = ""
-	} else {
-		bundle.StyleSrc = styleSrc
-	}
+func BundleCSS(filename string, src ...string) (outfile string, err error) {
+	return assets.Bundle(filepath.Join(paths.PublicDir, "css", filename), src)
+}
 
-	// process folders
-	if m.Folders != nil {
-		dirSrcs = append(dirSrcs, m.Folders...)
-	}
+func CopyDirsToPublic(view string) error {
+	manifest := ViewManifest(view)
+	dirs := manifest.Folders
 
 	var wg sync.WaitGroup
-	wg.Add(len(dirSrcs))
-
-	for _, f := range dirSrcs {
+	for _, dir := range dirs {
 		go func(f AssetFolder) {
 			defer wg.Done()
 			src := filepath.Join(filepath.Dir(view), f.Src)
@@ -151,9 +116,8 @@ func AssetBundles(view string, opts *BundleExtras) (bundle AssetBundle, err erro
 					log.Println(err)
 				}
 			}
-		}(f)
+		}(dir)
 	}
-
 	wg.Wait()
-	return bundle, nil
+	return nil
 }

@@ -1,10 +1,9 @@
 package plugins
 
 import (
-	"html/template"
-
 	"github.com/flarehotspot/core/connmgr"
 	"github.com/flarehotspot/core/db"
+	"github.com/flarehotspot/core/sdk/libs/jet"
 	"github.com/flarehotspot/core/sdk/utils/translate"
 )
 
@@ -12,8 +11,9 @@ type PluginApi struct {
 	slug             string
 	dir              string
 	trnslt           translate.TranslateFn
-	vfmap            template.FuncMap
+	vfmap            map[string]func()
 	db               *db.Database
+	viewset          *jet.Set
 	models           *PluginModels
 	AcctAPI          *AccountsApi
 	HttpAPI          *HttpApi
@@ -29,21 +29,3 @@ type PluginApi struct {
 	ClntMgr          *connmgr.ClientMgr
 	UciAPI           *UciApi
 }
-
-// func (api *PluginApi) Init() error {
-// 	pluginLib := filepath.Join(api.dir, "plugin.so")
-// 	p, err := plugin.Open(pluginLib)
-// 	if err != nil {
-// 		return err
-// 	}
-//
-// 	initSym, err := p.Lookup("Init")
-// 	if err != nil {
-// 		return err
-// 	}
-//
-// 	initFn := initSym.(func(sdk.IPluginApi))
-// 	initFn(api)
-//
-// 	return nil
-// }

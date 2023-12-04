@@ -1,7 +1,6 @@
 package http
 
 import (
-	"html/template"
 	"net/http"
 
 	"github.com/flarehotspot/core/sdk/api/http/middlewares"
@@ -27,5 +26,5 @@ type IHttpApi interface {
 
 	// Set a global template.FuncMap{} available for your view templates.
 	// Note that these custom function maps are not available in the layout templates.
-	ViewFuncMap(fmap template.FuncMap)
+	ViewFuncMap(fmap map[string]func())
 }

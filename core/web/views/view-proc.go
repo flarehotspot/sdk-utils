@@ -3,11 +3,13 @@ package views
 import (
 	"errors"
 	"fmt"
-	"html/template"
 	"log"
 	"os"
+	"path/filepath"
 	stdstr "strings"
 
+	"github.com/flarehotspot/core/sdk/libs/jet"
+	"github.com/flarehotspot/core/sdk/utils/paths"
 	"github.com/flarehotspot/core/sdk/utils/slices"
 	"github.com/flarehotspot/core/sdk/utils/strings"
 	"github.com/flarehotspot/core/utils/crypt"
@@ -15,30 +17,84 @@ import (
 )
 
 var viewQue = jobque.NewJobQues()
+var loader = NewJetLoader()
+var viewSet = jet.NewSet(loader)
 
 type ViewInput struct {
+	Set     *jet.Set
 	File    string
 	Extras  *BundleExtras
-	FuncMap template.FuncMap
+	FuncMap map[string]func()
 }
 
-type viewCache struct {
-	tmpl *template.Template
-	hash string
+func LayoutViewProc(fmap map[string]func(), layout *ViewInput, viewpath string) (*jet.Template, error) {
+	content := &ViewInput{File: viewpath}
+	cache, err := GetViewCache(layout, content)
+	if err != nil {
+		sym, err := viewQue.Exec(func() (interface{}, error) {
+			log.Println(err)
+			views := []*ViewInput{layout, content}
+			assets := []AssetBundle{}
+			for _, v := range views {
+				b, err := ViewAssets(v.File, v.Extras)
+				if err != nil {
+					return nil, err
+				}
+				assets = append(assets, b)
+			}
+
+			viewFiles := []string{}
+			for _, v := range views {
+				viewFiles = append(viewFiles, v.File)
+			}
+
+			html, err := getHtmlContents(layout, content)
+			if err != nil {
+				return nil, err
+			}
+
+			html, err = procHtml(html, assets)
+			if err != nil {
+				return nil, err
+			}
+
+			v := "view-" + strings.Sha1Hash(viewFiles...) + ".jet"
+			tmp := filepath.Join(paths.TmpDir, v)
+			vset := jet.NewSet(loader)
+
+			tmpl, err := vset.Parse(tmp, html)
+			if err != nil {
+				return nil, err
+			}
+
+			err = WriteViewCache(tmpl, views...)
+			if err != nil {
+				return nil, err
+			}
+
+			return tmpl, nil
+		})
+
+		if err != nil {
+			return nil, err
+		}
+
+		return sym.(*jet.Template), nil
+	}
+
+	return cache, nil
+
 }
 
-func ViewProc(fmap template.FuncMap, views ...*ViewInput) (*template.Template, error) {
+func ViewProc(fmap map[string]func(), views ...*ViewInput) (*jet.Template, error) {
 	cache, err := GetViewCache(views...)
 	if err != nil {
 		sym, err := viewQue.Exec(func() (interface{}, error) {
 			log.Println(err)
-			for _, v := range views {
-				log.Printf("NOT CACHED: %+v", *v)
-			}
 
 			bundles := []AssetBundle{}
 			for _, v := range views {
-				b, err := AssetBundles(v.File, v.Extras)
+				b, err := ViewAssets(v.File, v.Extras)
 				if err != nil {
 					return nil, err
 				}
@@ -60,7 +116,11 @@ func ViewProc(fmap template.FuncMap, views ...*ViewInput) (*template.Template, e
 				return nil, err
 			}
 
-			tmpl, err := template.New("html").Funcs(fmap).Parse(html)
+			v := "view-" + strings.Sha1Hash(viewFiles...) + ".jet"
+			tmp := filepath.Join(paths.TmpDir, v)
+			vset := jet.NewSet(loader)
+
+			tmpl, err := vset.Parse(tmp, html)
 			if err != nil {
 				return nil, err
 			}
@@ -77,28 +137,33 @@ func ViewProc(fmap template.FuncMap, views ...*ViewInput) (*template.Template, e
 			return nil, err
 		}
 
-		return sym.(*template.Template), nil
+		return sym.(*jet.Template), nil
 	}
 
 	return cache, nil
 }
 
-func getHtmlContents(views ...string) (string, error) {
-	if len(views) < 2 {
-		viewBytes, err := os.ReadFile(views[0])
-		if err != nil {
-			return "", err
-		}
-		return string(viewBytes), nil
-	} else {
-		layoutFile := views[0]
-		viewFile := views[1]
-		html, err := insertContent(layoutFile, viewFile)
-		if err != nil {
-			return "", err
-		}
-		return html, nil
+func getHtmlContents(layout *ViewInput, content *ViewInput) (string, error) {
+	layoutBytes, err := os.ReadFile(layout.File)
+	if err != nil {
+		return "", err
 	}
+
+	// if len(views) < 2 {
+	// 	viewBytes, err := os.ReadFile(views[0])
+	// 	if err != nil {
+	// 		return "", err
+	// 	}
+	// 	return string(viewBytes), nil
+	// } else {
+	// 	layoutFile := views[0]
+	// 	viewFile := views[1]
+	// 	html, err := insertContent(layoutFile, viewFile)
+	// 	if err != nil {
+	// 		return "", err
+	// 	}
+	// 	return html, nil
+	// }
 }
 
 func insertContent(layoutFile string, viewFile string) (result string, err error) {
@@ -112,7 +177,7 @@ func insertContent(layoutFile string, viewFile string) (result string, err error
 		return "", err
 	}
 
-	html := fmt.Sprintf("%s\n<!-- END LAYOUT -->\n {{ define \"content\" }}\n%s\n{{ end }}", layoutBytes, contentBytes)
+	html := fmt.Sprintf("%s\n<!-- END LAYOUT -->\n {{ block pageContent() }}\n%s\n{{ end }}", layoutBytes, contentBytes)
 	return html, nil
 }
 

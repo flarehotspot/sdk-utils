@@ -2,11 +2,11 @@ package views
 
 import (
 	"errors"
+	"log"
 	"path/filepath"
 	"sync"
 
-	"html/template"
-
+	"github.com/flarehotspot/core/sdk/libs/jet"
 	"github.com/flarehotspot/core/sdk/utils/paths"
 )
 
@@ -16,7 +16,7 @@ var (
 	errNoViewCache = errors.New("View cache not available.")
 )
 
-func WriteViewCache(tmpl *template.Template, views ...*ViewInput) error {
+func WriteViewCache(tmpl *jet.Template, views ...*ViewInput) error {
 	files := viewFiles(views...)
 	hash, err := filesHash(files...)
 	if err != nil {
@@ -34,7 +34,7 @@ func WriteViewCache(tmpl *template.Template, views ...*ViewInput) error {
 	return nil
 }
 
-func GetViewCache(views ...*ViewInput) (*template.Template, error) {
+func GetViewCache(views ...*ViewInput) (*jet.Template, error) {
 	files := viewFiles(views...)
 	hash, err := filesHash(files...)
 	if err != nil {
@@ -43,16 +43,19 @@ func GetViewCache(views ...*ViewInput) (*template.Template, error) {
 
 	vkey, err := viewsHash(views...)
 	if err != nil {
+        log.Println("View hash error!")
 		return nil, err
 	}
 
 	sym, ok := vmap.Load(vkey)
 	if !ok {
+        log.Println("View index not found: " + vkey)
 		return nil, errNoViewCache
 	}
 
 	vcache := sym.(*viewCache)
 	if vcache.hash != hash {
+        log.Println("View cache invalid symbol")
 		return nil, errNoViewCache
 	}
 

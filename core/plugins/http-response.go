@@ -8,16 +8,19 @@ import (
 	"github.com/flarehotspot/core/sdk/api/http/router"
 	"github.com/flarehotspot/core/sdk/api/http/views"
 	"github.com/flarehotspot/core/sdk/utils/flash"
+	"github.com/flarehotspot/core/sdk/utils/paths"
 	resp "github.com/flarehotspot/core/web/response"
 	v "github.com/flarehotspot/core/web/views"
 )
 
 type HttpResponse struct {
-	api *PluginApi
+	api      *PluginApi
+	viewroot string
 }
 
 func NewHttpResponse(api *PluginApi) *HttpResponse {
-	return &HttpResponse{api}
+	viewroot := paths.Strip(api.Resource("views"))
+	return &HttpResponse{api, viewroot}
 }
 
 func (self *HttpResponse) SetFlashMsg(w http.ResponseWriter, t flash.FlashType, msg string) {
