@@ -90,6 +90,8 @@ func CopyDirsToPublic(view string) error {
 	dirs := manifest.Folders
 
 	var wg sync.WaitGroup
+	wg.Add(len(dirs))
+
 	for _, dir := range dirs {
 		go func(f AssetFolder) {
 			defer wg.Done()
