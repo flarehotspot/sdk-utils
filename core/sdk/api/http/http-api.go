@@ -23,8 +23,4 @@ type IHttpApi interface {
 	// Returns the http variables in your routes. For example, if your route path is "/some/path/{varname}",
 	// then you can get the value of "varname" by calling GetMuxVars(r)["varname"].
 	MuxVars(r *http.Request) map[string]string
-
-	// Set a global template.FuncMap{} available for your view templates.
-	// Note that these custom function maps are not available in the layout templates.
-	ViewFuncMap(fmap map[string]func())
 }

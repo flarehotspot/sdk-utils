@@ -1,8 +1,6 @@
 package views
 
 import (
-	"html/template"
-
 	"github.com/flarehotspot/core/sdk/api/accounts"
 	"github.com/flarehotspot/core/sdk/api/connmgr"
 	"github.com/flarehotspot/core/sdk/api/http/navigation"
@@ -30,7 +28,7 @@ type IViewHelpers interface {
 
 	// Returns the html for the flash message.
   // These are the messages set in flash.SetFlashMsg() inside your controllers.
-	FlashMsgHtml() template.HTML
+	FlashMsgHtml() (html string)
 
 	// Returns the html for the ads view.
 	AdView() (html string)

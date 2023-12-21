@@ -11,7 +11,6 @@ type PluginApi struct {
 	slug             string
 	dir              string
 	trnslt           translate.TranslateFn
-	vfmap            map[string]func()
 	db               *db.Database
 	viewset          *jet.Set
 	models           *PluginModels

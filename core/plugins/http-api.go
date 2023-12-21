@@ -1,7 +1,6 @@
 package plugins
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/flarehotspot/core/connmgr"
@@ -46,12 +45,4 @@ func (self *HttpApi) Respond() response.IHttpResponse {
 
 func (self *HttpApi) MuxVars(r *http.Request) map[string]string {
 	return mux.Vars(r)
-}
-
-func (self *HttpApi) ViewFuncMap(fmap map[string]func()) {
-	if self.api.vfmap != nil {
-		log.Println("Warning: api.HttpApi().ViewFuncMap() can only be set once, discarding subsequent calls.")
-		return
-	}
-	self.api.vfmap = fmap
 }

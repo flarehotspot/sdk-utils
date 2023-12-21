@@ -3,14 +3,17 @@ package assets
 import (
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
-	stdstr "strings"
+	"strings"
 
-	"github.com/flarehotspot/core/utils/crypt"
 	"github.com/flarehotspot/core/sdk/utils/paths"
+	"github.com/flarehotspot/core/utils/crypt"
+)
+
+var (
+	stars = "**************************************************"
 )
 
 type CacheData struct {
@@ -59,17 +62,17 @@ func cacheExists(files []string) (*CacheData, bool) {
 	return data, true
 }
 
-func writeCache(outfile string, concat string, files []string) (string, error) {
+func writeCache(concat string, files []string) (string, error) {
+	ext := filepath.Ext(files[0])
+	pubsubdir := strings.Replace(ext, ".", "", 1)
 	key := cacheKey(files)
-	ext := filepath.Ext(outfile)
 	hash, err := crypt.SHA1Files(files)
 	if err != nil {
 		return "", err
 	}
 
-	o := fmt.Sprintf("%s-%s", stdstr.Replace(outfile, ext, "", 1), hash) + ext
-	s := filepath.Join(paths.AppDir, o)
-	d := filepath.Dir(s)
+	pubpath := filepath.Join("/public", pubsubdir, hash+ext)
+	abspath := filepath.Join(paths.AppDir, pubpath)
 	sum, err := crypt.FastHashFiles(files...)
 	if err != nil {
 		return "", err
@@ -77,8 +80,8 @@ func writeCache(outfile string, concat string, files []string) (string, error) {
 
 	cache := CacheData{
 		Sum:        sum,
-		PublicPath: o,
-		FilePath:   filepath.Join(paths.AppDir, o),
+		PublicPath: pubpath,
+		FilePath:   abspath,
 	}
 
 	prevFile, cacheErr := cacheFile(key)
@@ -100,17 +103,29 @@ func writeCache(outfile string, concat string, files []string) (string, error) {
 		return "", nil
 	}
 
+	concat = filesComment(files...) + "\n" + concat
+	d := filepath.Dir(abspath)
 	os.MkdirAll(d, os.ModePerm)
-	err = ioutil.WriteFile(s, []byte(concat), 0644)
+	err = os.WriteFile(abspath, []byte(concat), 0644)
 	if err != nil {
-		log.Println("Error writing to file: ", s, err)
+		log.Println("Error writing to file: ", abspath, err)
 		return "", err
 	}
 
-	return o, nil
+	return pubpath, nil
 }
 
 func filePathComment(f string) string {
-	stars := "**************************************************"
 	return fmt.Sprintf("\n/%s\nFile: %s\n%s/\n", stars, paths.Strip(f), stars)
+}
+
+func filesComment(files ...string) string {
+	comment := "/"
+	comment += stars
+	comment += "\nFiles:\n"
+	for _, f := range files {
+		comment += fmt.Sprintf("%s\n", paths.Strip(f))
+	}
+	comment += stars + "/\n"
+	return comment
 }

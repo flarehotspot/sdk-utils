@@ -2,14 +2,11 @@ package plugins
 
 import (
 	"fmt"
-	"html/template"
 	"log"
 	"net/http"
 	"strings"
 
 	"github.com/flarehotspot/core/accounts"
-	"github.com/flarehotspot/core/web/helpers"
-	"github.com/flarehotspot/core/web/router"
 	sdkacct "github.com/flarehotspot/core/sdk/api/accounts"
 	"github.com/flarehotspot/core/sdk/api/connmgr"
 	"github.com/flarehotspot/core/sdk/api/http/navigation"
@@ -18,6 +15,8 @@ import (
 	"github.com/flarehotspot/core/sdk/api/plugin"
 	"github.com/flarehotspot/core/sdk/utils/flash"
 	"github.com/flarehotspot/core/sdk/utils/translate"
+	"github.com/flarehotspot/core/web/helpers"
+	"github.com/flarehotspot/core/web/router"
 )
 
 var (
@@ -61,7 +60,7 @@ func (h *ViewHelpers) GetAdminNavs() []navigation.IAdminNavList {
 	return GetAdminNavs(h.api.PluginsMgr, h.r)
 }
 
-func (h *ViewHelpers) FlashMsgHtml() template.HTML {
+func (h *ViewHelpers) FlashMsgHtml() string {
 	var s strings.Builder
 	for _, t := range flashTypes {
 		klass := t
@@ -79,7 +78,7 @@ func (h *ViewHelpers) FlashMsgHtml() template.HTML {
 		}
 	}
 
-	return template.HTML(s.String())
+	return s.String()
 }
 
 func (h *ViewHelpers) AdView() (html string) {

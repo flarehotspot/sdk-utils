@@ -2,11 +2,13 @@
 
 package assets
 
-import jobque "github.com/flarehotspot/core/utils/job-que"
+import (
+	jobque "github.com/flarehotspot/core/utils/job-que"
+)
 
 var bundleQue = jobque.NewJobQues()
 
-func Bundle(outfile string, files []string) (string, error) {
+func Bundle(files...string) (string, error) {
 	result, err := bundleQue.Exec(func() (interface{}, error) {
 		if len(files) == 0 {
 			return "", ErrNoAssets
@@ -21,7 +23,7 @@ func Bundle(outfile string, files []string) (string, error) {
 			return "", err
 		}
 
-		return writeCache(outfile, concat, files)
+		return writeCache(concat, files)
 	})
 
 	return result.(string), err

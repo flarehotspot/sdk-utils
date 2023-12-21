@@ -89,10 +89,6 @@ func (p *PluginApi) ModelsApi() models.IModelsApi {
 	return p.models
 }
 
-func (p *PluginApi) FuncMap() map[string]func() {
-	return p.vfmap
-}
-
 func (p *PluginApi) AcctApi() acct.IAcctApi {
 	return p.AcctAPI
 }

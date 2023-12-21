@@ -3,8 +3,8 @@
 package assets
 
 import (
-	"io/ioutil"
 	"log"
+	"os"
 	"strings"
 )
 
@@ -14,7 +14,7 @@ func concatFiles(files []string) (concat string, err error) {
 	for _, f := range files {
 		var content string
 
-		b, err := ioutil.ReadFile(f)
+		b, err := os.ReadFile(f)
 		if err != nil {
 			log.Println("Asset not found: ", f)
 		} else {

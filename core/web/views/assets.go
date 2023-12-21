@@ -9,7 +9,6 @@ import (
 
 	"github.com/flarehotspot/core/sdk/utils/fs"
 	"github.com/flarehotspot/core/sdk/utils/paths"
-	"github.com/flarehotspot/core/utils/assets"
 	jobque "github.com/flarehotspot/core/utils/job-que"
 )
 
@@ -26,8 +25,7 @@ var emptyManifest = AssetsManifest{
 }
 
 var (
-	assetsQue   = jobque.NewJobQues()
-	assetsCache = sync.Map{}
+	assetsQue = jobque.NewJobQues()
 )
 
 type AssetSources struct {
@@ -85,14 +83,6 @@ func ViewAssets(view string) (sources AssetSources) {
 		Scripts: jsSources,
 		Styles:  cssSources,
 	}
-}
-
-func BundleJS(filename string, src ...string) (outfile string, err error) {
-	return assets.Bundle(filepath.Join(paths.PublicDir, "js", filename), src)
-}
-
-func BundleCSS(filename string, src ...string) (outfile string, err error) {
-	return assets.Bundle(filepath.Join(paths.PublicDir, "css", filename), src)
 }
 
 func CopyDirsToPublic(view string) error {

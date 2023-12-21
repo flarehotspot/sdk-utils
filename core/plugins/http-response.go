@@ -6,7 +6,6 @@ import (
 
 	"github.com/flarehotspot/core/sdk/api/http/response"
 	"github.com/flarehotspot/core/sdk/api/http/router"
-	"github.com/flarehotspot/core/sdk/api/http/views"
 	"github.com/flarehotspot/core/sdk/utils/flash"
 	"github.com/flarehotspot/core/sdk/utils/paths"
 	resp "github.com/flarehotspot/core/web/response"
@@ -35,37 +34,24 @@ func (self *HttpResponse) AdminView(w http.ResponseWriter, r *http.Request, view
 	vdir := self.api.Resource("views/web-admin")
 	viewfile := filepath.Join(vdir, view)
 	layout := v.WebAdminLayout()
-	fmap := self.api.vfmap
-	vdata := &views.ViewData{Helpers: helpers, Data: data}
-	resp.ViewWithLayout(w, layout, viewfile, fmap, vdata)
+	resp.ViewWithLayout(w, layout, viewfile, helpers, data)
 }
 
 func (self *HttpResponse) PortalView(w http.ResponseWriter, r *http.Request, view string, data any) {
-	if data == nil {
-		data = map[string]interface{}{}
-	}
 	helpers := NewViewHelpers(self.api, w, r)
 	vdir := self.api.Resource("views/captive-portal")
 	viewfile := filepath.Join(vdir, view)
 	layout := v.PortalLayout()
-
-	fmap := self.api.vfmap
-	vdata := &views.ViewData{Helpers: helpers, Data: data}
-	resp.ViewWithLayout(w, layout, viewfile, fmap, vdata)
+	resp.ViewWithLayout(w, layout, viewfile, helpers, data)
 }
 
 func (self *HttpResponse) View(w http.ResponseWriter, r *http.Request, view string, data any) {
-	if data == nil {
-		data = map[string]interface{}{}
-	}
 	helpers := NewViewHelpers(self.api, w, r)
 	vdir := self.api.Resource("views")
 	viewfile := filepath.Join(vdir, view)
 
-	fmap := self.api.vfmap
-	vdata := &views.ViewData{Helpers: helpers, Data: data}
 	v := &v.ViewInput{File: viewfile}
-	resp.View(w, v, fmap, vdata)
+	resp.View(w, v, helpers, data)
 }
 
 func (res *HttpResponse) Json(w http.ResponseWriter, data any, status int) {
