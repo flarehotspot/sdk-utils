@@ -201,9 +201,10 @@ func (self *BandwidthCtrl) Test(w http.ResponseWriter, r *http.Request) {
 	sec := cfg.Section("test section", "test description")
 	f := sec.Field("test field", "test label", "test help")
 	f.SetAttr("type", "text")
-	f.SetAttr("value", "same value")
+	f.SetAttr("value", "some value")
+	f.SetAttr("placeholder", "some placeholder")
 
-    fl := sec.FieldList("test field list", "test label")
+    fl := sec.FieldList("some_field_list", "test label")
     fl.Cols("col1", "col2", "col3")
     row := fl.Row(0)
     f = row.Field("col1", "name01")
@@ -211,7 +212,8 @@ func (self *BandwidthCtrl) Test(w http.ResponseWriter, r *http.Request) {
 
 	html, err := fci.FciComposeView(cfg)
 	if err != nil {
-		self.Error(w, r, err)
+		// self.Error(w, r, err)
+        fmt.Fprint(w, err)
 		return
 	}
 

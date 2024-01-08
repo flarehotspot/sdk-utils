@@ -7,7 +7,7 @@ type IFciFieldList interface {
 	Cols(cols ...string)
 	GetCols() []string
 	Row(index int) IFciInputLsRow
-	Rows() []IFciInputLsRow
+	GetRows() []IFciInputLsRow
 	DependsOn(name string, value string)
 	Values() []map[string]string
 }

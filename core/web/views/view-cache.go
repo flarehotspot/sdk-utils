@@ -3,7 +3,6 @@ package views
 import (
 	"bytes"
 	"fmt"
-	"log"
 	"strings"
 	"sync"
 
@@ -72,10 +71,6 @@ func (vc *viewCache) RenderHTML(helpers views.IViewHelpers, data any) (html stri
 		}
 
 		vdata.contentPath = contpath
-
-		log.Println("contpath", contpath)
-		log.Println("vc.layout", *vc.layout)
-		log.Println("vc.content", vc.content)
 
 		tmpl, err = GetTemplate(paths.Strip(*vc.layout))
 		if err != nil {

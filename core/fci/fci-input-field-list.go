@@ -51,7 +51,7 @@ func (fl *FciFieldList) Row(index int) (row fci.IFciInputLsRow) {
 	return r
 }
 
-func (fl *FciFieldList) Rows() []fci.IFciInputLsRow {
+func (fl *FciFieldList) GetRows() []fci.IFciInputLsRow {
 	rows := make([]fci.IFciInputLsRow, len(fl.Flrows))
 	for i, row := range fl.Flrows {
 		rows[i] = row
