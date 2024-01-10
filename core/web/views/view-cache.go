@@ -1,14 +1,12 @@
 package views
 
 import (
-	"bytes"
 	"fmt"
+	"html/template"
 	"strings"
 	"sync"
 
 	"github.com/flarehotspot/core/sdk/api/http/views"
-	"github.com/flarehotspot/core/sdk/libs/jet"
-	"github.com/flarehotspot/core/sdk/utils/paths"
 	strutil "github.com/flarehotspot/core/sdk/utils/strings"
 )
 
@@ -16,21 +14,29 @@ var (
 	cache = sync.Map{}
 )
 
-func WriteViewCache(layout *ViewInput, content ViewInput, jspath string, csspath string) *viewCache {
+func WriteViewCache(layout *ViewInput, content ViewInput, jspath string, csspath string) (*viewCache, error) {
 	hash := ViewsHash(layout, content)
 	vc := &viewCache{
-		content: content.File,
 		jspath:  jspath,
 		csspath: csspath,
 	}
 
+	views := []string{content.File}
 	if layout != nil {
-		vc.layout = &layout.File
+		views = append(views, layout.File)
+		vc.layout = true
 	}
+
+	templates, err := template.New("").ParseFiles(views...)
+	if err != nil {
+		return nil, err
+	}
+
+	vc.templates = templates
 
 	cache.Store(hash, vc)
 
-	return vc
+	return vc, nil
 }
 
 func GetViewCache(layout *ViewInput, content ViewInput) (vc *viewCache, ok bool) {
@@ -49,11 +55,11 @@ func ViewsHash(layout *ViewInput, content ViewInput) (hash string) {
 }
 
 type viewCache struct {
-	hash    string
-	layout  *string
-	content string
-	jspath  string
-	csspath string
+	hash      string
+	layout    bool
+	templates *template.Template
+	jspath    string
+	csspath   string
 }
 
 func (vc *viewCache) RenderHTML(helpers views.IViewHelpers, data any) (html string, err error) {
@@ -62,29 +68,13 @@ func (vc *viewCache) RenderHTML(helpers views.IViewHelpers, data any) (html stri
 		contentData: data,
 	}
 
-	var tmpl *jet.Template
-
-	if vc.layout != nil {
-		contpath, err := paths.RelativeFromTo(*vc.layout, vc.content)
-		if err != nil {
-			return "", err
-		}
-
-		vdata.contentPath = contpath
-
-		tmpl, err = GetTemplate(paths.Strip(*vc.layout))
-		if err != nil {
-			return "", err
-		}
-	} else {
-		tmpl, err = GetTemplate(paths.Strip(vc.content))
-		if err != nil {
-			return "", err
-		}
+	var tpl = "content"
+	if vc.layout {
+		tpl = "layout"
 	}
 
-	var buff bytes.Buffer
-	if err := tmpl.Execute(&buff, nil, vdata); err != nil {
+	var buff strings.Builder
+	if err := vc.templates.ExecuteTemplate(&buff, tpl, vdata); err != nil {
 		return "", err
 	}
 

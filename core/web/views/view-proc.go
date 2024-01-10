@@ -2,15 +2,12 @@ package views
 
 import (
 	"github.com/flarehotspot/core/sdk/api/http/views"
-	"github.com/flarehotspot/core/sdk/libs/jet"
 	"github.com/flarehotspot/core/sdk/utils/paths"
 	"github.com/flarehotspot/core/utils/assets"
 	jobque "github.com/flarehotspot/core/utils/job-que"
 )
 
 var viewQue = jobque.NewJobQues()
-var loader = NewJetLoader()
-var viewSet = jet.NewSet(loader)
 
 type ViewInput struct {
 	File   string
@@ -59,7 +56,11 @@ func ViewProc(layout *ViewInput, content ViewInput, helpers views.IViewHelpers, 
 				return "", err
 			}
 
-			vc := WriteViewCache(layout, content, paths.Strip(jsbundle), paths.Strip(cssbundle))
+			vc, err := WriteViewCache(layout, content, paths.Strip(jsbundle), paths.Strip(cssbundle))
+			if err != nil {
+				return "", err
+			}
+
 			return vc, nil
 		})
 

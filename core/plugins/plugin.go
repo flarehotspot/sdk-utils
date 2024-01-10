@@ -3,7 +3,6 @@ package plugins
 import (
 	"github.com/flarehotspot/core/connmgr"
 	"github.com/flarehotspot/core/db"
-	"github.com/flarehotspot/core/sdk/libs/jet"
 	"github.com/flarehotspot/core/sdk/utils/translate"
 )
 
@@ -12,7 +11,6 @@ type PluginApi struct {
 	dir              string
 	trnslt           translate.TranslateFn
 	db               *db.Database
-	viewset          *jet.Set
 	models           *PluginModels
 	AcctAPI          *AccountsApi
 	HttpAPI          *HttpApi

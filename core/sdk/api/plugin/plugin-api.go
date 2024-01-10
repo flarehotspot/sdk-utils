@@ -24,6 +24,9 @@ type IPluginApi interface {
 	// Returns the name of the plugin as defined in package.yml "name" field.
 	Name() string
 
+    // Returns the package name of the plugin as defined in package.yml "package" field.
+    Pkg() string
+
 	// Returns the version of the plugin as defined in package.yml "version" field.
 	Version() string
 
