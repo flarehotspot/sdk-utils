@@ -12,22 +12,22 @@ func VueRouteName(api *PluginApi, name string) string {
 }
 
 func VueRoutePath(api *PluginApi, path string) string {
-	return filepath.Join("/",api.Pkg(), path)
+	return filepath.Join("/", api.Pkg(), path)
 }
 
 func VueComponentPath(api *PluginApi, path string) string {
 	return api.HttpApi().AssetPath(path)
 }
 
-func NewVueRoute(api *PluginApi, route *router.VueRoute) *VueRoute {
-	return &VueRoute{
+func NewVuePortalRoute(api *PluginApi, route *router.VuePortalRoute) *VuePortalRoute {
+	return &VuePortalRoute{
 		RouteName:     VueRouteName(api, route.RouteName),
 		RoutePath:     VueRoutePath(api, route.RoutePath),
 		ComponentPath: VueComponentPath(api, route.ComponentPath),
 	}
 }
 
-type VueRoute struct {
+type VuePortalRoute struct {
 	RouteName     string `json:"name"`
 	RoutePath     string `json:"path"`
 	ComponentPath string `json:"component"`

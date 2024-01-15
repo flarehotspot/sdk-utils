@@ -1,6 +1,6 @@
 package router
 
-type VueRoute struct {
+type VuePortalRoute struct {
 	RouteName     string
 	RoutePath     string
 	ComponentPath string

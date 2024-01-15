@@ -32,7 +32,7 @@ func (c *AdminAssetsCtrl) MainJs(w http.ResponseWriter, r *http.Request) {
 	}
 
 	allPlugins := c.g.PluginMgr.All()
-	vueRoutes := []*plugins.VueRoute{}
+	vueRoutes := []*plugins.VuePortalRoute{}
 
 	for _, p := range allPlugins {
 		vueRouter := p.HttpApi().VueRouter().(*plugins.VueRouter)

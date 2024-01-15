@@ -11,27 +11,27 @@ func NewVueRouter(api *PluginApi) *VueRouter {
 
 type VueRouter struct {
 	api            *PluginApi
-	adminRoutesFn  func(r *http.Request) []*router.VueRoute
+	adminRoutesFn  func(r *http.Request) []*router.VueAdminRoute
 	adminNavsFn    func(r *http.Request) []*router.VueAdminNav
-	portalRoutesFn func(r *http.Request) []*router.VueRoute
+	portalRoutesFn func(r *http.Request) []*router.VuePortalRoute
 	portalNavsFn   func(r *http.Request) []*router.VuePortalItem
 }
 
-func (self *VueRouter) AdminRoutes(fn func(r *http.Request) []*router.VueRoute) {
+func (self *VueRouter) AdminRoutes(fn func(r *http.Request) []*router.VueAdminRoute) {
 	self.adminRoutesFn = fn
 }
 
-func (self *VueRouter) GetAdminRoutes(r *http.Request) []*VueRoute {
-	routes := []*VueRoute{}
+func (self *VueRouter) GetAdminRoutes(r *http.Request) []*VueAdminRoute {
+	routes := []*VueAdminRoute{}
 	if self.adminRoutesFn != nil {
 		for _, route := range self.adminRoutesFn(r) {
-			routes = append(routes, NewVueRoute(self.api, route))
+			routes = append(routes, NewVueAdminRoute(self.api, route))
 		}
 	}
 	return routes
 }
 
-func (self *VueRouter) FindAdminRoute(r *http.Request, name string) (*VueRoute, bool) {
+func (self *VueRouter) FindAdminRoute(r *http.Request, name string) (*VueAdminRoute, bool) {
 	routeName := VueRouteName(self.api, name)
 	for _, route := range self.GetAdminRoutes(r) {
 		if route.RouteName == routeName {
@@ -57,21 +57,21 @@ func (self *VueRouter) GetAdminNavs(r *http.Request) []*VueAdminNav {
 	return navs
 }
 
-func (self *VueRouter) PortalRoutes(fn func(r *http.Request) []*router.VueRoute) {
+func (self *VueRouter) PortalRoutes(fn func(r *http.Request) []*router.VuePortalRoute) {
 	self.portalRoutesFn = fn
 }
 
-func (self *VueRouter) GetPortalRoutes(r *http.Request) []*VueRoute {
-	routes := []*VueRoute{}
+func (self *VueRouter) GetPortalRoutes(r *http.Request) []*VuePortalRoute {
+	routes := []*VuePortalRoute{}
 	if self.portalRoutesFn != nil {
 		for _, route := range self.portalRoutesFn(r) {
-			routes = append(routes, NewVueRoute(self.api, route))
+			routes = append(routes, NewVuePortalRoute(self.api, route))
 		}
 	}
 	return routes
 }
 
-func (self *VueRouter) FindPortalRoute(r *http.Request, name string) (*VueRoute, bool) {
+func (self *VueRouter) FindPortalRoute(r *http.Request, name string) (*VuePortalRoute, bool) {
 	routeName := VueRouteName(self.api, name)
 
 	for _, route := range self.GetPortalRoutes(r) {

@@ -30,7 +30,7 @@ func (c *PortalAssetsCtrl) MainJs(w http.ResponseWriter, r *http.Request) {
 	}
 
 	allPlugins := c.g.PluginMgr.All()
-	routes := []*plugins.VueRoute{}
+	routes := []*plugins.VuePortalRoute{}
 
 	for _, p := range allPlugins {
 		vueRouter := p.HttpApi().VueRouter().(*plugins.VueRouter)
@@ -45,8 +45,8 @@ func (c *PortalAssetsCtrl) MainJs(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := map[string]any{
-		"CoreApi":       c.g.CoreApi,
-		"Routes":        string(routesJson),
+		"CoreApi": c.g.CoreApi,
+		"Routes":  string(routesJson),
 		"Theme": map[string]any{
 			"LayoutComponent": themePlugin.HttpApi().AssetPath(portalComponent.ThemeComponentPath),
 			"IndexComponent":  themePlugin.HttpApi().AssetPath(portalComponent.IndexComponentPath),

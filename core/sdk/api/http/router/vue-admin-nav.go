@@ -16,6 +16,7 @@ type VueAdminNav struct {
 	Category       INavCategory
 	TranslateLabel string
 	RouteName      string
+	PermitFn       *func(perms []string) bool
 }
 
 type AdminNavJson struct {
