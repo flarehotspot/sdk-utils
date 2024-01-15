@@ -16,10 +16,10 @@ type HttpRouterApi struct {
 }
 
 func NewRouterApi(api *PluginApi) *HttpRouterApi {
-	pluginMux := coreRouter.PluginRouter().PathPrefix("/" + api.slug).Subrouter()
+	pluginMux := coreRouter.PluginRouter.PathPrefix("/" + api.slug).Subrouter()
 	pluginRouter := &HttpRouter{api, pluginMux}
 
-	adminMux := coreRouter.AdminRouter().PathPrefix("/plugin/" + api.slug).Subrouter()
+	adminMux := coreRouter.AdminApiRouterV1.PathPrefix("/plugin/" + api.slug).Subrouter()
 	adminRouter := &HttpRouter{api, adminMux}
 
 	return &HttpRouterApi{api, adminRouter, pluginRouter}
@@ -40,7 +40,7 @@ func (self *HttpRouterApi) MuxRouteName(name router.PluginRouteName) router.MuxR
 
 func (util *HttpRouterApi) UrlForMuxRoute(muxname router.MuxRouteName, pairs ...string) string {
 	var url string
-	coreRouter.RootRouter().Walk(func(route *mux.Route, router *mux.Router, ancestors []*mux.Route) error {
+	coreRouter.RootRouter.Walk(func(route *mux.Route, router *mux.Router, ancestors []*mux.Route) error {
 		if url == "" && route.GetName() == string(muxname) {
 			result, err := route.URL(pairs...)
 			if err != nil {

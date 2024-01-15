@@ -4,11 +4,9 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"path/filepath"
 	"strings"
 
 	"github.com/flarehotspot/core/accounts"
-	"github.com/flarehotspot/core/config/appcfg"
 	sdkacct "github.com/flarehotspot/core/sdk/api/accounts"
 	"github.com/flarehotspot/core/sdk/api/connmgr"
 	Irtr "github.com/flarehotspot/core/sdk/api/http/router"
@@ -62,8 +60,7 @@ func (h *ViewHelpers) PluginMgr() plugin.IPluginMgr {
 // }
 
 func (h *ViewHelpers) AssetPath(path string) string {
-	cfg, _ := appcfg.Read()
-	return filepath.Join("/assets", cfg.AssetsVersion, h.api.Pkg(), path)
+	return h.api.HttpAPI.AssetPath(path)
 }
 
 func (h *ViewHelpers) FlashMsgHtml() string {

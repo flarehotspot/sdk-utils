@@ -12,11 +12,11 @@ func VueRouteName(api *PluginApi, name string) string {
 }
 
 func VueRoutePath(api *PluginApi, path string) string {
-	return "/" + filepath.Join(api.Pkg(), path)
+	return filepath.Join("/",api.Pkg(), path)
 }
 
 func VueComponentPath(api *PluginApi, path string) string {
-	return filepath.Join(api.Pkg(), path)
+	return api.HttpApi().AssetPath(path)
 }
 
 func NewVueRoute(api *PluginApi, route *router.VueRoute) *VueRoute {

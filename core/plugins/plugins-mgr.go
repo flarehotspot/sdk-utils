@@ -89,13 +89,13 @@ func (pmgr *PluginsMgr) All() []plugin.IPluginApi {
 }
 
 func (pmgr *PluginsMgr) PortalPluginApi() *PluginApi {
-	themepkg := themecfg.Read().CaptivePortal
+	themepkg := themecfg.Read().Portal
 	api := pmgr.FindByPkg(themepkg)
 	return api.(*PluginApi)
 }
 
 func (pmgr *PluginsMgr) AdminPluginApi() *PluginApi {
-	themepkg := themecfg.Read().WebAdmin
+	themepkg := themecfg.Read().Admin
 	api := pmgr.FindByPkg(themepkg)
 	return api.(*PluginApi)
 }

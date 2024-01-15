@@ -19,6 +19,9 @@ type IHttpApi interface {
 
 	Helpers(w http.ResponseWriter, r *http.Request) views.IViewHelpers
 
+	// Returns the http uri path for the given asset.
+	AssetPath(assetPath string) string
+
 	// Returns the middlewares API.
 	Middlewares() middlewares.Middlewares
 

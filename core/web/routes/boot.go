@@ -11,7 +11,7 @@ import (
 
 func BootRoutes(g *globals.CoreGlobals) {
 	bootCtrl := controllers.NewBootCtrl(g, g.PluginMgr, g.CoreApi)
-	r := router.BootingRrouter()
+	r := router.BootingRouter
 	r.Use(bootCtrl.Middleware)
 	r.HandleFunc(urls.BOOT_URL, bootCtrl.IndexPage).Methods("GET")
 	r.HandleFunc(urls.BOOT_STATUS_URL, bootCtrl.SseHandler).Methods("GET")

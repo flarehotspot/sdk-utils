@@ -11,8 +11,8 @@ import (
 
 type ThemesConfig struct {
 	Auth          string `json:"auth"`
-	CaptivePortal string `json:"captive-portal"`
-	WebAdmin      string `json:"web-admin"`
+	Portal string `json:"portal"`
+	Admin      string `json:"admin"`
 }
 
 func Defaults() *ThemesConfig {

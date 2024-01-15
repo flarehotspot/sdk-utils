@@ -1,11 +1,10 @@
 (function () {
   require.config({
-    baseUrl: '/assets/{{ .Data.AssetsVersion }}',
     paths: {
-      vue: '{{ .Data.CoreApi.Pkg }}/libs/requirejs-vue-1.1.5.min',
-      json: '{{ .Data.CoreApi.Pkg }}/libs/requirejs-json-0.4.0.min',
-      image: '{{ .Data.CoreApi.Pkg }}/libs/requirejs-image-0.2.2.min',
-      text: '{{ .Data.CoreApi.Pkg }}/libs/requirejs-text-2.0.5.min'
+      vue: '{{ .Helpers.AssetPath "libs/requirejs-vue-1.1.5.min" }}',
+      json: '{{ .Helpers.AssetPath "libs/requirejs-json-0.4.0.min" }}',
+      image: '{{ .Helpers.AssetPath "libs/requirejs-image-0.2.2.min" }}',
+      text: '{{ .Helpers.AssetPath "libs/requirejs-text-2.0.5.min" }}',
     },
     config: {
       vue: {
@@ -21,15 +20,11 @@
 
     // start configs --------------------------------------------
     var routesJson = JSON.parse('{{ .Data.Routes }}');
-    var portalThemeLayoutComponent = '{{ .Data.PortalTheme.LayoutComponent }}';
-    var portalThemeIndexComponent = '{{ .Data.PortalTheme.IndexComponent }}';
+    var themeLayoutComponent = '{{ .Data.Theme.LayoutComponent }}';
+    var themeIndexComponent = '{{ .Data.Theme.IndexComponent }}';
     // end configs --------------------------------------------
 
     function vueLoader(vueFile) {
-      if (vueFile.charAt(0) === '/') {
-        vueFile = vueFile.substring(1);
-      }
-
       return function (resolve) {
         return require(['vue!' + vueFile], resolve);
       };
@@ -39,8 +34,8 @@
     var routes = [
       {
         path: '/',
-        name: 'portal-index',
-        component: vueLoader(portalThemeIndexComponent)
+        name: 'theme-index',
+        component: vueLoader(themeIndexComponent)
       }
     ];
 
@@ -57,8 +52,8 @@
       routes: [
         {
           path: '/',
-          name: 'portal-theme',
-          component: vueLoader(portalThemeLayoutComponent),
+          name: 'theme-layout',
+          component: vueLoader(themeLayoutComponent),
           children: routes
         }
       ]

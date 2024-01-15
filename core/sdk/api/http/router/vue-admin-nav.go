@@ -1,19 +1,17 @@
 package router
 
-type INavCategory uint8
+type INavCategory string
 
-// List of admin navigation categories.
+// List of admin navigation menu categories.
 const (
-	CategorySystem INavCategory = iota
-	CategoryPayments
-	CategoryNetwork
-	CategoryThemes
-	CategoryTools
+	CategorySystem   INavCategory = "system"
+	CategoryPayments INavCategory = "payments"
+	CategoryNetwork  INavCategory = "network"
+	CategoryThemes   INavCategory = "themes"
+	CategoryTools    INavCategory = "tools"
 )
 
-// VueAdminNav represents an admin navigation item.
-// It implements IAdminNavItem and is used to create basic admin navigation items without translations.
-// For advanced type of navigation, you have to implement IAdminNavItem yourself.
+// VueAdminNav represents an admin navigation menu item.
 type VueAdminNav struct {
 	Category       INavCategory
 	TranslateLabel string

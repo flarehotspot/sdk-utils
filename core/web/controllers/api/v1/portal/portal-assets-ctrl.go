@@ -1,15 +1,13 @@
-package portalctrl
+package portalApiV1
 
 import (
 	"encoding/json"
 	"net/http"
-	"os"
-	"path/filepath"
 
-	"github.com/flarehotspot/core/config/appcfg"
 	"github.com/flarehotspot/core/config/themecfg"
 	"github.com/flarehotspot/core/globals"
 	"github.com/flarehotspot/core/plugins"
+	"github.com/flarehotspot/core/sdk/api/http/router"
 	"github.com/gorilla/mux"
 )
 
@@ -21,18 +19,8 @@ type PortalAssetsCtrl struct {
 	g *globals.CoreGlobals
 }
 
-func (c *PortalAssetsCtrl) FaviconIco(w http.ResponseWriter, r *http.Request) {
-	fileBytes, err := os.ReadFile(c.g.CoreApi.Resource("assets/images/default-favicon-32x32.png"))
-	if err != nil {
-		panic(err)
-	}
-	w.WriteHeader(http.StatusOK)
-	w.Header().Set("Content-Type", "application/octet-stream")
-	w.Write(fileBytes)
-}
-
 func (c *PortalAssetsCtrl) MainJs(w http.ResponseWriter, r *http.Request) {
-	themePkg := themecfg.Read().CaptivePortal
+	themePkg := themecfg.Read().Portal
 	themePlugin := c.g.PluginMgr.FindByPkg(themePkg)
 	themesApi := themePlugin.ThemesApi().(*plugins.ThemesApi)
 	portalComponent, ok := themesApi.GetPortalComponent()
@@ -56,24 +44,17 @@ func (c *PortalAssetsCtrl) MainJs(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	appConfig, err := appcfg.Read()
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-
 	data := map[string]any{
 		"CoreApi":       c.g.CoreApi,
 		"Routes":        string(routesJson),
-		"AssetsVersion": appConfig.AssetsVersion,
-		"PortalTheme": map[string]any{
-			"LayoutComponent": filepath.Join(themePlugin.Pkg(), portalComponent.ThemeComponentPath),
-			"IndexComponent":  filepath.Join(themePlugin.Pkg(), portalComponent.IndexComponentPath),
+		"Theme": map[string]any{
+			"LayoutComponent": themePlugin.HttpApi().AssetPath(portalComponent.ThemeComponentPath),
+			"IndexComponent":  themePlugin.HttpApi().AssetPath(portalComponent.IndexComponentPath),
 		},
 	}
 
 	w.Header().Set("Content-Type", "text/javascript; charset=utf-8")
-	c.g.CoreApi.HttpAPI.Respond().Text(w, r, "templates/portal/js/main.tpl.js", data)
+	c.g.CoreApi.HttpAPI.Respond().Text(w, r, "templates/js/main.tpl.js", data)
 }
 
 func (c *PortalAssetsCtrl) HelpersJs(g *globals.CoreGlobals) http.HandlerFunc {
@@ -100,11 +81,12 @@ func (c *PortalAssetsCtrl) HelpersJs(g *globals.CoreGlobals) http.HandlerFunc {
 		}
 
 		vdata := map[string]any{
-			"Plugin": plugin,
-			"Routes": string(routesJson),
+			"Plugin":       plugin,
+			"Routes":       string(routesJson),
+			"NotFoundPath": router.NotFoundVuePath,
 		}
 
 		w.Header().Set("Content-Type", "text/javascript; charset=utf-8")
-		c.g.CoreApi.HttpAPI.Respond().Text(w, r, "templates/portal/js/helpers.tpl.js", vdata)
+		c.g.CoreApi.HttpAPI.Respond().Text(w, r, "templates/js/helpers.tpl.js", vdata)
 	}
 }

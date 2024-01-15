@@ -1,4 +1,4 @@
-package portalctrl
+package adminctrl
 
 import (
 	"net/http"
@@ -8,37 +8,37 @@ import (
 	"github.com/flarehotspot/core/plugins"
 )
 
-func NewPortalCtrl(g *globals.CoreGlobals) PortalCtrl {
-	return PortalCtrl{g}
+func NewAdminCtrl(g *globals.CoreGlobals) *AdminCtrl {
+	return &AdminCtrl{g}
 }
 
-type PortalCtrl struct {
+type AdminCtrl struct {
 	g *globals.CoreGlobals
 }
 
-func (c *PortalCtrl) IndexPage(w http.ResponseWriter, r *http.Request) {
-	themePkg := themecfg.Read().Portal
+func (c *AdminCtrl) AdminIndex(w http.ResponseWriter, r *http.Request) {
+	themePkg := themecfg.Read().Admin
 	themePlugin := c.g.PluginMgr.FindByPkg(themePkg)
 	themesApi := themePlugin.ThemesApi().(*plugins.ThemesApi)
-	portalComponent, ok := themesApi.GetPortalComponent()
+	adminThemeComponent, ok := themesApi.GetAdminThemeComponent()
 	if !ok {
-		http.Error(w, "No portal theme component path defined", 500)
+		http.Error(w, "No admin theme component path defined", 500)
 		return
 	}
 
 	scripts := []string{}
 	styles := []string{}
 
-	if portalComponent.ThemeAssets != nil {
-		if portalComponent.ThemeAssets.Scripts != nil {
-			for _, script := range *portalComponent.ThemeAssets.Scripts {
+	if adminThemeComponent.ThemeAssets != nil {
+		if adminThemeComponent.ThemeAssets.Scripts != nil {
+			for _, script := range *adminThemeComponent.ThemeAssets.Scripts {
 				jsPath := themePlugin.HttpApi().Helpers(w, r).AssetPath(script)
 				scripts = append(scripts, jsPath)
 			}
 		}
 
-		if portalComponent.ThemeAssets.Styles != nil {
-			for _, style := range *portalComponent.ThemeAssets.Styles {
+		if adminThemeComponent.ThemeAssets.Styles != nil {
+			for _, style := range *adminThemeComponent.ThemeAssets.Styles {
 				cssPath := themePlugin.HttpApi().Helpers(w, r).AssetPath(style)
 				styles = append(styles, cssPath)
 			}
@@ -52,5 +52,5 @@ func (c *PortalCtrl) IndexPage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	api := c.g.CoreApi
-	api.HttpApi().Respond().View(w, r, "portal/layout.html", vdata)
+	api.HttpApi().Respond().View(w, r, "admin/layout.html", vdata)
 }

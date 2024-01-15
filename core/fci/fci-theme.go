@@ -74,7 +74,7 @@ func FciViewFile(t sdkfci.IFciInputTypes) (v string, err error) {
 }
 
 func FciReadFile(v string) (f string, err error) {
-	themepkg := themecfg.Read().WebAdmin
+	themepkg := themecfg.Read().Admin
 	viewdir := filepath.Join(paths.VendorDir, themepkg, "resources/views/fci")
 	file := filepath.Join(viewdir, v)
 
