@@ -1,4 +1,4 @@
-#!/bin/env node
+#!/usr/bin/env node
 
 const fs = require("node:fs/promises");
 const path = require("node:path");
