@@ -8,7 +8,6 @@ import (
 	"github.com/flarehotspot/core/sdk/utils/sse"
 	"github.com/flarehotspot/core/web/helpers"
 	"github.com/flarehotspot/core/web/routes/urls"
-	"github.com/flarehotspot/core/web/views"
 )
 
 type BootCtrl struct {
@@ -24,7 +23,7 @@ func (b *BootCtrl) IndexPage(w http.ResponseWriter, r *http.Request) {
 		"done":   b.bp.IsDone(),
 	}
 
-	b.api.HttpApi().Respond().View(w, r, views.BootingIndexHtml, data)
+	b.api.HttpApi().Respond().View(w, r, "booting/index.html", data)
 }
 
 func (b *BootCtrl) SseHandler(w http.ResponseWriter, r *http.Request) {

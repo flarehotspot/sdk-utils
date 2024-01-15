@@ -11,7 +11,7 @@ import (
 func InitPlugins(g *globals.CoreGlobals) error {
 	bp := g.BootProgress
 
-	out := plugins.Bootstrap()
+	out := plugins.InstallPlugins()
 	done := false
 
 	for !done {
@@ -31,6 +31,7 @@ func InitPlugins(g *globals.CoreGlobals) error {
 	RunMigrations(g)
 
 	pluginDirs := plugincfg.ListDirs()
+	log.Println("pluginDirs:", pluginDirs)
 
 	for _, dir := range pluginDirs {
 		log.Println("loading plugin from :", dir)

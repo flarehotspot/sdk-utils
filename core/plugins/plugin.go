@@ -1,12 +1,14 @@
 package plugins
 
 import (
+	"github.com/flarehotspot/core/config/plugincfg"
 	"github.com/flarehotspot/core/connmgr"
 	"github.com/flarehotspot/core/db"
 	"github.com/flarehotspot/core/sdk/utils/translate"
 )
 
 type PluginApi struct {
+	info             *plugincfg.PluginInfo
 	slug             string
 	dir              string
 	trnslt           translate.TranslateFn
@@ -14,7 +16,6 @@ type PluginApi struct {
 	models           *PluginModels
 	AcctAPI          *AccountsApi
 	HttpAPI          *HttpApi
-	NavAPI           *NavApi
 	ConfigAPI        *ConfigApi
 	PaymentsAPI      *PaymentsApi
 	ThemesAPI        *ThemesApi

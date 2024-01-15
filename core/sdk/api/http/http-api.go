@@ -6,13 +6,18 @@ import (
 	"github.com/flarehotspot/core/sdk/api/http/middlewares"
 	"github.com/flarehotspot/core/sdk/api/http/response"
 	"github.com/flarehotspot/core/sdk/api/http/router"
+	"github.com/flarehotspot/core/sdk/api/http/views"
 )
 
 // IHttpApi is used to process and respond to http requests.
 type IHttpApi interface {
 
 	// Returns the router API.
-	Router() router.IRouterApi
+	HttpRouter() router.IHttpRouterApi
+
+	VueRouter() router.IVueRouterApi
+
+	Helpers(w http.ResponseWriter, r *http.Request) views.IViewHelpers
 
 	// Returns the middlewares API.
 	Middlewares() middlewares.Middlewares

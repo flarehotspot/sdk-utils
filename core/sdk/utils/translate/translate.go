@@ -2,11 +2,11 @@ package translate
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"strings"
 
-	"github.com/flarehotspot/core/sdk/libs/yaml-3"
+	"encoding/json"
 	"github.com/flarehotspot/core/sdk/utils/paths"
 )
 
@@ -40,14 +40,14 @@ func NewTranslator(rootdir string) TranslateFn {
 }
 
 func getLang() string {
-	cfgPath := filepath.Join(paths.AppDir, "config/application.yml")
-	bytes, err := ioutil.ReadFile(cfgPath)
+	cfgPath := filepath.Join(paths.AppDir, "config/application.json")
+	bytes, err := os.ReadFile(cfgPath)
 	if err != nil {
 		return err.Error()
 	}
 
 	var cfg LangCfg
-	err = yaml.Unmarshal(bytes, &cfg)
+	err = json.Unmarshal(bytes, &cfg)
 	if err != nil {
 		return err.Error()
 	}
@@ -72,7 +72,7 @@ func msgWithParams(msg string, params ...string) string {
 
 func getMsg(trnsdir string, lang string, msgtype string, msgk string) string {
 	f := filepath.Join(trnsdir, lang, msgtype, msgk+".txt")
-	bytes, err := ioutil.ReadFile(f)
+	bytes, err := os.ReadFile(f)
 	if err != nil {
 		return err.Error()
 	}

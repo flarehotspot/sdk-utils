@@ -1,20 +1,21 @@
 package appcfg
 
 import (
+	"encoding/json"
 	"os"
 	"path/filepath"
 
-	"github.com/flarehotspot/core/sdk/libs/yaml-3"
 	"github.com/flarehotspot/core/sdk/utils/paths"
 	"github.com/flarehotspot/core/sdk/utils/strings"
 )
 
-var configPath = filepath.Join(paths.ConfigDir, "application.yml")
+var configPath = filepath.Join(paths.ConfigDir, "application.json")
 
 type AppConfig struct {
-	Lang     string `yaml:"lang"`
-	Currency string `yaml:"currency"`
-	Secret   string `yaml:"secret"`
+	Lang          string `json:"lang"`
+	Currency      string `json:"currency"`
+	AssetsVersion string `json:"assets_version"`
+	Secret        string `json:"secret"`
 }
 
 func genDefaults() (*AppConfig, error) {
@@ -24,7 +25,7 @@ func genDefaults() (*AppConfig, error) {
 		Secret:   strings.Rand(16),
 	}
 
-	b, err := yaml.Marshal(cfg)
+	b, err := json.Marshal(cfg)
 	if err != nil {
 		return nil, err
 	}
@@ -37,14 +38,14 @@ func genDefaults() (*AppConfig, error) {
 	return cfg, nil
 }
 
-func ReadConfig() (*AppConfig, error) {
+func Read() (*AppConfig, error) {
 	cbytes, err := os.ReadFile(configPath)
 	if err != nil {
 		return genDefaults()
 	}
 
 	var cfg AppConfig
-	err = yaml.Unmarshal(cbytes, &cfg)
+	err = json.Unmarshal(cbytes, &cfg)
 	if err != nil {
 		return genDefaults()
 	}
@@ -53,7 +54,7 @@ func ReadConfig() (*AppConfig, error) {
 }
 
 func WriteConfig(cfg *AppConfig) error {
-	b, err := yaml.Marshal(cfg)
+	b, err := json.Marshal(cfg)
 	if err != nil {
 		return err
 	}

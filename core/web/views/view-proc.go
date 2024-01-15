@@ -1,75 +1,37 @@
 package views
 
 import (
+	"html/template"
+	"strings"
+
 	"github.com/flarehotspot/core/sdk/api/http/views"
-	"github.com/flarehotspot/core/sdk/utils/paths"
-	"github.com/flarehotspot/core/utils/assets"
-	jobque "github.com/flarehotspot/core/utils/job-que"
 )
 
-var viewQue = jobque.NewJobQues()
+func ViewProc(layout *string, content string, helpers views.IViewHelpers, data any) (html string, err error) {
+	tpl := "content"
+	views := []string{content}
 
-type ViewInput struct {
-	File   string
-	Extras *BundleExtras
-}
-
-func ViewProc(layout *ViewInput, content ViewInput, helpers views.IViewHelpers, data any) (html string, err error) {
-	cache, ok := GetViewCache(layout, content)
-	if !ok {
-		sym, err := viewQue.Exec(func() (interface{}, error) {
-			views := []*ViewInput{&content}
-			if layout != nil {
-				views = []*ViewInput{layout, &content}
-			}
-
-			// gather assets
-			scripts := []string{}
-			styles := []string{}
-			for _, v := range views {
-				va := ViewAssets(v.File)
-				scripts = append(scripts, va.Scripts...)
-				styles = append(styles, va.Styles...)
-
-				if v.Extras != nil {
-					if v.Extras.ExtraJS != nil {
-						scripts = append(scripts, *v.Extras.ExtraJS...)
-					}
-					if v.Extras.ExtraCSS != nil {
-						styles = append(styles, *v.Extras.ExtraCSS...)
-					}
-				}
-
-				err = CopyDirsToPublic(v.File)
-				if err != nil {
-					return "", err
-				}
-			}
-
-			jsbundle, err := assets.Bundle(scripts...)
-			if err != nil {
-				return "", err
-			}
-
-			cssbundle, err := assets.Bundle(styles...)
-			if err != nil {
-				return "", err
-			}
-
-			vc, err := WriteViewCache(layout, content, paths.Strip(jsbundle), paths.Strip(cssbundle))
-			if err != nil {
-				return "", err
-			}
-
-			return vc, nil
-		})
-
-		if err != nil {
-			return "", err
-		}
-
-		cache = sym.(*viewCache)
+	if layout != nil {
+		views = append(views, *layout)
+		tpl = "layout"
 	}
 
-	return cache.RenderHTML(helpers, data)
+	templates, err := template.New("").ParseFiles(views...)
+	if err != nil {
+		return "", err
+	}
+
+	vdata := &ViewData{
+		helpers:     helpers,
+		contentData: data,
+	}
+
+	var buff strings.Builder
+	err = templates.ExecuteTemplate(&buff, tpl, vdata)
+
+	if err != nil {
+		return "", err
+	}
+
+	return buff.String(), nil
 }

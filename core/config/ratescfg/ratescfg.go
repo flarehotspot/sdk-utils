@@ -1,28 +1,28 @@
 package ratescfg
 
 import (
-	"io/ioutil"
 	"net"
+	"os"
 	"path/filepath"
 	"sort"
 
-	"github.com/flarehotspot/core/sdk/libs/yaml-3"
+	"encoding/json"
 	"github.com/flarehotspot/core/sdk/utils/paths"
 	"github.com/flarehotspot/core/sdk/utils/slices"
 )
 
 type WifiRate struct {
-	Uuid       string  `yaml:"uuid"`
-	Network    string  `yaml:"network"`
-	Amount     float64 `yaml:"amount"`
-	TimeMins   uint    `yaml:"time_mins"`
-	DataMbytes uint    `yaml:"data_mbytes"`
+	Uuid       string  `json:"uuid"`
+	Network    string  `json:"network"`
+	Amount     float64 `json:"amount"`
+	TimeMins   uint    `json:"time_mins"`
+	DataMbytes uint    `json:"data_mbytes"`
 }
 
-var configPath = filepath.Join(paths.ConfigDir, "session-rates.yml")
+var configPath = filepath.Join(paths.ConfigDir, "session-rates.json")
 
 func Defaults() ([]*WifiRate, error) {
-	configPath := filepath.Join(paths.DefaultsDir, "session-rates.yml")
+	configPath := filepath.Join(paths.DefaultsDir, "session-rates.json")
 	return readFile(configPath)
 }
 
@@ -43,12 +43,12 @@ func Write(cfg []*WifiRate) error {
 		}
 	}
 
-	b, err := yaml.Marshal(&cfg)
+	b, err := json.Marshal(&cfg)
 	if err != nil {
 		return err
 	}
 
-	return ioutil.WriteFile(configPath, b, 0644)
+	return os.WriteFile(configPath, b, 0644)
 }
 
 func FilterByNet(ip string, rates []*WifiRate) ([]*WifiRate, error) {
@@ -63,14 +63,14 @@ func FilterByNet(ip string, rates []*WifiRate) ([]*WifiRate, error) {
 }
 
 func readFile(configPath string) ([]*WifiRate, error) {
-	b, err := ioutil.ReadFile(configPath)
+	b, err := os.ReadFile(configPath)
 	if err != nil {
 		return nil, err
 	}
 
 	var rates []*WifiRate
 
-	err = yaml.Unmarshal(b, &rates)
+	err = json.Unmarshal(b, &rates)
 	if err != nil {
 		return nil, err
 	}

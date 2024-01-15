@@ -15,12 +15,12 @@ const (
 )
 
 func listFiles(dir string, d MigDirection) (files []string, err error) {
-	files = []string{}
-	list, err := fs.LsFiles(dir, false)
-	if err != nil {
+	list := []string{}
+	if err = fs.LsFiles(dir, &list, false); err != nil {
 		return files, err
 	}
 
+	files = []string{}
 	if d == migration_Down {
 		for _, f := range list {
 			if strings.HasSuffix(f, ".down.sql") && !strings.HasPrefix(f, ".") {

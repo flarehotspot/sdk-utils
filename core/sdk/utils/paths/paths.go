@@ -23,7 +23,6 @@ var (
 	CoreDir     = filepath.Join(AppDir, "core")
 	ConfigDir   = filepath.Join(AppDir, "config")
 	DefaultsDir = filepath.Join(ConfigDir, ".defaults")
-	PublicDir   = filepath.Join(AppDir, "public")
 	PluginsDir  = filepath.Join(AppDir, "plugins")
 	VendorDir   = filepath.Join(AppDir, "vendor")
 	LogsDir     = filepath.Join(AppDir, "logs")

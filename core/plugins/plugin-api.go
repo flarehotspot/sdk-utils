@@ -12,7 +12,6 @@ import (
 	"github.com/flarehotspot/core/sdk/api/config"
 	"github.com/flarehotspot/core/sdk/api/connmgr"
 	"github.com/flarehotspot/core/sdk/api/http"
-	Inav "github.com/flarehotspot/core/sdk/api/http/navigation"
 	"github.com/flarehotspot/core/sdk/api/inappur"
 	"github.com/flarehotspot/core/sdk/api/models"
 	sdknet "github.com/flarehotspot/core/sdk/api/network"
@@ -38,27 +37,15 @@ func (p *PluginApi) Migrate() error {
 }
 
 func (p *PluginApi) Name() string {
-	info, err := plugincfg.GetPluginInfo(p.dir)
-	if err != nil {
-		return ""
-	}
-	return info.Name
+	return p.info.Name
 }
 
 func (p *PluginApi) Pkg() string {
-	info, err := plugincfg.GetPluginInfo(p.dir)
-	if err != nil {
-		return ""
-	}
-	return info.Package
+	return p.info.Package
 }
 
 func (p *PluginApi) Version() string {
-	info, err := plugincfg.GetPluginInfo(p.dir)
-	if err != nil {
-		return ""
-	}
-	return info.Version
+	return p.info.Version
 }
 
 func (p *PluginApi) Description() string {
@@ -97,20 +84,12 @@ func (p *PluginApi) HttpApi() http.IHttpApi {
 	return p.HttpAPI
 }
 
-func (p *PluginApi) NavApi() Inav.INavApi {
-	return p.NavAPI
-}
-
 func (p *PluginApi) ConfigApi() config.IConfigApi {
 	return p.ConfigAPI
 }
 
 func (p *PluginApi) PaymentsApi() paymentsApi.IPaymentsApi {
 	return p.PaymentsAPI
-}
-
-func (p *PluginApi) ThemesApi() themes.IThemesApi {
-	return p.ThemesAPI
 }
 
 func (p *PluginApi) AdsApi() ads.IAdsApi {
@@ -141,15 +120,18 @@ func (p *PluginApi) UciApi() uci.IUciApi {
 	return p.UciAPI
 }
 
+func (p *PluginApi) ThemesApi() themes.IThemesApi {
+	return p.ThemesAPI
+}
+
 func NewPluginApi(dir string, pmgr *PluginsMgr, trfkMgr *network.TrafficMgr) *PluginApi {
 	info, err := plugincfg.GetPluginInfo(dir)
 	if err != nil {
 		log.Println("Error getting plugin info: ", err.Error())
 	}
 
-    log.Println("NewPluginApi: ", dir, " - ", info.Package, " - ", info.Name, " - ", info.Version, " - ", info.Description)
-
 	pluginApi := &PluginApi{
+		info:       info,
 		slug:       slug.Make(info.Package),
 		dir:        dir,
 		db:         pmgr.db,
@@ -162,10 +144,9 @@ func NewPluginApi(dir string, pmgr *PluginsMgr, trfkMgr *network.TrafficMgr) *Pl
 	mdls := NewPluginModels(pmgr.models)
 	acctApi := NewAcctApi(pluginApi)
 	httpApi := NewHttpApi(pluginApi, pmgr.models, pmgr.clntReg, pmgr.paymgr)
-	navApi := NewNavApi(pmgr, pluginApi)
 	configApi := NewConfigApi(pluginApi)
 	paymentsApi := NewPaymentsApi(pluginApi, pmgr.paymgr)
-	themesApi := NewThemesApi()
+	themesApi := NewThemesApi(pluginApi)
 	networkApi := NewNetworkApi(trfkMgr)
 	adsApi := NewAdsApi(pluginApi)
 	inappur := NewInAppPurchaseApi(pluginApi)
@@ -175,7 +156,6 @@ func NewPluginApi(dir string, pmgr *PluginsMgr, trfkMgr *network.TrafficMgr) *Pl
 	pluginApi.models = mdls
 	pluginApi.AcctAPI = acctApi
 	pluginApi.HttpAPI = httpApi
-	pluginApi.NavAPI = navApi
 	pluginApi.ConfigAPI = configApi
 	pluginApi.PaymentsAPI = paymentsApi
 	pluginApi.ThemesAPI = themesApi
@@ -183,6 +163,8 @@ func NewPluginApi(dir string, pmgr *PluginsMgr, trfkMgr *network.TrafficMgr) *Pl
 	pluginApi.AdsAPI = adsApi
 	pluginApi.InAppPurchaseAPI = inappur
 	pluginApi.UciAPI = uciApi
+
+	log.Println("NewPluginApi: ", dir, " - ", info.Package, " - ", info.Name, " - ", info.Version, " - ", info.Description)
 
 	return pluginApi
 }

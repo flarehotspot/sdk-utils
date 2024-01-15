@@ -1,44 +1,46 @@
 package plugins
 
-import (
-	"net/http"
+// import (
+// 	"net/http"
 
-	cnav "github.com/flarehotspot/core/web/navigation"
-	"github.com/flarehotspot/core/web/routes/names"
-	navig "github.com/flarehotspot/core/sdk/api/http/navigation"
-	"github.com/flarehotspot/core/sdk/utils/translate"
-)
+// 	"github.com/flarehotspot/core/sdk/api/http/router"
+// 	"github.com/flarehotspot/core/sdk/utils/translate"
+// )
 
-func GetAdminNavs(pmgr *PluginsMgr, r *http.Request) []navig.IAdminNavList {
-	systemNavs := cnav.NewAdminListItem(translate.Core(translate.Label, "system"), []string{})
-	networkNavs := cnav.NewAdminListItem(translate.Core(translate.Label, "network"), []string{})
-	paymentNavs := cnav.NewAdminListItem(translate.Core(translate.Label, "payments"), []string{})
-	adminThemeNavs := cnav.NewAdminListItem(translate.Core(translate.Label, "themes"), []string{})
-	toolsNavs := cnav.NewAdminListItem(translate.Core(translate.Label, "tools"), []string{})
-	navs := []navig.IAdminNavList{systemNavs, networkNavs, paymentNavs, adminThemeNavs, toolsNavs}
+// func GetAdminNavs(pmgr *PluginsMgr, r *http.Request) []*router.AdminNavList {
+// 	systemNavs := router.NewAdminList(translate.Core(translate.Label, "system"), []string{})
+// 	networkNavs := router.NewAdminList(translate.Core(translate.Label, "network"), []string{})
+// 	paymentNavs := router.NewAdminList(translate.Core(translate.Label, "payments"), []string{})
+// 	adminThemeNavs := router.NewAdminList(translate.Core(translate.Label, "themes"), []string{})
+// 	toolsNavs := router.NewAdminList(translate.Core(translate.Label, "tools"), []string{})
+// 	navs := []*router.AdminNavList{systemNavs, networkNavs, paymentNavs, adminThemeNavs, toolsNavs}
 
-	systemNavs.AddNav(cnav.NewAdminNavItem(navig.CategorySystem, translate.Core(translate.Label, "dashboard"), names.RouteAdminDashboardIndex, []string{}))
+// 	systemNavs.AddNav(&router.AdminNavJson{
+// 		Category: router.CategorySystem,
+// 		Label:    translate.Core(translate.Label, "dashboard"),
+// 		Route:    "/system",
+// 	})
 
-	for _, p := range pmgr.All() {
-		navApi := p.NavApi().(*NavApi)
-		for _, nav := range navApi.GetAdminNavs(r) {
-			switch nav.Category() {
-			case navig.CategorySystem:
-				systemNavs.AddNav(nav)
-			case navig.CategoryNetwork:
-				networkNavs.AddNav(nav)
-			case navig.CategoryPayments:
-				paymentNavs.AddNav(nav)
-			case navig.CategoryThemes:
-				adminThemeNavs.AddNav(nav)
-			case navig.CategoryTools:
-				toolsNavs.AddNav(nav)
-			}
-		}
-	}
+// 	for _, p := range pmgr.All() {
+// 		navApi := p.HttpApi().VueRouter().(*VueRouter)
+// 		for _, nav := range navApi.GetAdminNavs(r) {
+// 			switch nav.Category {
+// 			case router.CategorySystem:
+// 				systemNavs.AddNav(nav)
+// 			case router.CategoryNetwork:
+// 				networkNavs.AddNav(nav)
+// 			case router.CategoryPayments:
+// 				paymentNavs.AddNav(nav)
+// 			case router.CategoryThemes:
+// 				adminThemeNavs.AddNav(nav)
+// 			case router.CategoryTools:
+// 				toolsNavs.AddNav(nav)
+// 			}
+// 		}
+// 	}
 
-	systemNavs.AddNav(cnav.NewAdminNavItem(navig.CategorySystem, translate.Core(translate.Label, "plugins"), names.RouteAdminPluginsIndex, []string{}))
-	networkNavs.AddNav(cnav.NewAdminNavItem(navig.CategoryNetwork, translate.Core(translate.Label, "bandwidth"), names.RouteAdminBandwidthIndex, []string{}))
+// 	// systemNavs.AddNav(cnav.NewAdminNavItem(navig.CategorySystem, translate.Core(translate.Label, "plugins"), names.RouteAdminPluginsIndex, []string{}))
+// 	// networkNavs.AddNav(cnav.NewAdminNavItem(navig.CategoryNetwork, translate.Core(translate.Label, "bandwidth"), names.RouteAdminBandwidthIndex, []string{}))
 
-	return navs
-}
+// 	return navs
+// }

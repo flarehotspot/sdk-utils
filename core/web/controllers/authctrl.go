@@ -14,7 +14,6 @@ import (
 	"github.com/flarehotspot/core/web/response"
 	"github.com/flarehotspot/core/web/router"
 	"github.com/flarehotspot/core/web/routes/names"
-	"github.com/flarehotspot/core/web/views"
 )
 
 const (
@@ -31,7 +30,7 @@ func NewAuthCtrl(g *globals.CoreGlobals) *AuthCtrl {
 
 func (ctrl *AuthCtrl) GetLogin(w http.ResponseWriter, r *http.Request) {
 	api := ctrl.g.PluginMgr.AdminPluginApi()
-	api.HttpApi().Respond().View(w, r, views.LoginHtml, nil)
+	api.HttpApi().Respond().View(w, r, "auth/login.html", nil)
 }
 
 func (ctrl *AuthCtrl) PostLogin(w http.ResponseWriter, r *http.Request) {
@@ -50,7 +49,7 @@ func (ctrl *AuthCtrl) PostLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	cfg, err := appcfg.ReadConfig()
+	cfg, err := appcfg.Read()
 	if err != nil {
 		err = errors.New(translate.Core(translate.Error, "invalid_login"))
 		ctrl.Error(w, r, err)

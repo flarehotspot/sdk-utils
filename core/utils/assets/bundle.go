@@ -4,25 +4,25 @@ package assets
 
 import jobque "github.com/flarehotspot/core/utils/job-que"
 
-var bundleQue = jobque.NewJobQues()
+// var bundleQue = jobque.NewJobQues()
 
-func Bundle(files []string) (string, error) {
-	result, err := bundleQue.Exec(func() (interface{}, error) {
-		if len(files) == 0 {
-			return "", ErrNoAssets
-		}
+// func Bundle(files []string) (string, error) {
+// 	result, err := bundleQue.Exec(func() (interface{}, error) {
+// 		if len(files) == 0 {
+// 			return "", ErrNoAssets
+// 		}
 
-		if cache, ok := cacheExists(files); ok {
-			return cache.PublicPath, nil
-		}
+// 		if cache, ok := cacheExists(files); ok {
+// 			return cache.PublicPath, nil
+// 		}
 
-		concat, err := minifyFiles(files)
-		if err != nil {
-			return "", err
-		}
+// 		concat, err := minifyFiles(files)
+// 		if err != nil {
+// 			return "", err
+// 		}
 
-		return writeCache(concat, files)
-	})
+// 		return writeCache(concat, files)
+// 	})
 
-	return result.(string), err
-}
+// 	return result.(string), err
+// }

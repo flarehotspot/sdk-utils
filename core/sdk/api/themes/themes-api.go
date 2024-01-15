@@ -1,12 +1,16 @@
 package themes
 
-import (
-	"net/http"
-)
-
-// IThemesApi is used to configure and process themes.
 type IThemesApi interface {
+	PortalThemeComponent(*PortalTheme)
+}
 
-	// Define the handler for the index view of the captive portal.
-	PortalIndexHandler(func(w http.ResponseWriter, r *http.Request))
+type PortalTheme struct {
+	ThemeComponentPath string
+	IndexComponentPath string
+	ThemeAssets        *ThemeAssets
+}
+
+type ThemeAssets struct {
+	Scripts *[]string
+	Styles  *[]string
 }

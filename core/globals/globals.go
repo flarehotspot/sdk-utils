@@ -6,7 +6,7 @@ import (
 	"github.com/flarehotspot/core/db/models"
 	"github.com/flarehotspot/core/network"
 	"github.com/flarehotspot/core/payments"
-  "github.com/flarehotspot/core/plugins"
+	"github.com/flarehotspot/core/plugins"
 	"github.com/flarehotspot/core/sdk/utils/paths"
 )
 
@@ -36,6 +36,8 @@ func New() *CoreGlobals {
 
 	plgnMgr := plugins.NewPluginMgr(db, mdls, pmtMgr, clntReg, clntMgr, trfcMgr)
 	coreApi := plugins.NewPluginApi(paths.CoreDir, plgnMgr, trfcMgr)
+
+	plgnMgr.RegisterPlugin(coreApi)
 
 	return &CoreGlobals{db, coreApi, clntReg, clntMgr, trfcMgr, bp, mdls, plgnMgr, pmtMgr}
 }

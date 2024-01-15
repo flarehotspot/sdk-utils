@@ -7,14 +7,14 @@ import (
 
 	coreAcct "github.com/flarehotspot/core/accounts"
 	"github.com/flarehotspot/core/config/appcfg"
-	"github.com/flarehotspot/core/web/router"
-	"github.com/flarehotspot/core/web/routes/names"
-	"github.com/flarehotspot/core/utils/jsonwebtoken"
 	"github.com/flarehotspot/core/sdk/libs/jwt"
 	"github.com/flarehotspot/core/sdk/utils/contexts"
 	"github.com/flarehotspot/core/sdk/utils/cookie"
 	"github.com/flarehotspot/core/sdk/utils/flash"
 	"github.com/flarehotspot/core/sdk/utils/translate"
+	"github.com/flarehotspot/core/utils/jsonwebtoken"
+	"github.com/flarehotspot/core/web/router"
+	"github.com/flarehotspot/core/web/routes/names"
 )
 
 func AdminAuth(next http.Handler) http.Handler {
@@ -50,7 +50,7 @@ func IsAdminAuthenticated(w http.ResponseWriter, r *http.Request) (*coreAcct.Acc
 		return nil, err
 	}
 
-	cfg, err := appcfg.ReadConfig()
+	cfg, err := appcfg.Read()
 	if err != nil {
 		return nil, err
 	}

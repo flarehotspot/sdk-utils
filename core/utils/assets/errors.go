@@ -1,5 +1,5 @@
 package assets
 
-import "errors"
+// import "errors"
 
-var ErrNoAssets = errors.New("no asset files")
+// var ErrNoAssets = errors.New("no asset files")

@@ -5,5 +5,5 @@ devplugin:
 	./run.sh
 
 devmono:
-	node ./build-mono.js && go run -tags="dev mono" ./main/main_mono.go
+	./build-mono.js && go run -tags="dev mono" ./main/main_mono.go
 

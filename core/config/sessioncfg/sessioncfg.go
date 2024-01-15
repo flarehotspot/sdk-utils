@@ -1,37 +1,37 @@
 package sessioncfg
 
 import (
-	"io/ioutil"
 	"log"
+	"os"
 	"path/filepath"
 	"sort"
 	"time"
 
-	"github.com/flarehotspot/core/sdk/libs/yaml-3"
+	"encoding/json"
 	"github.com/flarehotspot/core/sdk/utils/paths"
 )
 
 type SessionExp struct {
-	Minutes    uint `yaml:"minutes"`
-	Mbytes     uint `yaml:"mbytes"`
-	PauseLimit uint `yaml:"pause_limit"`
-	ExpDays    uint `yaml:"exp_days"`
+	Minutes    uint `json:"minutes"`
+	Mbytes     uint `json:"mbytes"`
+	PauseLimit uint `json:"pause_limit"`
+	ExpDays    uint `json:"exp_days"`
 }
 
 type SessCfgData struct {
-	StartOnBoot       bool          `yaml:"start_on_boot"`
-	PauseInternetDown bool          `yaml:"pause_on_net_down"`
-	ResumeInterUp     bool          `yaml:"resume_on_net_up"`
-	ResumeWifiConnect bool          `yaml:"resume_on_wifi_conn"`
-	Expirations       []*SessionExp `yaml:"expirations"`
+	StartOnBoot       bool          `json:"start_on_boot"`
+	PauseInternetDown bool          `json:"pause_on_net_down"`
+	ResumeInterUp     bool          `json:"resume_on_net_up"`
+	ResumeWifiConnect bool          `json:"resume_on_wifi_conn"`
+	Expirations       []*SessionExp `json:"expirations"`
 }
 
 type SessionLimitsCfg struct{}
 
-var configPath = filepath.Join(paths.ConfigDir, "sessions.yml")
+var configPath = filepath.Join(paths.ConfigDir, "sessions.json")
 
 func Defaults() (*SessCfgData, error) {
-	cfgPath := filepath.Join(paths.DefaultsDir, "sessions.yml")
+	cfgPath := filepath.Join(paths.DefaultsDir, "sessions.json")
 	return readConfig(cfgPath)
 }
 
@@ -45,11 +45,11 @@ func Read() (*SessCfgData, error) {
 }
 
 func Write(cfg *SessCfgData) error {
-	b, err := yaml.Marshal(&cfg)
+	b, err := json.Marshal(&cfg)
 	if err != nil {
 		return err
 	}
-	return ioutil.WriteFile(configPath, b, 0644)
+	return os.WriteFile(configPath, b, 0644)
 }
 
 func ComputeExp(exps []*SessionExp, minutes uint, mbytes uint) time.Time {
@@ -58,12 +58,12 @@ func ComputeExp(exps []*SessionExp, minutes uint, mbytes uint) time.Time {
 }
 
 func readConfig(configPath string) (*SessCfgData, error) {
-	b, err := ioutil.ReadFile(configPath)
+	b, err := os.ReadFile(configPath)
 	if err != nil {
 		return nil, err
 	}
 	var cfg SessCfgData
-	err = yaml.Unmarshal(b, &cfg)
+	err = json.Unmarshal(b, &cfg)
 	if err != nil {
 		return nil, err
 	}

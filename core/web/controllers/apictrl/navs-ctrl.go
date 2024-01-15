@@ -22,20 +22,20 @@ func NewNavsCtrl(pmgr *plugins.PluginsMgr) *NavsCtrl {
 }
 
 func (self *NavsCtrl) NavSearchJson(w http.ResponseWriter, r *http.Request) {
-	api := self.pmgr.AdminPluginApi()
-	helpers := plugins.NewViewHelpers(api, w, r)
-	navList := helpers.GetAdminNavs()
+	// api := self.pmgr.AdminPluginApi()
+	// helpers := plugins.NewViewHelpers(api, w, r)
+	// navList := helpers.GetAdminNavs()
 
 	navsJson := []AdminNavJson{}
-	for _, list := range navList {
-		for _, item := range list.Navs() {
-			nav := AdminNavJson{
-				Text: item.Text(),
-				Href: item.Href(),
-			}
-			navsJson = append(navsJson, nav)
-		}
-	}
+	// for _, list := range navList {
+	// 	for _, item := range list.Navs() {
+	// 		nav := AdminNavJson{
+	// 			Text: item.Text(),
+	// 			Href: item.Href(),
+	// 		}
+	// 		navsJson = append(navsJson, nav)
+	// 	}
+	// }
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)

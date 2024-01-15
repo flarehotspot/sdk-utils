@@ -1,8 +1,8 @@
 package syslog
 
 import (
-	"github.com/flarehotspot/core/sdk/utils/paths"
 	"github.com/flarehotspot/core/sdk/utils/fs"
+	"github.com/flarehotspot/core/sdk/utils/paths"
 	"github.com/flarehotspot/core/sdk/utils/slices"
 )
 
@@ -19,8 +19,8 @@ func ReadError() ([]*LogEntry, error) {
 }
 
 func ReadAll() ([]*LogEntry, error) {
-	files, err := fs.LsFiles(paths.LogsDir, false)
-	if err != nil {
+	files := []string{}
+	if err := fs.LsFiles(paths.LogsDir, &files, false); err != nil {
 		return nil, err
 	}
 

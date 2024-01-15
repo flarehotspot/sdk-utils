@@ -11,5 +11,4 @@ find . -name "*.app" -type f -delete
 ./go-work.sh
 ./build-main.sh
 ./build-plugins.sh
-./link-resources.sh
 ./main/main.app

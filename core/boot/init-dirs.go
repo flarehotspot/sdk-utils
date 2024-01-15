@@ -11,7 +11,6 @@ import (
 func InitDirs() {
 	dirs := []string{
 		paths.ConfigDir,
-		paths.PublicDir,
 		paths.VendorDir,
 		paths.CacheDir,
 		paths.LogsDir,

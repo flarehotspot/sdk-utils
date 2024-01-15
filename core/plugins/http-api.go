@@ -9,34 +9,46 @@ import (
 	"github.com/flarehotspot/core/sdk/api/http/middlewares"
 	"github.com/flarehotspot/core/sdk/api/http/response"
 	"github.com/flarehotspot/core/sdk/api/http/router"
+	"github.com/flarehotspot/core/sdk/api/http/views"
 	"github.com/gorilla/mux"
 )
 
 type HttpApi struct {
-	api      *PluginApi
-	router   *RouterApi
-	response *HttpResponse
-	mw       *PluginMiddlewares
+	api         *PluginApi
+	httpRouter  *HttpRouterApi
+	vueRouter   *VueRouter
+	response    *HttpResponse
+	middlewares *PluginMiddlewares
 }
 
 func NewHttpApi(api *PluginApi, mdls *models.Models, dmgr *connmgr.ClientRegister, pmgr *payments.PaymentsMgr) *HttpApi {
-	prouter := NewRouterApi(api)
+	httpRouter := NewRouterApi(api)
+	vueRouter := NewVueRouter(api)
 	response := NewHttpResponse(api)
-	mw := NewPluginMiddlewares(api.db, mdls, dmgr, pmgr)
+	middlewares := NewPluginMiddlewares(api.db, mdls, dmgr, pmgr)
 	return &HttpApi{
-		api:      api,
-		router:   prouter,
-		response: response,
-		mw:       mw,
+		api:         api,
+		httpRouter:  httpRouter,
+		vueRouter:   vueRouter,
+		response:    response,
+		middlewares: middlewares,
 	}
 }
 
-func (self *HttpApi) Router() router.IRouterApi {
-	return self.router
+func (self *HttpApi) HttpRouter() router.IHttpRouterApi {
+	return self.httpRouter
+}
+
+func (self *HttpApi) VueRouter() router.IVueRouterApi {
+	return self.vueRouter
+}
+
+func (self *HttpApi) Helpers(w http.ResponseWriter, r *http.Request) views.IViewHelpers {
+	return NewViewHelpers(self.api, w, r)
 }
 
 func (self *HttpApi) Middlewares() middlewares.Middlewares {
-	return self.mw
+	return self.middlewares
 }
 
 func (self *HttpApi) Respond() response.IHttpResponse {

@@ -1,23 +1,23 @@
 package dbcfg
 
 import (
+	"encoding/json"
 	"fmt"
-	"github.com/flarehotspot/core/sdk/libs/yaml-3"
 	"github.com/flarehotspot/core/sdk/utils/paths"
 	_ "github.com/go-sql-driver/mysql"
 	"os"
 	"path/filepath"
 )
 
-var configPath = filepath.Join(paths.ConfigDir, "database.yml")
+var configPath = filepath.Join(paths.ConfigDir, "database.json")
 
 type DbConfig struct {
-	Host     string `yaml:"host"`
-	Port     int    `yaml:"port"`
-	Database string `yaml:"database"`
-	Username string `yaml:"username"`
-	Password string `yaml:"password"`
-	SslMode  string `yaml:"sslmode"`
+	Host     string `json:"host"`
+	Port     int    `json:"port"`
+	Database string `json:"database"`
+	Username string `json:"username"`
+	Password string `json:"password"`
+	SslMode  string `json:"sslmode"`
 }
 
 func (cfg *DbConfig) UrlString() string {
@@ -49,7 +49,7 @@ func Read() (*DbConfig, error) {
 		return nil, err
 	}
 
-	err = yaml.Unmarshal(dbBytes, &cfg)
+	err = json.Unmarshal(dbBytes, &cfg)
 	if err != nil {
 		return nil, err
 	}
@@ -62,7 +62,7 @@ func Read() (*DbConfig, error) {
 }
 
 func Write(cfg *DbConfig) error {
-	b, err := yaml.Marshal(cfg)
+	b, err := json.Marshal(cfg)
 	if err != nil {
 		return err
 	}

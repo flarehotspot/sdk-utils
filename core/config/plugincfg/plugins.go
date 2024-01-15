@@ -1,12 +1,11 @@
 package plugincfg
 
 import (
+	"encoding/json"
+	"github.com/flarehotspot/core/sdk/utils/paths"
 	"log"
 	"os"
 	"path/filepath"
-
-	"github.com/flarehotspot/core/sdk/libs/yaml-3"
-	"github.com/flarehotspot/core/sdk/utils/paths"
 )
 
 type PluginList []*PluginSrcDef
@@ -19,7 +18,7 @@ func readConfigFile(f string) PluginList {
 	}
 
 	var cfg PluginList
-	if err = yaml.Unmarshal(content, &cfg); err != nil {
+	if err = json.Unmarshal(content, &cfg); err != nil {
 		log.Println(err)
 		return PluginList{}
 	}
@@ -28,13 +27,13 @@ func readConfigFile(f string) PluginList {
 }
 
 func DefaultPluginSrc() PluginList {
-	defaultsYaml := filepath.Join(paths.DefaultsDir, "plugins.yml")
+	defaultsYaml := filepath.Join(paths.DefaultsDir, "plugins.json")
 	log.Printf("%+v", defaultsYaml)
 	return readConfigFile(defaultsYaml)
 }
 
 func UserPluginSrc() PluginList {
-	cfgPath := filepath.Join(paths.ConfigDir, "plugins.yml")
+	cfgPath := filepath.Join(paths.ConfigDir, "plugins.json")
 	return readConfigFile(cfgPath)
 }
 

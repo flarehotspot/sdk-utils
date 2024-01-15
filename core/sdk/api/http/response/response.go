@@ -23,6 +23,8 @@ type IHttpResponse interface {
 	// then you can render it with View(w, r, "index.html", data).
 	View(w http.ResponseWriter, r *http.Request, view string, data any)
 
+    Text(w http.ResponseWriter, r *http.Request, file string, data any)
+
 	// Used to send json response.
 	Json(w http.ResponseWriter, data any, status int)
 

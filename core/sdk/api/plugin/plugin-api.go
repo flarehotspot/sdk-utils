@@ -8,7 +8,6 @@ import (
 	"github.com/flarehotspot/core/sdk/api/config"
 	"github.com/flarehotspot/core/sdk/api/connmgr"
 	"github.com/flarehotspot/core/sdk/api/http"
-	"github.com/flarehotspot/core/sdk/api/http/navigation"
 	"github.com/flarehotspot/core/sdk/api/inappur"
 	"github.com/flarehotspot/core/sdk/api/models"
 	"github.com/flarehotspot/core/sdk/api/network"
@@ -24,8 +23,8 @@ type IPluginApi interface {
 	// Returns the name of the plugin as defined in package.yml "name" field.
 	Name() string
 
-    // Returns the package name of the plugin as defined in package.yml "package" field.
-    Pkg() string
+	// Returns the package name of the plugin as defined in package.yml "package" field.
+	Pkg() string
 
 	// Returns the version of the plugin as defined in package.yml "version" field.
 	Version() string
@@ -62,17 +61,11 @@ type IPluginApi interface {
 	// Returns an instance of http api.
 	HttpApi() http.IHttpApi
 
-	// Returns an instance of navigation api.
-	NavApi() navigation.INavApi
-
 	// Returns an instance of config api.
 	ConfigApi() config.IConfigApi
 
 	// Returns an instance of payments api.
 	PaymentsApi() payments.IPaymentsApi
-
-	// Returns an instance of themes api.
-	ThemesApi() themes.IThemesApi
 
 	// Returns an instance of network api.
 	NetworkApi() network.INetworkApi
@@ -94,4 +87,6 @@ type IPluginApi interface {
 
 	// Returns an instance of the uci api.
 	UciApi() uci.IUciApi
+
+	ThemesApi() themes.IThemesApi
 }

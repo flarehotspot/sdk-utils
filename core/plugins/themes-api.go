@@ -1,21 +1,23 @@
 package plugins
 
-import (
-	"net/http"
-)
+import "github.com/flarehotspot/core/sdk/api/themes"
+
+func NewThemesApi(api *PluginApi) *ThemesApi {
+	return &ThemesApi{api: api}
+}
 
 type ThemesApi struct {
-	handler func(w http.ResponseWriter, r *http.Request)
+	api         *PluginApi
+	portalTheme *themes.PortalTheme
 }
 
-func NewThemesApi() *ThemesApi {
-	return &ThemesApi{}
+func (t *ThemesApi) PortalThemeComponent(portalTheme *themes.PortalTheme) {
+	t.portalTheme = portalTheme
 }
 
-func (t *ThemesApi) PortalIndexHandler(handler func(w http.ResponseWriter, r *http.Request)) {
-	t.handler = handler
-}
-
-func (t *ThemesApi) GetPortalHandler() func(w http.ResponseWriter, r *http.Request) {
-	return t.handler
+func (t *ThemesApi) GetPortalComponent() (portalTheme *themes.PortalTheme, ok bool) {
+	if t.portalTheme != nil {
+		return t.portalTheme, true
+	}
+	return nil, false
 }

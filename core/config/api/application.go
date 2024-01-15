@@ -8,7 +8,7 @@ import (
 type AppCfgApi struct{}
 
 func (c *AppCfgApi) Read() (*config.AppCfg, error) {
-	cfg, err := appcfg.ReadConfig()
+	cfg, err := appcfg.Read()
 	if err != nil {
 		return nil, err
 	}

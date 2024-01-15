@@ -5,18 +5,18 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/flarehotspot/core/sdk/libs/yaml-3"
+	"encoding/json"
 	"github.com/flarehotspot/core/sdk/utils/paths"
 )
 
 type ThemesConfig struct {
-	Auth          string `yaml:"auth"`
-	CaptivePortal string `yaml:"captive-portal"`
-	WebAdmin      string `yaml:"web-admin"`
+	Auth          string `json:"auth"`
+	CaptivePortal string `json:"captive-portal"`
+	WebAdmin      string `json:"web-admin"`
 }
 
 func Defaults() *ThemesConfig {
-	cfgPath := filepath.Join(paths.DefaultsDir, "themes.yml")
+	cfgPath := filepath.Join(paths.DefaultsDir, "themes.json")
 	cfg, err := readConfigFile(cfgPath)
 	if err != nil {
 		panic(err)
@@ -25,7 +25,7 @@ func Defaults() *ThemesConfig {
 }
 
 func Read() *ThemesConfig {
-	cfgPath := filepath.Join(paths.ConfigDir, "themes.yml")
+	cfgPath := filepath.Join(paths.ConfigDir, "themes.json")
 	cfg, err := readConfigFile(cfgPath)
 	if err != nil {
 		return Defaults()
@@ -42,7 +42,7 @@ func readConfigFile(f string) (*ThemesConfig, error) {
 	}
 
 	var cfg ThemesConfig
-	err = yaml.Unmarshal(cfgBytes, &cfg)
+	err = json.Unmarshal(cfgBytes, &cfg)
 	if err != nil {
 		log.Println("Error when parsing file: ", err)
 		return &def, err

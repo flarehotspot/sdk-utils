@@ -4,12 +4,13 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"path/filepath"
 	"strings"
 
 	"github.com/flarehotspot/core/accounts"
+	"github.com/flarehotspot/core/config/appcfg"
 	sdkacct "github.com/flarehotspot/core/sdk/api/accounts"
 	"github.com/flarehotspot/core/sdk/api/connmgr"
-	"github.com/flarehotspot/core/sdk/api/http/navigation"
 	Irtr "github.com/flarehotspot/core/sdk/api/http/router"
 	"github.com/flarehotspot/core/sdk/api/http/views"
 	"github.com/flarehotspot/core/sdk/api/plugin"
@@ -56,8 +57,13 @@ func (h *ViewHelpers) PluginMgr() plugin.IPluginMgr {
 	return h.api.PluginsMgr
 }
 
-func (h *ViewHelpers) GetAdminNavs() []navigation.IAdminNavList {
-	return GetAdminNavs(h.api.PluginsMgr, h.r)
+// func (h *ViewHelpers) GetAdminNavs() []*navigation.AdminNavList {
+// 	return GetAdminNavs(h.api.PluginsMgr, h.r)
+// }
+
+func (h *ViewHelpers) AssetPath(path string) string {
+	cfg, _ := appcfg.Read()
+	return filepath.Join("/assets", cfg.AssetsVersion, h.api.Pkg(), path)
 }
 
 func (h *ViewHelpers) FlashMsgHtml() string {
@@ -86,7 +92,7 @@ func (h *ViewHelpers) AdView() (html string) {
 }
 
 func (h *ViewHelpers) MuxRouteName(name string) Irtr.MuxRouteName {
-	return h.api.HttpAPI.Router().MuxRouteName(Irtr.PluginRouteName(name))
+	return h.api.HttpAPI.HttpRouter().MuxRouteName(Irtr.PluginRouteName(name))
 }
 
 func (h *ViewHelpers) UrlForMuxRoute(name string, params ...string) string {
@@ -95,7 +101,7 @@ func (h *ViewHelpers) UrlForMuxRoute(name string, params ...string) string {
 }
 
 func (h *ViewHelpers) UrlForRoute(name string, params ...string) string {
-	return h.api.HttpApi().Router().UrlForRoute(Irtr.PluginRouteName(name), params...)
+	return h.api.HttpApi().HttpRouter().UrlForRoute(Irtr.PluginRouteName(name), params...)
 }
 
 func (h *ViewHelpers) IsLinkActive(href string) bool {

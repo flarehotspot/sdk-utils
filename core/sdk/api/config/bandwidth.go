@@ -1,6 +1,6 @@
 package config
 
-// BandwdData is the bandwidth configuration for a given interface.
+// BandwdData is the bandwidth configuration for a given interface. Each interface bandwidth is configured individually.
 type BandwdData struct {
 	// UseGlobal is true if the global bandwidth should be used.
 	UseGlobal bool

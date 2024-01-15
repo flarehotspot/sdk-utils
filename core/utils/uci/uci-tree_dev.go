@@ -9,5 +9,5 @@ import (
 	"github.com/flarehotspot/core/sdk/utils/paths"
 )
 
-var treeRoot = filepath.Join(paths.AppDir, "mock-files/etc/config")
+var treeRoot = filepath.Join(paths.AppDir, "openwrt-files/etc/config")
 var UciTree = uci.NewTree(treeRoot)

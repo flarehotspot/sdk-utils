@@ -3,9 +3,7 @@ package views
 import (
 	"github.com/flarehotspot/core/sdk/api/accounts"
 	"github.com/flarehotspot/core/sdk/api/connmgr"
-	"github.com/flarehotspot/core/sdk/api/http/navigation"
 	"github.com/flarehotspot/core/sdk/api/http/router"
-	"github.com/flarehotspot/core/sdk/api/plugin"
 )
 
 // IViewHelpers are methods available in html templates as .Helpers.
@@ -14,20 +12,17 @@ type IViewHelpers interface {
 
 	// Translates a message into the current language settings from application config.
 	// msgtype is the message type, e.g. "error", "success", "info", "warning".
-  // For example, if the current language is "en", then the following code in your template:
-  //  {{ .Helpers.Translate "error" "some-key" }}
-  // will look for the file "/resources/translations/en/error/some-key.txt" under the plugin root directory
-  // and displays the text inside that file.
+	// For example, if the current language is "en", then the following code in your template:
+	//  {{ .Helpers.Translate "error" "some-key" }}
+	// will look for the file "/resources/translations/en/error/some-key.txt" under the plugin root directory
+	// and displays the text inside that file.
 	Translate(msgtype string, msgk string) string
 
-	// Returns the plugin manager.
-	PluginMgr() plugin.IPluginMgr
-
-	// Returns a list of navigation items for the admin panel.
-	GetAdminNavs() []navigation.IAdminNavList
+	// Returns asset path prefixed with assets version/hash path
+	AssetPath(path string) string
 
 	// Returns the html for the flash message.
-  // These are the messages set in flash.SetFlashMsg() inside your controllers.
+	// These are the messages set in flash.SetFlashMsg() inside your controllers.
 	FlashMsgHtml() (html string)
 
 	// Returns the html for the ads view.

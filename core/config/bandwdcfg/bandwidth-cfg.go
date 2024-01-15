@@ -4,24 +4,24 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/flarehotspot/core/sdk/libs/yaml-3"
+	"encoding/json"
 	"github.com/flarehotspot/core/sdk/utils/paths"
 )
 
 var (
-	cfgFile = filepath.Join(paths.ConfigDir, "bandwidth.yml")
+	cfgFile = filepath.Join(paths.ConfigDir, "bandwidth.json")
 )
 
 type BandwdCfg struct {
-	Lans map[string]*IfCfg `yaml:"lans"`
+	Lans map[string]*IfCfg `json:"lans"`
 }
 
 type IfCfg struct {
-	UseGlobal       bool `yaml:"use_global"`
-	GlobalDownMbits int  `yaml:"global_down_mbits"`
-	GlobalUpMbits   int  `yaml:"global_up_mbits"`
-	UserDownMbits   int  `yaml:"user_down_mbits"`
-	UserUpMbits     int  `yaml:"user_up_mbits"`
+	UseGlobal       bool `json:"use_global"`
+	GlobalDownMbits int  `json:"global_down_mbits"`
+	GlobalUpMbits   int  `json:"global_up_mbits"`
+	UserDownMbits   int  `json:"user_down_mbits"`
+	UserUpMbits     int  `json:"user_up_mbits"`
 }
 
 func Read() (*BandwdCfg, error) {
@@ -34,7 +34,7 @@ func Read() (*BandwdCfg, error) {
 }
 
 func Save(cfg *BandwdCfg) error {
-	bytes, err := yaml.Marshal(cfg)
+	bytes, err := json.Marshal(cfg)
 	if err != nil {
 		return err
 	}
@@ -49,7 +49,7 @@ func readFile(f string) (*BandwdCfg, error) {
 	}
 
 	var cfg BandwdCfg
-	err = yaml.Unmarshal(bytes, &cfg)
+	err = json.Unmarshal(bytes, &cfg)
 	if err != nil {
 		return nil, err
 	}
@@ -58,6 +58,6 @@ func readFile(f string) (*BandwdCfg, error) {
 }
 
 func readDefaults() (*BandwdCfg, error) {
-	f := filepath.Join(paths.ConfigDir, ".defaults", "bandwidth.yml")
+	f := filepath.Join(paths.ConfigDir, ".defaults", "bandwidth.json")
 	return readFile(f)
 }
