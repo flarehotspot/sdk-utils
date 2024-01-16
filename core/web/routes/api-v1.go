@@ -18,12 +18,12 @@ func ApiRoutesV1(g *globals.CoreGlobals) {
 
 	// portal assets
 	portalAssetsCtrl := apiv1.NewPortalAssetsCtrl(g)
-	rootR.HandleFunc("/scripts/portal/main.js", portalAssetsCtrl.MainJs).Methods("GET").Name(routenames.PortalMainJs)
+	rootR.HandleFunc("/api/scripts/main-portal.js", portalAssetsCtrl.MainJs).Methods("GET").Name(routenames.PortalMainJs)
 	portalAssetsRouterV1.HandleFunc("/{pkg}/helpers.js", portalAssetsCtrl.HelpersJs).Methods("GET").Name(routenames.PortalHelperJs)
 
 	// admin assets
 	adminAssetsCtrl := apiv1.NewAdminAssetsCtrl(g)
-	rootR.HandleFunc("/scripts/admin/main.js", adminAssetsCtrl.MainJs).Methods("GET").Name(routenames.AdminMainJs)
+	rootR.HandleFunc("/api/scripts/main-admin.js", adminAssetsCtrl.MainJs).Methods("GET").Name(routenames.AdminMainJs)
 	adminAssetsRouterV1.HandleFunc("/{pkg}/helpers.js", adminAssetsCtrl.HelpersJs).Methods("GET").Name(routenames.AdminHelperJs)
 
 	// portal apis
