@@ -7,8 +7,8 @@ import (
 	"github.com/flarehotspot/core/sdk/utils/translate"
 )
 
-func NewVuePortalItem(api *PluginApi, r *http.Request, nav *router.VuePortalItem) *VuePortalItem {
-	vueRouter := api.HttpApi().VueRouter().(*VueRouter)
+func NewVuePortalItem(api *PluginApi, r *http.Request, nav router.VuePortalItem) VuePortalItem {
+	vueRouter := api.HttpApi().VueRouter().(*VueRouterApi)
 	label := api.Translate(translate.Label, nav.TranslateLabel)
 	path := router.NotFoundVuePath
 
@@ -16,7 +16,7 @@ func NewVuePortalItem(api *PluginApi, r *http.Request, nav *router.VuePortalItem
 		path = route.RoutePath
 	}
 
-	return &VuePortalItem{
+	return VuePortalItem{
 		Label:     label,
 		RoutePath: path,
 	}

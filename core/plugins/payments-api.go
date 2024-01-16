@@ -5,11 +5,11 @@ import (
 	"net/http"
 
 	"github.com/flarehotspot/core/payments"
+	"github.com/flarehotspot/core/sdk/api/models"
+	paymentsI "github.com/flarehotspot/core/sdk/api/payments"
 	"github.com/flarehotspot/core/web/response"
 	"github.com/flarehotspot/core/web/router"
 	"github.com/flarehotspot/core/web/routes/names"
-	"github.com/flarehotspot/core/sdk/api/models"
-	Ipayments "github.com/flarehotspot/core/sdk/api/payments"
 )
 
 type PaymentsApi struct {
@@ -17,8 +17,8 @@ type PaymentsApi struct {
 	paymentsMgr *payments.PaymentsMgr
 }
 
-func (self *PaymentsApi) Checkout(w http.ResponseWriter, r *http.Request, params *Ipayments.PurchaseRequest) {
-	url, err := router.UrlForRoute(names.RoutePaymentOptions)
+func (self *PaymentsApi) Checkout(w http.ResponseWriter, r *http.Request, params *paymentsI.PurchaseRequest) {
+	url, err := router.UrlForRoute(routenames.RoutePaymentOptions)
 	if err != nil {
 		response.Error(w, err)
 		return
@@ -44,11 +44,11 @@ func (self *PaymentsApi) CancelPurchase(w http.ResponseWriter, r *http.Request, 
 	log.Println("TODO: cancel purchase")
 }
 
-func (self *PaymentsApi) ParsePaymentInfo(r *http.Request) (*Ipayments.PaymentInfo, error) {
+func (self *PaymentsApi) ParsePaymentInfo(r *http.Request) (*paymentsI.PaymentInfo, error) {
 	return payments.ParsePaymentInfo(self.api.db, self.api.models, r)
 }
 
-func (self *PaymentsApi) NewPaymentProvider(provider Ipayments.IPaymentProvider) {
+func (self *PaymentsApi) NewPaymentProvider(provider paymentsI.IPaymentProvider) {
 	log.Println("Registering payment method:", provider.Name())
 	self.paymentsMgr.NewPaymentProvider(self.api, provider)
 }

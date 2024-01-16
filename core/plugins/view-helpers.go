@@ -107,7 +107,7 @@ func (h *ViewHelpers) IsLinkActive(href string) bool {
 }
 
 func (h *ViewHelpers) CurrentUser() sdkacct.IAccount {
-	acct, err := helpers.CurrentUser(h.r)
+	acct, err := helpers.CurrentAdmin(h.r)
 	if err != nil {
 		return nil
 	}
@@ -123,7 +123,7 @@ func (h *ViewHelpers) CurrentClient() connmgr.IClientDevice {
 }
 
 func (h *ViewHelpers) AdminHasAnyPerm(perms ...string) bool {
-	acct, err := helpers.CurrentUser(h.r)
+	acct, err := helpers.CurrentAdmin(h.r)
 	if err != nil {
 		return false
 	}
@@ -132,7 +132,7 @@ func (h *ViewHelpers) AdminHasAnyPerm(perms ...string) bool {
 }
 
 func (h *ViewHelpers) AdminHasAllPerms(perms ...string) bool {
-	acct, err := helpers.CurrentUser(h.r)
+	acct, err := helpers.CurrentAdmin(h.r)
 	if err != nil {
 		return false
 	}

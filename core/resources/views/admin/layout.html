@@ -11,7 +11,7 @@
     <script nomodule src='{{ .Helpers.AssetPath "libs/event-source.polyfill.min.js" }}'></script>
     <script src='{{ .Helpers.AssetPath "libs/vue-2.7.16.min.js" }}'></script>
     <script src='{{ .Helpers.AssetPath "libs/vue-router-3.6.5.min.js" }}'></script>
-    <script data-main='/api/v1/assets/admin/main.js'
+    <script data-main='{{ .Helpers.UrlForMuxRoute "admin.mainjs" }}'
         src='{{ .Helpers.AssetPath "libs/require-2.3.6.min.js" }}'></script>
 </head>
 

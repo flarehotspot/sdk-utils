@@ -1,10 +1,23 @@
-(function () {
+(function (window) {
+  window.apiv1 = {
+    HelperPath: function (pkg) {
+      var helperJsURL = '{{ .Data.HelperJsURL }}';
+      return helperJsURL.replace('PKG', pkg);
+    }
+  };
+
+  function VueLoader(vueFile) {
+    return function (resolve) {
+      return require(['vue!' + vueFile], resolve);
+    };
+  }
+
   require.config({
     paths: {
       vue: '{{ .Helpers.AssetPath "libs/requirejs-vue-1.1.5.min" }}',
       json: '{{ .Helpers.AssetPath "libs/requirejs-json-0.4.0.min" }}',
       image: '{{ .Helpers.AssetPath "libs/requirejs-image-0.2.2.min" }}',
-      text: '{{ .Helpers.AssetPath "libs/requirejs-text-2.0.5.min" }}',
+      text: '{{ .Helpers.AssetPath "libs/requirejs-text-2.0.5.min" }}'
     },
     config: {
       vue: {
@@ -24,18 +37,12 @@
     var themeIndexComponent = '{{ .Data.Theme.IndexComponent }}';
     // end configs --------------------------------------------
 
-    function vueLoader(vueFile) {
-      return function (resolve) {
-        return require(['vue!' + vueFile], resolve);
-      };
-    }
-
     // start routes
     var routes = [
       {
         path: '/',
         name: 'theme-index',
-        component: vueLoader(themeIndexComponent)
+        component: VueLoader(themeIndexComponent)
       }
     ];
 
@@ -44,7 +51,7 @@
       routes.push({
         path: r.path,
         name: r.name,
-        component: vueLoader(r.component)
+        component: VueLoader(r.component)
       });
     }
 
@@ -53,11 +60,16 @@
         {
           path: '/',
           name: 'theme-layout',
-          component: vueLoader(themeLayoutComponent),
+          component: VueLoader(themeLayoutComponent),
           children: routes
         }
       ]
     });
+
+    require.onError = function (err) {
+      console.log(err);
+    };
+
     // end routes
 
     var app = new Vue({
@@ -66,4 +78,4 @@
 
     app.$mount('#app');
   });
-})();
+})(window);

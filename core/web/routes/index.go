@@ -4,8 +4,7 @@ import (
 	"net/http"
 
 	"github.com/flarehotspot/core/globals"
-	"github.com/flarehotspot/core/web/controllers/adminctrl"
-	"github.com/flarehotspot/core/web/controllers/portalctrl"
+	"github.com/flarehotspot/core/web/controllers"
 	"github.com/flarehotspot/core/web/middlewares"
 	"github.com/flarehotspot/core/web/router"
 	"github.com/flarehotspot/core/web/routes/names"
@@ -14,12 +13,11 @@ import (
 func IndexRoutes(g *globals.CoreGlobals) {
 	rootR := router.RootRouter
 	deviceMw := middlewares.DeviceMiddleware(g.Db, g.ClientRegister)
-	portalCtrl := portalctrl.NewPortalCtrl(g)
-	portalIndexCtrl := deviceMw(http.HandlerFunc(portalCtrl.IndexPage))
-	rootR.Handle("/", portalIndexCtrl).Methods("GET").Name(names.RoutePortalIndex)
+	indexCtrl := controllers.NewIndexPageCtrl(g)
+	portalIndexCtrl := deviceMw(http.HandlerFunc(indexCtrl.PortalIndex))
 
-	adminCtrl := adminctrl.NewAdminCtrl(g)
-	rootR.HandleFunc("/admin", adminCtrl.AdminIndex)
+	rootR.Handle("/", portalIndexCtrl).Methods("GET").Name(routenames.RoutePortalIndex)
+	rootR.HandleFunc("/admin", indexCtrl.AdminIndex).Methods("GET").Name(routenames.RouteAdminIndex)
 
 	// portal assets subpath
 	// assetsR := router.AssetsApiRouterV1

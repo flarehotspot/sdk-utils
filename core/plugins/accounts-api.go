@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/flarehotspot/core/accounts"
-	"github.com/flarehotspot/core/web/helpers"
 	acct "github.com/flarehotspot/core/sdk/api/accounts"
+	"github.com/flarehotspot/core/web/helpers"
 )
 
 type AccountsApi struct {
@@ -16,8 +16,8 @@ func NewAcctApi(api *PluginApi) *AccountsApi {
 	return &AccountsApi{api}
 }
 
-func (self *AccountsApi) CurrentUser(r *http.Request) (acct.IAccount, error) {
-	return helpers.CurrentUser(r)
+func (self *AccountsApi) CurrentAdmin(r *http.Request) (acct.IAccount, error) {
+	return helpers.CurrentAdmin(r)
 }
 
 func (self *AccountsApi) Create(uname string, pass string, perms []string) (acct.IAccount, error) {

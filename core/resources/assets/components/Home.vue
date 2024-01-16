@@ -12,7 +12,7 @@
 define(["com.flarego.core/captive-portal/helpers"], function (h) {
   return {
     components: {
-      "test-component": h.vueLoader("/components/Test")
+      "test-component": h.VueLoader("/components/Test")
     },
     data: function () {
       return {

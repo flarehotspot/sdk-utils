@@ -8,7 +8,7 @@ import (
 	"github.com/flarehotspot/core/sdk/utils/contexts"
 )
 
-func CurrentUser(r *http.Request) (*accounts.Account, error) {
+func CurrentAdmin(r *http.Request) (*accounts.Account, error) {
 	sym := r.Context().Value(contexts.SysAcctCtxKey)
 	acct, ok := sym.(*accounts.Account)
 	if !ok {

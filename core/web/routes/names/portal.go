@@ -1,5 +1,6 @@
-package names
+package routenames
 
 const (
-  RoutePortalIndex = "portal::index"
+	RoutePortalIndex = "portal::index"
+	RouteAdminIndex  = "admin:index"
 )

@@ -17,14 +17,14 @@ import (
 type HttpApi struct {
 	api         *PluginApi
 	httpRouter  *HttpRouterApi
-	vueRouter   *VueRouter
+	vueRouter   *VueRouterApi
 	response    *HttpResponse
 	middlewares *PluginMiddlewares
 }
 
 func NewHttpApi(api *PluginApi, mdls *models.Models, dmgr *connmgr.ClientRegister, pmgr *payments.PaymentsMgr) *HttpApi {
 	httpRouter := NewRouterApi(api)
-	vueRouter := NewVueRouter(api)
+	vueRouter := NewVueRouterApi(api)
 	response := NewHttpResponse(api)
 	middlewares := NewPluginMiddlewares(api.db, mdls, dmgr, pmgr)
 	return &HttpApi{

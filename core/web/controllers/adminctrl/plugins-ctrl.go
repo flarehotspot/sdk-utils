@@ -12,12 +12,12 @@ import (
 
 	"github.com/flarehotspot/core/accounts"
 	"github.com/flarehotspot/core/plugins"
-	"github.com/flarehotspot/core/web/response"
-	"github.com/flarehotspot/core/web/router"
-	"github.com/flarehotspot/core/web/routes/names"
 	"github.com/flarehotspot/core/sdk/utils/contexts"
 	"github.com/flarehotspot/core/sdk/utils/paths"
 	"github.com/flarehotspot/core/sdk/utils/strings"
+	"github.com/flarehotspot/core/web/response"
+	"github.com/flarehotspot/core/web/router"
+	"github.com/flarehotspot/core/web/routes/names"
 )
 
 type InstallOut struct{ acct *accounts.Account }
@@ -45,7 +45,7 @@ func NewPluginsCtrl(pmgr *plugins.PluginsMgr, capi *plugins.PluginApi) *PluginCt
 
 func (self *PluginCtrl) Index(w http.ResponseWriter, r *http.Request) {
 	plugins := self.pmgr.All()
-	newPluginUrl, _ := router.UrlForRoute(names.RouteAdminPluginsNew)
+	newPluginUrl, _ := router.UrlForRoute(routenames.RouteAdminPluginsNew)
 
 	data := map[string]any{
 		"newPluginUrl": newPluginUrl,
@@ -56,7 +56,7 @@ func (self *PluginCtrl) Index(w http.ResponseWriter, r *http.Request) {
 }
 
 func (self *PluginCtrl) New(w http.ResponseWriter, r *http.Request) {
-	uploadUrl, _ := router.UrlForRoute(names.RouteAdminPluginUpload)
+	uploadUrl, _ := router.UrlForRoute(routenames.RouteAdminPluginUpload)
 	data := map[string]any{"uploadUrl": uploadUrl}
 	self.capi.HttpApi().Respond().AdminView(w, r, "plugins/upload.html", data)
 }

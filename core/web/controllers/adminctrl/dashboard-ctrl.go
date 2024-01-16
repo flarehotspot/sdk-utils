@@ -21,7 +21,7 @@ func (self *DashboardCtrl) Index(w http.ResponseWriter, r *http.Request) {
 }
 
 func (self *DashboardCtrl) RedirectToDash(w http.ResponseWriter, r *http.Request) {
-	adminURL, _ := router.UrlForRoute(names.RouteAdminDashboardIndex)
+	adminURL, _ := router.UrlForRoute(routenames.RouteAdminDashboardIndex)
 	http.Redirect(w, r, adminURL, http.StatusSeeOther)
 }
 

@@ -1,4 +1,4 @@
-package names
+package routenames
 
 const (
 	RouteAdminDashboardIndex = "admin:dashboard"

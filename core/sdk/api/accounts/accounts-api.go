@@ -4,8 +4,8 @@ import "net/http"
 
 // IAcctApi is used to manage accounts.
 type IAcctApi interface {
-	// Get the current user from the http request.
-	CurrentUser(r *http.Request) (IAccount, error)
+	// Get the current admin user from the http request.
+	CurrentAdmin(r *http.Request) (IAccount, error)
 
 	// Create a new system account. The list of available permissions
 	// can be obtained from IAcctApi.Permissions().

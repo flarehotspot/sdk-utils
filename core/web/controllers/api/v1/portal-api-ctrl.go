@@ -1,4 +1,4 @@
-package portalApiV1
+package apiv1
 
 import (
 	"net/http"
@@ -16,13 +16,13 @@ type PortalApiCtrl struct {
 }
 
 func (c *PortalApiCtrl) PortalNavs(w http.ResponseWriter, r *http.Request) {
-	portalItems := []*plugins.VuePortalItem{}
+	portalItems := []plugins.VuePortalItem{}
 	allPlugins := c.g.PluginMgr.All()
 
 	for _, p := range allPlugins {
-		vueRouter := p.HttpApi().VueRouter().(*plugins.VueRouter)
+		vueRouter := p.HttpApi().VueRouter().(*plugins.VueRouterApi)
 		portalItems = append(portalItems, vueRouter.GetPortalItems(r)...)
 	}
 
-	c.g.CoreApi.HttpApi().Respond().Json(w, portalItems, 200)
+	c.g.CoreApi.HttpApi().Respond().Json(w, portalItems, http.StatusOK)
 }

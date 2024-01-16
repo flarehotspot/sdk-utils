@@ -9,10 +9,10 @@ import (
 	"github.com/flarehotspot/core/db"
 	"github.com/flarehotspot/core/db/models"
 	pmt "github.com/flarehotspot/core/payments"
-	"github.com/flarehotspot/core/web/router"
-	"github.com/flarehotspot/core/web/routes/names"
 	Ipmt "github.com/flarehotspot/core/sdk/api/payments"
 	"github.com/flarehotspot/core/sdk/utils/contexts"
+	"github.com/flarehotspot/core/web/router"
+	"github.com/flarehotspot/core/web/routes/names"
 )
 
 func PendingPurchaseMw(dtb *db.Database, mdls *models.Models, paymgr *pmt.PaymentsMgr) func(next http.Handler) http.Handler {
@@ -42,7 +42,7 @@ func PendingPurchaseMw(dtb *db.Database, mdls *models.Models, paymgr *pmt.Paymen
 			}
 
 			if purchase != nil {
-				paymentUrl, err := router.UrlForRoute(names.RoutePaymentOptions)
+				paymentUrl, err := router.UrlForRoute(routenames.RoutePaymentOptions)
 				if err != nil {
 					http.Error(w, err.Error(), http.StatusInternalServerError)
 					return

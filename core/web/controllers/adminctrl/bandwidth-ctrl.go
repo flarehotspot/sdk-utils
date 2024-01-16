@@ -28,7 +28,7 @@ type BandwidthCtrl struct {
 }
 
 func NewBandwidthCtrl(g *globals.CoreGlobals, api *plugins.PluginApi) *BandwidthCtrl {
-	redirect := response.NewErrRoute(names.RouteAdminBandwidthIndex)
+	redirect := response.NewErrRoute(routenames.RouteAdminBandwidthIndex)
 	return &BandwidthCtrl{g, api, redirect}
 }
 
@@ -54,7 +54,7 @@ func (self *BandwidthCtrl) Index(w http.ResponseWriter, r *http.Request) {
 	}
 
 	saveUrlFor := func(ifname string) string {
-		url, _ := router.UrlForRoute(names.RouteAdminBandwidthSave, "ifname", ifname)
+		url, _ := router.UrlForRoute(routenames.RouteAdminBandwidthSave, "ifname", ifname)
 		return url
 	}
 
@@ -182,7 +182,7 @@ func (self *BandwidthCtrl) Error(w http.ResponseWriter, r *http.Request, err err
 }
 
 func (self *BandwidthCtrl) indexUrl() string {
-	url, _ := router.UrlForRoute(names.RouteAdminBandwidthIndex)
+	url, _ := router.UrlForRoute(routenames.RouteAdminBandwidthIndex)
 	return url
 }
 

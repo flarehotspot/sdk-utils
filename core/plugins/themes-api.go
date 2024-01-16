@@ -8,28 +8,28 @@ func NewThemesApi(api *PluginApi) *ThemesApi {
 
 type ThemesApi struct {
 	api         *PluginApi
-	portalTheme *themes.PortalTheme
-	adminTheme  *themes.AdminTheme
+	adminTheme  themes.AdminTheme
+	portalTheme themes.PortalTheme
 }
 
-func (t *ThemesApi) AdminThemeComponent(adminTheme *themes.AdminTheme) {
+func (t *ThemesApi) AdminThemeComponent(adminTheme themes.AdminTheme) {
 	t.adminTheme = adminTheme
 }
 
-func (t *ThemesApi) GetAdminThemeComponent() (adminTheme *themes.AdminTheme, ok bool) {
-	if t.adminTheme != nil {
+func (t *ThemesApi) GetAdminThemeComponent() (adminTheme themes.AdminTheme, ok bool) {
+	if t.adminTheme.IndexComponentPath != "" {
 		return t.adminTheme, true
 	}
-	return nil, false
+	return themes.AdminTheme{}, false
 }
 
-func (t *ThemesApi) PortalThemeComponent(portalTheme *themes.PortalTheme) {
+func (t *ThemesApi) PortalThemeComponent(portalTheme themes.PortalTheme) {
 	t.portalTheme = portalTheme
 }
 
-func (t *ThemesApi) GetPortalComponent() (portalTheme *themes.PortalTheme, ok bool) {
-	if t.portalTheme != nil {
+func (t *ThemesApi) GetPortalComponent() (portalTheme themes.PortalTheme, ok bool) {
+	if t.portalTheme.IndexComponentPath != "" {
 		return t.portalTheme, true
 	}
-	return nil, false
+	return themes.PortalTheme{}, false
 }

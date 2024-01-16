@@ -1,6 +1,7 @@
-package names
+package routenames
 
 const (
-	RouteAuthLogin  = "auth::login"
-	RouteAuthLogout = "auth::logout"
+	AuthLogin           = "auth.login"
+	AuthLogout          = "auth.logout"
+	AuthIsAuthenticated = "auth.is-authenticated"
 )

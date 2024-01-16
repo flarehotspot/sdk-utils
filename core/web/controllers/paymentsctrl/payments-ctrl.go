@@ -11,12 +11,12 @@ import (
 	"github.com/flarehotspot/core/globals"
 	"github.com/flarehotspot/core/payments"
 	"github.com/flarehotspot/core/plugins"
+	mdls "github.com/flarehotspot/core/sdk/api/models"
+	"github.com/flarehotspot/core/sdk/utils/flash"
 	"github.com/flarehotspot/core/web/helpers"
 	"github.com/flarehotspot/core/web/response"
 	"github.com/flarehotspot/core/web/router"
 	"github.com/flarehotspot/core/web/routes/names"
-	mdls "github.com/flarehotspot/core/sdk/api/models"
-	"github.com/flarehotspot/core/sdk/utils/flash"
 	"github.com/gorilla/mux"
 )
 
@@ -29,7 +29,7 @@ type PaymentsCtrl struct {
 }
 
 func NewPaymentsCtrl(g *globals.CoreGlobals) *PaymentsCtrl {
-	errR := response.NewErrRoute(names.RoutePaymentOptions)
+	errR := response.NewErrRoute(routenames.RoutePaymentOptions)
 	return &PaymentsCtrl{g.Db, g.Models, g.PaymentsMgr, g.CoreApi, errR}
 }
 
@@ -61,7 +61,7 @@ func (self *PaymentsCtrl) PaymentOptions(w http.ResponseWriter, r *http.Request)
 	}
 
 	for _, method := range self.paymentsMgr.Options(clnt) {
-		route := router.FindRoute(names.RoutePaymentSelected)
+		route := router.FindRoute(routenames.RoutePaymentSelected)
 		url, err := route.URL("uuid", method.Uuid())
 		if err != nil {
 			self.Error(w, r, err)
@@ -73,7 +73,7 @@ func (self *PaymentsCtrl) PaymentOptions(w http.ResponseWriter, r *http.Request)
 	log.Println("Items:", items)
 	log.Println("Methods: ", methods)
 
-	cancelUrl, err := router.UrlForRoute(names.RoutePaymentCancel)
+	cancelUrl, err := router.UrlForRoute(routenames.RoutePaymentCancel)
 	if err != nil {
 		self.Error(w, r, err)
 		return

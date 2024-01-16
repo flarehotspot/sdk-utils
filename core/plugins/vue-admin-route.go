@@ -4,8 +4,8 @@ import (
 	"github.com/flarehotspot/core/sdk/api/http/router"
 )
 
-func NewVueAdminRoute(api *PluginApi, route *router.VueAdminRoute) *VueAdminRoute {
-	return &VueAdminRoute{
+func NewVueAdminRoute(api *PluginApi, route router.VueAdminRoute) VueAdminRoute {
+	return VueAdminRoute{
 		RouteName:     VueRouteName(api, route.RouteName),
 		RoutePath:     VueRoutePath(api, route.RoutePath),
 		ComponentPath: VueComponentPath(api, route.ComponentPath),

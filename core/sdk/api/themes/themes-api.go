@@ -1,8 +1,8 @@
 package themes
 
 type IThemesApi interface {
-	AdminThemeComponent(*AdminTheme)
-	PortalThemeComponent(*PortalTheme)
+	AdminThemeComponent(AdminTheme)
+	PortalThemeComponent(PortalTheme)
 }
 
 type PortalTheme struct {
@@ -14,10 +14,11 @@ type PortalTheme struct {
 type AdminTheme struct {
 	ThemeComponentPath string
 	IndexComponentPath string
+	LoginComponentPath string
 	ThemeAssets        *ThemeAssets
 }
 
 type ThemeAssets struct {
-	Scripts *[]string
-	Styles  *[]string
+	Scripts []string
+	Styles  []string
 }
