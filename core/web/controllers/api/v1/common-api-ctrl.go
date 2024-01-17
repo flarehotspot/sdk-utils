@@ -7,16 +7,16 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func NewApiCtrl(g *globals.CoreGlobals) ApiCtrl {
-	return ApiCtrl{g}
+func NewCommonApiCtrl(g *globals.CoreGlobals) CommonApiCtrl {
+	return CommonApiCtrl{g}
 }
 
-type ApiCtrl struct {
+type CommonApiCtrl struct {
 	g *globals.CoreGlobals
 }
 
 // Render api-v1.js
-func (c *ApiCtrl) ApiJs(w http.ResponseWriter, r *http.Request) {
+func (c *CommonApiCtrl) ApiJs(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	pkg := vars["pkg"]
 	pluginApi := c.g.PluginMgr.FindByPkg(pkg)

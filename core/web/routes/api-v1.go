@@ -17,8 +17,8 @@ func ApiRoutesV1(g *globals.CoreGlobals) {
 	portalAssetsRouterV1 := assetsR.PathPrefix("/portal").Subrouter()
 	adminAssetsRouterV1 := assetsR.PathPrefix("/admin").Subrouter()
 
-	apiCtrl := apiv1.NewApiCtrl(g)
-	assetsR.HandleFunc("/{pkg}/api.js", apiCtrl.ApiJs).Methods("GET").Name(routenames.ApiJs)
+	commonApiCtrl := apiv1.NewCommonApiCtrl(g)
+	assetsR.HandleFunc("/{pkg}/api.js", commonApiCtrl.ApiJs).Methods("GET").Name(routenames.ApiJs)
 
 	// portal assets
 	portalAssetsCtrl := apiv1.NewPortalAssetsCtrl(g)
