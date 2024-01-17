@@ -1,18 +1,20 @@
 package views
 
 import (
+	"html/template"
+
 	"github.com/flarehotspot/core/sdk/api/http"
 )
 
 // should be exported to sdk
 type ViewData struct {
-	contentPath string
+	contentHtml template.HTML
 	contentData any
 	helpers     http.IHelpers
 }
 
-func (vd *ViewData) ContentPath() string {
-	return vd.contentPath
+func (vd *ViewData) ContentHtml() template.HTML {
+	return vd.contentHtml
 }
 
 func (vd *ViewData) Helpers() http.IHelpers {

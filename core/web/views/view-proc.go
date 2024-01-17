@@ -2,21 +2,19 @@ package views
 
 import (
 	"html/template"
+	"os"
 	"strings"
 
 	"github.com/flarehotspot/core/sdk/api/http"
 )
 
-func ViewProc(layout *string, content string, helpers http.IHelpers, data any) (html string, err error) {
-	tpl := "content"
-	views := []string{content}
-
-	if layout != nil {
-		views = append(views, *layout)
-		tpl = "layout"
+func ViewProc(layout string, contentHtml *template.HTML, helpers http.IHelpers, data any) (html template.HTML, err error) {
+	content, err := os.ReadFile(layout)
+	if err != nil {
+		return "", err
 	}
 
-	templates, err := template.New("").ParseFiles(views...)
+	tmpl, err := template.New("").Parse(string(content))
 	if err != nil {
 		return "", err
 	}
@@ -26,12 +24,15 @@ func ViewProc(layout *string, content string, helpers http.IHelpers, data any) (
 		contentData: data,
 	}
 
-	var buff strings.Builder
-	err = templates.ExecuteTemplate(&buff, tpl, vdata)
+	if contentHtml != nil {
+		vdata.contentHtml = *contentHtml
+	}
 
+	var output strings.Builder
+	err = tmpl.Execute(&output, vdata)
 	if err != nil {
 		return "", err
 	}
 
-	return buff.String(), nil
+	return template.HTML(output.String()), nil
 }

@@ -24,10 +24,10 @@ func (self *HttpResponse) AdminView(w http.ResponseWriter, r *http.Request, view
 	}
 
 	helpers := NewViewHelpers(self.api, w, r)
-	viewsDir := self.api.Resource("views/web-admin")
-	layoutFile := filepath.Join(viewsDir, "captive-portal/layout.html")
+	viewsDir := self.api.Resource("views/admin")
+	layoutFile := filepath.Join(viewsDir, "http-layout.html")
 	viewFile := filepath.Join(viewsDir, view)
-	resp.ViewWithLayout(w, &layoutFile, viewFile, helpers, data)
+	resp.ViewWithLayout(w, layoutFile, viewFile, helpers, data)
 }
 
 func (self *HttpResponse) PortalView(w http.ResponseWriter, r *http.Request, view string, data any) {
@@ -36,10 +36,10 @@ func (self *HttpResponse) PortalView(w http.ResponseWriter, r *http.Request, vie
 	}
 
 	helpers := NewViewHelpers(self.api, w, r)
-	viewsDir := self.api.Resource("views/captive-portal")
-	layoutFile := filepath.Join(viewsDir, "captive-portal/layout.html")
+	viewsDir := self.api.Resource("views/portal")
+	layoutFile := filepath.Join(viewsDir, "http-layout.html")
 	viewFile := filepath.Join(viewsDir, view)
-	resp.ViewWithLayout(w, &layoutFile, viewFile, helpers, data)
+	resp.ViewWithLayout(w, layoutFile, viewFile, helpers, data)
 }
 
 func (self *HttpResponse) View(w http.ResponseWriter, r *http.Request, view string, data any) {

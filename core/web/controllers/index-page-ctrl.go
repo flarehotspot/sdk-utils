@@ -34,7 +34,7 @@ func (c *IndexPageCtrl) PortalIndex(w http.ResponseWriter, r *http.Request) {
 	}
 
 	api := c.g.CoreApi
-	api.HttpApi().Respond().View(w, r, "portal/layout.html", vdata)
+	api.HttpApi().Respond().View(w, r, "portal/vue-layout.html", vdata)
 }
 
 func (c *IndexPageCtrl) AdminIndex(w http.ResponseWriter, r *http.Request) {
@@ -55,5 +55,5 @@ func (c *IndexPageCtrl) AdminIndex(w http.ResponseWriter, r *http.Request) {
 	}
 
 	api := c.g.CoreApi
-	api.HttpApi().Respond().View(w, r, "admin/layout.html", vdata)
+	api.HttpApi().Respond().View(w, r, "admin/vue-layout.html", vdata)
 }
