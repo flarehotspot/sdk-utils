@@ -30,10 +30,9 @@ usage() {
 }
 
 download_go(){
-    if [ ! -e "${DL_PATH}" ]; then
+    rm -rf $DL_PATH && \
         mkdir -p "$(dirname $DL_PATH)" && \
-            wget --progress=bar:force:noscroll -O "${DL_PATH}" "${GO_SRC}"
-    fi
+        wget --progress=bar:force:noscroll -O "${DL_PATH}" "${GO_SRC}"
 }
 
 if [ -d "${GO_CUSTOM_PATH}" ] && [ "$GO_VERSION" = "$(cat $GO_CUSTOM_PATH/go-version)" ]; then
