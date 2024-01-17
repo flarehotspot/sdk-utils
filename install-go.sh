@@ -9,7 +9,6 @@ GO_VERSION=$(cat "${WORKDIR}/go-version")
 GO_TAR="go${GO_VERSION}.${GOOS}-${GOARCH}.tar.gz"
 GO_SRC="https://go.dev/dl/${GO_TAR}"
 GO_CUSTOM_PATH="${GO_CUSTOM_PATH:-${WORKDIR}/go}"
-PARENT_PATH=$(dirname $GO_CUSTOM_PATH)
 DL_PATH="${CACHE_PATH}/downloads/${GO_TAR}"
 
 echo "GOOS: ${GOOS}"
@@ -31,9 +30,10 @@ usage() {
 }
 
 download_go(){
-    rm -rf $DL_PATH && \
+    if [ ! -e "$DL_PATH" ]; then
         mkdir -p "$(dirname $DL_PATH)" && \
-        wget --progress=bar:force:noscroll -O "${DL_PATH}" "${GO_SRC}"
+            wget --progress=bar:force:noscroll -O "${DL_PATH}" "${GO_SRC}"
+    fi
 }
 
 if [ -f "${GO_CUSTOM_PATH/go-version}" ] && [ "$GO_VERSION" = "$(cat $GO_CUSTOM_PATH/go-version)" ]; then
@@ -43,7 +43,8 @@ else
     echo "Downloading ${GO_SRC}..." && \
         download_go && \
         echo "Extracting ${GO_TAR} to ${GO_CUSTOM_PATH}..." && \
-        rm -rf ${GO_CUSTOM_PATH} && tar -C $PARENT_PATH -xzf "${DL_PATH}" && \
+        rm -rf ${GO_CUSTOM_PATH} && mkdir -p ${GO_CUSTOM_PATH} && \
+        tar -C $(dirname $GO_CUSTOM_PATH) -xzf "${DL_PATH}" && \
         echo $GO_VERSION > "$GO_CUSTOM_PATH/go-version" && \
         echo "Installed Go ${GO_VERSION} to ${GO_CUSTOM_PATH}" && usage
 fi
