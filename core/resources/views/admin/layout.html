@@ -17,6 +17,7 @@
     {{ $coreApi.HttpAPI.EmbedJs "libs/event-source.polyfill.min.js" nil }}
     {{ $coreApi.HttpAPI.EmbedJs "libs/vue-2.7.16.min.js" nil }}
     {{ $coreApi.HttpAPI.EmbedJs "libs/vue-router-3.6.5.min.js" nil }}
+    {{ $coreApi.HttpAPI.EmbedJs "libs/basic-http-1.0.0.js" nil }}
     <script async data-main='{{ .Helpers.UrlForMuxRoute "admin.mainjs" }}'
         src='{{ .Helpers.AssetPath "libs/require-2.3.6.min.js" }}'></script>
 </head>

@@ -1,6 +1,6 @@
 (function (window) {
   window.apiv1 = {
-    HelperPath: function (pkg) {
+    HelpersPath: function (pkg) {
       var url = '{{ .Helpers.UrlForMuxRoute "portal.helperjs" "pkg" "PKG" }}';
       return url.replace('PKG', pkg);
     },

@@ -1,6 +1,6 @@
 (function (window) {
   window.apiv1 = {
-    HelperPath: function (pkg) {
+    HelpersPath: function (pkg) {
       var url = '{{ .Helpers.UrlForMuxRoute "admin.helperjs" "pkg" "PKG" }}';
       return url.replace('PKG', pkg);
     },
@@ -60,7 +60,7 @@
           component: VueLoader(themeLayoutComponent),
           children: routes,
           meta: {
-            requiresAuth: true
+            requireAuth: true
           }
         },
         {
@@ -76,23 +76,25 @@
 
     router.beforeEach(function (to, _, next) {
       if (
-        to.matched.some(function (record) {
-          return record.meta.requiresAuth;
+        to.matched.some(function (route) {
+          return route.meta.requireAuth;
         })
       ) {
-        api.Auth.IsAuthenticated()
-          .then(function () {
-            next();
-          })
-          .catch(function (err) {
-            console.error(err);
-            next({ name: 'login' });
-          });
+        var segmnts = document.cookie.split(';');
+        var hastoken = false;
+        for (var i = 0; i < segmnts.length; i++) {
+          var seg = segmnts[i].split('=');
+          if (seg[0].trim() === 'auth-token' && seg[1].length > 0) {
+            hastoken = true;
+            break;
+          }
+        }
+        hastoken ? next() : next({ name: 'login' });
       }
 
       if (
-        to.matched.some(function (record) {
-          return record.meta.requireNoAuth;
+        to.matched.some(function (route) {
+          return route.meta.requireNoAuth;
         })
       ) {
         api.Auth.IsAuthenticated()
@@ -103,16 +105,27 @@
             console.error(err);
             next();
           });
+      } else {
+        return next();
       }
     });
 
-    require.onError = function (err) {
-      console.error(err);
-    };
-
     // end routes
 
-    var app = new Vue({ router: router });
+    var app = new Vue({
+      router: router,
+      mounted: function () {
+        var self = this;
+        // handle unauthorized requests
+        window.BasicHttp.onUnauthorized = function () {
+          var pending = self.$router.history.pending || {};
+          var current = self.$router.history.current;
+          if (current.name != 'login' && pending.name != 'login') {
+            router.push({ name: 'login' });
+          }
+        };
+      }
+    });
     app.$mount('#app');
   });
 })(window);
