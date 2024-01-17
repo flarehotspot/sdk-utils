@@ -85,6 +85,7 @@ var BasicHttp = (function () {
         url += url.indexOf('?') > -1 ? '&' : '?';
         url += serialize(data);
         client.open(method, url, true);
+        client.setRequestHeader('Accept', 'application/json');
         client.send();
       } catch (e) {
         handleError(errorCb, client);

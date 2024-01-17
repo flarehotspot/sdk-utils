@@ -10,6 +10,19 @@
     }
   };
 
+  function HasAuthToken() {
+    var segmnts = document.cookie.split(';');
+    var hastoken = false;
+    for (var i = 0; i < segmnts.length; i++) {
+      var seg = segmnts[i].split('=');
+      if (seg[0].trim() === 'auth-token' && seg[1].length > 0) {
+        hastoken = true;
+        break;
+      }
+    }
+    return hastoken;
+  }
+
   function VueLoader(vueFile) {
     return function (resolve) {
       return require(['vue!' + vueFile], resolve);
@@ -75,24 +88,18 @@
     });
 
     router.beforeEach(function (to, _, next) {
+      var hastoken = HasAuthToken();
+
       if (
         to.matched.some(function (route) {
           return route.meta.requireAuth;
         })
       ) {
-        var segmnts = document.cookie.split(';');
-        var hastoken = false;
-        for (var i = 0; i < segmnts.length; i++) {
-          var seg = segmnts[i].split('=');
-          if (seg[0].trim() === 'auth-token' && seg[1].length > 0) {
-            hastoken = true;
-            break;
-          }
-        }
         hastoken ? next() : next({ name: 'login' });
       }
 
       if (
+        hastoken &&
         to.matched.some(function (route) {
           return route.meta.requireNoAuth;
         })
