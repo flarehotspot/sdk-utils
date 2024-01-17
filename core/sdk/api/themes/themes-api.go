@@ -6,16 +6,16 @@ type IThemesApi interface {
 }
 
 type PortalTheme struct {
-	ThemeComponentPath string
-	IndexComponentPath string
-	ThemeAssets        *ThemeAssets
+	LayoutComponentPath string
+	IndexComponentPath  string
+	ThemeAssets         *ThemeAssets
 }
 
 type AdminTheme struct {
-	ThemeComponentPath string
-	IndexComponentPath string
-	LoginComponentPath string
-	ThemeAssets        *ThemeAssets
+	LayoutComponentPath string
+	IndexComponentPath  string
+	LoginComponentPath  string
+	ThemeAssets         *ThemeAssets
 }
 
 type ThemeAssets struct {

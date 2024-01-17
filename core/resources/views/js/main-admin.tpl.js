@@ -1,8 +1,12 @@
 (function (window) {
   window.apiv1 = {
     HelperPath: function (pkg) {
-      var helperJsURL = '{{ .Data.HelperJsURL }}';
-      return helperJsURL.replace('PKG', pkg);
+      var url = '{{ .Helpers.UrlForMuxRoute "admin.helperjs" "pkg" "PKG" }}';
+      return url.replace('PKG', pkg);
+    },
+    ApiPath: function (pkg) {
+      var url = '{{ .Helpers.UrlForMuxRoute "api.apijs" "pkg" "PKG" }}';
+      return url.replace('PKG', pkg);
     }
   };
 
@@ -27,26 +31,18 @@
     }
   });
 
-  require(['{{ .Helpers.AssetPath "services/http.js" }}'], function (http) {
+  require([
+    '{{  .Helpers.UrlForMuxRoute "api.apijs" "pkg" "com.flarego.core" }}'
+  ], function (api) {
     var Vue = window.Vue;
     var VueRouter = window.VueRouter;
 
-    // start configs --------------------------------------------
     var routesJson = JSON.parse('{{ .Data.Routes }}');
-    var themeLayoutComponent = '{{ .Data.Theme.LayoutComponent }}';
-    var themeIndexComponent = '{{ .Data.Theme.IndexComponent }}';
-    var themeLoginComponent = '{{ .Data.Theme.LoginComponent }}';
-    // end configs --------------------------------------------
+    var themeLayoutComponent = '{{ .Data.Theme.LayoutComponentPath }}';
+    var themeLoginComponent = '{{ .Data.Theme.LoginComponentPath }}';
 
     // start routes
-    var routes = [
-      {
-        path: '/',
-        name: 'theme-index',
-        component: VueLoader(themeIndexComponent)
-      }
-    ];
-
+    var routes = [];
     for (var i = 0; i < routesJson.length; i++) {
       var r = routesJson[i];
       routes.push({
@@ -62,14 +58,51 @@
           path: '/',
           name: 'theme-layout',
           component: VueLoader(themeLayoutComponent),
-          children: routes
+          children: routes,
+          meta: {
+            requiresAuth: true
+          }
         },
         {
           path: '/login',
           name: 'login',
-          component: VueLoader(themeLoginComponent)
+          component: VueLoader(themeLoginComponent),
+          meta: {
+            requireNoAuth: true
+          }
         }
       ]
+    });
+
+    router.beforeEach(function (to, _, next) {
+      if (
+        to.matched.some(function (record) {
+          return record.meta.requiresAuth;
+        })
+      ) {
+        api.Auth.IsAuthenticated()
+          .then(function () {
+            next();
+          })
+          .catch(function (err) {
+            console.error(err);
+            next({ name: 'login' });
+          });
+      }
+
+      if (
+        to.matched.some(function (record) {
+          return record.meta.requireNoAuth;
+        })
+      ) {
+        api.Auth.IsAuthenticated()
+          .then(function () {
+            next({ name: 'theme-index' });
+          })
+          .catch(function () {
+            next();
+          });
+      }
     });
 
     require.onError = function (err) {
@@ -78,23 +111,26 @@
 
     // end routes
 
-    var app = new Vue({ router: router });
+    var app = new Vue({
+      router: router
+      // mounted: function () {
+      //   // check if user is authenticated, if not redirect to login page
+      //   http.getJson(
+      //     '{{ .Helpers.UrlForMuxRoute "auth.is-authenticated" }}',
+      //     function (err) {
+      //       if (err) {
+      //         if (err.status === 401) {
+      //           router.replace({ name: 'login' });
+      //         } else {
+      //           console.error(err);
+      //         }
+      //       } else {
+      //         router.push({ name: 'theme-index' });
+      //       }
+      //     }
+      //   );
+      // }
+    });
     app.$mount('#app');
-
-    // check if user is authenticated, if not redirect to login page
-    http.getJson(
-      '{{ .Helpers.UrlForMuxRoute "auth.is-authenticated" }}',
-      function (err) {
-        if (err) {
-          if (err.status === 401) {
-            router.push({ name: 'login' });
-          } else {
-            console.error(err);
-          }
-        } else {
-          router.push({ name: 'theme-index' });
-        }
-      }
-    );
   });
 })(window);

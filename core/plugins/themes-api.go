@@ -16,9 +16,15 @@ func (t *ThemesApi) AdminThemeComponent(adminTheme themes.AdminTheme) {
 	t.adminTheme = adminTheme
 }
 
-func (t *ThemesApi) GetAdminThemeComponent() (adminTheme themes.AdminTheme, ok bool) {
+func (t *ThemesApi) GetAdminLayoutComponents() (adminTheme themes.AdminTheme, ok bool) {
 	if t.adminTheme.IndexComponentPath != "" {
-		return t.adminTheme, true
+		adminTheme = themes.AdminTheme{
+			LayoutComponentPath: t.api.HttpApi().AssetPath(t.adminTheme.LayoutComponentPath),
+			IndexComponentPath:  t.api.HttpApi().AssetPath(t.adminTheme.IndexComponentPath),
+			LoginComponentPath:  t.api.HttpApi().AssetPath(t.adminTheme.LoginComponentPath),
+			ThemeAssets:         adminTheme.ThemeAssets,
+		}
+		return adminTheme, true
 	}
 	return themes.AdminTheme{}, false
 }
@@ -27,9 +33,14 @@ func (t *ThemesApi) PortalThemeComponent(portalTheme themes.PortalTheme) {
 	t.portalTheme = portalTheme
 }
 
-func (t *ThemesApi) GetPortalComponent() (portalTheme themes.PortalTheme, ok bool) {
+func (t *ThemesApi) GetPortalThemeComponents() (portalTheme themes.PortalTheme, ok bool) {
 	if t.portalTheme.IndexComponentPath != "" {
-		return t.portalTheme, true
+		portalTheme = themes.PortalTheme{
+			LayoutComponentPath: t.api.HttpApi().AssetPath(t.portalTheme.LayoutComponentPath),
+			IndexComponentPath:  t.api.HttpApi().AssetPath(t.portalTheme.IndexComponentPath),
+			ThemeAssets:         portalTheme.ThemeAssets,
+		}
+		return portalTheme, true
 	}
 	return themes.PortalTheme{}, false
 }

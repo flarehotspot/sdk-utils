@@ -24,104 +24,112 @@
       return str.join('&');
     }
 
+    function handleError(errorCb, client) {
+      var body = client.response || client.responseText;
+      var error = 'Something went wrong';
+      if (body) {
+        try {
+          var data = JSON.parse(body);
+          error = data.error || data.message || error;
+          errorCb({ error: error });
+        } catch (e) {
+          console.error(e);
+          errorCb({ error: error });
+        }
+      } else {
+        errorCb({ error: error });
+      }
+    }
+
     function Ajax(opts) {
+      var noop = function () {
+        console.log('http callback not defined');
+      };
+
       var method = (opts.method || 'GET').toUpperCase();
       var url = opts.url;
       var data = opts.data || {};
-      var successCb =
-        opts.success ||
-        function () {
-          console.log('http success callback not defined');
-        };
-      var errorCb =
-        opts.error ||
-        function () {
-          console.log('http error callback not defined');
-        };
+      var successCb = opts.success || noop;
+      var errorCb = opts.error || noop;
 
-      var http = httpClient();
+      var client = httpClient();
 
-      http.onreadystatechange = function () {
-        if (http.readyState === 4) {
-          if (http.status >= 200 && http.status < 400) {
+      client.onreadystatechange = function () {
+        if (client.readyState === 4) {
+          if (client.status >= 200 && client.status < 400) {
             try {
-              var json = JSON.parse(http.responseText);
-              successCb(json);
+              var data = JSON.parse(client.responseText);
+              successCb(data);
             } catch (e) {
-              errorCb(e);
+              console.log(e);
+              handleError(errorCb, client);
             }
           } else {
-            errorCb(http);
+            handleError(errorCb, client);
           }
         }
       };
 
-      // prevent ajax caching
       if (method === 'GET') {
-        var cache_bust = Math.random().toString().replace('.', '');
+        // prevent ajax caching
+        data.cache_bust = Math.random().toString().replace('.', '');
         url += url.indexOf('?') > -1 ? '&' : '?';
-        url += serialize({ cache_bust: cache_bust });
-      }
-
-      http.open(method, url, true);
-      http.setRequestHeader('Accept', 'application/json');
-
-      if (method === 'POST') {
+        url += serialize(data);
+        client.open(method, url, true);
+        client.send();
+      } else if (method === 'POST') {
         try {
-          // Send the proper header information along with the request
-          http.setRequestHeader('Content-type', 'application/json');
-          var params = JSON.stringify(data);
-          http.send(params);
+          client.open(method, url, true);
+          client.setRequestHeader(
+            'Content-Type',
+            'application/x-www-form-urlencoded'
+          );
+          var params = serialize(data);
+          client.send(params);
         } catch (e) {
-          errorCb(e);
+          handleError(errorCb, client);
         }
       } else {
-        http.send();
+        console.error('Unsupported method:', method);
       }
     }
 
     var http = {};
 
-    http.getJson = function (url, cb) {
-      try {
-        Ajax({
-          url: url,
-          success: function (data) {
-            try {
-              cb(null, data);
-            } catch (e) {
-              console.error('Error in BasicHttp#get callback:', e);
-            }
-          },
-          error: cb
-        });
-      } catch (e) {
-        console.error(e);
-        cb(e);
-      }
+    http.getJson = function (url, data) {
+      return new Promise(function (resolve, reject) {
+        try {
+          Ajax({
+            url: url,
+            data: data,
+            success: resolve,
+            error: reject
+          });
+        } catch (e) {
+          console.error(e);
+          cb(e);
+        }
+      });
     };
 
-    http.postJson = function (url, data, cb) {
-      var callback = cb;
-      if (typeof data === 'function') {
-        callback = data;
-      }
-      try {
-        data.tmp_client_id = http.tmp_client_id;
-        Ajax({
-          url: url,
-          method: 'POST',
-          data: typeof data === 'function' ? {} : data,
-          success: function (data) {
-            callback(null, data);
-          },
-          error: function (e) {
-            callback(e);
-          }
-        });
-      } catch (e) {
-        callback(e);
-      }
+    http.postJson = function (url, data) {
+      return new Promise(function (resolve, reject) {
+        try {
+          Ajax({
+            method: 'POST',
+            url: url,
+            data: data,
+            success: function (data) {
+              resolve(data);
+            },
+            error: function (e) {
+              reject(e);
+            }
+          });
+        } catch (e) {
+          callback(e);
+        }
+      });
     };
 
     return http;

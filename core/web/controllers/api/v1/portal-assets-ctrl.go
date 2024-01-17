@@ -9,8 +9,6 @@ import (
 	"github.com/flarehotspot/core/globals"
 	"github.com/flarehotspot/core/plugins"
 	routerI "github.com/flarehotspot/core/sdk/api/http/router"
-	"github.com/flarehotspot/core/web/router"
-	routenames "github.com/flarehotspot/core/web/routes/names"
 	"github.com/gorilla/mux"
 )
 
@@ -26,7 +24,7 @@ func (c *PortalAssetsCtrl) MainJs(w http.ResponseWriter, r *http.Request) {
 	themePkg := themecfg.Read().Portal
 	themePlugin := c.g.PluginMgr.FindByPkg(themePkg)
 	themesApi := themePlugin.ThemesApi().(*plugins.ThemesApi)
-	portalComponent, ok := themesApi.GetPortalComponent()
+	portalTheme, ok := themesApi.GetPortalThemeComponents()
 	if !ok {
 		http.Error(w, "No portal theme component path defined", 500)
 		return
@@ -47,15 +45,10 @@ func (c *PortalAssetsCtrl) MainJs(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	helperJsURL, _ := router.UrlForRoute(routenames.PortalHelperJs, "pkg", "PKG")
 	data := map[string]any{
 		"CoreApi":     c.g.CoreApi,
 		"Routes":      string(routesJson),
-		"HelperJsURL": helperJsURL,
-		"Theme": map[string]any{
-			"LayoutComponent": themePlugin.HttpApi().AssetPath(portalComponent.ThemeComponentPath),
-			"IndexComponent":  themePlugin.HttpApi().AssetPath(portalComponent.IndexComponentPath),
-		},
+		"Theme":       portalTheme,
 	}
 
 	w.Header().Set("Content-Type", "text/javascript; charset=utf-8")

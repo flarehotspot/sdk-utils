@@ -13,8 +13,12 @@ import (
 func ApiRoutesV1(g *globals.CoreGlobals) {
 
 	rootR := router.RootRouter
-	portalAssetsRouterV1 := router.AssetsApiRouterV1.PathPrefix("/portal").Subrouter()
-	adminAssetsRouterV1 := router.AssetsApiRouterV1.PathPrefix("/admin").Subrouter()
+	assetsR := router.AssetsApiRouterV1
+	portalAssetsRouterV1 := assetsR.PathPrefix("/portal").Subrouter()
+	adminAssetsRouterV1 := assetsR.PathPrefix("/admin").Subrouter()
+
+	apiCtrl := apiv1.NewApiCtrl(g)
+	assetsR.HandleFunc("/{pkg}/api.js", apiCtrl.ApiJs).Methods("GET").Name(routenames.ApiJs)
 
 	// portal assets
 	portalAssetsCtrl := apiv1.NewPortalAssetsCtrl(g)
@@ -31,21 +35,20 @@ func ApiRoutesV1(g *globals.CoreGlobals) {
 	deviceMiddleware := middlewares.DeviceMiddleware(g.Db, g.ClientRegister)
 	portalApiCtrl := apiv1.NewPortalApiCtrl(g)
 	portalApiRouterV1.Use(deviceMiddleware)
-	portalApiRouterV1.HandleFunc("/navs", portalApiCtrl.PortalNavs).Methods("GET")
+	portalApiRouterV1.HandleFunc("/navs", portalApiCtrl.PortalNavs).Methods("GET").Name(routenames.PortalNavItems)
 
 	// auth apis
 	adminAuthMw := middlewares.AdminAuth
 	authApiRouterV1 := router.AuthApiRouterV1
 	adminAuthCtrl := apiv1.NewAdminAuthCtrl(g)
 	isAuthenticatedCtrl := adminAuthMw(http.HandlerFunc(adminAuthCtrl.IsAuthenticated))
-
-	authApiRouterV1.HandleFunc("/login", adminAuthCtrl.Login)
-	authApiRouterV1.HandleFunc("/logout", adminAuthCtrl.Logout)
-	authApiRouterV1.Handle("/is-authenticated", isAuthenticatedCtrl).Name(routenames.AuthIsAuthenticated)
+	authApiRouterV1.HandleFunc("/login", adminAuthCtrl.Login).Methods("POST").Name(routenames.AuthLogin)
+	authApiRouterV1.HandleFunc("/logout", adminAuthCtrl.Logout).Methods("POST").Name(routenames.AuthLogout)
+	authApiRouterV1.Handle("/is-authenticated", isAuthenticatedCtrl).Methods("GET").Name(routenames.AuthIsAuthenticated)
 
 	// admin apis
 	adminApiRouterV1 := router.AdminApiRouterV1
 	adminApiRouterV1.Use(adminAuthMw)
 	adminApiCtrl := apiv1.NewAdminApiCtrl(g)
-	adminApiRouterV1.HandleFunc("/navs", adminApiCtrl.GetAdminNavs).Methods("GET")
+	adminApiRouterV1.HandleFunc("/navs", adminApiCtrl.GetAdminNavs).Methods("GET").Name(routenames.AdminNavs)
 }

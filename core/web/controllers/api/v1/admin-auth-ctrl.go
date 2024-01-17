@@ -10,10 +10,7 @@ import (
 	"github.com/flarehotspot/core/sdk/utils/cookie"
 	"github.com/flarehotspot/core/sdk/utils/translate"
 	"github.com/flarehotspot/core/utils/jsonwebtoken"
-)
-
-const (
-	authTokenCookie = "auth-token"
+	"github.com/flarehotspot/core/web/middlewares"
 )
 
 func NewAdminAuthCtrl(g *globals.CoreGlobals) *AdminAuthCtrl {
@@ -25,14 +22,15 @@ type AdminAuthCtrl struct {
 }
 
 func (c *AdminAuthCtrl) Login(w http.ResponseWriter, r *http.Request) {
-	username := r.FormValue("username")
-	password := r.FormValue("password")
+	r.ParseForm()
+	username := r.PostFormValue("username")
+	password := r.PostFormValue("password")
 	acct, err := accounts.Find(username)
-
 	if err != nil {
 		c.ErrorUnauthorized(w, err.Error())
 		return
 	}
+
 	if !acct.Auth(password) {
 		err = errors.New(translate.Core(translate.Error, "invalid_login"))
 		c.ErrorUnauthorized(w, err.Error())
@@ -53,12 +51,13 @@ func (c *AdminAuthCtrl) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	cookie.SetCookie(w, middlewares.AuthTokenCookie, token)
 	data := map[string]string{"token": token}
 	c.g.CoreApi.HttpApi().Respond().Json(w, data, http.StatusOK)
 }
 
 func (c *AdminAuthCtrl) Logout(w http.ResponseWriter, r *http.Request) {
-	cookie.SetCookie(w, authTokenCookie, "")
+	cookie.SetCookie(w, middlewares.AuthTokenCookie, "")
 	data := map[string]string{"message": "Logout success"}
 	c.g.CoreApi.HttpApi().Respond().Json(w, data, http.StatusOK)
 }

@@ -20,7 +20,7 @@ func (c *IndexPageCtrl) PortalIndex(w http.ResponseWriter, r *http.Request) {
 	themePkg := themecfg.Read().Portal
 	themePlugin := c.g.PluginMgr.FindByPkg(themePkg)
 	themesApi := themePlugin.ThemesApi().(*plugins.ThemesApi)
-	portalComponent, ok := themesApi.GetPortalComponent()
+	portalComponent, ok := themesApi.GetPortalThemeComponents()
 	if !ok {
 		http.Error(w, "No portal theme component path defined", 500)
 		return
@@ -59,7 +59,7 @@ func (c *IndexPageCtrl) AdminIndex(w http.ResponseWriter, r *http.Request) {
 	themePkg := themecfg.Read().Admin
 	themePlugin := c.g.PluginMgr.FindByPkg(themePkg)
 	themesApi := themePlugin.ThemesApi().(*plugins.ThemesApi)
-	adminThemeComponent, ok := themesApi.GetAdminThemeComponent()
+	adminThemeComponent, ok := themesApi.GetAdminLayoutComponents()
 	if !ok {
 		http.Error(w, "No admin theme component path defined", 500)
 		return

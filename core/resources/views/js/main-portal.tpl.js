@@ -1,8 +1,12 @@
 (function (window) {
   window.apiv1 = {
     HelperPath: function (pkg) {
-      var helperJsURL = '{{ .Data.HelperJsURL }}';
-      return helperJsURL.replace('PKG', pkg);
+      var url = '{{ .Helpers.UrlForMuxRoute "portal.helperjs" "pkg" "PKG" }}';
+      return url.replace('PKG', pkg);
+    },
+    ApiPath: function (pkg) {
+      var url = '{{ .Helpers.UrlForMuxRoute "api.apijs" "pkg" "PKG" }}';
+      return url.replace('PKG', pkg);
     }
   };
 
@@ -33,8 +37,8 @@
 
     // start configs --------------------------------------------
     var routesJson = JSON.parse('{{ .Data.Routes }}');
-    var themeLayoutComponent = '{{ .Data.Theme.LayoutComponent }}';
-    var themeIndexComponent = '{{ .Data.Theme.IndexComponent }}';
+    var themeLayoutComponent = '{{ .Data.Theme.LayoutComponentPath }}';
+    var themeIndexComponent = '{{ .Data.Theme.IndexComponentPath }}';
     // end configs --------------------------------------------
 
     // start routes

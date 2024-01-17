@@ -25,14 +25,20 @@ func (c *AdminAssetsCtrl) MainJs(w http.ResponseWriter, r *http.Request) {
 	themePkg := themecfg.Read().Admin
 	themePlugin := c.g.PluginMgr.FindByPkg(themePkg)
 	themesApi := themePlugin.ThemesApi().(*plugins.ThemesApi)
-	adminComponent, ok := themesApi.GetAdminThemeComponent()
+	adminTheme, ok := themesApi.GetAdminLayoutComponents()
 	if !ok {
 		http.Error(w, "No admin theme component path defined", 500)
 		return
 	}
 
 	allPlugins := c.g.PluginMgr.All()
-	vueRoutes := []plugins.VueAdminRoute{}
+	vueRoutes := []plugins.VueAdminRoute{
+		{
+			RouteName:     "theme-index",
+			RoutePath:     "/",
+			ComponentPath: adminTheme.IndexComponentPath,
+		},
+	}
 
 	for _, p := range allPlugins {
 		vueRouter := p.HttpApi().VueRouter().(*plugins.VueRouterApi)
@@ -51,11 +57,7 @@ func (c *AdminAssetsCtrl) MainJs(w http.ResponseWriter, r *http.Request) {
 		"CoreApi":     c.g.CoreApi,
 		"Routes":      string(routesJson),
 		"HelperJsURL": helperJsURL,
-		"Theme": map[string]any{
-			"LayoutComponent": themePlugin.HttpApi().AssetPath(adminComponent.ThemeComponentPath),
-			"IndexComponent":  themePlugin.HttpApi().AssetPath(adminComponent.IndexComponentPath),
-			"LoginComponent":  themePlugin.HttpApi().AssetPath(adminComponent.LoginComponentPath),
-		},
+		"Theme":       adminTheme,
 	}
 
 	w.Header().Set("Content-Type", "text/javascript; charset=utf-8")

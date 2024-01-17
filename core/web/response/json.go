@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-func Json(w http.ResponseWriter, data interface{}, status int) {
+func Json(w http.ResponseWriter, data any, status int) {
 	jsonBytes, err := json.Marshal(data)
 	if err != nil {
 		log.Printf("render.Json() error: %v\n", err)
@@ -15,5 +15,6 @@ func Json(w http.ResponseWriter, data interface{}, status int) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(status)
 	w.Write(jsonBytes)
 }

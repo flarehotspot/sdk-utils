@@ -9,6 +9,7 @@
     {{ range .Data.ThemeScripts }}<script src="{{.}}"></script>{{ end }}
     {{ range .Data.ThemeStyles }}<link rel="stylesheet" href="{{.}}" />{{ end }}
     <script nomodule src='{{ .Helpers.AssetPath "libs/event-source.polyfill.min.js" }}'></script>
+    <script nomodule src='{{ .Helpers.AssetPath "libs/promise-polyfill.min.js" }}'></script>
     <script src='{{ .Helpers.AssetPath "libs/vue-2.7.16.min.js" }}'></script>
     <script src='{{ .Helpers.AssetPath "libs/vue-router-3.6.5.min.js" }}'></script>
     <script data-main='{{ .Helpers.UrlForMuxRoute "portal.mainjs" }}'

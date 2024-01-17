@@ -25,10 +25,10 @@ func NewVueAdminNav(api *PluginApi, r *http.Request, nav router.VueAdminNav) Vue
 }
 
 type VueAdminNav struct {
-	Category router.INavCategory
-	PermitFn func(perms []string) bool
-	Label    string `json:"label"`
-	Path     string `json:"path"`
+	Category router.INavCategory       `json:"-"`
+	PermitFn func(perms []string) bool `json:"-"`
+	Label    string                    `json:"label"`
+	Path     string                    `json:"path"`
 }
 
 func (nav *VueAdminNav) Permit(r *http.Request) bool {
@@ -45,7 +45,7 @@ func (nav *VueAdminNav) Permit(r *http.Request) bool {
 }
 
 type VueAdminNavList struct {
-	MenuHead string         `json:"menu_head"`
+	MenuHead string        `json:"menu_head"`
 	Navs     []VueAdminNav `json:"navs"`
 }
 

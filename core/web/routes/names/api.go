@@ -1,5 +1,5 @@
 package routenames
 
 const (
-	RouteApiNavsPrefetch = "api:navs:prefetch"
+	ApiJs                = "api.apijs"
 )
