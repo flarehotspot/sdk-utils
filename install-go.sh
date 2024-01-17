@@ -17,16 +17,10 @@ echo "GO_CUSTOM_PATH: ${GO_CUSTOM_PATH}"
 
 usage() {
     echo
-    echo "To use the installed go binary, add this to your .bashrc or .zshrc file:"
-    echo "      export PATH=\"${GO_CUSTOM_PATH}/bin:\$PATH\""
-    echo "      export GOROOT=\"${GO_CUSTOM_PATH}\""
-    echo "      export GOPATH=\"$(dirname $GO_CUSTOM_PATH)\""
-
-    echo
-    echo "To use go in the current terminal session, execute the following: "
-    echo "      export PATH=\"${GO_CUSTOM_PATH}/bin:\$PATH\""
-    echo "      export GOROOT=\"${GO_CUSTOM_PATH}\""
-    echo "      export GOPATH=\"$(dirname $GO_CUSTOM_PATH)\""
+    echo "To use the installed go binary, add these lines to your .bashrc or .zshrc file."
+    echo "      export PATH=\"${GO_CUSTOM_PATH}/go/bin:\$PATH\""
+    echo "      export GOROOT=\"${GO_CUSTOM_PATH}/go\""
+    echo "      export GOPATH=\"$(dirname $GO_CUSTOM_PATH)/go\""
 }
 
 download_go(){
@@ -44,7 +38,7 @@ else
         download_go && \
         echo "Extracting ${GO_TAR} to ${GO_CUSTOM_PATH}..." && \
         rm -rf ${GO_CUSTOM_PATH} && mkdir -p ${GO_CUSTOM_PATH} && \
-        tar -C $(dirname $GO_CUSTOM_PATH) -xzf "${DL_PATH}" && \
+        tar -C ${GO_CUSTOM_PATH} -xzf "${DL_PATH}" && \
         echo $GO_VERSION > "$GO_CUSTOM_PATH/go-version" && \
         echo "Installed Go ${GO_VERSION} to ${GO_CUSTOM_PATH}" && usage
 fi
