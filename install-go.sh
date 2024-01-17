@@ -35,7 +35,7 @@ download_go(){
         wget --progress=bar:force:noscroll -O "${DL_PATH}" "${GO_SRC}"
 }
 
-if [ -d "${GO_CUSTOM_PATH}" ] && [ "$GO_VERSION" = "$(cat $GO_CUSTOM_PATH/go-version)" ]; then
+if [ -f "${GO_CUSTOM_PATH/go-version}" ] && [ "$GO_VERSION" = "$(cat $GO_CUSTOM_PATH/go-version)" ]; then
     echo "Go is already installed" && usage
     exit 0
 else
