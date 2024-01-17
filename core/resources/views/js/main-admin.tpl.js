@@ -99,7 +99,8 @@
           .then(function () {
             next({ name: 'theme-index' });
           })
-          .catch(function () {
+          .catch(function (err) {
+            console.error(err);
             next();
           });
       }
@@ -111,26 +112,7 @@
 
     // end routes
 
-    var app = new Vue({
-      router: router
-      // mounted: function () {
-      //   // check if user is authenticated, if not redirect to login page
-      //   http.getJson(
-      //     '{{ .Helpers.UrlForMuxRoute "auth.is-authenticated" }}',
-      //     function (err) {
-      //       if (err) {
-      //         if (err.status === 401) {
-      //           router.replace({ name: 'login' });
-      //         } else {
-      //           console.error(err);
-      //         }
-      //       } else {
-      //         router.push({ name: 'theme-index' });
-      //       }
-      //     }
-      //   );
-      // }
-    });
+    var app = new Vue({ router: router });
     app.$mount('#app');
   });
 })(window);

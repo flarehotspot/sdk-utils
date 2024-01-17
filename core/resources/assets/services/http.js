@@ -73,10 +73,14 @@
       if (method === 'GET') {
         // prevent ajax caching
         data.cache_bust = Math.random().toString().replace('.', '');
-        url += url.indexOf('?') > -1 ? '&' : '?';
-        url += serialize(data);
-        client.open(method, url, true);
-        client.send();
+        try {
+          url += url.indexOf('?') > -1 ? '&' : '?';
+          url += serialize(data);
+          client.open(method, url, true);
+          client.send();
+        } catch (e) {
+          handleError(errorCb, client);
+        }
       } else if (method === 'POST') {
         try {
           client.open(method, url, true);
@@ -96,7 +100,7 @@
 
     var http = {};
 
-    http.getJson = function (url, data) {
+    http.GetJson = function (url, data) {
       return new Promise(function (resolve, reject) {
         try {
           Ajax({
@@ -112,7 +116,7 @@
       });
     };
 
-    http.postJson = function (url, data) {
+    http.PostJson = function (url, data) {
       return new Promise(function (resolve, reject) {
         try {
           Ajax({
