@@ -46,13 +46,12 @@ func (c *PortalAssetsCtrl) MainJs(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := map[string]any{
-		"CoreApi":     c.g.CoreApi,
-		"Routes":      string(routesJson),
-		"Theme":       portalTheme,
+		"CoreApi": c.g.CoreApi,
+		"Routes":  string(routesJson),
+		"Theme":   portalTheme,
 	}
 
-	w.Header().Set("Content-Type", "text/javascript; charset=utf-8")
-	c.g.CoreApi.HttpAPI.Respond().Text(w, r, "views/js/main-portal.tpl.js", data)
+	c.g.CoreApi.HttpAPI.Respond().Script(w, r, "views/js/main-portal.tpl.js", data)
 }
 
 func (c *PortalAssetsCtrl) HelpersJs(w http.ResponseWriter, r *http.Request) {
@@ -86,6 +85,5 @@ func (c *PortalAssetsCtrl) HelpersJs(w http.ResponseWriter, r *http.Request) {
 		"NotFoundPath": routerI.NotFoundVuePath,
 	}
 
-	w.Header().Set("Content-Type", "text/javascript; charset=utf-8")
-	c.g.CoreApi.HttpAPI.Respond().Text(w, r, "views/js/helpers-v1.tpl.js", vdata)
+	c.g.CoreApi.HttpAPI.Respond().Script(w, r, "views/js/helpers-v1.tpl.js", vdata)
 }

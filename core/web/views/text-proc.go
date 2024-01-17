@@ -4,10 +4,10 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/flarehotspot/core/sdk/api/http/views"
+	"github.com/flarehotspot/core/sdk/api/http"
 )
 
-func TextProc(file string, helpers views.IViewHelpers, data any) (text string, err error) {
+func TextProc(file string, helpers http.IHelpers, data any) (text string, err error) {
 	templates, err := template.ParseFiles(file)
 	if err != nil {
 		return "", err

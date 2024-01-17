@@ -1,4 +1,4 @@
-package views
+package http
 
 import (
 	"github.com/flarehotspot/core/sdk/api/accounts"
@@ -6,9 +6,9 @@ import (
 	"github.com/flarehotspot/core/sdk/api/http/router"
 )
 
-// IViewHelpers are methods available in html templates as .Helpers.
+// IHelpers are methods available in html templates as .Helpers.
 // For example, to use the Translate() method in html templates, use {{ .Helpers.Translate "label" "network_settings" }}.
-type IViewHelpers interface {
+type IHelpers interface {
 
 	// Translates a message into the current language settings from application config.
 	// msgtype is the message type, e.g. "error", "success", "info", "warning".
@@ -20,10 +20,6 @@ type IViewHelpers interface {
 
 	// Returns asset path prefixed with assets version/hash path
 	AssetPath(path string) string
-
-	// Returns the html for the flash message.
-	// These are the messages set in flash.SetFlashMsg() inside your controllers.
-	FlashMsgHtml() (html string)
 
 	// Returns the html for the ads view.
 	AdView() (html string)

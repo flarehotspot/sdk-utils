@@ -1,50 +1,32 @@
 package plugins
 
 import (
-	"fmt"
-	"log"
-	"net/http"
+	nethttp "net/http"
 	"strings"
 
 	"github.com/flarehotspot/core/accounts"
 	sdkacct "github.com/flarehotspot/core/sdk/api/accounts"
 	"github.com/flarehotspot/core/sdk/api/connmgr"
+	"github.com/flarehotspot/core/sdk/api/http"
 	Irtr "github.com/flarehotspot/core/sdk/api/http/router"
-	"github.com/flarehotspot/core/sdk/api/http/views"
 	"github.com/flarehotspot/core/sdk/api/plugin"
-	"github.com/flarehotspot/core/sdk/utils/flash"
 	"github.com/flarehotspot/core/sdk/utils/translate"
 	"github.com/flarehotspot/core/web/helpers"
 	"github.com/flarehotspot/core/web/router"
 )
 
-var (
-	flashTypes = []string{string(flash.Info), string(flash.Success), string(flash.Warning), string(flash.Error)}
-)
-
 type ViewHelpers struct {
-	w        http.ResponseWriter
-	r        *http.Request
-	api      *PluginApi
-	flashMsg map[string]string
+	w   nethttp.ResponseWriter
+	r   *nethttp.Request
+	api *PluginApi
 }
 
-func NewViewHelpers(api *PluginApi, w http.ResponseWriter, r *http.Request) views.IViewHelpers {
-	h := &ViewHelpers{
-		w:        w,
-		r:        r,
-		api:      api,
-		flashMsg: make(map[string]string),
+func NewViewHelpers(api *PluginApi, w nethttp.ResponseWriter, r *nethttp.Request) http.IHelpers {
+	return &ViewHelpers{
+		w:   w,
+		r:   r,
+		api: api,
 	}
-
-	// Cache flash messages and write cookie to w first
-	// because we'ere unable to write cookie once the view is executed.
-	for _, t := range flashTypes {
-		msg := flash.GetFlashMsg(w, r, t)
-		h.flashMsg[t] = msg
-	}
-
-	return h
 }
 
 func (h *ViewHelpers) Translate(msgtype string, msgk string) string {
@@ -55,33 +37,8 @@ func (h *ViewHelpers) PluginMgr() plugin.IPluginMgr {
 	return h.api.PluginsMgr
 }
 
-// func (h *ViewHelpers) GetAdminNavs() []*navigation.AdminNavList {
-// 	return GetAdminNavs(h.api.PluginsMgr, h.r)
-// }
-
 func (h *ViewHelpers) AssetPath(path string) string {
 	return h.api.HttpAPI.AssetPath(path)
-}
-
-func (h *ViewHelpers) FlashMsgHtml() string {
-	var s strings.Builder
-	for _, t := range flashTypes {
-		klass := t
-		if t == "error" {
-			klass = "danger"
-		}
-
-		if msg, ok := h.flashMsg[t]; ok && msg != "" {
-			log.Println("GET FLASH MSG: ", msg)
-			s.WriteString(fmt.Sprintf(`
-      <div class="flash-msg alert alert-%s alert-dismissible fade show">
-      %s
-      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-      </div>`, klass, msg))
-		}
-	}
-
-	return s.String()
 }
 
 func (h *ViewHelpers) AdView() (html string) {

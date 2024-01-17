@@ -60,8 +60,7 @@ func (c *AdminAssetsCtrl) MainJs(w http.ResponseWriter, r *http.Request) {
 		"Theme":       adminTheme,
 	}
 
-	w.Header().Set("Content-Type", "text/javascript; charset=utf-8")
-	c.g.CoreApi.HttpAPI.Respond().Text(w, r, "views/js/main-admin.tpl.js", data)
+	c.g.CoreApi.HttpAPI.Respond().Script(w, r, "views/js/main-admin.tpl.js", data)
 }
 
 func (c *AdminAssetsCtrl) HelpersJs(w http.ResponseWriter, r *http.Request) {
@@ -93,6 +92,5 @@ func (c *AdminAssetsCtrl) HelpersJs(w http.ResponseWriter, r *http.Request) {
 		"NotFoundPath": routerI.NotFoundVuePath,
 	}
 
-	w.Header().Set("Content-Type", "text/javascript; charset=utf-8")
-	c.g.CoreApi.HttpAPI.Respond().Text(w, r, "views/portal/js/helpers.tpl.js", vdata)
+	c.g.CoreApi.HttpAPI.Respond().Script(w, r, "views/portal/js/helpers.tpl.js", vdata)
 }

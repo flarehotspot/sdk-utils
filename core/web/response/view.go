@@ -2,13 +2,13 @@ package response
 
 import (
 	"log"
-	"net/http"
+	nethttp "net/http"
 
-	sdkviews "github.com/flarehotspot/core/sdk/api/http/views"
+	"github.com/flarehotspot/core/sdk/api/http"
 	"github.com/flarehotspot/core/web/views"
 )
 
-func ViewWithLayout(w http.ResponseWriter, layout *string, viewpath string, helpers sdkviews.IViewHelpers, data any) {
+func ViewWithLayout(w nethttp.ResponseWriter, layout *string, viewpath string, helpers http.IHelpers, data any) {
 	html, err := views.ViewProc(layout, viewpath, helpers, data)
 	if err != nil {
 		Error(w, err)
@@ -19,7 +19,7 @@ func ViewWithLayout(w http.ResponseWriter, layout *string, viewpath string, help
 	w.Write([]byte(html))
 }
 
-func View(w http.ResponseWriter, viewpath string, helpers sdkviews.IViewHelpers, data any) {
+func View(w nethttp.ResponseWriter, viewpath string, helpers http.IHelpers, data any) {
 	html, err := views.ViewProc(nil, viewpath, helpers, data)
 	if err != nil {
 		log.Printf("View error: %+v", err)
@@ -31,7 +31,7 @@ func View(w http.ResponseWriter, viewpath string, helpers sdkviews.IViewHelpers,
 	w.Write([]byte(html))
 }
 
-func Text(w http.ResponseWriter, file string, helpers sdkviews.IViewHelpers, data any) {
+func Text(w nethttp.ResponseWriter, file string, helpers http.IHelpers, data any) {
 	text, err := views.TextProc(file, helpers, data)
 	if err != nil {
 		log.Printf("Text response error: %+v", err)

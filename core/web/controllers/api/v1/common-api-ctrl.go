@@ -30,5 +30,5 @@ func (c *CommonApiCtrl) ApiJs(w http.ResponseWriter, r *http.Request) {
 		"Plugin":  pluginApi,
 	}
 
-	c.g.CoreApi.HttpApi().Respond().Text(w, r, "views/js/api-v1.tpl.js", vdata)
+	c.g.CoreApi.HttpApi().Respond().Script(w, r, "views/js/api-v1.tpl.js", vdata)
 }

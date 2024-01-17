@@ -6,13 +6,19 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    {{ range .Data.ThemeScripts }}<script src="{{.}}"></script>{{ end }}
-    {{ range .Data.ThemeStyles }}<link rel="stylesheet" href="{{.}}" />{{ end }}
-    <script nomodule src='{{ .Helpers.AssetPath "libs/event-source.polyfill.min.js" }}'></script>
-    <script nomodule src='{{ .Helpers.AssetPath "libs/promise-polyfill.min.js" }}'></script>
-    <script src='{{ .Helpers.AssetPath "libs/vue-2.7.16.min.js" }}'></script>
-    <script src='{{ .Helpers.AssetPath "libs/vue-router-3.6.5.min.js" }}'></script>
-    <script data-main='{{ .Helpers.UrlForMuxRoute "portal.mainjs" }}'
+
+    {{ $coreApi := .Data.CoreApi }}
+    {{ $themeApi := .Data.ThemeApi }}
+
+    {{ range .Data.ThemeStyles }}{{ $themeApi.HttpAPI.EmbedCss . nil }}{{ end }}
+    {{ range .Data.ThemeScripts }}{{ $themeApi.HttpAPI.EmbedJs . nil }}{{ end }}
+
+    {{ $coreApi.HttpAPI.EmbedJs "libs/promise-polyfill.min.js" nil }}
+    {{ $coreApi.HttpAPI.EmbedJs "libs/event-source.polyfill.min.js" nil }}
+    {{ $coreApi.HttpAPI.EmbedJs "libs/vue-2.7.16.min.js" nil }}
+    {{ $coreApi.HttpAPI.EmbedJs "libs/vue-router-3.6.5.min.js" nil }}
+
+    <script async data-main='{{ .Helpers.UrlForMuxRoute "portal.mainjs" }}'
         src='{{ .Helpers.AssetPath "libs/require-2.3.6.min.js" }}'></script>
 </head>
 

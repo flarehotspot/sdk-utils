@@ -6,7 +6,6 @@ import (
 	"github.com/flarehotspot/core/sdk/api/http/middlewares"
 	"github.com/flarehotspot/core/sdk/api/http/response"
 	"github.com/flarehotspot/core/sdk/api/http/router"
-	"github.com/flarehotspot/core/sdk/api/http/views"
 )
 
 // IHttpApi is used to process and respond to http requests.
@@ -17,7 +16,7 @@ type IHttpApi interface {
 
 	VueRouter() router.IVueRouterApi
 
-	Helpers(w http.ResponseWriter, r *http.Request) views.IViewHelpers
+	Helpers(w http.ResponseWriter, r *http.Request) IHelpers
 
 	// Returns the http uri path for the given asset.
 	AssetPath(assetPath string) string

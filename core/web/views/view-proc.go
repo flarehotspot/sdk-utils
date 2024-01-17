@@ -4,10 +4,10 @@ import (
 	"html/template"
 	"strings"
 
-	"github.com/flarehotspot/core/sdk/api/http/views"
+	"github.com/flarehotspot/core/sdk/api/http"
 )
 
-func ViewProc(layout *string, content string, helpers views.IViewHelpers, data any) (html string, err error) {
+func ViewProc(layout *string, content string, helpers http.IHelpers, data any) (html string, err error) {
 	tpl := "content"
 	views := []string{content}
 

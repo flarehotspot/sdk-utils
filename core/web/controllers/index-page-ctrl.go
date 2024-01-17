@@ -26,29 +26,11 @@ func (c *IndexPageCtrl) PortalIndex(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	scripts := []string{}
-	styles := []string{}
-
-	if portalComponent.ThemeAssets != nil {
-		if portalComponent.ThemeAssets.Scripts != nil {
-			for _, script := range portalComponent.ThemeAssets.Scripts {
-				jsPath := themePlugin.HttpApi().Helpers(w, r).AssetPath(script)
-				scripts = append(scripts, jsPath)
-			}
-		}
-
-		if portalComponent.ThemeAssets.Styles != nil {
-			for _, style := range portalComponent.ThemeAssets.Styles {
-				cssPath := themePlugin.HttpApi().Helpers(w, r).AssetPath(style)
-				styles = append(styles, cssPath)
-			}
-		}
-	}
-
 	vdata := map[string]any{
 		"CoreApi":      c.g.CoreApi,
-		"ThemeScripts": scripts,
-		"ThemeStyles":  styles,
+		"ThemeApi":     themePlugin.(*plugins.PluginApi),
+		"ThemeScripts": portalComponent.ThemeAssets.Scripts,
+		"ThemeStyles":  portalComponent.ThemeAssets.Styles,
 	}
 
 	api := c.g.CoreApi
@@ -65,29 +47,11 @@ func (c *IndexPageCtrl) AdminIndex(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	scripts := []string{}
-	styles := []string{}
-
-	if adminThemeComponent.ThemeAssets != nil {
-		if adminThemeComponent.ThemeAssets.Scripts != nil {
-			for _, script := range adminThemeComponent.ThemeAssets.Scripts {
-				jsPath := themePlugin.HttpApi().Helpers(w, r).AssetPath(script)
-				scripts = append(scripts, jsPath)
-			}
-		}
-
-		if adminThemeComponent.ThemeAssets.Styles != nil {
-			for _, style := range adminThemeComponent.ThemeAssets.Styles {
-				cssPath := themePlugin.HttpApi().Helpers(w, r).AssetPath(style)
-				styles = append(styles, cssPath)
-			}
-		}
-	}
-
 	vdata := map[string]any{
 		"CoreApi":      c.g.CoreApi,
-		"ThemeScripts": scripts,
-		"ThemeStyles":  styles,
+		"ThemeApi":     themePlugin.(*plugins.PluginApi),
+		"ThemeScripts": adminThemeComponent.ThemeAssets.Scripts,
+		"ThemeStyles":  adminThemeComponent.ThemeAssets.Styles,
 	}
 
 	api := c.g.CoreApi
