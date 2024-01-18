@@ -32,7 +32,6 @@
   require.config({
     paths: {
       vue: '{{ .Helpers.AssetPath "libs/requirejs-vue-1.1.5.min" }}',
-      json: '{{ .Helpers.AssetPath "libs/requirejs-json-0.4.0.min" }}',
       image: '{{ .Helpers.AssetPath "libs/requirejs-image-0.2.2.min" }}',
       text: '{{ .Helpers.AssetPath "libs/requirejs-text-2.0.5.min" }}'
     },
