@@ -18,8 +18,12 @@ type IHelpers interface {
 	// and displays the text inside that file.
 	Translate(msgtype string, msgk string) string
 
-	// Returns asset path prefixed with assets version/hash path
+    // Returns the uri path of a static file in resources/assets directory from your plugin
 	AssetPath(path string) string
+
+    // Returns the uri path of a file in resources/assets directory from your plugin.
+    // The file is parsed using text/template go module with access to {{ .Helpers }} object.
+	AssetWithHelpersPath(path string) string
 
 	// Returns the html for the ads view.
 	AdView() (html string)

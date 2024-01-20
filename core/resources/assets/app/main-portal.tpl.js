@@ -30,7 +30,9 @@
     }
   });
 
-  require([], function () {
+  require(['{{ .Helpers.AssetPath "libs/vue-notifications.js" }}'], function (
+    VueNotif
+  ) {
     var Vue = window.Vue;
     var VueRouter = window.VueRouter;
 
@@ -78,6 +80,10 @@
     var app = new Vue({
       router: router
     });
+
+    console.log(VueNotif.default);
+
+    app.use(VueNotif.default);
 
     app.$mount('#app');
   });

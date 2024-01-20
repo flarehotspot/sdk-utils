@@ -15,16 +15,13 @@ func SetupBootRoutes(g *globals.CoreGlobals) {
 
 func SetupAllRoutes(g *globals.CoreGlobals) {
 
-	routes.FaviconRoute(g)
 	routes.IndexRoutes(g)
-	routes.PluginAssets(g)
-	routes.ApiRoutesV1(g)
+	routes.AssetsRoutes(g)
+	routes.ApiRoutes(g)
 	// routes.AuthRoutes(g)
 	// routes.AdminRoutes(g)
 	// routes.PaymentRoutes(g)
 	// routes.ApiRoutes(g)
-
-	// plugins public assets
 
 	router.RootRouter.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", http.StatusFound)

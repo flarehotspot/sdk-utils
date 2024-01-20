@@ -10,10 +10,10 @@ import (
 func NewVuePortalItem(api *PluginApi, r *http.Request, nav router.VuePortalItem) VuePortalItem {
 	vueRouter := api.HttpApi().VueRouter().(*VueRouterApi)
 	label := api.Translate(translate.Label, nav.TranslateLabel)
-	path := router.NotFoundVuePath
+	path := router.VueNotFoundPath
 
-	if route, ok := vueRouter.FindPortalRoute(r, nav.RouteName); ok {
-		path = route.RoutePath
+	if route, ok := vueRouter.FindPortalRoute(nav.RouteName); ok {
+		path = route.HttpDataPath
 	}
 
 	return VuePortalItem{

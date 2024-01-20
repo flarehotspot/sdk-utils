@@ -18,14 +18,15 @@ type IHttpApi interface {
 
 	Helpers(w http.ResponseWriter, r *http.Request) IHelpers
 
-	// Returns the http uri path for the given asset.
-	AssetPath(assetPath string) string
+	AssetPath(path string) string
 
 	// Returns the middlewares API.
 	Middlewares() middlewares.Middlewares
 
 	// Returns the http response API.
-	Respond() response.IHttpResponse
+	HttpResponse() response.IHttpResponse
+
+	// VueResponse() response.IVueResponse
 
 	// Returns the http variables in your routes. For example, if your route path is "/some/path/{varname}",
 	// then you can get the value of "varname" by calling GetMuxVars(r)["varname"].

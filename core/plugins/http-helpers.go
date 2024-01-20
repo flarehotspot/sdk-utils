@@ -1,8 +1,14 @@
 package plugins
 
 import (
+	"fmt"
+	"html/template"
+	"log"
 	nethttp "net/http"
+	"os"
+	"path/filepath"
 	"strings"
+	texttemplate "text/template"
 
 	"github.com/flarehotspot/core/accounts"
 	sdkacct "github.com/flarehotspot/core/sdk/api/accounts"
@@ -12,7 +18,9 @@ import (
 	"github.com/flarehotspot/core/sdk/api/plugin"
 	"github.com/flarehotspot/core/sdk/utils/translate"
 	"github.com/flarehotspot/core/web/helpers"
+	"github.com/flarehotspot/core/web/response"
 	"github.com/flarehotspot/core/web/router"
+	routenames "github.com/flarehotspot/core/web/routes/names"
 )
 
 type ViewHelpers struct {
@@ -33,12 +41,74 @@ func (h *ViewHelpers) Translate(msgtype string, msgk string) string {
 	return h.api.Translate(translate.MsgType(msgtype), msgk)
 }
 
-func (h *ViewHelpers) PluginMgr() plugin.IPluginMgr {
-	return h.api.PluginsMgr
+func (self *ViewHelpers) AssetPath(path string) string {
+	return self.api.HttpApi().AssetPath(path)
 }
 
-func (h *ViewHelpers) AssetPath(path string) string {
-	return h.api.HttpAPI.AssetPath(path)
+func (self *ViewHelpers) AssetWithHelpersPath(path string) string {
+	r := router.AssetsRouter.Get(routenames.AssetWithHelpers)
+	pluginApi := self.api
+	url, err := r.URL("pkg", pluginApi.Pkg(), "version", pluginApi.Version(), "path", path)
+	if err != nil {
+		log.Println("Error: ", err.Error())
+		return ""
+	}
+
+	return url.String()
+}
+
+func (self *ViewHelpers) EmbedJs(path string, data any) template.HTML {
+	jspath := self.api.Resource(filepath.Join("assets", path))
+	tpljs, err := os.ReadFile(jspath)
+	if err != nil {
+		tpljs = []byte(fmt.Sprintf("console.error('%s: %s')", jspath, err.Error()))
+	}
+
+	var output strings.Builder
+
+	jstmpl, err := texttemplate.New("").Parse(string(tpljs))
+	if err != nil {
+		jstmpl, _ = texttemplate.New("").Parse(fmt.Sprintf("console.log('%s: %s')", jspath, err.Error()))
+	}
+
+	vdata := &response.ViewData{
+		ViewData:    data,
+		ViewHelpers: self,
+	}
+
+	jstmpl.Execute(&output, vdata)
+
+	scriptTag := fmt.Sprintf("<script>%s</script>", output.String())
+	return template.HTML(scriptTag)
+}
+
+func (self *ViewHelpers) EmbedCss(path string, data any) template.HTML {
+	csspath := self.api.Resource(filepath.Join("assets", path))
+	tplcss, err := os.ReadFile(csspath)
+	if err != nil {
+		tplcss = []byte(fmt.Sprintf("/* %s: %s */", csspath, err.Error()))
+	}
+
+	var output strings.Builder
+
+	csstmpl, err := texttemplate.New("").Parse(string(tplcss))
+	if err != nil {
+		csstmpl, _ = texttemplate.New("").Parse(fmt.Sprintf("/* %s: %s */", csspath, err.Error()))
+	}
+
+	vdata := &response.ViewData{
+		ViewData:    data,
+		ViewHelpers: self,
+	}
+
+	csstmpl.Execute(&output, vdata)
+
+	styleTag := fmt.Sprintf("<style>%s</style>", output.String())
+	return template.HTML(styleTag)
+}
+
+func (h *ViewHelpers) PluginMgr() plugin.IPluginMgr {
+	return h.api.PluginsMgr
 }
 
 func (h *ViewHelpers) AdView() (html string) {

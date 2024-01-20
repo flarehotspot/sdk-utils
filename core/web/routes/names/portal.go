@@ -1,6 +1,9 @@
 package routenames
 
 const (
-	RoutePortalIndex = "portal::index"
-	RouteAdminIndex  = "admin:index"
+	PortalThemeLayout = "portal.theme.layout"
+	PortalThemeIndex  = "portal.theme.index"
+
+	RoutePortalIndex = "portal.index"
+	RouteAdminIndex  = "admin.index"
 )

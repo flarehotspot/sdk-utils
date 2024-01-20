@@ -24,5 +24,5 @@ func (c *PortalApiCtrl) PortalNavs(w http.ResponseWriter, r *http.Request) {
 		portalItems = append(portalItems, vueRouter.GetPortalItems(r)...)
 	}
 
-	c.g.CoreApi.HttpApi().Respond().Json(w, portalItems, http.StatusOK)
+	c.g.CoreApi.HttpApi().HttpResponse().Json(w, portalItems, http.StatusOK)
 }

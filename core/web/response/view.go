@@ -1,25 +1,45 @@
 package response
 
 import (
+	"html/template"
 	"log"
-	nethttp "net/http"
+	"net/http"
+	"strings"
 
-	"github.com/flarehotspot/core/sdk/api/http"
-	"github.com/flarehotspot/core/web/views"
+	httpI "github.com/flarehotspot/core/sdk/api/http"
+	tmplcache "github.com/flarehotspot/core/utils/flaretmpl"
 )
 
-func ViewWithLayout(w nethttp.ResponseWriter, layout string, content string, helpers http.IHelpers, data any) {
-	contentHtml, err := views.ViewProc(content, nil, helpers, data)
+type ViewData struct {
+	PageContent template.HTML
+	ViewData    any
+	ViewHelpers httpI.IHelpers
+}
+
+func (vd *ViewData) ContentHtml() template.HTML {
+	return vd.PageContent
+}
+
+func (vd *ViewData) Helpers() httpI.IHelpers {
+	return vd.ViewHelpers
+}
+
+func (vd *ViewData) Data() any {
+	return vd.ViewData
+}
+
+func ViewWithLayout(w http.ResponseWriter, layout string, content string, helpers httpI.IHelpers, data any) {
+	contentHtml, err := viewProc(content, nil, helpers, data)
 	if err != nil {
 		log.Printf("View error: %+v", err)
-		ErrorJson(w, err)
+		ErrorJson(w, err.Error())
 		return
 	}
 
-	html, err := views.ViewProc(layout, &contentHtml, helpers, data)
+	html, err := viewProc(layout, &contentHtml, helpers, data)
 	if err != nil {
 		log.Printf("View error: %+v", err)
-		ErrorJson(w, err)
+		ErrorJson(w, err.Error())
 		return
 	}
 
@@ -27,24 +47,38 @@ func ViewWithLayout(w nethttp.ResponseWriter, layout string, content string, hel
 	w.Write([]byte(html))
 }
 
-func View(w nethttp.ResponseWriter, viewpath string, helpers http.IHelpers, data any) {
-	html, err := views.ViewProc(viewpath, nil, helpers, data)
+func View(w http.ResponseWriter, viewpath string, helpers httpI.IHelpers, data any) {
+	html, err := viewProc(viewpath, nil, helpers, data)
 	if err != nil {
 		log.Printf("View error: %+v", err)
-		ErrorJson(w, err)
+		ErrorJson(w, err.Error())
 		return
 	}
+
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.Write([]byte(html))
 }
 
-func Text(w nethttp.ResponseWriter, file string, helpers http.IHelpers, data any) {
-	text, err := views.TextProc(file, helpers, data)
+func viewProc(layout string, contentHtml *template.HTML, helpers httpI.IHelpers, data any) (html template.HTML, err error) {
+	tmpl, err := tmplcache.GetHtmlTemplate(layout)
 	if err != nil {
-		log.Printf("Text response error: %+v", err)
-		ErrorJson(w, err)
-		return
+		return "", err
 	}
 
-	w.Write([]byte(text))
+	vdata := &ViewData{
+		ViewHelpers: helpers,
+		ViewData:    data,
+	}
+
+	if contentHtml != nil {
+		vdata.PageContent = *contentHtml
+	}
+
+	var output strings.Builder
+	err = tmpl.Execute(&output, vdata)
+	if err != nil {
+		return "", err
+	}
+
+	return template.HTML(output.String()), nil
 }

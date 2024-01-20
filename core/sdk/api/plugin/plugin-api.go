@@ -29,6 +29,9 @@ type IPluginApi interface {
 	// Returns the version of the plugin as defined in package.yml "version" field.
 	Version() string
 
+    // Returns the slug name of the plugin
+    Slug() string
+
 	// Returns the description of plugin.
 	Description() string
 

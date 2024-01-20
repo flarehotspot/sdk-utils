@@ -10,9 +10,9 @@ import (
 
 func NewVueAdminNav(api *PluginApi, r *http.Request, nav router.VueAdminNav) VueAdminNav {
 	vueRouter := api.HttpAPI.vueRouter
-	path := router.NotFoundVuePath
-	if route, ok := vueRouter.FindAdminRoute(r, nav.RouteName); ok {
-		path = route.RoutePath
+	path := router.VueNotFoundPath
+	if route, ok := vueRouter.FindAdminRoute(nav.RouteName); ok {
+		path = route.HttpDataPath
 	}
 
 	label := api.Translate(translate.Label, nav.TranslateLabel)

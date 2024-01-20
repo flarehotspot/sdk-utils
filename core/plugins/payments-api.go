@@ -20,12 +20,12 @@ type PaymentsApi struct {
 func (self *PaymentsApi) Checkout(w http.ResponseWriter, r *http.Request, params *paymentsI.PurchaseRequest) {
 	url, err := router.UrlForRoute(routenames.RoutePaymentOptions)
 	if err != nil {
-		response.ErrorJson(w, err)
+		response.ErrorJson(w, err.Error())
 		return
 	}
 	query, err := params.ToQueryParams()
 	if err != nil {
-		response.ErrorJson(w, err)
+		response.ErrorJson(w, err.Error())
 	}
 	url = url + "?" + query
 	response.Redirect(w, r, url, http.StatusSeeOther)

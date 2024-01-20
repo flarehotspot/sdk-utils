@@ -1,7 +1,6 @@
 package middlewares
 
 import (
-	"errors"
 	"github.com/flarehotspot/core/web/helpers"
 	"github.com/flarehotspot/core/web/response"
 	"net/http"
@@ -12,7 +11,7 @@ func AssetPath(next http.Handler) http.Handler {
 		if helpers.IsAssetPath(r.URL.Path) {
 			next.ServeHTTP(w, r)
 		} else {
-			response.ErrorJson(w, errors.New("Invalid asset path: "+r.URL.Path))
+			response.ErrorJson(w, "Invalid asset path: "+r.URL.Path)
 		}
 	})
 }

@@ -26,4 +26,5 @@ type PluginApi struct {
 	ClntReg          *connmgr.ClientRegister
 	ClntMgr          *connmgr.ClientMgr
 	UciAPI           *UciApi
+	Utl              *PluginUtils
 }

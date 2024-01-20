@@ -53,21 +53,21 @@ func (c *AdminAuthCtrl) Login(w http.ResponseWriter, r *http.Request) {
 
 	cookie.SetCookie(w, middlewares.AuthTokenCookie, token)
 	data := map[string]string{"token": token}
-	c.g.CoreApi.HttpApi().Respond().Json(w, data, http.StatusOK)
+	c.g.CoreApi.HttpApi().HttpResponse().Json(w, data, http.StatusOK)
 }
 
 func (c *AdminAuthCtrl) Logout(w http.ResponseWriter, r *http.Request) {
 	cookie.SetCookie(w, middlewares.AuthTokenCookie, "")
 	data := map[string]string{"message": "Logout success"}
-	c.g.CoreApi.HttpApi().Respond().Json(w, data, http.StatusOK)
+	c.g.CoreApi.HttpApi().HttpResponse().Json(w, data, http.StatusOK)
 }
 
 func (c *AdminAuthCtrl) IsAuthenticated(w http.ResponseWriter, r *http.Request) {
 	data := map[string]string{"message": "Success"}
-	c.g.CoreApi.HttpApi().Respond().Json(w, data, http.StatusOK)
+	c.g.CoreApi.HttpApi().HttpResponse().Json(w, data, http.StatusOK)
 }
 
 func (c *AdminAuthCtrl) ErrorUnauthorized(w http.ResponseWriter, msg string) {
 	data := map[string]string{"error": msg}
-	c.g.CoreApi.HttpApi().Respond().Json(w, data, http.StatusUnauthorized)
+	c.g.CoreApi.HttpApi().HttpResponse().Json(w, data, http.StatusUnauthorized)
 }

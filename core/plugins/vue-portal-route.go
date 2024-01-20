@@ -1,34 +1,23 @@
 package plugins
 
-import (
-	"fmt"
-	"path/filepath"
+// import (
+// 	"fmt"
+// 	"path/filepath"
 
-	"github.com/flarehotspot/core/sdk/api/http/router"
-)
+// 	"github.com/flarehotspot/core/sdk/api/http/router"
+// )
 
-func VueRouteName(api *PluginApi, name string) string {
-	return fmt.Sprintf("%s.%s", api.Pkg(), name)
-}
+// func NewVuePortalRoute(api *PluginApi, route router.VuePortalRoute) VuePortalRoute {
+//     vueR := api.HttpAPI.vueRouter
+// 	return VuePortalRoute{
+// 		RouteName:     vueR.VueRouteName( route.RouteName),
+// 		RoutePath:     vueR.VueRoutePath( route.RoutePath),
+// 		ComponentPath: vueR.VueComponentPath( route.ComponentPath),
+// 	}
+// }
 
-func VueRoutePath(api *PluginApi, path string) string {
-	return filepath.Join("/", api.Pkg(), path)
-}
-
-func VueComponentPath(api *PluginApi, path string) string {
-	return api.HttpApi().AssetPath(path)
-}
-
-func NewVuePortalRoute(api *PluginApi, route router.VuePortalRoute) VuePortalRoute {
-	return VuePortalRoute{
-		RouteName:     VueRouteName(api, route.RouteName),
-		RoutePath:     VueRoutePath(api, route.RoutePath),
-		ComponentPath: VueComponentPath(api, route.ComponentPath),
-	}
-}
-
-type VuePortalRoute struct {
-	RouteName     string `json:"name"`
-	RoutePath     string `json:"path"`
-	ComponentPath string `json:"component"`
-}
+// type VuePortalRoute struct {
+// 	RouteName     string `json:"name"`
+// 	RoutePath     string `json:"path"`
+// 	ComponentPath string `json:"component"`
+// }

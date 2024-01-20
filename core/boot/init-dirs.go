@@ -13,7 +13,7 @@ func InitDirs() {
 		paths.ConfigDir,
 		paths.VendorDir,
 		paths.CacheDir,
-		paths.LogsDir,
+		paths.PublicDir,
 		filepath.Join(paths.CacheDir, "assets"),
 		filepath.Join(paths.ConfigDir, "plugins"),
 		filepath.Join(paths.ConfigDir, "accounts"),

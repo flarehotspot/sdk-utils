@@ -5,17 +5,22 @@ type IThemesApi interface {
 	PortalThemeComponent(PortalTheme)
 }
 
-type PortalTheme struct {
-	LayoutComponentPath string
-	IndexComponentPath  string
-	ThemeAssets         *ThemeAssets
+type AdminTheme struct {
+	LayoutComponent    ThemeComponent
+	IndexComponentPath ThemeComponent
+	LoginComponentPath ThemeComponent
+	ThemeAssets        *ThemeAssets
 }
 
-type AdminTheme struct {
-	LayoutComponentPath string
-	IndexComponentPath  string
-	LoginComponentPath  string
-	ThemeAssets         *ThemeAssets
+type PortalTheme struct {
+	LayoutComponent ThemeComponent
+	IndexComponent  ThemeComponent
+	ThemeAssets     *ThemeAssets
+}
+
+type ThemeComponent struct {
+	Data          any
+	ComponentPath string
 }
 
 type ThemeAssets struct {

@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <script>
+        var $flare = {};
+    </script>
+
+    {{ $themeApi := .Data.ThemeApi }}
+    {{ $helpers := .Data.ThemeHelpers }}
+
+    <!-- Css libraries -->
+    {{ .Helpers.EmbedCss "libs/animate-3.7.2.min.css" nil }}
+
+    <!-- JS libraries -->
+    {{ .Helpers.EmbedJs "libs/promise-polyfill.min.js" nil }}
+    {{ .Helpers.EmbedJs "libs/event-source.polyfill.min.js" nil }}
+    {{ .Helpers.EmbedJs "libs/vue-2.7.16.min.js" nil }}
+    {{ .Helpers.EmbedJs "libs/vue-router-3.6.5.min.js" nil }}
+    {{ .Helpers.EmbedJs "libs/basic-http-1.0.0.js" nil }}
+
+    <!-- Theme global assets -->
+    {{ range .Data.ThemeStyles }}{{ $helpers.EmbedCss . nil }}{{ end }}
+    {{ range .Data.ThemeScripts }}{{ $helpers.EmbedJs . nil }}{{ end }}
+
+    <!-- Vue application assets -->
+    {{ .Helpers.EmbedJs "requirejs-config.tpl.js" nil }}
+    {{ .Helpers.EmbedJs "auth.tpl.js" nil }}
+    {{ .Helpers.EmbedJs "router.tpl.js" .Data }}
+    {{ .Helpers.EmbedJs "vue-http-client.tpl.js" .Data }}
+    {{ .Helpers.EmbedJs "navigator.tpl.js" .Data }}
+
+    <script
+      src='{{ .Helpers.AssetPath "libs/require-2.3.6.min.js" }}'
+      data-main='{{ .Helpers.AssetWithHelpersPath "main.tpl.js" }}'
+      async
+    ></script>
+
+  </head>
+  <body>
+    <div id="app">
+      <router-view></router-view>
+    </div>
+  </body>
+</html>

@@ -48,6 +48,10 @@ func (p *PluginApi) Version() string {
 	return p.info.Version
 }
 
+func (p *PluginApi) Slug() string {
+	return p.slug
+}
+
 func (p *PluginApi) Description() string {
 	info, err := plugincfg.GetPluginInfo(p.dir)
 	if err != nil {
@@ -143,7 +147,7 @@ func NewPluginApi(dir string, pmgr *PluginsMgr, trfkMgr *network.TrafficMgr) *Pl
 	translateFn := translate.NewTranslator(dir)
 	mdls := NewPluginModels(pmgr.models)
 	acctApi := NewAcctApi(pluginApi)
-	httpApi := NewHttpApi(pluginApi, pmgr.models, pmgr.clntReg, pmgr.paymgr)
+	httpApi := NewHttpApi(pluginApi, pmgr.db, pmgr.clntReg, pmgr.models, pmgr.clntReg, pmgr.paymgr)
 	configApi := NewConfigApi(pluginApi)
 	paymentsApi := NewPaymentsApi(pluginApi, pmgr.paymgr)
 	themesApi := NewThemesApi(pluginApi)
@@ -151,6 +155,7 @@ func NewPluginApi(dir string, pmgr *PluginsMgr, trfkMgr *network.TrafficMgr) *Pl
 	adsApi := NewAdsApi(pluginApi)
 	inappur := NewInAppPurchaseApi(pluginApi)
 	uciApi := NewUciApi()
+    utl := NewPluginUtils(pluginApi)
 
 	pluginApi.trnslt = translateFn
 	pluginApi.models = mdls
@@ -163,6 +168,7 @@ func NewPluginApi(dir string, pmgr *PluginsMgr, trfkMgr *network.TrafficMgr) *Pl
 	pluginApi.AdsAPI = adsApi
 	pluginApi.InAppPurchaseAPI = inappur
 	pluginApi.UciAPI = uciApi
+    pluginApi.Utl = utl
 
 	log.Println("NewPluginApi: ", dir, " - ", info.Package, " - ", info.Name, " - ", info.Version, " - ", info.Description)
 

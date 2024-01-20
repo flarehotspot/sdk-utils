@@ -37,5 +37,5 @@ func (c *AdminApiCtrl) GetAdminNavs(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	c.g.CoreApi.HttpApi().Respond().Json(w, navs, http.StatusOK)
+	c.g.CoreApi.HttpApi().HttpResponse().Json(w, navs, http.StatusOK)
 }

@@ -1,131 +1,131 @@
 package assets
 
-// import (
-// 	"errors"
-// 	"fmt"
-// 	"log"
-// 	"os"
-// 	"path/filepath"
-// 	"strings"
+import (
+	"errors"
+	"fmt"
+	"log"
+	"os"
+	"path/filepath"
+	"strings"
 
-// 	"github.com/flarehotspot/core/sdk/utils/paths"
-// 	"github.com/flarehotspot/core/utils/crypt"
-// )
+	"github.com/flarehotspot/core/sdk/utils/paths"
+	"github.com/flarehotspot/core/utils/crypt"
+)
 
-// var (
-// 	stars = "**************************************************"
-// )
+var (
+	stars = "**************************************************"
+)
 
-// type CacheData struct {
-// 	Sum        string `json:"sum"`
-// 	PublicPath string `json:"pub_path"`
-// 	FilePath   string `json:"file_path"`
-// }
+type CacheData struct {
+	Sum        string `json:"sum"`
+	PublicPath string `json:"pub_path"`
+	AbsPath    string `json:"file_path"`
+}
 
-// func cacheFile(k string) (f string, err error) {
-// 	data, err := readManifest(k)
-// 	if err != nil {
-// 		return "", err
-// 	}
-// 	return data.FilePath, nil
-// }
+func cacheFile(k string) (f string, err error) {
+	data, err := readManifest(k)
+	if err != nil {
+		return "", err
+	}
+	return data.AbsPath, nil
+}
 
-// func cacheKey(files []string) string {
-// 	hash, _ := crypt.FastHashFiles(files...)
-// 	return hash
-// }
+func cacheKey(files []string) string {
+	hash, _ := crypt.FastHashFiles(files...)
+	return hash
+}
 
-// func isValidCache(files []string, data *CacheData) bool {
-// 	result, err := crypt.FastHashFiles(files...)
-// 	if err != nil {
-// 		return false
-// 	}
-// 	return result == data.Sum
-// }
+func isValidCache(files []string, data CacheData) bool {
+	result, err := crypt.FastHashFiles(files...)
+	if err != nil {
+		return false
+	}
+	return result == data.Sum
+}
 
-// func cacheExists(files []string) (*CacheData, bool) {
-// 	key := cacheKey(files)
-// 	data, err := readManifest(key)
+func cacheExists(files []string) (CacheData, bool) {
+	key := cacheKey(files)
+	data, err := readManifest(key)
 
-// 	if err != nil {
-// 		return nil, false
-// 	}
+	if err != nil {
+		return CacheData{}, false
+	}
 
-// 	if _, err := os.Stat(data.FilePath); errors.Is(err, os.ErrNotExist) {
-// 		return nil, false
-// 	}
+	if _, err := os.Stat(data.AbsPath); errors.Is(err, os.ErrNotExist) {
+		return CacheData{}, false
+	}
 
-// 	if !isValidCache(files, data) {
-// 		return nil, false
-// 	}
+	if !isValidCache(files, data) {
+		return CacheData{}, false
+	}
 
-// 	return data, true
-// }
+	return data, true
+}
 
-// func writeCache(concat string, files []string) (string, error) {
-// 	ext := filepath.Ext(files[0])
-// 	pubsubdir := strings.Replace(ext, ".", "", 1)
-// 	key := cacheKey(files)
-// 	hash, err := crypt.SHA1Files(files)
-// 	if err != nil {
-// 		return "", err
-// 	}
+func writeCache(concat string, files []string) (data CacheData, err error) {
+	ext := filepath.Ext(files[0])
+	pubSubDir := strings.Replace(ext, ".", "", 1)
+	key := cacheKey(files)
+	hash, err := crypt.SHA1Files(files)
+	if err != nil {
+		return CacheData{}, err
+	}
 
-// 	pubpath := filepath.Join("/public", pubsubdir, hash+ext)
-// 	abspath := filepath.Join(paths.AppDir, pubpath)
-// 	sum, err := crypt.FastHashFiles(files...)
-// 	if err != nil {
-// 		return "", err
-// 	}
+	pubUriPath := filepath.Join("/public", pubSubDir, hash+ext)
+	absPath := filepath.Join(paths.AppDir, pubUriPath)
+	sum, err := crypt.FastHashFiles(files...)
+	if err != nil {
+		return CacheData{}, err
+	}
 
-// 	cache := CacheData{
-// 		Sum:        sum,
-// 		PublicPath: pubpath,
-// 		FilePath:   abspath,
-// 	}
+	cache := CacheData{
+		Sum:        sum,
+		PublicPath: pubUriPath,
+		AbsPath:    absPath,
+	}
 
-// 	prevFile, cacheErr := cacheFile(key)
-// 	defer func() {
-// 		if cacheErr != nil {
-// 			return
-// 		}
-// 		if prevFile == cache.FilePath {
-// 			return
-// 		}
-// 		err := os.Remove(prevFile)
-// 		if err != nil {
-// 			log.Println(err)
-// 		}
-// 	}()
+	defer func() {
+		prevFile, cacheErr := cacheFile(key)
+		if cacheErr != nil {
+			return
+		}
+		if prevFile == cache.AbsPath {
+			return
+		}
+		err := os.Remove(prevFile)
+		if err != nil {
+			log.Println(err)
+		}
+	}()
 
-// 	err = writeManifest(key, &cache)
-// 	if err != nil {
-// 		return "", nil
-// 	}
+	err = writeManifest(key, cache)
+	if err != nil {
+		return CacheData{}, nil
+	}
 
-// 	concat = filesComment(files...) + "\n" + concat
-// 	d := filepath.Dir(abspath)
-// 	os.MkdirAll(d, os.ModePerm)
-// 	err = os.WriteFile(abspath, []byte(concat), 0644)
-// 	if err != nil {
-// 		log.Println("Error writing to file: ", abspath, err)
-// 		return "", err
-// 	}
+	concat = filesComment(files...) + "\n" + concat
+	d := filepath.Dir(absPath)
+	os.MkdirAll(d, os.ModePerm)
+	err = os.WriteFile(absPath, []byte(concat), 0644)
+	if err != nil {
+		log.Println("Error writing to file: ", absPath, err)
+		return CacheData{}, err
+	}
 
-// 	return pubpath, nil
-// }
+	return cache, nil
+}
 
-// func filePathComment(f string) string {
-// 	return fmt.Sprintf("\n/%s\nFile: %s\n%s/\n", stars, paths.Strip(f), stars)
-// }
+func filePathComment(f string) string {
+	return fmt.Sprintf("\n/%s\nFile: %s\n%s/\n", stars, paths.Strip(f), stars)
+}
 
-// func filesComment(files ...string) string {
-// 	comment := "/"
-// 	comment += stars
-// 	comment += "\nFiles:\n"
-// 	for _, f := range files {
-// 		comment += fmt.Sprintf("%s\n", paths.Strip(f))
-// 	}
-// 	comment += stars + "/\n"
-// 	return comment
-// }
+func filesComment(files ...string) string {
+	comment := "/"
+	comment += stars
+	comment += "\nFiles:\n"
+	for _, f := range files {
+		comment += fmt.Sprintf("%s\n", paths.Strip(f))
+	}
+	comment += stars + "/\n"
+	return comment
+}

@@ -16,7 +16,27 @@ var (
 	RootRouter    *mux.Router
 	BootingRouter *mux.Router
 	PluginRouter  *mux.Router
+	AssetsRouter  *mux.Router
 )
+
+var (
+	ApiRouter       *mux.Router
+	AdminApiRouter  *mux.Router
+	PortalApiRouter *mux.Router
+	AuthApiRouter   *mux.Router
+)
+
+func init() {
+	RootRouter = mux.NewRouter().StrictSlash(true)
+	BootingRouter = mux.NewRouter().StrictSlash(true)
+	PluginRouter = RootRouter.PathPrefix("/plugin").Subrouter()
+	AssetsRouter = RootRouter.PathPrefix("/assets").Subrouter()
+
+	ApiRouter = RootRouter.PathPrefix("/api").Subrouter()
+	AdminApiRouter = ApiRouter.PathPrefix("/admin").Subrouter()
+	PortalApiRouter = ApiRouter.PathPrefix("/portal").Subrouter()
+	AuthApiRouter = ApiRouter.PathPrefix("/auth").Subrouter()
+}
 
 func UrlForRoute(muxname router.MuxRouteName, pairs ...string) (string, error) {
 	route := FindRoute(muxname)

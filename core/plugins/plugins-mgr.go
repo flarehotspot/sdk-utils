@@ -5,14 +5,14 @@ import (
 	"path/filepath"
 
 	"github.com/flarehotspot/core/config/plugincfg"
-	"github.com/flarehotspot/core/config/themecfg"
+	// "github.com/flarehotspot/core/config/themecfg"
 	"github.com/flarehotspot/core/connmgr"
 	"github.com/flarehotspot/core/db"
 	"github.com/flarehotspot/core/db/models"
 	"github.com/flarehotspot/core/network"
 	"github.com/flarehotspot/core/payments"
-	"github.com/flarehotspot/core/utils/migrate"
 	"github.com/flarehotspot/core/sdk/api/plugin"
+	"github.com/flarehotspot/core/utils/migrate"
 )
 
 type PluginsMgr struct {
@@ -62,22 +62,22 @@ func (pmgr *PluginsMgr) MigrateAll() {
 	}
 }
 
-func (pmgr *PluginsMgr) FindByName(name string) plugin.IPluginApi {
+func (pmgr *PluginsMgr) FindByName(name string) (plugin.IPluginApi, bool) {
 	for _, p := range pmgr.plugins {
 		if p.Name() == name {
-			return p
+			return p, true
 		}
 	}
-	return nil
+	return nil, false
 }
 
-func (pmgr *PluginsMgr) FindByPkg(pkg string) plugin.IPluginApi {
+func (pmgr *PluginsMgr) FindByPkg(pkg string) (plugin.IPluginApi, bool) {
 	for _, p := range pmgr.plugins {
 		if p.Pkg() == pkg {
-			return p
+			return p, true
 		}
 	}
-	return nil
+	return nil, false
 }
 
 func (pmgr *PluginsMgr) All() []plugin.IPluginApi {
@@ -88,23 +88,23 @@ func (pmgr *PluginsMgr) All() []plugin.IPluginApi {
 	return plugins
 }
 
-func (pmgr *PluginsMgr) PortalPluginApi() *PluginApi {
-	themepkg := themecfg.Read().Portal
-	api := pmgr.FindByPkg(themepkg)
-	return api.(*PluginApi)
-}
+// func (pmgr *PluginsMgr) PortalPluginApi() *PluginApi {
+// 	themepkg := themecfg.Read().Portal
+// 	api, ok := pmgr.FindByPkg(themepkg)
+// 	return api.(*PluginApi)
+// }
 
-func (pmgr *PluginsMgr) AdminPluginApi() *PluginApi {
-	themepkg := themecfg.Read().Admin
-	api := pmgr.FindByPkg(themepkg)
-	return api.(*PluginApi)
-}
+// func (pmgr *PluginsMgr) AdminPluginApi() *PluginApi {
+// 	themepkg := themecfg.Read().Admin
+// 	api, ok := pmgr.FindByPkg(themepkg)
+// 	return api.(*PluginApi)
+// }
 
-func (pmgr *PluginsMgr) AuthPluginApi() *PluginApi {
-	themepkg := themecfg.Read().Auth
-	api := pmgr.FindByPkg(themepkg)
-	return api.(*PluginApi)
-}
+// func (pmgr *PluginsMgr) AuthPluginApi() *PluginApi {
+// 	themepkg := themecfg.Read().Auth
+// 	api, ok := pmgr.FindByPkg(themepkg)
+// 	return api.(*PluginApi)
+// }
 
 func (pmgr *PluginsMgr) PaymentMethods() []plugin.IPluginApi {
 	methods := []plugin.IPluginApi{}
