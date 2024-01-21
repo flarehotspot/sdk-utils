@@ -31,10 +31,12 @@ func AssetsRoutes(g *globals.CoreGlobals) {
 		router.RootRouter.PathPrefix(prefix).Handler(fileserver)
 	}
 
+    cacheMw := middlewares.CacheResponse(90)
+    assetPathMw := middlewares.AssetPath
 	publicDir := paths.PublicDir
 	fs := http.FileServer(http.Dir(publicDir))
 	prefix := "/public"
-	fileserver := middlewares.AssetPath(http.StripPrefix(prefix, fs))
+	fileserver := cacheMw(assetPathMw(http.StripPrefix(prefix, fs)))
 	router.RootRouter.PathPrefix(prefix).Handler(fileserver)
 }
 
