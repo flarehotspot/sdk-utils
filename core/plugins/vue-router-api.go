@@ -8,21 +8,20 @@ import (
 	"strings"
 
 	"github.com/flarehotspot/core/sdk/api/http"
-	"github.com/gorilla/mux"
 )
 
 func NewVueRouterApi(api *PluginApi) *VueRouterApi {
 	return &VueRouterApi{
 		api:          api,
-		adminRoutes:  []*VueComponentRoute{},
-		portalRoutes: []*VueComponentRoute{},
+		adminRoutes:  []*VueRouteComponent{},
+		portalRoutes: []*VueRouteComponent{},
 	}
 }
 
 type VueRouterApi struct {
 	api          *PluginApi
-	adminRoutes  []*VueComponentRoute
-	portalRoutes []*VueComponentRoute
+	adminRoutes  []*VueRouteComponent
+	portalRoutes []*VueRouteComponent
 	adminNavsFn  sdkhttp.VueAdminNavsHandler
 	portalNavsFn sdkhttp.VuePortalItemsHandler
 }
@@ -33,7 +32,7 @@ func (self *VueRouterApi) AdminRoutes(routes []sdkhttp.VueAdminRoute) {
 		dataRouter := self.api.HttpAPI.httpRouter.adminRouter.mux.PathPrefix("/vue-route/admin-data").Subrouter()
 
 		for _, r := range routes {
-			route := NewVueComponentRoute(self.api, r.RouteName, r.RoutePath, r.HandlerFn, r.Component, r.DisableCache, true, nil, nil)
+			route := NewVueRouteComponent(self.api, r.RouteName, r.RoutePath, r.HandlerFn, r.Component, r.DisableCache, true, nil, nil)
 
 			if _, ok := self.FindAdminRoute(route.VueRouteName); ok {
 				log.Println("Warning: Admin route name \"" + r.RouteName + "\" already exists in admin routes ")
@@ -79,7 +78,7 @@ func (self *VueRouterApi) PortalRoutes(routes []sdkhttp.VuePortalRoute) {
 		compRouter := pluginRouter.mux.PathPrefix("/vue-route/portal-components").Subrouter()
 		dataRouter := pluginRouter.mux.PathPrefix("/vue-route/portal-data").Subrouter()
 		for _, r := range routes {
-			route := NewVueComponentRoute(self.api, r.RouteName, r.RoutePath, r.HandlerFn, r.Component, r.DisableCache, false, nil, nil)
+			route := NewVueRouteComponent(self.api, r.RouteName, r.RoutePath, r.HandlerFn, r.Component, r.DisableCache, false, nil, nil)
 
 			if _, ok := self.FindPortalRoute(route.VueRouteName); ok {
 				log.Println("Warning: Portal route name \"" + r.RouteName + "\" already exists in portal routes ")
@@ -119,15 +118,15 @@ func (self *VueRouterApi) PortalRoutes(routes []sdkhttp.VuePortalRoute) {
 	}
 }
 
-func (self *VueRouterApi) GetAdminRoutes() []*VueComponentRoute {
+func (self *VueRouterApi) GetAdminRoutes() []*VueRouteComponent {
 	return self.adminRoutes
 }
 
-func (self *VueRouterApi) GetPortalRoutes() []*VueComponentRoute {
+func (self *VueRouterApi) GetPortalRoutes() []*VueRouteComponent {
 	return self.portalRoutes
 }
 
-func (self *VueRouterApi) FindAdminRoute(vueRouteName string) (*VueComponentRoute, bool) {
+func (self *VueRouterApi) FindAdminRoute(vueRouteName string) (*VueRouteComponent, bool) {
 	vueR := self.api.HttpAPI.vueRouter
 	routeName := vueR.VueRouteName(vueRouteName)
 	for _, route := range self.GetAdminRoutes() {
@@ -145,8 +144,7 @@ func (self *VueRouterApi) AdminNavs(fn sdkhttp.VueAdminNavsHandler) {
 func (self *VueRouterApi) GetAdminNavs(r *http.Request) []VueAdminNav {
 	navs := []VueAdminNav{}
 	if self.adminNavsFn != nil {
-		vars := mux.Vars(r)
-		for _, nav := range self.adminNavsFn(r, vars) {
+		for _, nav := range self.adminNavsFn(r) {
 			navs = append(navs, NewVueAdminNav(self.api, r, nav))
 		}
 	}
@@ -154,7 +152,7 @@ func (self *VueRouterApi) GetAdminNavs(r *http.Request) []VueAdminNav {
 	return navs
 }
 
-func (self *VueRouterApi) FindPortalRoute(name string) (*VueComponentRoute, bool) {
+func (self *VueRouterApi) FindPortalRoute(name string) (*VueRouteComponent, bool) {
 	vueR := self.api.HttpAPI.vueRouter
 	routeName := vueR.VueRouteName(name)
 
@@ -167,8 +165,8 @@ func (self *VueRouterApi) FindPortalRoute(name string) (*VueComponentRoute, bool
 	return nil, false
 }
 
-func (self *VueRouterApi) FindVueComponent(name string) (VueComponentRoute, bool) {
-	return VueComponentRoute{}, true
+func (self *VueRouterApi) FindVueComponent(name string) (VueRouteComponent, bool) {
+	return VueRouteComponent{}, true
 }
 
 func (self *VueRouterApi) PortalItems(fn sdkhttp.VuePortalItemsHandler) {
@@ -177,10 +175,9 @@ func (self *VueRouterApi) PortalItems(fn sdkhttp.VuePortalItemsHandler) {
 
 func (self *VueRouterApi) GetPortalItems(r *http.Request) []VuePortalItem {
 	navs := []VuePortalItem{}
-	vars := mux.Vars(r)
 
 	if self.portalNavsFn != nil {
-		for _, nav := range self.portalNavsFn(r, vars) {
+		for _, nav := range self.portalNavsFn(r) {
 			navs = append(navs, NewVuePortalItem(self.api, r, nav))
 		}
 
@@ -190,7 +187,7 @@ func (self *VueRouterApi) GetPortalItems(r *http.Request) []VuePortalItem {
 	return navs
 }
 
-func (self *VueRouterApi) FindVueRoute(name string) (*VueComponentRoute, bool) {
+func (self *VueRouterApi) FindVueRoute(name string) (*VueRouteComponent, bool) {
 	vueR := self.api.HttpAPI.vueRouter
 	routeName := vueR.VueRouteName(name)
 	for _, route := range self.GetAdminRoutes() {

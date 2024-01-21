@@ -8,12 +8,11 @@ import (
 
 	"github.com/flarehotspot/core/sdk/api/http"
 	"github.com/flarehotspot/core/web/response"
-	"github.com/gorilla/mux"
 )
 
-func NewVueComponentRoute(api *PluginApi, name string, path string, handler sdkhttp.VueHandlerFn, comp string, nocache bool, auth bool, permsReq []string, permsAny []string) *VueComponentRoute {
+func NewVueRouteComponent(api *PluginApi, name string, path string, handler sdkhttp.VueHandlerFn, comp string, nocache bool, auth bool, permsReq []string, permsAny []string) *VueRouteComponent {
 
-	return &VueComponentRoute{
+	return &VueRouteComponent{
 		api:                 api,
 		handler:             handler,
 		component:           comp,
@@ -30,7 +29,7 @@ func NewVueComponentRoute(api *PluginApi, name string, path string, handler sdkh
 	}
 }
 
-type VueComponentRoute struct {
+type VueRouteComponent struct {
 	api                   *PluginApi           `json:"-"`
 	handler               sdkhttp.VueHandlerFn `json:"-"`
 	component             string               `json:"-"`
@@ -48,21 +47,20 @@ type VueComponentRoute struct {
 	PermissionsAnyOf      []string             `json:"permissions_any_of"`
 }
 
-func (self *VueComponentRoute) GetDataHandler() http.HandlerFunc {
+func (self *VueRouteComponent) GetDataHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
 		res := NewVueResponse(self.api.HttpAPI.vueRouter, w, r)
 		if self.handler == nil {
 			response.Json(w, map[string]any{}, http.StatusOK)
 			return
 		}
-		if err := self.handler(res, r, vars); err != nil {
+		if err := self.handler(res, r); err != nil {
 			response.ErrorJson(w, err.Error())
 		}
 	}
 }
 
-func (self *VueComponentRoute) GetComponentHandler() http.HandlerFunc {
+func (self *VueRouteComponent) GetComponentHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		helpers := self.api.HttpApi().Helpers()
 		comp := self.component

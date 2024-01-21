@@ -58,7 +58,7 @@ func (c *IndexPageCtrl) MainJs(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *IndexPageCtrl) adminRoutes(themesApi *plugins.ThemesApi) []map[string]any {
-	routes := []*plugins.VueComponentRoute{}
+	routes := []*plugins.VueRouteComponent{}
 	for _, p := range c.g.PluginMgr.All() {
 		vueR := p.HttpApi().VueRouter().(*plugins.VueRouterApi)
 		adminRoutes := vueR.GetAdminRoutes()
@@ -106,8 +106,8 @@ func (c *IndexPageCtrl) adminRoutes(themesApi *plugins.ThemesApi) []map[string]a
 	return routesMap
 }
 
-func (c *IndexPageCtrl) portalRoutes() []*plugins.VueComponentRoute {
-	routes := []*plugins.VueComponentRoute{}
+func (c *IndexPageCtrl) portalRoutes() []*plugins.VueRouteComponent {
+	routes := []*plugins.VueRouteComponent{}
 	for _, p := range c.g.PluginMgr.All() {
 		vueR := p.HttpApi().VueRouter().(*plugins.VueRouterApi)
 		portalRoutes := vueR.GetPortalRoutes()
