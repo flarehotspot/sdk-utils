@@ -3,6 +3,7 @@
 package assets
 
 import (
+	"github.com/flarehotspot/core/env"
 	jobque "github.com/flarehotspot/core/utils/job-que"
 )
 
@@ -14,7 +15,8 @@ func Bundle(files []string) (data CacheData, err error) {
 			return "", ErrNoAssets
 		}
 
-		if cache, ok := cacheExists(files); ok {
+        useCache := env.GoEnv != env.ENV_DEV
+		if cache, ok := cacheExists(files); ok && useCache {
 			return cache, nil
 		}
 

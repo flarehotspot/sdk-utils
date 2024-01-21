@@ -30,7 +30,8 @@
       var data_path = route.meta.data_path;
       var params = route.params;
       var data_uri = substitutePathParams(data_path, params);
-      BasicHttp.GetJson(data_uri).then(function (data) {
+      $flare.http.get(data_uri).then(function (data) {
+        console.log(data)
         viewData.data = data;
       });
     }

@@ -6,6 +6,10 @@ import (
 	"github.com/flarehotspot/core/web/response"
 )
 
+const (
+	rootjson = "$vue"
+)
+
 func NewVueResponse(vr *VueRouterApi, w http.ResponseWriter, r *http.Request) *VueResponse {
 	return &VueResponse{w, r, vr}
 }
@@ -18,8 +22,10 @@ type VueResponse struct {
 
 func (self *VueResponse) JsonData(data any) {
 	data = map[string]any{
-		"redirect": false,
-		"data":     data,
+		rootjson: map[string]any{
+			"redirect": false,
+			"data":     data,
+		},
 	}
 	response.Json(self.w, data, http.StatusOK)
 }
@@ -37,9 +43,11 @@ func (res *VueResponse) Redirect(routename string, pairs ...string) {
 	}
 
 	data := map[string]any{
-		"redirect": true,
-		"name":     route.VueRouteName,
-		"params":   params,
+		rootjson: map[string]any{
+			"redirect": true,
+			"name":     route.VueRouteName,
+			"params":   params,
+		},
 	}
 
 	response.Json(res.w, data, http.StatusOK)

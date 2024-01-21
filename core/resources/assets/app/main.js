@@ -14,9 +14,6 @@
 
     var app = new Vue({
       router: $flare.router,
-      mounted: function () {
-        $flare._triggerReady();
-      }
     });
 
     app.$mount('#app');

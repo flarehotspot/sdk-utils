@@ -12,7 +12,8 @@ func Bundle(files []string) (CacheData, error) {
 			return "", ErrNoAssets
 		}
 
-		if cache, ok := cacheExists(files); ok {
+        useCache := env.GoEnv != env.ENV_DEV
+		if cache, ok := cacheExists(files); ok && useCache {
 			return cache, nil
 		}
 

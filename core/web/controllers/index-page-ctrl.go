@@ -127,16 +127,15 @@ func (c *IndexPageCtrl) render(w http.ResponseWriter, r *http.Request, themePlug
 	routesData := map[string]any{"Routes": string(routesJson)}
 
 	jsFiles := []assets.AssetWithData{
-		{File: c.g.CoreApi.Resource("assets/app/flare-ready.js")},
 		{File: c.g.CoreApi.Resource("assets/libs/basic-http-1.0.0.js")},
 		{File: c.g.CoreApi.Resource("assets/libs/promise-polyfill.min.js")},
 		{File: c.g.CoreApi.Resource("assets/libs/event-source.polyfill.min.js")},
 		{File: c.g.CoreApi.Resource("assets/libs/vue-2.7.16.min.js")},
 		{File: c.g.CoreApi.Resource("assets/libs/vue-router-3.6.5.min.js")},
-		{File: c.g.CoreApi.Resource("assets/app/requirejs-config.tpl.js")},
+		{File: c.g.CoreApi.Resource("assets/app/vue-http.js")},
+		{File: c.g.CoreApi.Resource("assets/app/require-config.js")},
 		{File: c.g.CoreApi.Resource("assets/app/auth.tpl.js")},
 		{File: c.g.CoreApi.Resource("assets/app/router.tpl.js"), Data: routesData},
-		{File: c.g.CoreApi.Resource("assets/app/vue-http.js")},
 		{File: c.g.CoreApi.Resource("assets/app/flare-view.js")},
 	}
 

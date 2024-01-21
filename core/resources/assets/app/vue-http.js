@@ -7,14 +7,14 @@
   }
 
   function parseRespones(res) {
-    var $res = res.$flare_response;
+    var $res = res.$vue;
     if (!$res) {
       invalidResponse(res);
       return res;
     }
 
     if ($res.redirect) {
-      $flare.router.push({ name: $res.route_name });
+      $flare.router.push({ name: $res.name });
     } else if ($res.data) {
       return $res.data;
     } else {
