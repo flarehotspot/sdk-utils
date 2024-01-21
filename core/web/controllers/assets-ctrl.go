@@ -45,5 +45,5 @@ func (c *AssetsCtrl) AssetWithHelpers(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response.File(w, assetPath, c.g.CoreApi.HttpApi().Helpers(w, r), nil)
+	response.File(w, assetPath, c.g.CoreApi.HttpApi().Helpers(), nil)
 }

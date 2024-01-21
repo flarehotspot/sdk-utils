@@ -45,8 +45,8 @@ func (self *HttpApi) VueRouter() router.IVueRouterApi {
 	return self.vueRouter
 }
 
-func (self *HttpApi) Helpers(w nethttp.ResponseWriter, r *nethttp.Request) http.IHelpers {
-	return NewViewHelpers(self.api, w, r)
+func (self *HttpApi) Helpers() http.IHelpers {
+	return NewViewHelpers(self.api)
 }
 
 func (self *HttpApi) AssetPath(path string) string {

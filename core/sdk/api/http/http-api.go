@@ -16,7 +16,7 @@ type IHttpApi interface {
 
 	VueRouter() router.IVueRouterApi
 
-	Helpers(w http.ResponseWriter, r *http.Request) IHelpers
+	Helpers() IHelpers
 
 	AssetPath(path string) string
 

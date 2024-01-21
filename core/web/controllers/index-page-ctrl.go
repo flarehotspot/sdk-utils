@@ -52,7 +52,7 @@ func (c *IndexPageCtrl) AdminIndex(w http.ResponseWriter, r *http.Request) {
 
 func (c *IndexPageCtrl) MainJs(w http.ResponseWriter, r *http.Request) {
 	mainjs := filepath.Join(c.g.CoreApi.Resource("views/scripts/main.tpl.js"))
-	helpers := c.g.CoreApi.HttpApi().Helpers(w, r)
+	helpers := c.g.CoreApi.HttpApi().Helpers()
 	w.Header().Set("Content-Type", "application/javascript")
 	response.Text(w, mainjs, helpers, nil)
 }

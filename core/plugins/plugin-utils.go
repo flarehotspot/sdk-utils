@@ -22,7 +22,7 @@ func (u *PluginUtils) BundleAssetsWithHelper(w http.ResponseWriter, r *http.Requ
 			File: entry.File,
 			Data: &response.ViewData{
 				ViewData:    entry.Data,
-				ViewHelpers: u.api.HttpAPI.Helpers(w, r),
+				ViewHelpers: u.api.HttpAPI.Helpers(),
 			},
 		}
 	}

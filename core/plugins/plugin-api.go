@@ -155,7 +155,7 @@ func NewPluginApi(dir string, pmgr *PluginsMgr, trfkMgr *network.TrafficMgr) *Pl
 	adsApi := NewAdsApi(pluginApi)
 	inappur := NewInAppPurchaseApi(pluginApi)
 	uciApi := NewUciApi()
-    utl := NewPluginUtils(pluginApi)
+	utl := NewPluginUtils(pluginApi)
 
 	pluginApi.trnslt = translateFn
 	pluginApi.models = mdls
@@ -168,7 +168,7 @@ func NewPluginApi(dir string, pmgr *PluginsMgr, trfkMgr *network.TrafficMgr) *Pl
 	pluginApi.AdsAPI = adsApi
 	pluginApi.InAppPurchaseAPI = inappur
 	pluginApi.UciAPI = uciApi
-    pluginApi.Utl = utl
+	pluginApi.Utl = utl
 
 	log.Println("NewPluginApi: ", dir, " - ", info.Package, " - ", info.Name, " - ", info.Version, " - ", info.Description)
 

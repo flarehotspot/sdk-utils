@@ -1,8 +1,6 @@
 package http
 
 import (
-	"github.com/flarehotspot/core/sdk/api/accounts"
-	"github.com/flarehotspot/core/sdk/api/connmgr"
 	"github.com/flarehotspot/core/sdk/api/http/router"
 )
 
@@ -18,11 +16,11 @@ type IHelpers interface {
 	// and displays the text inside that file.
 	Translate(msgtype string, msgk string) string
 
-    // Returns the uri path of a static file in resources/assets directory from your plugin
+	// Returns the uri path of a static file in resources/assets directory from your plugin
 	AssetPath(path string) string
 
-    // Returns the uri path of a file in resources/assets directory from your plugin.
-    // The file is parsed using text/template go module with access to {{ .Helpers }} object.
+	// Returns the uri path of a file in resources/assets directory from your plugin.
+	// The file is parsed using text/template go module with access to {{ .Helpers }} object.
 	AssetWithHelpersPath(path string) string
 
 	// Returns the html for the ads view.
@@ -40,21 +38,6 @@ type IHelpers interface {
 	// The difference between UrlForMuxRoute() vs UrlForRoute() is that UrlForMuxRoute() only accepts route names built-in to the core system.
 	UrlForRoute(name string, pairs ...string) (url string)
 
-	// Returns true if the link/url is active.
-	IsLinkActive(href string) bool
-
-	// Returns the current admin account user.
-	CurrentUser() accounts.IAccount
-
-	// Returns the current client device.
-	CurrentClient() connmgr.IClientDevice
-
-	// Returns true if the current admin user has any of the specified permissions.
-	AdminHasAnyPerm(perms ...string) bool
-
-	// Returns true if the current admin user has all of the specified permissions.
-	AdminHasAllPerms(perms ...string) bool
-
-    // Returns the vue route name for a named route which can be used in <flare-link>
-    VueRouteName(name string) string
+	// Returns the vue route name for a named route which can be used in <flare-link>
+	VueRouteName(name string) string
 }

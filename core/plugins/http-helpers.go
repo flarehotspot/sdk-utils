@@ -4,37 +4,26 @@ import (
 	"fmt"
 	"html/template"
 	"log"
-	nethttp "net/http"
 	"os"
 	"path/filepath"
 	"strings"
 	texttemplate "text/template"
 
-	"github.com/flarehotspot/core/accounts"
-	sdkacct "github.com/flarehotspot/core/sdk/api/accounts"
-	"github.com/flarehotspot/core/sdk/api/connmgr"
-	"github.com/flarehotspot/core/sdk/api/http"
-	Irtr "github.com/flarehotspot/core/sdk/api/http/router"
+	httpI "github.com/flarehotspot/core/sdk/api/http"
+	routerI "github.com/flarehotspot/core/sdk/api/http/router"
 	"github.com/flarehotspot/core/sdk/api/plugin"
 	"github.com/flarehotspot/core/sdk/utils/translate"
-	"github.com/flarehotspot/core/web/helpers"
 	"github.com/flarehotspot/core/web/response"
 	"github.com/flarehotspot/core/web/router"
-	routenames "github.com/flarehotspot/core/web/routes/names"
+	rnames "github.com/flarehotspot/core/web/routes/names"
 )
 
 type ViewHelpers struct {
-	w   nethttp.ResponseWriter
-	r   *nethttp.Request
 	api *PluginApi
 }
 
-func NewViewHelpers(api *PluginApi, w nethttp.ResponseWriter, r *nethttp.Request) http.IHelpers {
-	return &ViewHelpers{
-		w:   w,
-		r:   r,
-		api: api,
-	}
+func NewViewHelpers(api *PluginApi) httpI.IHelpers {
+	return &ViewHelpers{api: api}
 }
 
 func (h *ViewHelpers) Translate(msgtype string, msgk string) string {
@@ -46,7 +35,7 @@ func (self *ViewHelpers) AssetPath(path string) string {
 }
 
 func (self *ViewHelpers) AssetWithHelpersPath(path string) string {
-	r := router.AssetsRouter.Get(routenames.AssetWithHelpers)
+	r := router.AssetsRouter.Get(rnames.AssetWithHelpers)
 	pluginApi := self.api
 	url, err := r.URL("pkg", pluginApi.Pkg(), "version", pluginApi.Version(), "path", path)
 	if err != nil {
@@ -115,55 +104,17 @@ func (h *ViewHelpers) AdView() (html string) {
 	return ""
 }
 
-func (h *ViewHelpers) MuxRouteName(name string) Irtr.MuxRouteName {
-	return h.api.HttpAPI.HttpRouter().MuxRouteName(Irtr.PluginRouteName(name))
+func (h *ViewHelpers) MuxRouteName(name string) routerI.MuxRouteName {
+	return h.api.HttpAPI.HttpRouter().MuxRouteName(routerI.PluginRouteName(name))
 }
 
 func (h *ViewHelpers) UrlForMuxRoute(name string, params ...string) string {
-	url, _ := router.UrlForRoute(Irtr.MuxRouteName(name), params...)
+	url, _ := router.UrlForRoute(routerI.MuxRouteName(name), params...)
 	return url
 }
 
 func (h *ViewHelpers) UrlForRoute(name string, params ...string) string {
-	return h.api.HttpApi().HttpRouter().UrlForRoute(Irtr.PluginRouteName(name), params...)
-}
-
-func (h *ViewHelpers) IsLinkActive(href string) bool {
-	curr := h.r.URL.String()
-	return strings.HasPrefix(curr, href)
-}
-
-func (h *ViewHelpers) CurrentUser() sdkacct.IAccount {
-	acct, err := helpers.CurrentAdmin(h.r)
-	if err != nil {
-		return nil
-	}
-	return acct
-}
-
-func (h *ViewHelpers) CurrentClient() connmgr.IClientDevice {
-	clnt, err := helpers.CurrentClient(h.r)
-	if err != nil {
-		return nil
-	}
-	return clnt
-}
-
-func (h *ViewHelpers) AdminHasAnyPerm(perms ...string) bool {
-	acct, err := helpers.CurrentAdmin(h.r)
-	if err != nil {
-		return false
-	}
-
-	return accounts.HasAnyPerm(acct, perms...)
-}
-
-func (h *ViewHelpers) AdminHasAllPerms(perms ...string) bool {
-	acct, err := helpers.CurrentAdmin(h.r)
-	if err != nil {
-		return false
-	}
-	return accounts.HasAllPerms(acct, perms...)
+	return h.api.HttpApi().HttpRouter().UrlForRoute(routerI.PluginRouteName(name), params...)
 }
 
 func (h *ViewHelpers) VueRouteName(name string) string {

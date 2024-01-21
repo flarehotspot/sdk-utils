@@ -23,7 +23,7 @@ func (self *HttpResponse) AdminView(w http.ResponseWriter, r *http.Request, view
 		data = map[string]any{}
 	}
 
-	helpers := NewViewHelpers(self.api, w, r)
+	helpers := NewViewHelpers(self.api)
 	viewsDir := self.api.Resource("views/admin")
 	layoutFile := filepath.Join(viewsDir, "http-layout.html")
 	viewFile := filepath.Join(viewsDir, view)
@@ -35,7 +35,7 @@ func (self *HttpResponse) PortalView(w http.ResponseWriter, r *http.Request, vie
 		data = map[string]any{}
 	}
 
-	helpers := NewViewHelpers(self.api, w, r)
+	helpers := NewViewHelpers(self.api)
 	viewsDir := self.api.Resource("views/portal")
 	layoutFile := filepath.Join(viewsDir, "http-layout.html")
 	viewFile := filepath.Join(viewsDir, view)
@@ -47,7 +47,7 @@ func (self *HttpResponse) View(w http.ResponseWriter, r *http.Request, view stri
 		data = map[string]any{}
 	}
 
-	helpers := NewViewHelpers(self.api, w, r)
+	helpers := NewViewHelpers(self.api)
 	vdir := self.api.Resource("views")
 	viewfile := filepath.Join(vdir, view)
 
@@ -59,7 +59,7 @@ func (self *HttpResponse) Script(w http.ResponseWriter, r *http.Request, file st
 		data = map[string]any{}
 	}
 
-	helpers := NewViewHelpers(self.api, w, r)
+	helpers := NewViewHelpers(self.api)
 	file = self.api.Resource(file)
 
 	w.Header().Set("Content-Type", "text/javascript")
