@@ -1,5 +1,9 @@
 (function (window) {
   var $flare = window.$flare;
+  var colorSuccess = '#1fad45';
+  var colorInfo = '#0581f5';
+  var colorWarning = '#f2b211';
+  var colorError = '#c72020';
 
   $flare.notification = {
     success: function (msg) {
@@ -17,11 +21,6 @@
   };
 
   function createToast(msgType, msg) {
-    var colorSuccess = '#1fad45';
-    var colorInfo = '#0581f5';
-    var colorWarning = '#f2b211';
-    var colorError = '#c72020';
-
     var color =
       msgType === 'success'
         ? colorSuccess
