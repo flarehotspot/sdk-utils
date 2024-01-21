@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/flarehotspot/core/sdk/api/uci"
+	uci "github.com/flarehotspot/core/sdk/api/uci"
 )
 
 type UciDhcpApi struct{}

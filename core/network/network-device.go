@@ -1,8 +1,8 @@
 package network
 
 import (
-	"github.com/flarehotspot/core/utils/ubus"
 	"github.com/flarehotspot/core/sdk/api/network"
+	"github.com/flarehotspot/core/utils/ubus"
 )
 
 type NetworkDevice struct {
@@ -13,8 +13,8 @@ func (self *NetworkDevice) Name() string {
 	return self.netdev.Name
 }
 
-func (self *NetworkDevice) Type() network.NetDevType {
-	return network.NetDevType(self.netdev.Type)
+func (self *NetworkDevice) Type() sdknet.NetDevType {
+	return sdknet.NetDevType(self.netdev.Type)
 }
 
 func (self *NetworkDevice) MacAddr() string {
@@ -41,6 +41,6 @@ func (self *NetworkDevice) TxBytes() uint {
 	return self.netdev.Stats.TxBytes
 }
 
-func NewNetworkDevice(d *ubus.NetworkDevice) network.INetworkDevice {
+func NewNetworkDevice(d *ubus.NetworkDevice) sdknet.INetworkDevice {
 	return &NetworkDevice{d}
 }

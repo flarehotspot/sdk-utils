@@ -3,7 +3,7 @@ package dbcfg
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/flarehotspot/core/sdk/utils/paths"
+	paths "github.com/flarehotspot/core/sdk/utils/paths"
 	_ "github.com/go-sql-driver/mysql"
 	"os"
 	"path/filepath"

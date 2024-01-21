@@ -11,9 +11,8 @@ import (
 	"github.com/flarehotspot/core/accounts"
 	"github.com/flarehotspot/core/config/appcfg"
 	"github.com/flarehotspot/core/sdk/libs/jwt"
-	"github.com/flarehotspot/core/sdk/utils/contexts"
-	"github.com/flarehotspot/core/sdk/utils/cookie"
-	"github.com/flarehotspot/core/sdk/utils/translate"
+	"github.com/flarehotspot/core/sdk/api/http"
+	translate "github.com/flarehotspot/core/sdk/utils/translate"
 	"github.com/flarehotspot/core/utils/jsonwebtoken"
 )
 
@@ -31,13 +30,13 @@ func AdminAuth(next http.Handler) http.Handler {
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), contexts.SysAcctCtxKey, acct)
+		ctx := context.WithValue(r.Context(), sdkhttp.SysAcctCtxKey, acct)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
 
 func IsAdminAuthenticated(w http.ResponseWriter, r *http.Request) (*accounts.Account, error) {
-	authtoken, err := cookie.GetCookie(r, AuthTokenCookie)
+	authtoken, err := sdkhttp.GetCookie(r, AuthTokenCookie)
 	if err != nil {
 		bearer := r.Header.Get("Authorization")
 		splitToken := strings.Split(bearer, "Bearer ")

@@ -1,4 +1,4 @@
-package config
+package sdkcfg
 
 // AppCfg is the application configuration.
 type AppCfg struct {

@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strings"
 
-	IRouter "github.com/flarehotspot/core/sdk/api/http/router"
+	"github.com/flarehotspot/core/sdk/api/http"
 	"github.com/gorilla/mux"
 )
 
@@ -18,36 +18,36 @@ func (r *HttpRouter) Router() *mux.Router {
 	return r.mux
 }
 
-func (r *HttpRouter) Get(path string, h http.HandlerFunc) IRouter.IHttpRoute {
+func (r *HttpRouter) Get(path string, h http.HandlerFunc) sdkhttp.IHttpRoute {
 	path = sanitizePath(path)
 	route := r.mux.HandleFunc(path, h).Methods("GET")
 	return &HttpRoute{r.api, route}
 }
-func (r *HttpRouter) Post(path string, h http.HandlerFunc) IRouter.IHttpRoute {
+func (r *HttpRouter) Post(path string, h http.HandlerFunc) sdkhttp.IHttpRoute {
 	path = sanitizePath(path)
 	route := r.mux.HandleFunc(path, h).Methods("POST")
 	return &HttpRoute{r.api, route}
 }
 
-func (r *HttpRouter) Put(path string, h http.HandlerFunc) IRouter.IHttpRoute {
+func (r *HttpRouter) Put(path string, h http.HandlerFunc) sdkhttp.IHttpRoute {
 	path = sanitizePath(path)
 	route := r.mux.HandleFunc(path, h).Methods("PUT")
 	return &HttpRoute{r.api, route}
 }
 
-func (r *HttpRouter) Delete(path string, h http.HandlerFunc) IRouter.IHttpRoute {
+func (r *HttpRouter) Delete(path string, h http.HandlerFunc) sdkhttp.IHttpRoute {
 	path = sanitizePath(path)
 	route := r.mux.HandleFunc(path, h).Methods("DELETE")
 	return &HttpRoute{r.api, route}
 }
 
-func (r *HttpRouter) Options(path string, h http.HandlerFunc) IRouter.IHttpRoute {
+func (r *HttpRouter) Options(path string, h http.HandlerFunc) sdkhttp.IHttpRoute {
 	path = sanitizePath(path)
 	route := r.mux.HandleFunc(path, h).Methods("OPTIONS")
 	return &HttpRoute{r.api, route}
 }
 
-func (r *HttpRouter) Group(path string, fn func(IRouter.IHttpRouter)) {
+func (r *HttpRouter) Group(path string, fn func(sdkhttp.IHttpRouter)) {
 	if fn == nil {
 		panic(fmt.Sprintf("plugin-router: attempting to Route() a nil subrouter on '%s'", path))
 	}

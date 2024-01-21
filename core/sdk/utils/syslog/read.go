@@ -1,4 +1,4 @@
-package syslog
+package sdksyslog
 
 import (
 	"github.com/flarehotspot/core/sdk/utils/fs"
@@ -20,7 +20,7 @@ func ReadError() ([]*LogEntry, error) {
 
 func ReadAll() ([]*LogEntry, error) {
 	files := []string{}
-	if err := fs.LsFiles(paths.LogsDir, &files, false); err != nil {
+	if err := sdkfs.LsFiles(sdkpaths.LogsDir, &files, false); err != nil {
 		return nil, err
 	}
 
@@ -38,7 +38,7 @@ func ReadByType(t LogType) ([]*LogEntry, error) {
 		return nil, err
 	}
 
-	entries = slices.Filter(entries, func(ent *LogEntry) bool {
+	entries = sdkslices.Filter(entries, func(ent *LogEntry) bool {
 		return ent.Type() == t
 	})
 

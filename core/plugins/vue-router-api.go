@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	routerI "github.com/flarehotspot/core/sdk/api/http/router"
+	"github.com/flarehotspot/core/sdk/api/http"
 	"github.com/gorilla/mux"
 )
 
@@ -23,11 +23,11 @@ type VueRouterApi struct {
 	api          *PluginApi
 	adminRoutes  []*VueComponentRoute
 	portalRoutes []*VueComponentRoute
-	adminNavsFn  routerI.VueAdminNavsHandler
-	portalNavsFn routerI.VuePortalItemsHandler
+	adminNavsFn  sdkhttp.VueAdminNavsHandler
+	portalNavsFn sdkhttp.VuePortalItemsHandler
 }
 
-func (self *VueRouterApi) AdminRoutes(routes []routerI.VueAdminRoute) {
+func (self *VueRouterApi) AdminRoutes(routes []sdkhttp.VueAdminRoute) {
 	if routes != nil {
 		compRouter := self.api.HttpAPI.httpRouter.pluginRouter.mux.PathPrefix("/vue-route/admin-components").Subrouter()
 		dataRouter := self.api.HttpAPI.httpRouter.adminRouter.mux.PathPrefix("/vue-route/admin-data").Subrouter()
@@ -72,7 +72,7 @@ func (self *VueRouterApi) AdminRoutes(routes []routerI.VueAdminRoute) {
 	}
 }
 
-func (self *VueRouterApi) PortalRoutes(routes []routerI.VuePortalRoute) {
+func (self *VueRouterApi) PortalRoutes(routes []sdkhttp.VuePortalRoute) {
 	if routes != nil {
 
 		pluginRouter := self.api.HttpAPI.httpRouter.pluginRouter
@@ -138,7 +138,7 @@ func (self *VueRouterApi) FindAdminRoute(vueRouteName string) (*VueComponentRout
 	return nil, false
 }
 
-func (self *VueRouterApi) AdminNavs(fn routerI.VueAdminNavsHandler) {
+func (self *VueRouterApi) AdminNavs(fn sdkhttp.VueAdminNavsHandler) {
 	self.adminNavsFn = fn
 }
 
@@ -171,7 +171,7 @@ func (self *VueRouterApi) FindVueComponent(name string) (VueComponentRoute, bool
 	return VueComponentRoute{}, true
 }
 
-func (self *VueRouterApi) PortalItems(fn routerI.VuePortalItemsHandler) {
+func (self *VueRouterApi) PortalItems(fn sdkhttp.VuePortalItemsHandler) {
 	self.portalNavsFn = fn
 }
 

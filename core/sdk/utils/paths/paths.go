@@ -1,4 +1,4 @@
-package paths
+package sdkpaths
 
 import (
 	"os"

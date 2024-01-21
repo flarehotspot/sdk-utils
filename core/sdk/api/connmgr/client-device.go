@@ -1,4 +1,4 @@
-package connmgr
+package sdkconnmgr
 
 import "context"
 

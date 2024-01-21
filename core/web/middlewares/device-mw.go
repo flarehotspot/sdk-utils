@@ -7,7 +7,7 @@ import (
 
 	"github.com/flarehotspot/core/connmgr"
 	"github.com/flarehotspot/core/db"
-	"github.com/flarehotspot/core/sdk/utils/contexts"
+	"github.com/flarehotspot/core/sdk/api/http"
 	"github.com/flarehotspot/core/utils/hostfinder"
 	"github.com/flarehotspot/core/web/response"
 )
@@ -33,7 +33,7 @@ func DeviceMiddleware(dtb *db.Database, clntMgr *connmgr.ClientRegister) func(ne
 				return
 			}
 
-			ctx := context.WithValue(r.Context(), contexts.ClientCtxKey, clnt)
+			ctx := context.WithValue(r.Context(), sdkhttp.ClientCtxKey, clnt)
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})
 	}

@@ -1,4 +1,4 @@
-package config
+package sdkcfg
 
 // BandwdData is the bandwidth configuration for a given interface. Each interface bandwidth is configured individually.
 type BandwdData struct {

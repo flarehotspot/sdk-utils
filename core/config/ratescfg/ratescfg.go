@@ -7,8 +7,8 @@ import (
 	"sort"
 
 	"encoding/json"
-	"github.com/flarehotspot/core/sdk/utils/paths"
-	"github.com/flarehotspot/core/sdk/utils/slices"
+	paths "github.com/flarehotspot/core/sdk/utils/paths"
+	slices "github.com/flarehotspot/core/sdk/utils/slices"
 )
 
 type WifiRate struct {

@@ -1,4 +1,4 @@
-package payments
+package sdkpayments
 
 // PurchaseItem represents a purchase item to be included in the purchase.
 type PurchaseItem struct {

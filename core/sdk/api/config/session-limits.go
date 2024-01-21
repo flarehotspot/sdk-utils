@@ -1,4 +1,4 @@
-package config
+package sdkcfg
 
 type ExpPauseDenom struct {
 	// Matches sessions with minutes equal or above to this value.

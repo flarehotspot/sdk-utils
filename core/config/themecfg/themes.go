@@ -6,13 +6,13 @@ import (
 	"path/filepath"
 
 	"encoding/json"
-	"github.com/flarehotspot/core/sdk/utils/paths"
+	paths "github.com/flarehotspot/core/sdk/utils/paths"
 )
 
 type ThemesConfig struct {
-	Auth          string `json:"auth"`
+	Auth   string `json:"auth"`
 	Portal string `json:"portal"`
-	Admin      string `json:"admin"`
+	Admin  string `json:"admin"`
 }
 
 func Defaults() *ThemesConfig {

@@ -1,42 +1,42 @@
 package plugins
 
 import (
-	coreM "github.com/flarehotspot/core/db/models"
+	"github.com/flarehotspot/core/db/models"
 	"github.com/flarehotspot/core/sdk/api/models"
 )
 
 type PluginModels struct {
-	models *coreM.Models
+	models *models.Models
 }
 
-func (self *PluginModels) Device() models.IDeviceModel {
+func (self *PluginModels) Device() sdkmodels.IDeviceModel {
 	return self.models.Device()
 }
 
-func (self *PluginModels) Session() models.ISessionModel {
+func (self *PluginModels) Session() sdkmodels.ISessionModel {
 	return self.models.Session()
 }
 
-func (self *PluginModels) Purchase() models.IPurchaseModel {
+func (self *PluginModels) Purchase() sdkmodels.IPurchaseModel {
 	return self.models.Purchase()
 }
 
-func (self *PluginModels) PurchaseItem() models.IPurchaseItemModel {
+func (self *PluginModels) PurchaseItem() sdkmodels.IPurchaseItemModel {
 	return self.models.PurchaseItem()
 }
 
-func (self *PluginModels) Payment() models.IPaymentModel {
+func (self *PluginModels) Payment() sdkmodels.IPaymentModel {
 	return self.models.Payment()
 }
 
-func (self *PluginModels) Wallet() models.IWalletModel {
+func (self *PluginModels) Wallet() sdkmodels.IWalletModel {
 	return self.models.Wallet()
 }
 
-func (self *PluginModels) WalletTrns() models.IWalletTrnsModel {
+func (self *PluginModels) WalletTrns() sdkmodels.IWalletTrnsModel {
 	return self.models.WalletTrns()
 }
 
-func NewPluginModels(m *coreM.Models) *PluginModels {
+func NewPluginModels(m *models.Models) *PluginModels {
 	return &PluginModels{m}
 }

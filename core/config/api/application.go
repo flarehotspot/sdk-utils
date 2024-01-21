@@ -7,20 +7,20 @@ import (
 
 type AppCfgApi struct{}
 
-func (c *AppCfgApi) Read() (*config.AppCfg, error) {
+func (c *AppCfgApi) Read() (*sdkcfg.AppCfg, error) {
 	cfg, err := appcfg.Read()
 	if err != nil {
 		return nil, err
 	}
 
-	return &config.AppCfg{
+	return &sdkcfg.AppCfg{
 		Lang:     cfg.Lang,
 		Currency: cfg.Currency,
 		Secret:   cfg.Secret,
 	}, nil
 }
 
-func (c *AppCfgApi) Write(cfg *config.AppCfg) error {
+func (c *AppCfgApi) Write(cfg *sdkcfg.AppCfg) error {
 	data := appcfg.AppConfig{
 		Lang:     cfg.Lang,
 		Currency: cfg.Currency,

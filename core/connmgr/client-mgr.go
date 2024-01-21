@@ -9,11 +9,11 @@ import (
 	"github.com/flarehotspot/core/db"
 	"github.com/flarehotspot/core/db/models"
 	"github.com/flarehotspot/core/network"
-	"github.com/flarehotspot/core/utils/nftables"
-	"github.com/flarehotspot/core/sdk/api/connmgr"
+	connmgr "github.com/flarehotspot/core/sdk/api/connmgr"
 	sdknet "github.com/flarehotspot/core/sdk/api/network"
-	"github.com/flarehotspot/core/sdk/utils/slices"
-	"github.com/flarehotspot/core/sdk/utils/sse"
+	slices "github.com/flarehotspot/core/sdk/utils/slices"
+	sse "github.com/flarehotspot/core/sdk/utils/sse"
+	"github.com/flarehotspot/core/utils/nftables"
 )
 
 const (
@@ -52,7 +52,7 @@ func (cmgr *ClientMgr) ReloadSessions(ctx context.Context, iface string) error {
 		defer cmgr.mu.RUnlock()
 
 		for _, rs := range cmgr.sessions {
-      lan := rs.Lan()
+			lan := rs.Lan()
 
 			if lan.Name() == iface {
 				cs := rs.GetSession()

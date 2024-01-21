@@ -4,7 +4,7 @@ import (
 	"github.com/flarehotspot/core/config/plugincfg"
 	"github.com/flarehotspot/core/connmgr"
 	"github.com/flarehotspot/core/db"
-	"github.com/flarehotspot/core/sdk/utils/translate"
+	translate "github.com/flarehotspot/core/sdk/utils/translate"
 )
 
 type PluginApi struct {

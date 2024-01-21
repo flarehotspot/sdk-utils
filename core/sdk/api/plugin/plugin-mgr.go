@@ -1,4 +1,4 @@
-package plugin
+package sdkplugin
 
 // IPluginMgr is used to get data of installed plugins in the system.
 type IPluginMgr interface {

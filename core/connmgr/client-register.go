@@ -8,18 +8,18 @@ import (
 	"net/http"
 
 	"github.com/flarehotspot/core/db"
-	coreMdls "github.com/flarehotspot/core/db/models"
+	"github.com/flarehotspot/core/db/models"
+	connmgr "github.com/flarehotspot/core/sdk/api/connmgr"
+	"github.com/flarehotspot/core/sdk/api/http"
+	"github.com/flarehotspot/core/sdk/api/models"
 	jobque "github.com/flarehotspot/core/utils/job-que"
-	"github.com/flarehotspot/core/sdk/api/connmgr"
-	sdkMdls "github.com/flarehotspot/core/sdk/api/models"
-	cnts "github.com/flarehotspot/core/sdk/utils/contexts"
 )
 
 var regQue *jobque.JobQues = jobque.NewJobQues()
 
 type ClientRegister struct {
 	db            *db.Database
-	mdls          *coreMdls.Models
+	mdls          *models.Models
 	mgr           *ClientMgr
 	findHooks     []connmgr.ClientFindHookFn
 	createdHooks  []connmgr.ClientCreatedHookFn
@@ -27,7 +27,7 @@ type ClientRegister struct {
 	modifiedHooks []connmgr.ClientModifierHookFn
 }
 
-func NewClientRegister(dtb *db.Database, mdls *coreMdls.Models) *ClientRegister {
+func NewClientRegister(dtb *db.Database, mdls *models.Models) *ClientRegister {
 	return &ClientRegister{
 		db:            dtb,
 		mdls:          mdls,
@@ -57,7 +57,7 @@ func (reg *ClientRegister) ClientModifierHook(fn connmgr.ClientModifierHookFn) {
 func (reg *ClientRegister) Register(ctx context.Context, mac string, ip string, hostname string) (connmgr.IClientDevice, error) {
 	var (
 		clnt *ClientDevice
-		dev  sdkMdls.IDevice
+		dev  sdkmodels.IDevice
 		err  error
 	)
 
@@ -93,7 +93,7 @@ func (reg *ClientRegister) Register(ctx context.Context, mac string, ip string, 
 }
 
 func (reg *ClientRegister) CurrentClient(r *http.Request) (connmgr.IClientDevice, error) {
-	sym := r.Context().Value(cnts.ClientCtxKey)
+	sym := r.Context().Value(sdkhttp.ClientCtxKey)
 	clnt, ok := sym.(connmgr.IClientDevice)
 	if !ok {
 		return nil, errors.New("Can't determine client device")

@@ -1,7 +1,7 @@
 package fci
 
 import (
-	"github.com/flarehotspot/core/sdk/api/fci"
+	fci "github.com/flarehotspot/core/sdk/api/fci"
 )
 
 func NewFieldLsRow(cfg *FciConfig, fl *FciFieldList, m []map[string]any) *FciFieldLsRow {

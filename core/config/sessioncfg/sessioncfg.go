@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"encoding/json"
-	"github.com/flarehotspot/core/sdk/utils/paths"
+	paths "github.com/flarehotspot/core/sdk/utils/paths"
 )
 
 type SessionExp struct {

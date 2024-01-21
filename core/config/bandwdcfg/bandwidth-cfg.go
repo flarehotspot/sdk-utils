@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 
 	"encoding/json"
-	"github.com/flarehotspot/core/sdk/utils/paths"
+	paths "github.com/flarehotspot/core/sdk/utils/paths"
 )
 
 var (

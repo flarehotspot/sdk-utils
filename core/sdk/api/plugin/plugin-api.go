@@ -1,4 +1,4 @@
-package plugin
+package sdkplugin
 
 import (
 	"database/sql"
@@ -29,8 +29,8 @@ type IPluginApi interface {
 	// Returns the version of the plugin as defined in package.yml "version" field.
 	Version() string
 
-    // Returns the slug name of the plugin
-    Slug() string
+	// Returns the slug name of the plugin
+	Slug() string
 
 	// Returns the description of plugin.
 	Description() string
@@ -44,7 +44,7 @@ type IPluginApi interface {
 	//  api.Translate(translate.Error, "some-key")
 	// will look for the file "/resources/translations/en/error/some-key.txt" under the plugin's root directory
 	// and displays the text inside that file.
-	Translate(t translate.MsgType, msgk string) string
+	Translate(t sdktrans.MsgType, msgk string) string
 
 	// Returns the absolute path to the given file in /resources folder of your plugin.
 	// For example, if you have the following code:
@@ -56,40 +56,40 @@ type IPluginApi interface {
 	DbApi() *sql.DB
 
 	// Returns an instance of models api.
-	ModelsApi() models.IModelsApi
+	ModelsApi() sdkmodels.IModelsApi
 
 	// Returns an instance of accounts api.
-	AcctApi() accounts.IAcctApi
+	AcctApi() sdkacct.IAcctApi
 
 	// Returns an instance of http api.
-	HttpApi() http.IHttpApi
+	HttpApi() sdkhttp.IHttpApi
 
 	// Returns an instance of config api.
-	ConfigApi() config.IConfigApi
+	ConfigApi() sdkcfg.IConfigApi
 
 	// Returns an instance of payments api.
-	PaymentsApi() payments.IPaymentsApi
+	PaymentsApi() sdkpayments.IPaymentsApi
 
 	// Returns an instance of network api.
-	NetworkApi() network.INetworkApi
+	NetworkApi() sdknet.INetworkApi
 
 	// Returns an instance of ads api.
-	AdsApi() ads.IAdsApi
+	AdsApi() sdkads.IAdsApi
 
 	// Returns an instance of in-app purchase api.
-	InAppPurchaseApi() inappur.InAppPurchaseApi
+	InAppPurchaseApi() sdkinappur.InAppPurchaseApi
 
 	// Returns an instance of the plugin manager.
 	PluginMgr() IPluginMgr
 
 	// Returns an instance of the client register.
-	ClientReg() connmgr.IClientRegister
+	ClientReg() sdkconnmgr.IClientRegister
 
 	// Returns an instance of the client manager.
-	ClientMgr() connmgr.IClientMgr
+	ClientMgr() sdkconnmgr.IClientMgr
 
 	// Returns an instance of the uci api.
-	UciApi() uci.IUciApi
+	UciApi() sdkuci.IUciApi
 
-	ThemesApi() themes.IThemesApi
+	ThemesApi() sdktheme.IThemesApi
 }

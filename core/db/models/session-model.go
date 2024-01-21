@@ -5,11 +5,11 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/flarehotspot/core/db"
-	"github.com/flarehotspot/core/sdk/api/models"
-	"github.com/flarehotspot/core/sdk/utils/log"
+	models "github.com/flarehotspot/core/sdk/api/models"
 )
 
 var (

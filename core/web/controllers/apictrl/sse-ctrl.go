@@ -5,8 +5,8 @@ import (
 
 	"github.com/flarehotspot/core/accounts"
 	"github.com/flarehotspot/core/web/helpers"
-	"github.com/flarehotspot/core/sdk/utils/contexts"
-	"github.com/flarehotspot/core/sdk/utils/sse"
+	"github.com/flarehotspot/core/sdk/api/http"
+	sse "github.com/flarehotspot/core/sdk/utils/sse"
 )
 
 type SseApiCtrl struct{}
@@ -17,7 +17,7 @@ func NewSseApiCtrl() *SseApiCtrl {
 
 func (ctrl *SseApiCtrl) AdminEvents(w http.ResponseWriter, r *http.Request) {
 
-	acctsym := r.Context().Value(contexts.SysAcctCtxKey)
+	acctsym := r.Context().Value(sdkhttp.SysAcctCtxKey)
 	acct := acctsym.(*accounts.Account)
 
 	socket, err := sse.NewSocket(w, r)

@@ -1,4 +1,4 @@
-package response
+package sdkhttp
 
 import (
 	"net/http"

@@ -9,7 +9,7 @@ import (
 
 	"github.com/flarehotspot/core/config/themecfg"
 	sdkfci "github.com/flarehotspot/core/sdk/api/fci"
-	"github.com/flarehotspot/core/sdk/utils/paths"
+	paths "github.com/flarehotspot/core/sdk/utils/paths"
 )
 
 // FciComposeView returns the html form as string

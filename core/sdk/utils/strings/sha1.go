@@ -1,4 +1,4 @@
-package strings
+package sdkstr
 
 import (
 	"crypto/sha1"

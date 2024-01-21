@@ -1,4 +1,4 @@
-package router
+package sdkhttp
 
 // IHttpRoute represents a single route in the router.
 type IHttpRoute interface {

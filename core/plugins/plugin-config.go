@@ -1,8 +1,8 @@
 package plugins
 
 import (
-	"github.com/flarehotspot/core/sdk/utils/fs"
-	"github.com/flarehotspot/core/sdk/utils/paths"
+	fs "github.com/flarehotspot/core/sdk/utils/fs"
+	paths "github.com/flarehotspot/core/sdk/utils/paths"
 	"os"
 	"path/filepath"
 )

@@ -1,6 +1,4 @@
-package views
-
-import "github.com/flarehotspot/core/sdk/api/http"
+package sdkhttp
 
 // ViewData represents the data passed to the views in your plugin.
 // It is composed of two parts, the view helpers and view data you passed to the view.
@@ -10,6 +8,6 @@ import "github.com/flarehotspot/core/sdk/api/http"
 // Then your custom data can be accessed in your view with: {{ .Data() }}.
 // The helpers can be accessed with: {{ .Helpers() }}.
 type IViewData interface {
-	Helpers() http.IHelpers
+	Helpers() IHelpers
 	Data() any
 }

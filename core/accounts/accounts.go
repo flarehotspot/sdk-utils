@@ -8,10 +8,10 @@ import (
 	"sync"
 
 	"encoding/json"
-	"github.com/flarehotspot/core/sdk/api/accounts"
-	"github.com/flarehotspot/core/sdk/utils/fs"
-	"github.com/flarehotspot/core/sdk/utils/paths"
-	"github.com/flarehotspot/core/sdk/utils/translate"
+	accounts "github.com/flarehotspot/core/sdk/api/accounts"
+	fs "github.com/flarehotspot/core/sdk/utils/fs"
+	paths "github.com/flarehotspot/core/sdk/utils/paths"
+	translate "github.com/flarehotspot/core/sdk/utils/translate"
 )
 
 const (

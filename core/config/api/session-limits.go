@@ -9,7 +9,7 @@ import (
 
 type SessionLimitsCfg struct{}
 
-func (c *SessionLimitsCfg) Read() (*config.SessCfgData, error) {
+func (c *SessionLimitsCfg) Read() (*sdkcfg.SessCfgData, error) {
 	cfg, err := sessioncfg.Read()
 	if err != nil {
 		return nil, err
@@ -18,7 +18,7 @@ func (c *SessionLimitsCfg) Read() (*config.SessCfgData, error) {
 	return sessionCfgToOut(cfg), nil
 }
 
-func (c *SessionLimitsCfg) Write(data *config.SessCfgData) error {
+func (c *SessionLimitsCfg) Write(data *sdkcfg.SessCfgData) error {
 	cfg := inputToSessionCfg(data)
 	return sessioncfg.Write(cfg)
 }
@@ -37,7 +37,7 @@ func NewSessionsCfg() *SessionLimitsCfg {
 	return &SessionLimitsCfg{}
 }
 
-func inputToSessionCfg(input *config.SessCfgData) *sessioncfg.SessCfgData {
+func inputToSessionCfg(input *sdkcfg.SessCfgData) *sessioncfg.SessCfgData {
 	cfg := sessioncfg.SessCfgData{
 		StartOnBoot:       input.StartOnBoot,
 		PauseInternetDown: input.PauseInternetDown,
@@ -57,8 +57,8 @@ func inputToSessionCfg(input *config.SessCfgData) *sessioncfg.SessCfgData {
 	return &cfg
 }
 
-func sessionCfgToOut(cfg *sessioncfg.SessCfgData) *config.SessCfgData {
-	data := config.SessCfgData{
+func sessionCfgToOut(cfg *sessioncfg.SessCfgData) *sdkcfg.SessCfgData {
+	data := sdkcfg.SessCfgData{
 		StartOnBoot:       cfg.StartOnBoot,
 		PauseInternetDown: cfg.PauseInternetDown,
 		ResumeInterUp:     cfg.ResumeInterUp,
@@ -66,7 +66,7 @@ func sessionCfgToOut(cfg *sessioncfg.SessCfgData) *config.SessCfgData {
 	}
 
 	for _, exp := range cfg.Expirations {
-		data.PauseLimitDenoms = append(data.PauseLimitDenoms, &config.ExpPauseDenom{
+		data.PauseLimitDenoms = append(data.PauseLimitDenoms, &sdkcfg.ExpPauseDenom{
 			Minutes:    exp.Minutes,
 			Mbytes:     exp.Mbytes,
 			PauseLimit: exp.PauseLimit,

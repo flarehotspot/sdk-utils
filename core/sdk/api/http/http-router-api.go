@@ -1,4 +1,4 @@
-package router
+package sdkhttp
 
 type IHttpRouterApi interface {
 	AdminRouter() IHttpRouter

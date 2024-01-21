@@ -9,10 +9,9 @@ import (
 	"strings"
 	texttemplate "text/template"
 
-	httpI "github.com/flarehotspot/core/sdk/api/http"
-	routerI "github.com/flarehotspot/core/sdk/api/http/router"
-	"github.com/flarehotspot/core/sdk/api/plugin"
-	"github.com/flarehotspot/core/sdk/utils/translate"
+	"github.com/flarehotspot/core/sdk/api/http"
+	plugin "github.com/flarehotspot/core/sdk/api/plugin"
+	translate "github.com/flarehotspot/core/sdk/utils/translate"
 	"github.com/flarehotspot/core/web/response"
 	"github.com/flarehotspot/core/web/router"
 	rnames "github.com/flarehotspot/core/web/routes/names"
@@ -22,7 +21,7 @@ type ViewHelpers struct {
 	api *PluginApi
 }
 
-func NewViewHelpers(api *PluginApi) httpI.IHelpers {
+func NewViewHelpers(api *PluginApi) sdkhttp.IHelpers {
 	return &ViewHelpers{api: api}
 }
 
@@ -104,17 +103,17 @@ func (h *ViewHelpers) AdView() (html string) {
 	return ""
 }
 
-func (h *ViewHelpers) MuxRouteName(name string) routerI.MuxRouteName {
-	return h.api.HttpAPI.HttpRouter().MuxRouteName(routerI.PluginRouteName(name))
+func (h *ViewHelpers) MuxRouteName(name string) sdkhttp.MuxRouteName {
+	return h.api.HttpAPI.HttpRouter().MuxRouteName(sdkhttp.PluginRouteName(name))
 }
 
 func (h *ViewHelpers) UrlForMuxRoute(name string, params ...string) string {
-	url, _ := router.UrlForRoute(routerI.MuxRouteName(name), params...)
+	url, _ := router.UrlForRoute(sdkhttp.MuxRouteName(name), params...)
 	return url
 }
 
 func (h *ViewHelpers) UrlForRoute(name string, params ...string) string {
-	return h.api.HttpApi().HttpRouter().UrlForRoute(routerI.PluginRouteName(name), params...)
+	return h.api.HttpApi().HttpRouter().UrlForRoute(sdkhttp.PluginRouteName(name), params...)
 }
 
 func (h *ViewHelpers) VueRouteName(name string) string {

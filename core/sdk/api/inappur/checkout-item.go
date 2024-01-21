@@ -1,4 +1,4 @@
-package inappur
+package sdkinappur
 
 // InAppCheckoutItem represents an item that can be purchased.
 type InAppCheckoutItem struct {

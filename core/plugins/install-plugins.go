@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 
 	"github.com/flarehotspot/core/config/plugincfg"
-	"github.com/flarehotspot/core/sdk/utils/paths"
-	"github.com/flarehotspot/core/sdk/utils/strings"
+	paths "github.com/flarehotspot/core/sdk/utils/paths"
+	strings "github.com/flarehotspot/core/sdk/utils/strings"
 	"github.com/flarehotspot/core/utils/git"
 )
 

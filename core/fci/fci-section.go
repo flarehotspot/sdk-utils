@@ -3,7 +3,7 @@ package fci
 import (
 	"errors"
 
-	"github.com/flarehotspot/core/sdk/api/fci"
+	fci "github.com/flarehotspot/core/sdk/api/fci"
 )
 
 func NewFciSection(cfg *FciConfig, secmap map[string]any) *FciSection {

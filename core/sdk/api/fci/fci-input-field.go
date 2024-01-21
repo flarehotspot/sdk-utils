@@ -1,4 +1,4 @@
-package fci
+package sdkfci
 
 import "html/template"
 

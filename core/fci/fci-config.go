@@ -5,8 +5,8 @@ import (
 	"os"
 	"path"
 
-	"github.com/flarehotspot/core/sdk/api/fci"
-	"github.com/flarehotspot/core/sdk/utils/paths"
+	fci "github.com/flarehotspot/core/sdk/api/fci"
+	paths "github.com/flarehotspot/core/sdk/utils/paths"
 )
 
 func NewFciConfig(pkg string, name string) *FciConfig {

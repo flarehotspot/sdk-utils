@@ -4,9 +4,9 @@ import (
 	"log"
 
 	"github.com/flarehotspot/core/config/ratescfg"
-	"github.com/flarehotspot/core/sdk/api/config"
-	"github.com/flarehotspot/core/sdk/api/models"
-	"github.com/flarehotspot/core/sdk/utils/strings"
+	config "github.com/flarehotspot/core/sdk/api/config"
+	models "github.com/flarehotspot/core/sdk/api/models"
+	strings "github.com/flarehotspot/core/sdk/utils/strings"
 )
 
 type SessionRatesApi struct{}

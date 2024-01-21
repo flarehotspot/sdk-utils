@@ -1,4 +1,4 @@
-package ads
+package sdkads
 
 // IAdsApi is used for displaying ads in the captive portal.
 type IAdsApi interface {

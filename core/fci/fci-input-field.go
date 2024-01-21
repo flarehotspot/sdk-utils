@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"html/template"
 
-	"github.com/flarehotspot/core/sdk/api/fci"
+	fci "github.com/flarehotspot/core/sdk/api/fci"
 )
 
 func NewFciInputField(cfg *FciConfig, m map[string]any) *FciInputField {

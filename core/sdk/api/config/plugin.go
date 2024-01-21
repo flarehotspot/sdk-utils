@@ -1,4 +1,4 @@
-package config
+package sdkcfg
 
 // IPluginCfg is used to read and write custom configuration for your plugin.
 type IPluginCfg interface {

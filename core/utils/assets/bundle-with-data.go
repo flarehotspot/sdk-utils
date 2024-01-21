@@ -7,8 +7,8 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/flarehotspot/core/sdk/utils/fs"
-	"github.com/flarehotspot/core/sdk/utils/paths"
+	fs "github.com/flarehotspot/core/sdk/utils/fs"
+	paths "github.com/flarehotspot/core/sdk/utils/paths"
 	"github.com/flarehotspot/core/utils/crypt"
 	jobque "github.com/flarehotspot/core/utils/job-que"
 	tmplcache "github.com/flarehotspot/core/utils/flaretmpl"

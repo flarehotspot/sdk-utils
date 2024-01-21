@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"path/filepath"
 
-	"github.com/flarehotspot/core/sdk/api/themes"
+	themes "github.com/flarehotspot/core/sdk/api/themes"
 	"github.com/flarehotspot/core/web/response"
 	"github.com/flarehotspot/core/web/router"
 	routenames "github.com/flarehotspot/core/web/routes/names"

@@ -6,10 +6,9 @@ import (
 
 	"github.com/flarehotspot/core/connmgr"
 	"github.com/flarehotspot/core/db"
-	"github.com/flarehotspot/core/sdk/api/http/router"
-	routerI "github.com/flarehotspot/core/sdk/api/http/router"
+	"github.com/flarehotspot/core/sdk/api/http"
 	"github.com/flarehotspot/core/web/middlewares"
-	coreR "github.com/flarehotspot/core/web/router"
+	"github.com/flarehotspot/core/web/router"
 )
 
 type HttpRouterApi struct {
@@ -20,7 +19,7 @@ type HttpRouterApi struct {
 
 func NewRouterApi(api *PluginApi, db *db.Database, clnt *connmgr.ClientRegister) *HttpRouterApi {
 	prefix := fmt.Sprintf("/%s/%s", api.Pkg(), api.Version())
-	pluginMux := coreR.PluginRouter.PathPrefix(prefix).Subrouter()
+	pluginMux := router.PluginRouter.PathPrefix(prefix).Subrouter()
 	adminMux := pluginMux.PathPrefix("/admin").Subrouter()
 
 	authMw := middlewares.AdminAuth
@@ -32,21 +31,21 @@ func NewRouterApi(api *PluginApi, db *db.Database, clnt *connmgr.ClientRegister)
 	return &HttpRouterApi{api, adminRouter, pluginRouter}
 }
 
-func (self *HttpRouterApi) AdminRouter() routerI.IHttpRouter {
+func (self *HttpRouterApi) AdminRouter() sdkhttp.IHttpRouter {
 	return self.adminRouter
 }
 
-func (self *HttpRouterApi) PluginRouter() routerI.IHttpRouter {
+func (self *HttpRouterApi) PluginRouter() sdkhttp.IHttpRouter {
 	return self.pluginRouter
 }
 
-func (self *HttpRouterApi) MuxRouteName(name router.PluginRouteName) router.MuxRouteName {
+func (self *HttpRouterApi) MuxRouteName(name sdkhttp.PluginRouteName) sdkhttp.MuxRouteName {
 	muxname := fmt.Sprintf("%s.%s", self.api.Pkg(), string(name))
-	return router.MuxRouteName(muxname)
+	return sdkhttp.MuxRouteName(muxname)
 }
 
-func (util *HttpRouterApi) UrlForMuxRoute(muxname router.MuxRouteName, pairs ...string) string {
-	route := coreR.RootRouter.Get(string(muxname))
+func (util *HttpRouterApi) UrlForMuxRoute(muxname sdkhttp.MuxRouteName, pairs ...string) string {
+	route := router.RootRouter.Get(string(muxname))
 	url, err := route.URL(pairs...)
 	if err != nil {
 		log.Println("Error: " + err.Error())
@@ -56,7 +55,7 @@ func (util *HttpRouterApi) UrlForMuxRoute(muxname router.MuxRouteName, pairs ...
 	return url.String()
 }
 
-func (util *HttpRouterApi) UrlForRoute(name router.PluginRouteName, pairs ...string) string {
+func (util *HttpRouterApi) UrlForRoute(name sdkhttp.PluginRouteName, pairs ...string) string {
 	muxname := util.MuxRouteName(name)
 	return util.UrlForMuxRoute(muxname, pairs...)
 }

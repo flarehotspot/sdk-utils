@@ -1,4 +1,4 @@
-package slices
+package sdkslices
 
 func Contains[T comparable](arr []T, item T) bool {
 	for _, v := range arr {

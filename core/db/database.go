@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/flarehotspot/core/config/dbcfg"
-	"github.com/flarehotspot/core/utils/mysql"
 	"github.com/flarehotspot/core/sdk/utils/strings"
+	"github.com/flarehotspot/core/utils/mysql"
 	//
 	// UNCOMMENT BELOW LINES WHEN DEBUGGING SQL QUERIES:
 	//
@@ -25,8 +25,8 @@ type Database struct {
 }
 
 func NewDatabase() (*Database, error) {
-	dbpass := strings.Rand(8)
-	dbname := fmt.Sprintf("flarehotspot_%s", strings.Rand(8))
+	dbpass := sdkstr.Rand(8)
+	dbname := fmt.Sprintf("flarehotspot_%s", sdkstr.Rand(8))
 
 	err := mysql.SetupDb(dbpass, dbname)
 	if err != nil {

@@ -7,13 +7,13 @@ import (
 
 type DbCfgApi struct{}
 
-func (c *DbCfgApi) Read() (*config.Database, error) {
+func (c *DbCfgApi) Read() (*sdkcfg.Database, error) {
 	cfg, err := dbcfg.Read()
 	if err != nil {
 		return nil, err
 	}
 
-	return &config.Database{
+	return &sdkcfg.Database{
 		Host:     cfg.Host,
 		Username: cfg.Username,
 		Password: cfg.Password,
@@ -21,7 +21,7 @@ func (c *DbCfgApi) Read() (*config.Database, error) {
 	}, nil
 }
 
-func (c *DbCfgApi) Write(cfg *config.Database) error {
+func (c *DbCfgApi) Write(cfg *sdkcfg.Database) error {
 	return dbcfg.Write(&dbcfg.DbConfig{
 		Host:     cfg.Host,
 		Username: cfg.Username,

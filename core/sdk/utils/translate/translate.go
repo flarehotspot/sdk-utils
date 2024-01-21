@@ -1,4 +1,4 @@
-package translate
+package sdktrans
 
 import (
 	"fmt"
@@ -17,11 +17,11 @@ const (
 )
 
 var (
-	coretrnsdir = filepath.Join(paths.AppDir, "core/resources/translations")
-	sdktrnsdir  = filepath.Join(paths.AppDir, "sdk/resources/translations")
+	coretrnsdir = filepath.Join(sdkpaths.AppDir, "core/resources/translations")
+	sdktrnsdir  = filepath.Join(sdkpaths.AppDir, "sdk/resources/translations")
 
-	Core = NewTranslator(paths.CoreDir)
-	Sdk  = NewTranslator(paths.SdkDir)
+	Core = NewTranslator(sdkpaths.CoreDir)
+	Sdk  = NewTranslator(sdkpaths.SdkDir)
 )
 
 type MsgType string
@@ -40,7 +40,7 @@ func NewTranslator(rootdir string) TranslateFn {
 }
 
 func getLang() string {
-	cfgPath := filepath.Join(paths.AppDir, "config/application.json")
+	cfgPath := filepath.Join(sdkpaths.AppDir, "config/application.json")
 	bytes, err := os.ReadFile(cfgPath)
 	if err != nil {
 		return err.Error()

@@ -1,4 +1,4 @@
-package themes
+package sdktheme
 
 type IThemesApi interface {
 	AdminThemeComponent(AdminTheme)

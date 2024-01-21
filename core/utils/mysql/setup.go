@@ -5,19 +5,19 @@ package mysql
 import (
 	"fmt"
 	"os"
+    "encoding/json"
 	"path/filepath"
 	stdstr "strings"
 	"time"
 
 	"github.com/flarehotspot/core/utils/cmd"
 	"github.com/flarehotspot/core/sdk/libs/go-uci"
-	"github.com/flarehotspot/core/sdk/libs/yaml-3"
-	"github.com/flarehotspot/core/sdk/utils/fs"
-	"github.com/flarehotspot/core/sdk/utils/paths"
+fs	"github.com/flarehotspot/core/sdk/utils/fs"
+paths	"github.com/flarehotspot/core/sdk/utils/paths"
 )
 
 var (
-	configPath  = filepath.Join(paths.ConfigDir, "database.yml")
+	configPath  = filepath.Join(paths.ConfigDir, "database.json")
 	srvMysqlDir = "/srv/mysql"
 )
 
@@ -150,7 +150,7 @@ func writeConfig(dbpass string, dbname string) error {
 		"database": dbname,
 	}
 
-	bytes, err := yaml.Marshal(&cfg)
+	bytes, err := json.Marshal(&cfg)
 	if err != nil {
 		return err
 	}

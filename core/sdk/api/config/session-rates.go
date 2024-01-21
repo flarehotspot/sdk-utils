@@ -1,6 +1,8 @@
-package config
+package sdkcfg
 
-import "github.com/flarehotspot/core/sdk/api/models"
+import (
+	models "github.com/flarehotspot/core/sdk/api/models"
+)
 
 // SessionRate is used to compute the session's time and data.
 type SessionRate struct {

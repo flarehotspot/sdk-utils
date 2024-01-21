@@ -1,4 +1,4 @@
-package slices
+package sdkslices
 
 func Filter[T any](collection []T, filterFn func(item T) bool) []T {
 	var newArr []T = []T{}

@@ -8,8 +8,8 @@ import (
 	"github.com/flarehotspot/core/config/themecfg"
 	"github.com/flarehotspot/core/globals"
 	"github.com/flarehotspot/core/plugins"
-	"github.com/flarehotspot/core/sdk/api/plugin"
-	"github.com/flarehotspot/core/sdk/api/themes"
+	plugin "github.com/flarehotspot/core/sdk/api/plugin"
+	themes "github.com/flarehotspot/core/sdk/api/themes"
 	"github.com/flarehotspot/core/utils/assets"
 	"github.com/flarehotspot/core/web/response"
 )

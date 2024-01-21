@@ -11,7 +11,7 @@ func NewBandwdCfgApi() *BandwdCfgApi {
 	return &BandwdCfgApi{}
 }
 
-func (c *BandwdCfgApi) GetConfig(ifname string) (*config.BandwdData, bool) {
+func (c *BandwdCfgApi) GetConfig(ifname string) (*sdkcfg.BandwdData, bool) {
 	cfg, err := bandwdcfg.Read()
 	if err != nil {
 		return nil, false
@@ -22,7 +22,7 @@ func (c *BandwdCfgApi) GetConfig(ifname string) (*config.BandwdData, bool) {
 		return nil, false
 	}
 
-	return &config.BandwdData{
+	return &sdkcfg.BandwdData{
 		UseGlobal:       bcfg.UseGlobal,
 		GlobalDownMbits: bcfg.GlobalDownMbits,
 		GlobalUpMbits:   bcfg.GlobalUpMbits,
@@ -31,7 +31,7 @@ func (c *BandwdCfgApi) GetConfig(ifname string) (*config.BandwdData, bool) {
 	}, true
 }
 
-func (c *BandwdCfgApi) SetConfig(ifname string, cfg *config.BandwdData) error {
+func (c *BandwdCfgApi) SetConfig(ifname string, cfg *sdkcfg.BandwdData) error {
 	oldCfg, err := bandwdcfg.Read()
 	if err != nil {
 		return err

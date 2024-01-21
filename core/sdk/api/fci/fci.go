@@ -1,6 +1,6 @@
 // Flarehotspot Configuration Interface (FCI)
 
-package fci
+package sdkfci
 
 type IFciInputTypes string
 

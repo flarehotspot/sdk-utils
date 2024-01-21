@@ -1,10 +1,10 @@
-package connmgr
+package sdkconnmgr
 
 import (
 	"context"
 	"time"
 
-	"github.com/flarehotspot/core/sdk/api/models"
+	models "github.com/flarehotspot/core/sdk/api/models"
 )
 
 // IClientSession represents a client's internet connection session.

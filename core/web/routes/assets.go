@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 
 	"github.com/flarehotspot/core/globals"
-	"github.com/flarehotspot/core/sdk/utils/paths"
+	paths "github.com/flarehotspot/core/sdk/utils/paths"
 	"github.com/flarehotspot/core/web/controllers"
 	"github.com/flarehotspot/core/web/middlewares"
 	"github.com/flarehotspot/core/web/router"

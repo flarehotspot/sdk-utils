@@ -1,8 +1,4 @@
-package http
-
-import (
-	"github.com/flarehotspot/core/sdk/api/http/router"
-)
+package sdkhttp
 
 // IHelpers are methods available in html templates as .Helpers.
 // For example, to use the Translate() method in html templates, use {{ .Helpers.Translate "label" "network_settings" }}.
@@ -28,7 +24,7 @@ type IHelpers interface {
 
 	// Returns the muxnmame for the route name in your plugin.
 	// "muxname" is a route name that can be used for the UrlForMuxRoute() method.
-	MuxRouteName(name string) (muxname router.MuxRouteName)
+	MuxRouteName(name string) (muxname MuxRouteName)
 
 	// Returns the url for the mux route.
 	// The difference between UrlForMuxRoute() vs UrlForRoute() is that UrlForRoute() only accepts route names specific to your plugin.

@@ -1,4 +1,4 @@
-package network
+package sdknet
 
 type NetworkIpv4 struct {
 	Addr    string

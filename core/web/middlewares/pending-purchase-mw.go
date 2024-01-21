@@ -10,7 +10,7 @@ import (
 	"github.com/flarehotspot/core/db/models"
 	pmt "github.com/flarehotspot/core/payments"
 	Ipmt "github.com/flarehotspot/core/sdk/api/payments"
-	"github.com/flarehotspot/core/sdk/utils/contexts"
+	"github.com/flarehotspot/core/sdk/api/http"
 	"github.com/flarehotspot/core/web/router"
 	"github.com/flarehotspot/core/web/routes/names"
 )
@@ -21,7 +21,7 @@ func PendingPurchaseMw(dtb *db.Database, mdls *models.Models, paymgr *pmt.Paymen
 			ctx := r.Context()
 			errCode := http.StatusInternalServerError
 
-			sym := ctx.Value(contexts.ClientCtxKey)
+			sym := ctx.Value(sdkhttp.ClientCtxKey)
 			if sym == nil {
 				http.Error(w, "Cannot identify device.", errCode)
 				return

@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 
 	"encoding/json"
-	"github.com/flarehotspot/core/sdk/utils/fs"
-	"github.com/flarehotspot/core/sdk/utils/paths"
+	fs "github.com/flarehotspot/core/sdk/utils/fs"
+	paths "github.com/flarehotspot/core/sdk/utils/paths"
 )
 
 type PluginInfo struct {
@@ -47,7 +47,7 @@ func GetPluginInfo(pluginPath string) (*PluginInfo, error) {
 }
 
 func FindPluginSrc(dir string) (string, error) {
-    files := []string{}
+	files := []string{}
 	err := fs.LsFiles(dir, &files, true)
 	if err != nil {
 		return dir, err

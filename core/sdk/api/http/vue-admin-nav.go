@@ -1,4 +1,4 @@
-package router
+package sdkhttp
 
 type INavCategory string
 

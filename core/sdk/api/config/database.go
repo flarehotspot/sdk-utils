@@ -1,4 +1,4 @@
-package config
+package sdkcfg
 
 // Database is the database configuration.
 type Database struct {

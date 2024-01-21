@@ -1,4 +1,4 @@
-package router
+package sdkhttp
 
 const (
 	VueNotFoundPath = "/404"

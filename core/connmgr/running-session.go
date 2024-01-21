@@ -6,12 +6,12 @@ import (
 	"sync"
 	"time"
 
-	coreNet "github.com/flarehotspot/core/network"
-	"github.com/flarehotspot/core/utils/tc"
-	jobque "github.com/flarehotspot/core/utils/job-que"
-	"github.com/flarehotspot/core/sdk/api/connmgr"
+	"github.com/flarehotspot/core/network"
+	connmgr "github.com/flarehotspot/core/sdk/api/connmgr"
 	"github.com/flarehotspot/core/sdk/api/models"
 	"github.com/flarehotspot/core/sdk/api/network"
+	jobque "github.com/flarehotspot/core/utils/job-que"
+	"github.com/flarehotspot/core/utils/tc"
 )
 
 var sessionQ *jobque.JobQues = jobque.NewJobQues()
@@ -20,7 +20,7 @@ type RunningSession struct {
 	mu         sync.RWMutex
 	mac        string
 	ip         string
-	lan        *coreNet.NetworkLan
+	lan        *network.NetworkLan
 	tcClassId  *tc.TcClassId
 	tcFilter   *tc.TcFilter
 	timeTicker *time.Ticker
@@ -30,7 +30,7 @@ type RunningSession struct {
 }
 
 func NewRunningSession(mac string, ip string, s connmgr.IClientSession, classid *tc.TcClassId) (*RunningSession, error) {
-	lan, err := coreNet.FindByIp(ip)
+	lan, err := network.FindByIp(ip)
 	if err != nil {
 		return nil, err
 	}
@@ -53,7 +53,7 @@ func (rs *RunningSession) GetSession() connmgr.IClientSession {
 	return rs.session
 }
 
-func (rs *RunningSession) Lan() *coreNet.NetworkLan {
+func (rs *RunningSession) Lan() *network.NetworkLan {
 	rs.mu.RLock()
 	defer rs.mu.RUnlock()
 	return rs.lan
@@ -107,7 +107,7 @@ func (rs *RunningSession) Change(cs connmgr.IClientSession) error {
 
 		downMbits, upMbits := cs.DownMbits(), cs.UpMbits()
 		if cs.UseGlobal() {
-			lan, err := coreNet.FindByIp(rs.ip)
+			lan, err := network.FindByIp(rs.ip)
 			if err != nil {
 				return nil, err
 			}
@@ -177,7 +177,7 @@ func (rs *RunningSession) CleanupTc() error {
 	return <-errCh
 }
 
-func (rs *RunningSession) UpdateData(stats *network.TrafficData) {
+func (rs *RunningSession) UpdateData(stats *sdknet.TrafficData) {
 	rs.mu.Lock()
 	defer rs.mu.Unlock()
 
@@ -309,12 +309,12 @@ func (rs *RunningSession) isConsumed() bool {
 	s := rs.session
 	t := s.Type()
 
-	if t == models.SessionTypeTime || t == models.SessionTypeTimeOrData {
+	if t == sdkmodels.SessionTypeTime || t == sdkmodels.SessionTypeTimeOrData {
 		isTimeConsumed := s.TimeConsumption() >= s.TimeSecs()
 		return isTimeConsumed || rs.expired()
 	}
 
-	if t == models.SessionTypeData || t == models.SessionTypeTimeOrData {
+	if t == sdkmodels.SessionTypeData || t == sdkmodels.SessionTypeTimeOrData {
 		isDataConsumed := s.DataConsumption() >= s.DataMb()
 		return isDataConsumed || rs.expired()
 	}

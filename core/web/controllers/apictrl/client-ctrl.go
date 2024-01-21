@@ -6,7 +6,7 @@ import (
 	"github.com/flarehotspot/core/globals"
 	"github.com/flarehotspot/core/web/helpers"
 	"github.com/flarehotspot/core/web/response"
-	"github.com/flarehotspot/core/sdk/api/models"
+	models "github.com/flarehotspot/core/sdk/api/models"
 )
 
 type ClientApiCtrl struct {

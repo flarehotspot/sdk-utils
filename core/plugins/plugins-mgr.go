@@ -5,13 +5,12 @@ import (
 	"path/filepath"
 
 	"github.com/flarehotspot/core/config/plugincfg"
-	// "github.com/flarehotspot/core/config/themecfg"
 	"github.com/flarehotspot/core/connmgr"
 	"github.com/flarehotspot/core/db"
 	"github.com/flarehotspot/core/db/models"
 	"github.com/flarehotspot/core/network"
 	"github.com/flarehotspot/core/payments"
-	"github.com/flarehotspot/core/sdk/api/plugin"
+	plugin "github.com/flarehotspot/core/sdk/api/plugin"
 	"github.com/flarehotspot/core/utils/migrate"
 )
 

@@ -7,8 +7,8 @@ import (
 	"github.com/flarehotspot/core/accounts"
 	"github.com/flarehotspot/core/config/appcfg"
 	"github.com/flarehotspot/core/globals"
-	"github.com/flarehotspot/core/sdk/utils/cookie"
-	"github.com/flarehotspot/core/sdk/utils/translate"
+	"github.com/flarehotspot/core/sdk/api/http"
+	translate "github.com/flarehotspot/core/sdk/utils/translate"
 	"github.com/flarehotspot/core/utils/jsonwebtoken"
 	"github.com/flarehotspot/core/web/middlewares"
 )
@@ -51,13 +51,13 @@ func (c *AdminAuthCtrl) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	cookie.SetCookie(w, middlewares.AuthTokenCookie, token)
+	sdkhttp.SetCookie(w, middlewares.AuthTokenCookie, token)
 	data := map[string]string{"token": token}
 	c.g.CoreApi.HttpApi().HttpResponse().Json(w, data, http.StatusOK)
 }
 
 func (c *AdminAuthCtrl) Logout(w http.ResponseWriter, r *http.Request) {
-	cookie.SetCookie(w, middlewares.AuthTokenCookie, "")
+	sdkhttp.SetCookie(w, middlewares.AuthTokenCookie, "")
 	data := map[string]string{"message": "Logout success"}
 	c.g.CoreApi.HttpApi().HttpResponse().Json(w, data, http.StatusOK)
 }

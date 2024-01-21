@@ -1,4 +1,4 @@
-package network
+package sdknet
 
 // INetworkApi is used to get network data from the system.
 type INetworkApi interface {

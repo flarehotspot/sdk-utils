@@ -1,4 +1,4 @@
-package inappur
+package sdkinappur
 
 import "net/http"
 

@@ -3,7 +3,7 @@ package fci
 import (
 	"errors"
 
-	"github.com/flarehotspot/core/sdk/api/fci"
+	fci "github.com/flarehotspot/core/sdk/api/fci"
 )
 
 func NewFciInputCheckbox(cfg *FciConfig, ckmap map[string]any) *FciInputCheckbox {

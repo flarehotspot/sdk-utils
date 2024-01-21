@@ -1,4 +1,4 @@
-package connmgr
+package sdkconnmgr
 
 // IClientMgr is used to manage client devices.
 type IClientMgr interface {

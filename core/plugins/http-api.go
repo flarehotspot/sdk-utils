@@ -1,7 +1,7 @@
 package plugins
 
 import (
-	nethttp "net/http"
+	"net/http"
 	"path/filepath"
 
 	"github.com/flarehotspot/core/connmgr"
@@ -9,9 +9,6 @@ import (
 	"github.com/flarehotspot/core/db/models"
 	"github.com/flarehotspot/core/payments"
 	"github.com/flarehotspot/core/sdk/api/http"
-	"github.com/flarehotspot/core/sdk/api/http/middlewares"
-	"github.com/flarehotspot/core/sdk/api/http/response"
-	"github.com/flarehotspot/core/sdk/api/http/router"
 	"github.com/gorilla/mux"
 )
 
@@ -37,15 +34,15 @@ func NewHttpApi(api *PluginApi, db *db.Database, clnt *connmgr.ClientRegister, m
 	}
 }
 
-func (self *HttpApi) HttpRouter() router.IHttpRouterApi {
+func (self *HttpApi) HttpRouter() sdkhttp.IHttpRouterApi {
 	return self.httpRouter
 }
 
-func (self *HttpApi) VueRouter() router.IVueRouterApi {
+func (self *HttpApi) VueRouter() sdkhttp.IVueRouterApi {
 	return self.vueRouter
 }
 
-func (self *HttpApi) Helpers() http.IHelpers {
+func (self *HttpApi) Helpers() sdkhttp.IHelpers {
 	return NewViewHelpers(self.api)
 }
 
@@ -53,14 +50,14 @@ func (self *HttpApi) AssetPath(path string) string {
 	return filepath.Join("/plugin", self.api.Pkg(), self.api.Version(), "assets", path)
 }
 
-func (self *HttpApi) Middlewares() middlewares.Middlewares {
+func (self *HttpApi) Middlewares() sdkhttp.Middlewares {
 	return self.middlewares
 }
 
-func (self *HttpApi) HttpResponse() response.IHttpResponse {
+func (self *HttpApi) HttpResponse() sdkhttp.IHttpResponse {
 	return self.response
 }
 
-func (self *HttpApi) MuxVars(r *nethttp.Request) map[string]string {
+func (self *HttpApi) MuxVars(r *http.Request) map[string]string {
 	return mux.Vars(r)
 }

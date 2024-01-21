@@ -1,4 +1,4 @@
-package uci
+package sdkuci
 
 // INetworkApi is used to get/set network configuration
 type INetworkApi interface {

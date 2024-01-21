@@ -3,14 +3,14 @@ package plugins
 import (
 	"net/http"
 
-	"github.com/flarehotspot/core/sdk/api/http/router"
-	"github.com/flarehotspot/core/sdk/utils/translate"
+	"github.com/flarehotspot/core/sdk/api/http"
+	translate "github.com/flarehotspot/core/sdk/utils/translate"
 	"github.com/flarehotspot/core/web/helpers"
 )
 
-func NewVueAdminNav(api *PluginApi, r *http.Request, nav router.VueAdminNav) VueAdminNav {
+func NewVueAdminNav(api *PluginApi, r *http.Request, nav sdkhttp.VueAdminNav) VueAdminNav {
 	vueRouter := api.HttpAPI.vueRouter
-	path := router.VueNotFoundPath
+	path := sdkhttp.VueNotFoundPath
 	if route, ok := vueRouter.FindAdminRoute(nav.RouteName); ok {
 		path = route.HttpDataPath
 	}
@@ -25,7 +25,7 @@ func NewVueAdminNav(api *PluginApi, r *http.Request, nav router.VueAdminNav) Vue
 }
 
 type VueAdminNav struct {
-	Category router.INavCategory       `json:"-"`
+	Category sdkhttp.INavCategory      `json:"-"`
 	PermitFn func(perms []string) bool `json:"-"`
 	Label    string                    `json:"label"`
 	Path     string                    `json:"path"`

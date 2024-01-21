@@ -1,4 +1,4 @@
-package currencies
+package sdkpayments
 
 // List of supported currencies
 const (

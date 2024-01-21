@@ -1,4 +1,4 @@
-package config
+package sdkcfg
 
 // IConfigApi is used to access the configuration API.
 type IConfigApi interface {

@@ -1,6 +1,6 @@
 package fci
 
-import "github.com/flarehotspot/core/sdk/api/fci"
+import fci "github.com/flarehotspot/core/sdk/api/fci"
 
 func NewFciFieldList(cfg *FciConfig, m [][]map[string]any) *FciFieldList {
 	return &FciFieldList{

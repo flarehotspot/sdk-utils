@@ -4,12 +4,12 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/flarehotspot/core/sdk/api/connmgr"
-	"github.com/flarehotspot/core/sdk/utils/contexts"
+	connmgr "github.com/flarehotspot/core/sdk/api/connmgr"
+	"github.com/flarehotspot/core/sdk/api/http"
 )
 
 func CurrentClient(r *http.Request) (connmgr.IClientDevice, error) {
-	clntSym := r.Context().Value(contexts.ClientCtxKey)
+	clntSym := r.Context().Value(sdkhttp.ClientCtxKey)
 	clnt, ok := clntSym.(connmgr.IClientDevice)
 	if !ok {
 		return nil, errors.New("Cannot convert nil to client device.")

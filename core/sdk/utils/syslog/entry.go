@@ -1,8 +1,8 @@
-package syslog
+package sdksyslog
 
 import (
-	"io/ioutil"
 	"log"
+	"os"
 	"path/filepath"
 	"strings"
 )
@@ -43,7 +43,7 @@ func (self *LogEntry) Type() LogType {
 }
 
 func (self *LogEntry) Read() (msg string) {
-	b, err := ioutil.ReadFile(self.path)
+	b, err := os.ReadFile(self.path)
 	if err != nil {
 		log.Println(err)
 		return "Unable to read log message."

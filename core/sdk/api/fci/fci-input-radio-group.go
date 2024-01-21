@@ -1,4 +1,4 @@
-package fci
+package sdkfci
 
 type IFciRadioGrp interface {
 	Type() IFciInputTypes

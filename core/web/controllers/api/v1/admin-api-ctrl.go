@@ -5,7 +5,7 @@ import (
 
 	"github.com/flarehotspot/core/globals"
 	"github.com/flarehotspot/core/plugins"
-	"github.com/flarehotspot/core/sdk/utils/translate"
+	translate "github.com/flarehotspot/core/sdk/utils/translate"
 )
 
 func NewAdminApiCtrl(g *globals.CoreGlobals) *AdminApiCtrl {

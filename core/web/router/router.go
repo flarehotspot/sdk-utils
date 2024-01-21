@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/flarehotspot/core/sdk/api/http/router"
+	"github.com/flarehotspot/core/sdk/api/http"
 	"github.com/gorilla/mux"
 )
 
@@ -38,7 +38,7 @@ func init() {
 	AuthApiRouter = ApiRouter.PathPrefix("/auth").Subrouter()
 }
 
-func UrlForRoute(muxname router.MuxRouteName, pairs ...string) (string, error) {
+func UrlForRoute(muxname sdkhttp.MuxRouteName, pairs ...string) (string, error) {
 	route := FindRoute(muxname)
 	if route != nil {
 		if url, err := route.URL(pairs...); err == nil {
@@ -48,6 +48,6 @@ func UrlForRoute(muxname router.MuxRouteName, pairs ...string) (string, error) {
 	return "", errors.New(fmt.Sprintf("Route name not found: \"%s\"", muxname))
 }
 
-func FindRoute(muxname router.MuxRouteName) *mux.Route {
+func FindRoute(muxname sdkhttp.MuxRouteName) *mux.Route {
 	return RootRouter.Get(string(muxname))
 }

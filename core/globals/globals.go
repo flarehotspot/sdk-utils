@@ -7,7 +7,7 @@ import (
 	"github.com/flarehotspot/core/network"
 	"github.com/flarehotspot/core/payments"
 	"github.com/flarehotspot/core/plugins"
-	"github.com/flarehotspot/core/sdk/utils/paths"
+	paths "github.com/flarehotspot/core/sdk/utils/paths"
 )
 
 type CoreGlobals struct {
