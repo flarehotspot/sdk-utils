@@ -6,10 +6,10 @@
  * Copyright 2021-2024 Flarego Technologies Corp. <business@flarego.ph>
  */
 (function ($flare) {
-  var viewData = { data: {} };
+  var viewData = { view: { loading: true, data: {} } };
 
   Vue.component('flare-view', {
-    template: '<router-view :data="data"></router-view>',
+    template: '<router-view :data="view"></router-view>',
     data: function () {
       return viewData;
     },
@@ -30,10 +30,19 @@
       var data_path = route.meta.data_path;
       var params = route.params;
       var data_uri = substitutePathParams(data_path, params);
-      $flare.http.get(data_uri).then(function (data) {
-        console.log(data)
-        viewData.data = data;
-      });
+
+      viewData.view.loading = true;
+      $flare.http
+        .get(data_uri)
+        .then(function (data) {
+          console.log(data);
+          viewData.view.data = data;
+        })
+        .finally(function () {
+          viewData.view.loading = false;
+        });
+    } else {
+      viewData.view.data = {};
     }
   }
 
@@ -42,11 +51,11 @@
     const paramRegex = /\{([^}]+)\}/g;
 
     // Replace each {param} with the corresponding value from the params object
-    const substitutedPath = path.replace(paramRegex, (_, paramName) => {
+    const substitutedPath = path.replace(paramRegex, function (_, paramName) {
       // If the param exists in the params object, use its value, otherwise, keep the original {param}
       return params.hasOwnProperty(paramName)
         ? params[paramName]
-        : `{${paramName}}`;
+        : '{' + paramName + '}';
     });
 
     return substitutedPath;

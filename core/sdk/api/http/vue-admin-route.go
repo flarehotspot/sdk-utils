@@ -6,7 +6,7 @@ type VueAdminRoute struct {
 	RouteName           string
 	RoutePath           string
 	Component           string
-	HandlerFn           VueHandlerFn
+	HandlerFunc           VueHandlerFn
 	Middlewares         []func(http.Handler) http.Handler
 	DisableCache        bool
 	PermissionsRequired []string

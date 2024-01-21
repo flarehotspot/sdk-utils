@@ -1,20 +1,53 @@
 (function ($flare) {
   var http = window.BasicHttp;
-  var client = {};
+  var vueHttp = {};
+  var rootres = '$$response$$';
+  $flare.http = vueHttp;
 
   function invalidResponse(err) {
     console.error('Invalid response:', err);
   }
 
   function parseRespones(res) {
-    var $res = res.$vue;
+    var $res = res[rootres];
     if (!$res) {
       invalidResponse(res);
       return res;
     }
 
+    if ($res.flash) {
+      var f = $res.flash;
+      // types are success, info, warning, error
+      var colorSuccess = '#1fad45';
+      var colorInfo = '#0581f5';
+      var colorWarning = '#f2b211';
+      var colorError = '#c72020';
+
+      var color =
+        f.type === 'success'
+          ? colorSuccess
+          : f.type === 'info'
+          ? colorInfo
+          : f.type === 'warning'
+          ? colorWarning
+          : f.type === 'error'
+          ? colorError
+          : 'gray';
+
+      Toastify({
+        text: f.msg,
+        duration: 5000,
+        newWindow: true,
+        close: true,
+        gravity: 'bottom', // `top` or `bottom`
+        position: 'right', // `left`, `center` or `right`
+        style: { background: color },
+        stopOnFocus: true // Prevents dismissing of toast on hover
+      }).showToast();
+    }
+
     if ($res.redirect) {
-      $flare.router.push({ name: $res.name });
+      $flare.router.push({ name: $res.route_name });
     } else if ($res.data) {
       return $res.data;
     } else {
@@ -23,17 +56,15 @@
     }
   }
 
-  client.get = function (url, params) {
+  vueHttp.get = function (url, params) {
     return http.GetJson(url, params).then(function (data) {
       return parseRespones(data);
     });
   };
 
-  client.post = function (url, params) {
+  vueHttp.post = function (url, params) {
     return http.PostJson(url, params).then(function (data) {
       return parseRespones(data);
     });
   };
-
-  $flare.http = client;
 })(window.$flare);
