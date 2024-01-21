@@ -135,6 +135,7 @@ func (c *IndexPageCtrl) render(w http.ResponseWriter, r *http.Request, themePlug
 		{File: c.g.CoreApi.Resource("assets/libs/vue-router-3.6.5.min.js")},
 		{File: c.g.CoreApi.Resource("assets/app/vue-http.js")},
 		{File: c.g.CoreApi.Resource("assets/app/require-config.js")},
+		{File: c.g.CoreApi.Resource("assets/app/notification.js")},
 		{File: c.g.CoreApi.Resource("assets/app/auth.tpl.js")},
 		{File: c.g.CoreApi.Resource("assets/app/router.tpl.js"), Data: routesData},
 		{File: c.g.CoreApi.Resource("assets/app/flare-view.js")},

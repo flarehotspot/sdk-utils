@@ -16,39 +16,12 @@
     }
 
     if ($res.flash) {
-      var f = $res.flash;
-      // types are success, info, warning, error
-      var colorSuccess = '#1fad45';
-      var colorInfo = '#0581f5';
-      var colorWarning = '#f2b211';
-      var colorError = '#c72020';
-
-      var color =
-        f.type === 'success'
-          ? colorSuccess
-          : f.type === 'info'
-          ? colorInfo
-          : f.type === 'warning'
-          ? colorWarning
-          : f.type === 'error'
-          ? colorError
-          : 'gray';
-
-      var t = Toastify({
-        text: f.msg,
-        duration: 5000,
-        newWindow: true,
-        close: false,
-        gravity: 'bottom', // `top` or `bottom`
-        position: 'right', // `left`, `center` or `right`
-        style: { background: color },
-        stopOnFocus: true, // Prevents dismissing of toast on hover,
-        onClick: function () {
-          if (t) {
-            t.hideToast();
-          }
-        }
-      }).showToast();
+      var fn = $flare.notification[$res.flash.type];
+      if (fn) {
+        fn($res.flash.msg);
+      } else {
+        console.error('Invalid flash type:', $res.flash.type);
+      }
     }
 
     if ($res.redirect) {

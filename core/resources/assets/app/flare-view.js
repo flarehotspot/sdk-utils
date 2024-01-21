@@ -6,10 +6,10 @@
  * Copyright 2021-2024 Flarego Technologies Corp. <business@flarego.ph>
  */
 (function ($flare) {
-  var viewData = { view: { loading: true, data: {} } };
+  var viewData = { flareView: { loading: true, data: {} } };
 
   Vue.component('flare-view', {
-    template: '<router-view :data="view"></router-view>',
+    template: '<router-view :flare-view="flareView"></router-view>',
     data: function () {
       return viewData;
     },
@@ -31,18 +31,18 @@
       var params = route.params;
       var data_uri = substitutePathParams(data_path, params);
 
-      viewData.view.loading = true;
+      viewData.flareView.loading = true;
       $flare.http
         .get(data_uri)
         .then(function (data) {
           console.log(data);
-          viewData.view.data = data;
+          viewData.flareView.data = data;
         })
         .finally(function () {
-          viewData.view.loading = false;
+          viewData.flareView.loading = false;
         });
     } else {
-      viewData.view.data = {};
+      viewData.flareView.data = {};
     }
   }
 
