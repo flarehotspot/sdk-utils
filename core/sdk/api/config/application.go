@@ -14,6 +14,6 @@ type AppCfg struct {
 
 // IApplicationCfg is used to read and write application configuration.
 type IApplicationCfg interface {
-	Read() (*AppCfg, error)
-	Write(*AppCfg) error
+	Read() (AppCfg, error)
+	Write(AppCfg) error
 }

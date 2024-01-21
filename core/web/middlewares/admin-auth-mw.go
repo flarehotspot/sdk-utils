@@ -9,9 +9,9 @@ import (
 	"strings"
 
 	"github.com/flarehotspot/core/accounts"
-	"github.com/flarehotspot/core/config/appcfg"
-	"github.com/flarehotspot/core/sdk/libs/jwt"
+	"github.com/flarehotspot/core/config"
 	"github.com/flarehotspot/core/sdk/api/http"
+	"github.com/flarehotspot/core/sdk/libs/jwt"
 	translate "github.com/flarehotspot/core/sdk/utils/translate"
 	"github.com/flarehotspot/core/utils/jsonwebtoken"
 )
@@ -47,12 +47,12 @@ func IsAdminAuthenticated(w http.ResponseWriter, r *http.Request) (*accounts.Acc
 		authtoken = splitToken[1]
 	}
 
-	cfg, err := appcfg.Read()
+	appcfg, err := config.ReadApplicationConfig()
 	if err != nil {
 		return nil, err
 	}
 
-	token, err := jsonwebtoken.VerifyToken(authtoken, cfg.Secret)
+	token, err := jsonwebtoken.VerifyToken(authtoken, appcfg.Secret)
 	if err != nil {
 		return nil, err
 	}

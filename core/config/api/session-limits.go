@@ -3,24 +3,24 @@ package cfgapi
 import (
 	"log"
 
-	"github.com/flarehotspot/core/config/sessioncfg"
+	"github.com/flarehotspot/core/config"
 	"github.com/flarehotspot/core/sdk/api/config"
 )
 
 type SessionLimitsCfg struct{}
 
-func (c *SessionLimitsCfg) Read() (*sdkcfg.SessCfgData, error) {
-	cfg, err := sessioncfg.Read()
+func (c *SessionLimitsCfg) Read() (sdkcfg.SessCfgData, error) {
+	cfg, err := config.ReadSessionSettingsConfig()
 	if err != nil {
-		return nil, err
+		return sdkcfg.SessCfgData{}, err
 	}
 
 	return sessionCfgToOut(cfg), nil
 }
 
-func (c *SessionLimitsCfg) Write(data *sdkcfg.SessCfgData) error {
+func (c *SessionLimitsCfg) Write(data sdkcfg.SessCfgData) error {
 	cfg := inputToSessionCfg(data)
-	return sessioncfg.Write(cfg)
+	return config.WriteSessionSettingsConfig(cfg)
 }
 
 func (c *SessionLimitsCfg) ComputeExpDays(minutes uint, mbytes uint) uint {
@@ -37,8 +37,8 @@ func NewSessionsCfg() *SessionLimitsCfg {
 	return &SessionLimitsCfg{}
 }
 
-func inputToSessionCfg(input *sdkcfg.SessCfgData) *sessioncfg.SessCfgData {
-	cfg := sessioncfg.SessCfgData{
+func inputToSessionCfg(input sdkcfg.SessCfgData) config.SessCfgData {
+	cfg := config.SessCfgData{
 		StartOnBoot:       input.StartOnBoot,
 		PauseInternetDown: input.PauseInternetDown,
 		ResumeInterUp:     input.ResumeInterUp,
@@ -46,7 +46,7 @@ func inputToSessionCfg(input *sdkcfg.SessCfgData) *sessioncfg.SessCfgData {
 	}
 
 	for _, exp := range input.PauseLimitDenoms {
-		cfg.Expirations = append(cfg.Expirations, &sessioncfg.SessionExp{
+		cfg.Expirations = append(cfg.Expirations, config.SessionExp{
 			Minutes:    exp.Minutes,
 			Mbytes:     exp.Mbytes,
 			PauseLimit: exp.PauseLimit,
@@ -54,10 +54,10 @@ func inputToSessionCfg(input *sdkcfg.SessCfgData) *sessioncfg.SessCfgData {
 		})
 	}
 
-	return &cfg
+	return cfg
 }
 
-func sessionCfgToOut(cfg *sessioncfg.SessCfgData) *sdkcfg.SessCfgData {
+func sessionCfgToOut(cfg config.SessCfgData) sdkcfg.SessCfgData {
 	data := sdkcfg.SessCfgData{
 		StartOnBoot:       cfg.StartOnBoot,
 		PauseInternetDown: cfg.PauseInternetDown,
@@ -66,7 +66,7 @@ func sessionCfgToOut(cfg *sessioncfg.SessCfgData) *sdkcfg.SessCfgData {
 	}
 
 	for _, exp := range cfg.Expirations {
-		data.PauseLimitDenoms = append(data.PauseLimitDenoms, &sdkcfg.ExpPauseDenom{
+		data.PauseLimitDenoms = append(data.PauseLimitDenoms, sdkcfg.ExpPauseDenom{
 			Minutes:    exp.Minutes,
 			Mbytes:     exp.Mbytes,
 			PauseLimit: exp.PauseLimit,
@@ -74,5 +74,5 @@ func sessionCfgToOut(cfg *sessioncfg.SessCfgData) *sdkcfg.SessCfgData {
 		})
 	}
 
-	return &data
+	return data
 }

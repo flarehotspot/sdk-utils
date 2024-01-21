@@ -4,7 +4,7 @@ import (
 	"log"
 	"path/filepath"
 
-	"github.com/flarehotspot/core/config/plugincfg"
+	"github.com/flarehotspot/core/config"
 	"github.com/flarehotspot/core/connmgr"
 	"github.com/flarehotspot/core/db"
 	"github.com/flarehotspot/core/db/models"
@@ -49,7 +49,7 @@ func (pmgr *PluginsMgr) RegisterPlugin(p *PluginApi) {
 }
 
 func (pmgr *PluginsMgr) MigrateAll() {
-	pluginDirs := plugincfg.ListDirs()
+	pluginDirs := config.PluginDirList()
 	for _, pdir := range pluginDirs {
 		migdir := filepath.Join(pdir, "resources/migrations")
 		err := migrate.MigrateUp(migdir, pmgr.db.SqlDB())

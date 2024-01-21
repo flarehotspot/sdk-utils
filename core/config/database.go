@@ -1,15 +1,12 @@
-package dbcfg
+package config
 
 import (
-	"encoding/json"
 	"fmt"
-	paths "github.com/flarehotspot/core/sdk/utils/paths"
+
 	_ "github.com/go-sql-driver/mysql"
-	"os"
-	"path/filepath"
 )
 
-var configPath = filepath.Join(paths.ConfigDir, "database.json")
+const databaseJsonFile = "database.json"
 
 type DbConfig struct {
 	Host     string `json:"host"`
@@ -42,14 +39,9 @@ func (cfg *DbConfig) BaseConnStr() string {
 	return fmt.Sprintf("%s%s@tcp(%s%s)/", cfg.Username, password, cfg.Host, port)
 }
 
-func Read() (*DbConfig, error) {
+func ReadDatabaseConfig() (*DbConfig, error) {
 	var cfg DbConfig
-	dbBytes, err := os.ReadFile(configPath)
-	if err != nil {
-		return nil, err
-	}
-
-	err = json.Unmarshal(dbBytes, &cfg)
+	err := readConfigFile(&cfg, databaseJsonFile)
 	if err != nil {
 		return nil, err
 	}
@@ -61,11 +53,6 @@ func Read() (*DbConfig, error) {
 	return &cfg, nil
 }
 
-func Write(cfg *DbConfig) error {
-	b, err := json.Marshal(cfg)
-	if err != nil {
-		return err
-	}
-
-	return os.WriteFile(configPath, b, 0644)
+func WriteDatabaseConfig(cfg DbConfig) error {
+	return writeConfigFile(databaseJsonFile, cfg)
 }

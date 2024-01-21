@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/flarehotspot/core/config"
 	"github.com/flarehotspot/core/config/plugincfg"
 	paths "github.com/flarehotspot/core/sdk/utils/paths"
 	strings "github.com/flarehotspot/core/sdk/utils/strings"
@@ -30,9 +31,9 @@ func InstallPlugins() *InstallStatus {
 	}
 
 	go func() {
-		for _, def := range plugincfg.AllPluginSrc() {
+		for _, def := range config.AllPluginSrc() {
 			if !isInstalled(def) {
-				if def.Src == plugincfg.PluginSrcGit {
+				if def.Src == config.PluginSrcGit {
 					info, err := buildFromGit(out, def)
 					if err != nil {
 						log.Println("buildFromGit error:", err)
@@ -48,7 +49,7 @@ func InstallPlugins() *InstallStatus {
 					}
 				}
 
-				if def.Src == plugincfg.PluginSrcStore {
+				if def.Src == config.PluginSrcStore {
 					log.Printf("TODO: build from store")
 				}
 
@@ -61,7 +62,7 @@ func InstallPlugins() *InstallStatus {
 	return out
 }
 
-func buildFromGit(w io.Writer, src *plugincfg.PluginSrcDef) (*plugincfg.PluginInfo, error) {
+func buildFromGit(w io.Writer, src *config.PluginSrcDef) (*plugincfg.PluginInfo, error) {
 	repo := git.RepoSource{URL: src.GitURL, Ref: src.GitRef}
 	clonePath := filepath.Join(paths.TmpDir, "plugins", strings.Rand(16))
 
@@ -88,7 +89,7 @@ func buildFromGit(w io.Writer, src *plugincfg.PluginSrcDef) (*plugincfg.PluginIn
 	return plugincfg.GetInstallInfo(info.Package)
 }
 
-func isInstalled(def *plugincfg.PluginSrcDef) bool {
+func isInstalled(def *config.PluginSrcDef) bool {
 	cacheInfo, ok := plugincfg.GetCacheInfo(def)
 	if !ok {
 		return false

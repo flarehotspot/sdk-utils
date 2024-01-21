@@ -21,9 +21,9 @@ type BandwdData struct {
 // IBandwdCfg is used to get and set bandwidth configuration.
 type IBandwdCfg interface {
 	// GetConfig returns the bandwidth configuration for a given interface.
-	GetConfig(ifname string) (cfg *BandwdData, ok bool)
+	GetConfig(ifname string) (cfg BandwdData, ok bool)
 
 	// SetConfig sets the bandwidth configuration for a given interface.
   // It needs application restart for the changes to take effect.
-	SetConfig(ifname string, cfg *BandwdData) error
+	SetConfig(ifname string, cfg BandwdData) error
 }

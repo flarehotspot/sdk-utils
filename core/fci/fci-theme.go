@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/flarehotspot/core/config/themecfg"
+	"github.com/flarehotspot/core/config"
 	sdkfci "github.com/flarehotspot/core/sdk/api/fci"
 	paths "github.com/flarehotspot/core/sdk/utils/paths"
 )
@@ -74,8 +74,12 @@ func FciViewFile(t sdkfci.IFciInputTypes) (v string, err error) {
 }
 
 func FciReadFile(v string) (f string, err error) {
-	themepkg := themecfg.Read().Admin
-	viewdir := filepath.Join(paths.VendorDir, themepkg, "resources/views/fci")
+	cfg, err := config.ReadThemesConfig()
+	if err != nil {
+		return "", err
+	}
+
+	viewdir := filepath.Join(paths.VendorDir, cfg.Admin, "resources/views/fci")
 	file := filepath.Join(viewdir, v)
 
 	b, err := os.ReadFile(file)

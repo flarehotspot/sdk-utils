@@ -18,8 +18,8 @@ type Database struct {
 // IDatabaseCfg is the interface for database configuration.
 type IDatabaseCfg interface {
 	// Read reads the database configuration.
-	Read() (*Database, error)
+	Read() (Database, error)
 
 	// Write writes the database configuration.
-	Write(*Database) error
+	Write(Database) error
 }

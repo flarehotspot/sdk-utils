@@ -7,7 +7,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/flarehotspot/core/config/dbcfg"
+	"github.com/flarehotspot/core/config"
 	"github.com/flarehotspot/core/sdk/utils/strings"
 	"github.com/flarehotspot/core/utils/mysql"
 	//
@@ -94,8 +94,8 @@ func (d *Database) SetSql(db *sql.DB) {
 	d.db = db
 }
 
-func CreateDb() (*dbcfg.DbConfig, error) {
-	cfg, err := dbcfg.Read()
+func CreateDb() (*config.DbConfig, error) {
+	cfg, err := config.ReadDatabaseConfig()
 	if err != nil {
 		return cfg, err
 	}

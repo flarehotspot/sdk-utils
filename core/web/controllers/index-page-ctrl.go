@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"path/filepath"
 
-	"github.com/flarehotspot/core/config/themecfg"
+	"github.com/flarehotspot/core/config"
 	"github.com/flarehotspot/core/globals"
 	"github.com/flarehotspot/core/plugins"
 	plugin "github.com/flarehotspot/core/sdk/api/plugin"
@@ -23,7 +23,13 @@ type IndexPageCtrl struct {
 }
 
 func (c *IndexPageCtrl) PortalIndex(w http.ResponseWriter, r *http.Request) {
-	themePkg := themecfg.Read().Portal
+	cfg, err := config.ReadThemesConfig()
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	themePkg := cfg.Portal
 	themePlugin, ok := c.g.PluginMgr.FindByPkg(themePkg)
 	if !ok {
 		http.Error(w, "Invalid portal theme", 500)
@@ -38,7 +44,13 @@ func (c *IndexPageCtrl) PortalIndex(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *IndexPageCtrl) AdminIndex(w http.ResponseWriter, r *http.Request) {
-	themePkg := themecfg.Read().Admin
+	cfg, err := config.ReadThemesConfig()
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	themePkg := cfg.Admin
 	themePlugin, ok := c.g.PluginMgr.FindByPkg(themePkg)
 	if !ok {
 		http.Error(w, "Invalid admin theme", 500)

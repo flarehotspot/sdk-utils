@@ -5,10 +5,10 @@ import (
 	"log"
 	"sync"
 
-	"github.com/flarehotspot/core/config/bandwdcfg"
+	"github.com/flarehotspot/core/config"
+	jobque "github.com/flarehotspot/core/utils/job-que"
 	"github.com/flarehotspot/core/utils/nftables"
 	"github.com/flarehotspot/core/utils/tc"
-	jobque "github.com/flarehotspot/core/utils/job-que"
 	"github.com/flarehotspot/core/utils/ubus"
 )
 
@@ -84,7 +84,7 @@ func (self *NetworkLan) SetupCaptivePortal() (err error) {
 
 func (self *NetworkLan) SetupHFSC() (err error) {
 	_, err = self.que.Exec(func() (interface{}, error) {
-		cfg, err := bandwdcfg.Read()
+		cfg, err := config.ReadBandwidthConfig()
 		if err != nil {
 			return nil, err
 		}

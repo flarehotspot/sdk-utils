@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/flarehotspot/core/config"
 	fs "github.com/flarehotspot/core/sdk/utils/fs"
 	paths "github.com/flarehotspot/core/sdk/utils/paths"
 	strings "github.com/flarehotspot/core/sdk/utils/strings"
@@ -28,7 +29,7 @@ type CacheInfo struct {
 	Version string `json:"version"`
 }
 
-func WriteCache(def *PluginSrcDef, info *PluginInfo) error {
+func WriteCache(def *config.PluginSrcDef, info *PluginInfo) error {
 	_, err := que.Exec(func() (interface{}, error) {
 		cache := &CacheInfo{
 			Name:    info.Name,
@@ -61,7 +62,7 @@ func WriteCache(def *PluginSrcDef, info *PluginInfo) error {
 	return err
 }
 
-func GetCacheInfo(def *PluginSrcDef) (*CacheInfo, bool) {
+func GetCacheInfo(def *config.PluginSrcDef) (*CacheInfo, bool) {
 	sym, err := que.Exec(func() (interface{}, error) {
 		cfg, err := readCache()
 		if err != nil {
@@ -83,13 +84,13 @@ func GetCacheInfo(def *PluginSrcDef) (*CacheInfo, bool) {
 	return sym.(*CacheInfo), true
 }
 
-func getCacheKey(def *PluginSrcDef) string {
+func getCacheKey(def *config.PluginSrcDef) string {
 	var key string
-	if def.Src == PluginSrcGit {
+	if def.Src == config.PluginSrcGit {
 		key = "git::" + def.GitURL + "#" + def.GitRef
 	}
 
-	if def.Src == PluginSrcStore {
+	if def.Src == config.PluginSrcStore {
 		key = "store::" + def.StorePackage + "#" + def.StoreVersion
 	}
 

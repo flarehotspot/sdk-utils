@@ -1,19 +1,23 @@
 package cfgapi
 
 import (
-	"github.com/flarehotspot/core/config/dbcfg"
+	"github.com/flarehotspot/core/config"
 	"github.com/flarehotspot/core/sdk/api/config"
 )
 
+func NewDbCfgApi() *DbCfgApi {
+	return &DbCfgApi{}
+}
+
 type DbCfgApi struct{}
 
-func (c *DbCfgApi) Read() (*sdkcfg.Database, error) {
-	cfg, err := dbcfg.Read()
+func (c *DbCfgApi) Read() (sdkcfg.Database, error) {
+	cfg, err := config.ReadDatabaseConfig()
 	if err != nil {
-		return nil, err
+		return sdkcfg.Database{}, err
 	}
 
-	return &sdkcfg.Database{
+	return sdkcfg.Database{
 		Host:     cfg.Host,
 		Username: cfg.Username,
 		Password: cfg.Password,
@@ -21,15 +25,12 @@ func (c *DbCfgApi) Read() (*sdkcfg.Database, error) {
 	}, nil
 }
 
-func (c *DbCfgApi) Write(cfg *sdkcfg.Database) error {
-	return dbcfg.Write(&dbcfg.DbConfig{
+func (c *DbCfgApi) Write(cfg sdkcfg.Database) error {
+	dbcfg := config.DbConfig{
 		Host:     cfg.Host,
 		Username: cfg.Username,
 		Password: cfg.Password,
 		Database: cfg.Database,
-	})
-}
-
-func NewDbCfgApi() *DbCfgApi {
-	return &DbCfgApi{}
+	}
+	return config.WriteDatabaseConfig(dbcfg)
 }
