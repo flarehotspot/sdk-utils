@@ -30,7 +30,7 @@ func (h *ViewHelpers) Translate(msgtype string, msgk string) string {
 }
 
 func (self *ViewHelpers) AssetPath(path string) string {
-	return self.api.HttpApi().AssetPath(path)
+	return filepath.Join("/plugin", self.api.Pkg(), self.api.Version(), "assets", path)
 }
 
 func (self *ViewHelpers) AssetWithHelpersPath(path string) string {
@@ -99,7 +99,7 @@ func (h *ViewHelpers) PluginMgr() plugin.IPluginMgr {
 	return h.api.PluginsMgr
 }
 
-func (h *ViewHelpers) AdView() (html string) {
+func (h *ViewHelpers) AdView() (html template.HTML) {
 	return ""
 }
 

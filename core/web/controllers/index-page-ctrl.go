@@ -145,15 +145,14 @@ func (c *IndexPageCtrl) render(w http.ResponseWriter, r *http.Request, themePlug
 		jsFiles = append(jsFiles, assets.AssetWithData{File: file})
 	}
 
-    cssFiles := []assets.AssetWithData{}
+	cssFiles := []assets.AssetWithData{}
 
-    cssFiles = append(cssFiles, assets.AssetWithData{File: c.g.CoreApi.Resource("assets/libs/toastify-1.12.0.min.css")})
+	cssFiles = append(cssFiles, assets.AssetWithData{File: c.g.CoreApi.Resource("assets/libs/toastify-1.12.0.min.css")})
 
 	for _, path := range themeAssets.Styles {
 		file := themePlugin.Resource(filepath.Join("assets", path))
 		cssFiles = append(cssFiles, assets.AssetWithData{File: file})
 	}
-
 
 	jsBundle, err := c.g.CoreApi.Utl.BundleAssetsWithHelper(w, r, jsFiles...)
 	if err != nil {

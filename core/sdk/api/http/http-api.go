@@ -14,8 +14,6 @@ type IHttpApi interface {
 
 	Helpers() IHelpers
 
-	AssetPath(path string) string
-
 	// Returns the middlewares API.
 	Middlewares() Middlewares
 

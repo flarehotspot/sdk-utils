@@ -1,7 +1,7 @@
 (function ($flare) {
   var http = window.BasicHttp;
   var vueHttp = {};
-  var rootres = '$$response$$';
+  var rootres = '$$response';
   $flare.http = vueHttp;
 
   function invalidResponse(err) {
@@ -34,15 +34,20 @@
           ? colorError
           : 'gray';
 
-      Toastify({
+      var t = Toastify({
         text: f.msg,
         duration: 5000,
         newWindow: true,
-        close: true,
+        close: false,
         gravity: 'bottom', // `top` or `bottom`
         position: 'right', // `left`, `center` or `right`
         style: { background: color },
-        stopOnFocus: true // Prevents dismissing of toast on hover
+        stopOnFocus: true, // Prevents dismissing of toast on hover,
+        onClick: function () {
+          if (t) {
+            t.hideToast();
+          }
+        }
       }).showToast();
     }
 

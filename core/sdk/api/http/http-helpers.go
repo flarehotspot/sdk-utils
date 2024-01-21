@@ -1,5 +1,7 @@
 package sdkhttp
 
+import "html/template"
+
 // IHelpers are methods available in html templates as .Helpers.
 // For example, to use the Translate() method in html templates, use {{ .Helpers.Translate "label" "network_settings" }}.
 type IHelpers interface {
@@ -13,14 +15,14 @@ type IHelpers interface {
 	Translate(msgtype string, msgk string) string
 
 	// Returns the uri path of a static file in resources/assets directory from your plugin
-	AssetPath(path string) string
+	AssetPath(path string) (uri string)
 
 	// Returns the uri path of a file in resources/assets directory from your plugin.
 	// The file is parsed using text/template go module with access to {{ .Helpers }} object.
-	AssetWithHelpersPath(path string) string
+	AssetWithHelpersPath(path string) (uri string)
 
 	// Returns the html for the ads view.
-	AdView() (html string)
+    AdView() (html template.HTML)
 
 	// Returns the muxnmame for the route name in your plugin.
 	// "muxname" is a route name that can be used for the UrlForMuxRoute() method.
@@ -28,11 +30,11 @@ type IHelpers interface {
 
 	// Returns the url for the mux route.
 	// The difference between UrlForMuxRoute() vs UrlForRoute() is that UrlForRoute() only accepts route names specific to your plugin.
-	UrlForMuxRoute(muxname string, pairs ...string) (url string)
+	UrlForMuxRoute(muxname string, pairs ...string) (uri string)
 
 	// Returns the url for the route.
 	// The difference between UrlForMuxRoute() vs UrlForRoute() is that UrlForMuxRoute() only accepts route names built-in to the core system.
-	UrlForRoute(name string, pairs ...string) (url string)
+	UrlForRoute(name string, pairs ...string) (uri string)
 
 	// Returns the vue route name for a named route which can be used in <flare-link>
 	VueRouteName(name string) string

@@ -18,7 +18,7 @@ func AssetsRoutes(g *globals.CoreGlobals) {
 	router.RootRouter.HandleFunc("/favicon.ico", assetsCtrl.GetFavicon)
 
 	router.AssetsRouter.
-    HandleFunc("/with-helper/{pkg}/{version}/{path:.*}", assetsCtrl.AssetWithHelpers).
+		HandleFunc("/with-helper/{pkg}/{version}/{path:.*}", assetsCtrl.AssetWithHelpers).
 		Methods("GET").
 		Name(routenames.AssetWithHelpers)
 
@@ -26,7 +26,7 @@ func AssetsRoutes(g *globals.CoreGlobals) {
 	for _, p := range allPlugins {
 		assetsDir := filepath.Join(p.Resource("assets"))
 		fs := http.FileServer(http.Dir(assetsDir))
-		prefix := p.HttpApi().AssetPath("")
+		prefix := p.HttpApi().Helpers().AssetPath("")
 		fileserver := middlewares.AssetPath(http.StripPrefix(prefix, fs))
 		router.RootRouter.PathPrefix(prefix).Handler(fileserver)
 	}
@@ -41,7 +41,7 @@ func AssetsRoutes(g *globals.CoreGlobals) {
 func CoreAssets(g *globals.CoreGlobals) {
 	assetsDir := g.CoreApi.Resource("assets")
 	fs := http.FileServer(http.Dir(assetsDir))
-	prefix := g.CoreApi.HttpApi().AssetPath("")
+	prefix := g.CoreApi.HttpApi().Helpers().AssetPath("")
 	fileserver := middlewares.AssetPath(http.StripPrefix(prefix, fs))
 	router.RootRouter.PathPrefix(prefix).Handler(fileserver)
 }

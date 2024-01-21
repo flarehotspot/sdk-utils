@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	rootjson = "$$response$$"
+	rootjson = "$$response"
 )
 
 func NewVueResponse(vr *VueRouterApi, w http.ResponseWriter, r *http.Request) *VueResponse {

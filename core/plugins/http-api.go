@@ -2,7 +2,6 @@ package plugins
 
 import (
 	"net/http"
-	"path/filepath"
 
 	"github.com/flarehotspot/core/connmgr"
 	"github.com/flarehotspot/core/db"
@@ -44,10 +43,6 @@ func (self *HttpApi) VueRouter() sdkhttp.IVueRouterApi {
 
 func (self *HttpApi) Helpers() sdkhttp.IHelpers {
 	return NewViewHelpers(self.api)
-}
-
-func (self *HttpApi) AssetPath(path string) string {
-	return filepath.Join("/plugin", self.api.Pkg(), self.api.Version(), "assets", path)
 }
 
 func (self *HttpApi) Middlewares() sdkhttp.Middlewares {

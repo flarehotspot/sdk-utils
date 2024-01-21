@@ -9,21 +9,12 @@ type PluginRouteName string
 type IHttpRouter interface {
 
 	// Register a handler for a GET request to the given pattern.
-	Get(pattern string, h http.HandlerFunc) IHttpRoute
+	Get(pattern string, h http.HandlerFunc) (route IHttpRoute)
 
 	// Register a handler for a POST request to the given pattern.
-	Post(pattern string, h http.HandlerFunc) IHttpRoute
+	Post(pattern string, h http.HandlerFunc) (route IHttpRoute)
 
-	// Register a handler for a PUT request to the given pattern.
-	Put(pattern string, h http.HandlerFunc) IHttpRoute
-
-	// Register a handler for a PATCH request to the given pattern.
-	Delete(pattern string, h http.HandlerFunc) IHttpRoute
-
-	// Register a handler for a OPTIONS request to the given pattern.
-	Options(pattern string, h http.HandlerFunc) IHttpRoute
-
-	// Register a handler for a HEAD request to the given pattern.
+    // Register a subrouter for a given path
 	Group(pattern string, fn func(subrouter IHttpRouter))
 
 	// Register a middleware to be used on all routes in this router instance.
