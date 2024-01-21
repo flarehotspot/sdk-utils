@@ -12,14 +12,14 @@
   // authentication
   auth.isAuthenticated = function () {
     return http.GetJson(
-      '{{ .Helpers.UrlForMuxRoute "auth.is-authenticated" }}'
+      '<% .Helpers.UrlForMuxRoute "auth.is-authenticated" %>'
     );
   };
   auth.login = function (data) {
-    return http.PostJson('{{ .Helpers.UrlForMuxRoute "auth.login" }}', data);
+    return http.PostJson('<% .Helpers.UrlForMuxRoute "auth.login" %>', data);
   };
   auth.logout = function () {
-    return http.PostJson('{{ .Helpers.UrlForMuxRoute "auth.logout" }}');
+    return http.PostJson('<% .Helpers.UrlForMuxRoute "auth.logout" %>');
   };
 
   auth.hasAuthToken = function () {

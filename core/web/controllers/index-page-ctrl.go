@@ -90,7 +90,7 @@ func (c *IndexPageCtrl) adminRoutes(themesApi *plugins.ThemesApi) []map[string]a
 			"component": themesApi.AdminLayoutComponentFullPath,
 			"children":  children,
 			"meta": map[string]any{
-				"requiresAuth": true,
+				"requireAuth": true,
 			},
 		},
 		{
@@ -136,8 +136,8 @@ func (c *IndexPageCtrl) render(w http.ResponseWriter, r *http.Request, themePlug
 		{File: c.g.CoreApi.Resource("assets/app/requirejs-config.tpl.js")},
 		{File: c.g.CoreApi.Resource("assets/app/auth.tpl.js")},
 		{File: c.g.CoreApi.Resource("assets/app/router.tpl.js"), Data: routesData},
-		{File: c.g.CoreApi.Resource("assets/app/vue-http-client.tpl.js")},
-		{File: c.g.CoreApi.Resource("assets/app/navigator.tpl.js")},
+		{File: c.g.CoreApi.Resource("assets/app/vue-http.js")},
+		{File: c.g.CoreApi.Resource("assets/app/flare-view.js")},
 	}
 
 	cssFiles := []assets.AssetWithData{}
@@ -152,21 +152,21 @@ func (c *IndexPageCtrl) render(w http.ResponseWriter, r *http.Request, themePlug
 		cssFiles = append(cssFiles, assets.AssetWithData{File: file})
 	}
 
-	jsData, err := c.g.CoreApi.Utl.BundleAssetsWithHelper(w, r, jsFiles...)
+	jsBundle, err := c.g.CoreApi.Utl.BundleAssetsWithHelper(w, r, jsFiles...)
 	if err != nil {
 		response.ErrorHtml(w, err.Error())
 		return
 	}
 
-	cssData, err := c.g.CoreApi.Utl.BundleAssetsWithHelper(w, r, cssFiles...)
+	cssBundle, err := c.g.CoreApi.Utl.BundleAssetsWithHelper(w, r, cssFiles...)
 	if err != nil {
 		response.ErrorHtml(w, err.Error())
 		return
 	}
 
 	vdata := map[string]any{
-		"VendorScripts": jsData.PublicPath,
-		"VendorStyles":  cssData.PublicPath,
+		"VendorScripts": jsBundle.PublicPath,
+		"VendorStyles":  cssBundle.PublicPath,
 	}
 
 	api := c.g.CoreApi

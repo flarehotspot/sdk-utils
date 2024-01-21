@@ -165,3 +165,7 @@ func (h *ViewHelpers) AdminHasAllPerms(perms ...string) bool {
 	}
 	return accounts.HasAllPerms(acct, perms...)
 }
+
+func (h *ViewHelpers) VueRouteName(name string) string {
+	return h.api.HttpAPI.vueRouter.VueRouteName(name)
+}

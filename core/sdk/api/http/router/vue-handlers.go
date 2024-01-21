@@ -8,5 +8,5 @@ type VuePortalItemsHandler func(r *http.Request, vars map[string]string) []VuePo
 
 type VueResponseWriter interface {
 	JsonData(data any)
-	Redirect(routename string, params any)
+	Redirect(routename string, pairs ...string)
 }

@@ -43,37 +43,46 @@
   console.log(routes);
 
   var appRouter = new VueRouter({ routes: routes });
-
-  // appRouter.beforeEach(function (to, _, next) {
-  //   var hastoken = HasAuthToken();
-
-  //   if (
-  //     to.matched.some(function (route) {
-  //       return route.meta.requireAuth;
-  //     })
-  //   ) {
-  //     hastoken ? next() : next({ name: 'login' });
-  //   }
-
-  //   if (
-  //     hastoken &&
-  //     to.matched.some(function (route) {
-  //       return route.meta.requireNoAuth;
-  //     })
-  //   ) {
-  //     $flare.auth
-  //       .is_authenticated()
-  //       .then(function () {
-  //         next({ name: 'theme-index' });
-  //       })
-  //       .catch(function (err) {
-  //         console.error(err);
-  //         next();
-  //       });
-  //   } else {
-  //     return next();
-  //   }
-  // });
-
   $flare.router = appRouter;
+
+  appRouter.beforeEach(function (to, _, next) {
+    var hastoken = $flare.auth.hasAuthToken();
+    console.log('has token', hastoken);
+
+    if (
+      to.matched.some(function (route) {
+        return route.meta.requireAuth;
+      })
+    ) {
+      hastoken ? next() : next({ name: 'login' });
+    }
+
+    if (
+      hastoken &&
+      to.matched.some(function (route) {
+        return route.meta.requireNoAuth;
+      })
+    ) {
+      $flare.auth
+        .isAuthenticated()
+        .then(function () {
+          next({ name: 'index' });
+        })
+        .catch(function (err) {
+          console.error(err);
+          next();
+        });
+    } else {
+      return next();
+    }
+  });
+
+  // handle unauthorized requests
+  window.BasicHttp.onUnauthorized = function () {
+    var pending = appRouter.history.pending || {};
+    var current = appRouter.history.current;
+    if (current.name != 'login' && pending.name != 'login') {
+      appRouter.push({ name: 'login' });
+    }
+  };
 })(window.$flare);

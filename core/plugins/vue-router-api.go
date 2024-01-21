@@ -207,7 +207,9 @@ func (self *VueRouterApi) FindVueRoute(name string) (*VueComponentRoute, bool) {
 }
 
 func (self *VueRouterApi) VueRouteName(name string) string {
-	return fmt.Sprintf("%s.%s", self.api.Pkg(), name)
+	name = fmt.Sprintf("%s-%s", self.api.Slug(), name)
+	name = strings.ReplaceAll(name, "-", "")
+	return name
 }
 
 func (self *VueRouterApi) VueRoutePath(path string) string {

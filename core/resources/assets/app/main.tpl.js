@@ -15,17 +15,7 @@
     var app = new Vue({
       router: $flare.router,
       mounted: function () {
-        var self = this;
-        // handle unauthorized requests
-        // window.BasicHttp.onUnauthorized = function () {
-        //   var pending = self.$router.history.pending || {};
-        //   var current = self.$router.history.current;
-        //   if (current.name != 'login' && pending.name != 'login') {
-        //     router.push({ name: 'login' });
-        //   }
-        // };
-
-        // $flare._triggerReady();
+        $flare._triggerReady();
       }
     });
 

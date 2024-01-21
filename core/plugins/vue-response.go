@@ -17,20 +17,29 @@ type VueResponse struct {
 }
 
 func (self *VueResponse) JsonData(data any) {
+	data = map[string]any{
+		"redirect": false,
+		"data":     data,
+	}
 	response.Json(self.w, data, http.StatusOK)
 }
 
-func (res *VueResponse) Redirect(routename string, params any) {
+func (res *VueResponse) Redirect(routename string, pairs ...string) {
 	route, ok := res.router.FindVueRoute(routename)
 	if !ok {
 		response.ErrorJson(res.w, "Vue route \""+routename+"\" not found")
 		return
 	}
 
+	params := map[string]string{}
+	for i := 0; i < len(pairs); i += 2 {
+		params[pairs[i]] = pairs[i+1]
+	}
+
 	data := map[string]any{
-		"redirect":  true,
-		"routename": route.VueRouteName,
-		"params":    params,
+		"redirect": true,
+		"name":     route.VueRouteName,
+		"params":   params,
 	}
 
 	response.Json(res.w, data, http.StatusOK)

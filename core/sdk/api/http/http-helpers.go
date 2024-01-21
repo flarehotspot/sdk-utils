@@ -54,4 +54,7 @@ type IHelpers interface {
 
 	// Returns true if the current admin user has all of the specified permissions.
 	AdminHasAllPerms(perms ...string) bool
+
+    // Returns the vue route name for a named route which can be used in <flare-link>
+    VueRouteName(name string) string
 }
