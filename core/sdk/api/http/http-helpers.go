@@ -1,6 +1,8 @@
 package sdkhttp
 
-import "html/template"
+import (
+	"html/template"
+)
 
 // IHelpers are methods available in html templates as .Helpers.
 // For example, to use the Translate() method in html templates, use {{ .Helpers.Translate "label" "network_settings" }}.
