@@ -25,7 +25,4 @@ type IVueRouterApi interface {
 	// Used to register a function that returns a slice of *PortalNavItem.
 	// Items returned from this function is added to the captive portal navigation items.
 	PortalItemsFunc(VuePortalItemsFunc)
-
-	// Returns the vue route name for a named route which can be used in <flare-link>
-	VueRouteName(name string) string
 }

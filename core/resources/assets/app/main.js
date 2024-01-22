@@ -16,11 +16,13 @@
       router: $flare.router,
       data: function () {
         return viewData;
+      },
+      mounted: function () {
+        viewData.view.loading = false;
       }
     });
 
     app.$mount('#app');
-
     $flare.app = app;
   });
 })(window);
