@@ -23,6 +23,10 @@ import (
 	"github.com/flarehotspot/core/utils/migrate"
 )
 
+func (p *PluginApi) InitCoreApi(coreApi *PluginApi) {
+	p.coreApi = coreApi
+}
+
 func (p *PluginApi) Migrate() error {
 	migdir := filepath.Join(p.dir, "resources/migrations")
 	err := migrate.MigrateUp(migdir, p.db.SqlDB())

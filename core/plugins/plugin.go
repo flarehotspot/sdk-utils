@@ -7,6 +7,7 @@ import (
 )
 
 type PluginApi struct {
+	coreApi          *PluginApi
 	info             *plugincfg.PluginInfo
 	slug             string
 	dir              string

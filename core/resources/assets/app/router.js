@@ -9,13 +9,12 @@
 (function ($flare) {
   var VueRouter = window.VueRouter;
   var routes = JSON.parse('<% .Data.Routes %>');
-  routes = transformRoutes(routes);
   console.log(routes);
+  routes = transformRoutes(routes);
   var router = new VueRouter({ routes: routes });
 
   router.beforeEach(function (to, _, next) {
     var hastoken = $flare.auth.hasAuthToken();
-    console.log('has token', hastoken);
 
     if (
       to.matched.some(function (route) {

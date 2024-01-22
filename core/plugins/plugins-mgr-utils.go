@@ -34,10 +34,7 @@ func (util *PluginsMgrUtils) GetAdminRoutes() []map[string]any {
 		children = append(children, map[string]any{
 			"path":      r.VueRoutePath,
 			"name":      r.VueRouteName,
-			"component": r.HttpComponentFullPath,
-			"meta": map[string]any{
-				"data_path": r.HttpDataFullPath,
-			},
+			"component": r.HttpWrapperFullPath,
 		})
 	}
 
@@ -52,30 +49,27 @@ func (util *PluginsMgrUtils) GetAdminRoutes() []map[string]any {
 	}
 
 	themesApi := themesPlugin.ThemesApi().(*ThemesApi)
-	// dashboardRoute, _ := themesApi.GetDashboardVueRoute()
 	children = append(children, map[string]any{
 		"path":     "*",
-		"redirect": themesApi.AdminDashVuePath,
+		"redirect": themesApi.AdminDashboardRoute.VueRoutePath,
 	})
 
 	routesMap := []map[string]any{
 		{
 			"path":      "",
 			"name":      "layout",
-			"component": themesApi.AdminLayoutComponentFullPath,
+			"component": themesApi.AdminLayoutRoute.HttpWrapperFullPath,
 			"children":  children,
 			"meta": map[string]any{
 				"requireAuth": true,
-				"data_path":   themesApi.AdminLayoutDataFullPath,
 			},
 		},
 		{
 			"path":      "/login",
 			"name":      "login",
-			"component": themesApi.AdminLoginComponentFullPath,
+			"component": themesApi.AdminLoginRoute.HttpWrapperFullPath,
 			"meta": map[string]any{
 				"requireNoAuth": true,
-				"data_path":     themesApi.AdminLoginDataFullPath,
 			},
 		},
 	}

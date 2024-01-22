@@ -10,57 +10,11 @@
   var $flare = window.$flare;
   var viewData = { view: { loading: false, data: {} } };
 
-  Vue.component('flare-view', {
+  Vue.component('FlareView', {
     template: '<router-view :flare-view="view"></router-view>',
     data: function () {
       return viewData;
-    },
-    mounted: function () {
-      var router = $flare.router;
-      if (router.currentRoute.meta.data_path) {
-        loadData(router.currentRoute);
-      }
-
-      router.afterEach(function (to, _) {
-        loadData(to);
-      });
     }
   });
 
-  function loadData(route) {
-    if (route.meta.data_path) {
-      var data_path = route.meta.data_path;
-      var params = route.params;
-      var data_uri = substitutePathParams(data_path, params);
-
-      viewData.view.loading = true;
-      $flare.http
-        .get(data_uri)
-        .then(function (data) {
-          console.log('View data:', data);
-          viewData.view.data = data;
-          console.log(viewData.view);
-        })
-        .finally(function () {
-          viewData.view.loading = false;
-        });
-    } else {
-      viewData.view.data = {};
-    }
-  }
-
-  function substitutePathParams(path, params) {
-    // Regular expression to match {param} in the path
-    const paramRegex = /\{([^}]+)\}/g;
-
-    // Replace each {param} with the corresponding value from the params object
-    const substitutedPath = path.replace(paramRegex, function (_, paramName) {
-      // If the param exists in the params object, use its value, otherwise, keep the original {param}
-      return params.hasOwnProperty(paramName)
-        ? params[paramName]
-        : '{' + paramName + '}';
-    });
-
-    return substitutedPath;
-  }
 })(window);

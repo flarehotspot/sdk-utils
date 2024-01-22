@@ -188,12 +188,24 @@ func (self *VueRouterApi) VueRoutePath(path string) string {
 }
 func (self *VueRouterApi) HttpDataPath(path string) string {
 	path = self.MuxPathFromVue(path)
-	// path = filepath.Join("/data", path)
 	return strings.TrimSuffix(path, "/")
 }
 
 func (self *VueRouterApi) HttpComponentPath(name string) string {
 	name = filepath.Join("/components/", name)
+	if !strings.HasSuffix(name, ".vue") {
+		name = name + ".vue"
+	}
+	return name
+}
+
+func (self *VueRouterApi) HttpWrapperRouteName(name string) string {
+	name = fmt.Sprintf("%s.%s", self.api.Pkg(), "wrapper", name, )
+	return name
+}
+
+func (self *VueRouterApi) HttpWrapperRoutePath(name string) string {
+	name = filepath.Join("/wrapper", name)
 	if !strings.HasSuffix(name, ".vue") {
 		name = name + ".vue"
 	}

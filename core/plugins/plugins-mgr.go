@@ -15,6 +15,7 @@ import (
 )
 
 type PluginsMgr struct {
+	coreApi *PluginApi
 	db      *db.Database
 	models  *models.Models
 	paymgr  *payments.PaymentsMgr
@@ -37,8 +38,9 @@ func NewPluginMgr(d *db.Database, m *models.Models, paymgr *payments.PaymentsMgr
 	return pmgr
 }
 
-func (pmgr *PluginsMgr) InitUtils(coreApi *PluginApi) {
-    pmgr.utils = NewPluginsMgrUtil(pmgr, coreApi)
+func (pmgr *PluginsMgr) Init(coreApi *PluginApi) {
+	pmgr.coreApi = coreApi
+	pmgr.utils = NewPluginsMgrUtil(pmgr, coreApi)
 }
 
 func (pmgr *PluginsMgr) Plugins() []*PluginApi {
@@ -46,6 +48,7 @@ func (pmgr *PluginsMgr) Plugins() []*PluginApi {
 }
 
 func (pmgr *PluginsMgr) RegisterPlugin(p *PluginApi) {
+	p.InitCoreApi(pmgr.coreApi)
 	pmgr.plugins = append(pmgr.plugins, p)
 
 	err := p.Init()
