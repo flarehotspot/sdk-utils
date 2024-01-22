@@ -16,9 +16,9 @@ type ThemesApi struct {
 	adminTheme  themes.AdminTheme
 	portalTheme themes.PortalTheme
 
-	AdminLayoutRoute *VueRouteComponent
-    AdminDashboardRoute *VueRouteComponent
-    AdminLoginRoute *VueRouteComponent
+	AdminLayoutRoute    *VueRouteComponent
+	AdminDashboardRoute *VueRouteComponent
+	AdminLoginRoute     *VueRouteComponent
 
 	PortalLayoutComponentFullPath string
 	PortalIndexComponentFullPath  string
@@ -39,17 +39,9 @@ func (t *ThemesApi) NewAdminTheme(theme themes.AdminTheme) {
 	// register dashbord component to admin routes
 	t.api.HttpAPI.vueRouter.adminRoutes = append(t.api.HttpAPI.vueRouter.adminRoutes, dashComp)
 
-    t.AdminLayoutRoute = layoutComp
-    t.AdminDashboardRoute = dashComp
-    t.AdminLoginRoute = loginComp
-
-	// t.AdminLayoutComponentFullPath = layoutComp.HttpComponentFullPath
-	// t.AdminLayoutDataFullPath = layoutComp.HttpDataFullPath
-
-	// t.AdminLoginComponentFullPath = loginComp.HttpComponentFullPath
-	// t.AdminLoginDataFullPath = loginComp.HttpDataFullPath
-
-	// t.AdminDashVuePath = dashComp.VueRoutePath
+	t.AdminLayoutRoute = layoutComp
+	t.AdminDashboardRoute = dashComp
+	t.AdminLoginRoute = loginComp
 	t.adminTheme = theme
 }
 

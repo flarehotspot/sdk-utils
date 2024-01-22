@@ -200,7 +200,7 @@ func (self *VueRouterApi) HttpComponentPath(name string) string {
 }
 
 func (self *VueRouterApi) HttpWrapperRouteName(name string) string {
-	name = fmt.Sprintf("%s.%s", self.api.Pkg(), "wrapper", name, )
+	name = fmt.Sprintf("%s.%s.%s", self.api.Pkg(), "wrapper", name, )
 	return name
 }
 

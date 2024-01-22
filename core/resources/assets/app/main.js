@@ -8,42 +8,14 @@
 
 (function (window) {
   var $flare = window.$flare || {};
-  var router = $flare.router;
-  var http = $flare.http;
   var Vue = window.Vue;
   var viewData = { view: { loading: false, data: {} } };
-
-  // router.beforeEach(function (to, _, next) {
-  //   console.log('To Route: ', to);
-  //   next();
-  // });
 
   define([], function () {
     var app = new Vue({
       router: $flare.router,
       data: function () {
         return viewData;
-      },
-      mounted: function () {
-        // var themeRoute = router.resolve({ name: 'layout' });
-        // var dataPath = themeRoute.route.meta.data_path;
-        // viewData.view.loading = true;
-
-        // http
-        //   .get(dataPath)
-        //   .then(function (data) {
-        //     console.log('Layout Data', data);
-        //     viewData.view.data = data;
-        //   })
-        //   .catch(function (err) {
-        //     console.error(err);
-        //     $flare.notify.error(
-        //       err.error || err.message || 'Error fetching theme layout data'
-        //     );
-        //   })
-        //   .finally(function () {
-        //     viewData.view.loading = false;
-        //   });
       }
     });
 

@@ -15,7 +15,7 @@ type IVueRouterApi interface {
 	// Set admin vue routes
 	SetAdminRoutes([]VueAdminRoute)
 
-	// Used to register a function that returns a slice of *AdminNav.
+	// Used to register a function that returns a slice of admin navs.
 	// Items returned from this function is added to the admin navigation menu.
 	AdminNavsFunc(VueAdminNavsFunc)
 

@@ -75,10 +75,19 @@ func (self *VueRouteComponent) GetComponentHandler() http.HandlerFunc {
 	}
 }
 
+func (self *VueRouteComponent) GetComponentWrapperHandler() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		wrapperFile := self.api.coreApi.Utl.Resource("views/vue/component-wrapper.html")
+		helpers := self.api.HttpApi().Helpers()
+		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+		response.Text(w, wrapperFile, helpers, self)
+	}
+}
+
 func (self *VueRouteComponent) MountRoute(dataRouter *mux.Router, middlewares ...func(http.Handler) http.Handler) {
 	rand := sdkstr.Rand(8)
 	compRouter := self.api.HttpAPI.httpRouter.pluginRouter.mux.PathPrefix("/vue/components/" + rand).Subrouter()
-	dataRouter = dataRouter.PathPrefix("/data/" + rand).Subrouter()
+	dataRouter = dataRouter.PathPrefix("/vue/data/" + rand).Subrouter()
 
 	// mount vue component path
 	compRouter.
@@ -87,30 +96,26 @@ func (self *VueRouteComponent) MountRoute(dataRouter *mux.Router, middlewares ..
 		Name(string(self.MuxCompRouteName))
 
 	// mount vue data path
-	var handlerFunc http.Handler
-	handler := http.HandlerFunc(self.GetDataHandler())
 
 	if middlewares != nil {
 		for _, m := range middlewares {
-			handlerFunc = m(handlerFunc)
+			dataRouter.Use(m)
 		}
-	} else {
-		handlerFunc = handler
 	}
 
 	dataRouter.
-		Handle(self.HttpDataPath, handlerFunc).
+		HandleFunc(self.HttpDataPath, self.GetDataHandler()).
 		Methods("GET").
 		Name(string(self.MuxDataRouteName))
 
 	// mount wrapper handler
-	wrapHandler := self.GetComponentWrapperHandler
+	wrapHandler := self.GetComponentWrapperHandler()
 	compRouter.
-		HandleFunc(self.HttpWrapperPath, wrapHandler).
+		Handle(self.HttpWrapperPath, wrapHandler).
 		Methods("GET").
 		Name(self.HttpWrapperRouteName)
 
-	wrapperR := compRouter.Get(string(self.HttpWrapperRouteName))
+	wrapperR := compRouter.Get(self.HttpWrapperRouteName)
 	compR := compRouter.Get(string(self.MuxCompRouteName))
 	dataR := compRouter.Get(string(self.MuxDataRouteName))
 
@@ -121,12 +126,4 @@ func (self *VueRouteComponent) MountRoute(dataRouter *mux.Router, middlewares ..
 	self.HttpWrapperFullPath = wrapperpath
 	self.HttpComponentFullPath = comppath
 	self.HttpDataFullPath = datapath
-
-}
-
-func (self *VueRouteComponent) GetComponentWrapperHandler(w http.ResponseWriter, r *http.Request) {
-	wrapperFile := self.api.coreApi.Utl.Resource("views/vue/component-wrapper.html")
-	helpers := self.api.HttpApi().Helpers()
-    w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	response.Text(w, wrapperFile, helpers, self)
 }

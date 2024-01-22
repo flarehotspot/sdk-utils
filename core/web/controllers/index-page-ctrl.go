@@ -89,7 +89,6 @@ func (c *IndexPageCtrl) render(w http.ResponseWriter, r *http.Request, themePlug
 		{File: c.g.CoreApi.Utl.Resource("assets/app/notify.js")},
 		{File: c.g.CoreApi.Utl.Resource("assets/app/auth.js")},
 		{File: c.g.CoreApi.Utl.Resource("assets/app/router.js"), Data: routesData},
-		{File: c.g.CoreApi.Utl.Resource("assets/app/flare-view.js")},
 	}
 
 	for _, path := range themeAssets.Scripts {
