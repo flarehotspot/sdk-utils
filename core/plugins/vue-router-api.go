@@ -191,12 +191,12 @@ func (self *VueRouterApi) HttpDataPath(path string) string {
 	return strings.TrimSuffix(path, "/")
 }
 
-func (self *VueRouterApi) HttpComponentPath(name string) string {
-	name = filepath.Join("/components/", name)
-	if !strings.HasSuffix(name, ".vue") {
-		name = name + ".vue"
+func (self *VueRouterApi) HttpComponentPath(path string) string {
+	path = filepath.Join("/unwrapped/", path)
+	if !strings.HasSuffix(path, ".vue") {
+		path = path + ".vue"
 	}
-	return name
+	return path
 }
 
 func (self *VueRouterApi) HttpWrapperRouteName(name string) string {

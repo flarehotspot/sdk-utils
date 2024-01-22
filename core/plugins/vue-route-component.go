@@ -7,24 +7,32 @@ import (
 	sdkhttp "github.com/flarehotspot/core/sdk/api/http"
 	"github.com/flarehotspot/core/sdk/libs/slug"
 	sdkstr "github.com/flarehotspot/core/sdk/utils/strings"
+	"github.com/flarehotspot/core/utils/crypt"
 	"github.com/flarehotspot/core/web/response"
 	"github.com/gorilla/mux"
 )
 
 func NewVueRouteComponent(api *PluginApi, name string, path string, handler sdkhttp.VueHandlerFn, comp string, permsReq []string, permsAny []string) *VueRouteComponent {
+
+	compFile := filepath.Join(api.Utl.Resource("components/" + comp))
+    compHash, _ := crypt.SHA1Files(compFile)
+    compHash = sdkstr.Sha1Hash(name, path, comp, compHash)
+
 	if name == "" {
-		name = sdkstr.Rand(8) + "-" + slug.Make(comp)
+		name = compHash + "-" + slug.Make(comp) + "(empty)"
 	}
 
 	return &VueRouteComponent{
 		api:                  api,
 		handler:              handler,
 		component:            comp,
+		componentFile:        compFile,
+		componentHash:        compHash,
 		MuxCompRouteName:     api.HttpAPI.httpRouter.MuxRouteName(sdkhttp.PluginRouteName(name + ".component")),
 		MuxDataRouteName:     api.HttpAPI.httpRouter.MuxRouteName(sdkhttp.PluginRouteName(name + ".data")),
 		HttpWrapperRouteName: api.HttpAPI.vueRouter.HttpWrapperRouteName(name),
-		HttpWrapperPath:      api.HttpAPI.vueRouter.HttpWrapperRoutePath(name),
-		HttpComponentPath:    api.HttpAPI.vueRouter.HttpComponentPath(name),
+		HttpWrapperPath:      api.HttpAPI.vueRouter.HttpWrapperRoutePath(comp),
+		HttpComponentPath:    api.HttpAPI.vueRouter.HttpComponentPath(comp),
 		HttpDataPath:         api.HttpAPI.vueRouter.HttpDataPath(path),
 		VueRouteName:         api.HttpAPI.vueRouter.VueRouteName(name),
 		VueRoutePath:         api.HttpAPI.vueRouter.VueRoutePath(path),
@@ -37,6 +45,8 @@ type VueRouteComponent struct {
 	api                   *PluginApi           `json:"-"`
 	handler               sdkhttp.VueHandlerFn `json:"-"`
 	component             string               `json:"-"`
+	componentFile         string               `json:"-"`
+	componentHash         string               `json:"-"`
 	MuxCompRouteName      sdkhttp.MuxRouteName `json:"mux_component_route_name"`
 	MuxDataRouteName      sdkhttp.MuxRouteName `json:"mux_data_route_name"`
 	HttpWrapperRouteName  string               `json:"http_wrapper_route_name"`
@@ -85,9 +95,8 @@ func (self *VueRouteComponent) GetComponentWrapperHandler() http.HandlerFunc {
 }
 
 func (self *VueRouteComponent) MountRoute(dataRouter *mux.Router, middlewares ...func(http.Handler) http.Handler) {
-	rand := sdkstr.Rand(8)
-	compRouter := self.api.HttpAPI.httpRouter.pluginRouter.mux.PathPrefix("/vue/components/" + rand).Subrouter()
-	dataRouter = dataRouter.PathPrefix("/vue/data/" + rand).Subrouter()
+	compRouter := self.api.HttpAPI.httpRouter.pluginRouter.mux.PathPrefix("/vue/components/" + self.componentHash).Subrouter()
+	dataRouter = dataRouter.PathPrefix("/vue/data/" + self.componentHash).Subrouter()
 
 	// mount vue component path
 	compRouter.

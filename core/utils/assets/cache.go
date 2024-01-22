@@ -66,7 +66,7 @@ func writeCache(concat string, files []string) (data CacheData, err error) {
 	ext := filepath.Ext(files[0])
 	pubSubDir := strings.Replace(ext, ".", "", 1)
 	key := cacheKey(files)
-	hash, err := crypt.SHA1Files(files)
+	hash, err := crypt.SHA1Files(files...)
 	if err != nil {
 		return CacheData{}, err
 	}
