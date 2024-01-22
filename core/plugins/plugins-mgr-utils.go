@@ -2,18 +2,23 @@ package plugins
 
 import (
 	"log"
+	"net/http"
 
 	"github.com/flarehotspot/core/config"
+	sdkhttp "github.com/flarehotspot/core/sdk/api/http"
+	translate "github.com/flarehotspot/core/sdk/utils/translate"
 )
 
-func NewPluginsMgrUtil(pmgr *PluginsMgr) *PluginsMgrUtils {
+func NewPluginsMgrUtil(pmgr *PluginsMgr, coreApi *PluginApi) *PluginsMgrUtils {
 	return &PluginsMgrUtils{
-		pmgr: pmgr,
+		pmgr:    pmgr,
+		coreApi: coreApi,
 	}
 }
 
 type PluginsMgrUtils struct {
-	pmgr *PluginsMgr
+	pmgr    *PluginsMgr
+	coreApi *PluginApi
 }
 
 func (util *PluginsMgrUtils) GetAdminRoutes() []map[string]any {
@@ -48,10 +53,10 @@ func (util *PluginsMgrUtils) GetAdminRoutes() []map[string]any {
 	}
 
 	themesApi := themesPlugin.ThemesApi().(*ThemesApi)
-	dashboardRoute, _ := themesApi.GetDashboardVueRoute()
+	// dashboardRoute, _ := themesApi.GetDashboardVueRoute()
 	children = append(children, map[string]any{
 		"path":     "*",
-		"redirect": dashboardRoute.VueRoutePath,
+		"redirect": themesApi.AdminDashVuePath,
 	})
 
 	routesMap := []map[string]any{
@@ -62,6 +67,7 @@ func (util *PluginsMgrUtils) GetAdminRoutes() []map[string]any {
 			"children":  children,
 			"meta": map[string]any{
 				"requireAuth": true,
+				"data_path":   themesApi.AdminLayoutDataFullPath,
 			},
 		},
 		{
@@ -70,6 +76,7 @@ func (util *PluginsMgrUtils) GetAdminRoutes() []map[string]any {
 			"component": themesApi.AdminLoginComponentFullPath,
 			"meta": map[string]any{
 				"requireNoAuth": true,
+				"data_path":     themesApi.AdminLoginDataFullPath,
 			},
 		},
 	}
@@ -85,4 +92,33 @@ func (utils *PluginsMgrUtils) GetPortalRoutes() []*VueRouteComponent {
 		routes = append(routes, portalRoutes...)
 	}
 	return routes
+}
+
+func (utils *PluginsMgrUtils) GetAdminNavs(r *http.Request) []sdkhttp.AdminNavCategory {
+	navs := []sdkhttp.AdminNavCategory{}
+	categories := []sdkhttp.INavCategory{
+		sdkhttp.NavCategorySystem,
+        // sdkhttp.NavCategoryNetwork,
+	}
+
+	for _, category := range categories {
+		navItems := []sdkhttp.AdminNavItem{}
+
+		for _, p := range utils.pmgr.All() {
+			vueR := p.HttpApi().VueRouter().(*VueRouterApi)
+			adminNavs := vueR.GetAdminNavs(r)
+			for _, nav := range adminNavs {
+				if nav.Category == category {
+					navItems = append(navItems, nav)
+				}
+			}
+		}
+
+		navs = append(navs, sdkhttp.AdminNavCategory{
+			Category: utils.coreApi.Utl.Translate(translate.Label, string(category)),
+			Items:    navItems,
+		})
+	}
+
+	return navs
 }

@@ -4,11 +4,11 @@ type INavCategory string
 
 // List of admin navigation menu categories.
 const (
-	CategorySystem   INavCategory = "system"
-	CategoryPayments INavCategory = "payments"
-	CategoryNetwork  INavCategory = "network"
-	CategoryThemes   INavCategory = "themes"
-	CategoryTools    INavCategory = "tools"
+	NavCategorySystem   INavCategory = "system"
+	NavCategoryPayments INavCategory = "payments"
+	NavCategoryNetwork  INavCategory = "network"
+	NavCategoryThemes   INavCategory = "themes"
+	NavCategoryTools    INavCategory = "tools"
 )
 
 // VueAdminNav represents an admin navigation menu item.

@@ -1,14 +1,10 @@
 package plugins
 
 import (
-	"fmt"
-	"net/http"
-	"path/filepath"
-
 	themes "github.com/flarehotspot/core/sdk/api/themes"
-	"github.com/flarehotspot/core/web/response"
-	"github.com/flarehotspot/core/web/router"
-	routenames "github.com/flarehotspot/core/web/routes/names"
+	// "github.com/flarehotspot/core/web/middlewares"
+	// "github.com/flarehotspot/core/web/router"
+	// routenames "github.com/flarehotspot/core/web/routes/names"
 )
 
 func NewThemesApi(api *PluginApi) *ThemesApi {
@@ -16,45 +12,59 @@ func NewThemesApi(api *PluginApi) *ThemesApi {
 }
 
 type ThemesApi struct {
-	api                             *PluginApi
-	adminTheme                      themes.AdminTheme
-	portalTheme                     themes.PortalTheme
-	AdminLayoutComponentFullPath    string
-	AdminLoginComponentFullPath     string
-	PortalLayoutComponentFullPath   string
-	PortalIndexComponentFullPath    string
+	api         *PluginApi
+	adminTheme  themes.AdminTheme
+	portalTheme themes.PortalTheme
+
+	AdminLayoutComponentFullPath string
+	AdminLayoutDataFullPath      string
+
+	AdminLoginComponentFullPath string
+	AdminLoginDataFullPath      string
+
+	AdminDashVuePath string
+
+	PortalLayoutComponentFullPath string
+	PortalIndexComponentFullPath  string
 }
 
 func (t *ThemesApi) NewAdminTheme(theme themes.AdminTheme) {
+	adminRouter := t.api.HttpAPI.httpRouter.adminRouter.mux
+	router := t.api.HttpAPI.httpRouter.pluginRouter.mux
+
+	layoutComp := NewVueRouteComponent(t.api, theme.LayoutComponent.RouteName, "/theme/layout", theme.LayoutComponent.HandlerFunc, theme.LayoutComponent.ComponentPath, nil, nil)
+	layoutComp.MountRoute(router)
+
+	loginComp := NewVueRouteComponent(t.api, theme.LoginComponent.RouteName, "/theme/login", theme.LoginComponent.HandlerFunc, theme.LoginComponent.ComponentPath, nil, nil)
+	loginComp.MountRoute(router)
+
+	dashComp := NewVueRouteComponent(t.api, theme.DashboardComponent.RouteName, "/theme/dashboard", theme.DashboardComponent.HandlerFunc, theme.DashboardComponent.ComponentPath, nil, nil)
+	dashComp.MountRoute(adminRouter)
+	// register dashbord component to admin routes
+	t.api.HttpAPI.vueRouter.adminRoutes = append(t.api.HttpAPI.vueRouter.adminRoutes, dashComp)
+
+	t.AdminLayoutComponentFullPath = layoutComp.HttpComponentFullPath
+	t.AdminLayoutDataFullPath = layoutComp.HttpDataFullPath
+
+	t.AdminLoginComponentFullPath = loginComp.HttpComponentFullPath
+	t.AdminLoginDataFullPath = loginComp.HttpDataFullPath
+
+	t.AdminDashVuePath = dashComp.VueRoutePath
 	t.adminTheme = theme
-
-	loginRouterName := fmt.Sprintf("%s:%s", t.api.Pkg(), routenames.AdminThemeLogin)
-	layoutRouteName := fmt.Sprintf("%s:%s", t.api.Pkg(), routenames.AdminThemeLayout)
-
-	r := t.api.HttpApi().HttpRouter().(*HttpRouterApi).pluginRouter.mux
-	r = r.PathPrefix("/vue/theme/admin/components").Subrouter()
-	r.HandleFunc("/Login.vue", t.GetComponentHandler(theme.LoginComponentPath)).Methods("GET").Name(loginRouterName)
-	r.HandleFunc("/Layout.vue", t.GetComponentHandler(theme.LayoutComponent)).Methods("GET").Name(layoutRouteName)
-
-	adminLoginPath, _ := r.Get(loginRouterName).GetPathTemplate()
-	adminLayoutPath, _ := r.Get(layoutRouteName).GetPathTemplate()
-
-	t.AdminLoginComponentFullPath = adminLoginPath
-	t.AdminLayoutComponentFullPath = adminLayoutPath
 }
 
 func (t *ThemesApi) NewPortalTheme(theme themes.PortalTheme) {
-	t.portalTheme = theme
-	r := router.RootRouter
-	r = r.PathPrefix("/vue/theme/portal/components").Subrouter()
-	r.HandleFunc("/layout.vue", t.GetComponentHandler(theme.LayoutComponent)).Methods("GET").Name(routenames.PortalThemeLayout)
-	r.HandleFunc("/index.vue", t.GetComponentHandler(theme.IndexComponent)).Methods("GET").Name(routenames.PortalThemeIndex)
+	// t.portalTheme = theme
+	// r := router.RootRouter
+	// r = r.PathPrefix("/vue/theme/portal/components").Subrouter()
+	// r.HandleFunc("/layout.vue", t.GetComponentHandler(theme.LayoutComponent)).Methods("GET").Name(routenames.PortalThemeLayout)
+	// r.HandleFunc("/index.vue", t.GetComponentHandler(theme.IndexComponent)).Methods("GET").Name(routenames.PortalThemeIndex)
 
-	portalLayoutPath, _ := r.Get(routenames.PortalThemeLayout).GetPathTemplate()
-	portalIndexPath, _ := r.Get(routenames.PortalThemeIndex).GetPathTemplate()
+	// portalLayoutPath, _ := r.Get(routenames.PortalThemeLayout).GetPathTemplate()
+	// portalIndexPath, _ := r.Get(routenames.PortalThemeIndex).GetPathTemplate()
 
-	t.PortalLayoutComponentFullPath = portalLayoutPath
-	t.PortalIndexComponentFullPath = portalIndexPath
+	// t.PortalLayoutComponentFullPath = portalLayoutPath
+	// t.PortalIndexComponentFullPath = portalIndexPath
 }
 
 func (t *ThemesApi) GetAdminThemeAssets() themes.ThemeAssets {
@@ -83,27 +93,15 @@ func (t *ThemesApi) GetPortalThemeAssets() themes.ThemeAssets {
 	return assets
 }
 
-func (t *ThemesApi) GetDashboarComponentHandler() http.HandlerFunc {
-	route, ok := t.api.HttpAPI.vueRouter.FindAdminRoute(t.adminTheme.DashboardRoute)
-	if !ok {
-		return func(w http.ResponseWriter, r *http.Request) {
-			response.ErrorJson(w, "Invalid dashboard route: "+t.adminTheme.DashboardRoute)
-		}
-	}
-
-	return route.GetComponentHandler()
+func (t *ThemesApi) GetThemeRouteComponent(comp themes.ThemeComponent, name string, path string) *VueRouteComponent {
+	return NewVueRouteComponent(t.api, name, path, comp.HandlerFunc, comp.ComponentPath, nil, nil)
 }
 
-func (t *ThemesApi) GetDashboardVueRoute() (*VueRouteComponent, bool) {
-	return t.api.HttpAPI.vueRouter.FindAdminRoute(t.adminTheme.DashboardRoute)
-}
-
-func (t *ThemesApi) GetComponentHandler(comp themes.ThemeComponent) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		helpers := t.api.HttpApi().Helpers()
-		compfile := filepath.Join(t.api.Utl.Resource(filepath.Join("components", comp.ComponentPath)))
-		data := comp.Data
-		w.Header().Set("Content-Type", "text/html; charset=utf-8")
-		response.Text(w, compfile, helpers, data)
-	}
-}
+// func (t *ThemesApi) GetComponentHandler(comp themes.ThemeComponent) http.HandlerFunc {
+// 	return func(w http.ResponseWriter, r *http.Request) {
+// 		helpers := t.api.HttpApi().Helpers()
+// 		compfile := filepath.Join(t.api.Utl.Resource(filepath.Join("components", comp.ComponentPath)))
+// 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+// 		response.Text(w, compfile, helpers, nil)
+// 	}
+// }

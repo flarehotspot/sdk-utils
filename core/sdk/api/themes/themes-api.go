@@ -1,5 +1,7 @@
 package sdktheme
 
+import sdkhttp "github.com/flarehotspot/core/sdk/api/http"
+
 type IThemesApi interface {
 	NewAdminTheme(AdminTheme)
 	NewPortalTheme(PortalTheme)
@@ -7,8 +9,8 @@ type IThemesApi interface {
 
 type AdminTheme struct {
 	LayoutComponent    ThemeComponent
-	LoginComponentPath ThemeComponent
-	DashboardRoute     string
+	LoginComponent     ThemeComponent
+	DashboardComponent ThemeComponent
 	ThemeAssets        *ThemeAssets
 }
 
@@ -19,7 +21,8 @@ type PortalTheme struct {
 }
 
 type ThemeComponent struct {
-	Data          any
+    RouteName string
+	HandlerFunc   sdkhttp.VueHandlerFn
 	ComponentPath string
 }
 

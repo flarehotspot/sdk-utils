@@ -84,7 +84,6 @@ func (c *IndexPageCtrl) render(w http.ResponseWriter, r *http.Request, themePlug
 		{File: c.g.CoreApi.Utl.Resource("assets/libs/event-source.polyfill.min.js")},
 		{File: c.g.CoreApi.Utl.Resource("assets/libs/vue-2.7.16.min.js")},
 		{File: c.g.CoreApi.Utl.Resource("assets/libs/vue-router-3.6.5.min.js")},
-		{File: c.g.CoreApi.Utl.Resource("assets/libs/vuex-global-4.1.0.js")},
 		{File: c.g.CoreApi.Utl.Resource("assets/app/vue-http.js")},
 		{File: c.g.CoreApi.Utl.Resource("assets/app/require-config.js")},
 		{File: c.g.CoreApi.Utl.Resource("assets/app/notify.js")},

@@ -1,54 +1,43 @@
 package plugins
 
 import (
+	"log"
 	"net/http"
 
-	"github.com/flarehotspot/core/sdk/api/http"
+	sdkhttp "github.com/flarehotspot/core/sdk/api/http"
 	translate "github.com/flarehotspot/core/sdk/utils/translate"
 	"github.com/flarehotspot/core/web/helpers"
 )
 
-func NewVueAdminNav(api *PluginApi, r *http.Request, nav sdkhttp.VueAdminNav) VueAdminNav {
-	vueRouter := api.HttpAPI.vueRouter
-	path := sdkhttp.VueNotFoundPath
-	if route, ok := vueRouter.FindAdminRoute(nav.RouteName); ok {
-		path = route.HttpDataPath
+func NewVueAdminNav(api *PluginApi, r *http.Request, nav sdkhttp.VueAdminNav) (sdkhttp.AdminNavItem, bool) {
+	var adminNav sdkhttp.AdminNavItem
+
+	if nav.PermitFn != nil {
+		acct, err := helpers.CurrentAdmin(r)
+		if err != nil {
+			log.Println("Warning: helpers.CurrentAdmin() failed: ", err)
+			return adminNav, false
+		}
+
+		if !nav.PermitFn(acct.Permissions()) {
+			return adminNav, false
+		}
+	}
+
+	var routename, routepath string
+	routepath = sdkhttp.VueNotFoundPath
+
+	if vueRoute, ok := api.HttpAPI.vueRouter.FindVueRoute(nav.RouteName); ok {
+		routename = vueRoute.VueRouteName
+		routepath = vueRoute.VueRoutePath
 	}
 
 	label := api.Utils().Translate(translate.Label, nav.TranslateLabel)
-	return VueAdminNav{
-		Category: nav.Category,
-		PermitFn: nav.PermitFn,
-		Label:    label,
-		Path:     path,
-	}
-}
 
-type VueAdminNav struct {
-	Category sdkhttp.INavCategory      `json:"-"`
-	PermitFn func(perms []string) bool `json:"-"`
-	Label    string                    `json:"label"`
-	Path     string                    `json:"path"`
-}
-
-func (nav *VueAdminNav) Permit(r *http.Request) bool {
-	if nav.PermitFn == nil {
-		return true
-	}
-
-	acct, err := helpers.CurrentAdmin(r)
-	if err != nil {
-		return false
-	}
-
-	return (nav.PermitFn)(acct.Perms)
-}
-
-type VueAdminNavList struct {
-	MenuHead string        `json:"menu_head"`
-	Navs     []VueAdminNav `json:"navs"`
-}
-
-func (navList *VueAdminNavList) AddNav(nav VueAdminNav) {
-	navList.Navs = append(navList.Navs, nav)
+	return sdkhttp.AdminNavItem{
+		Category:     nav.Category,
+		Label:        label,
+		VueRouteName: routename,
+		VueRoutePath: routepath,
+	}, true
 }

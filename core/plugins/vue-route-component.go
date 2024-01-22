@@ -5,10 +5,16 @@ import (
 	"path/filepath"
 
 	sdkhttp "github.com/flarehotspot/core/sdk/api/http"
+	"github.com/flarehotspot/core/sdk/libs/slug"
+	sdkstr "github.com/flarehotspot/core/sdk/utils/strings"
 	"github.com/flarehotspot/core/web/response"
+	"github.com/gorilla/mux"
 )
 
-func NewVueRouteComponent(api *PluginApi, name string, path string, handler sdkhttp.VueHandlerFn, comp string, auth bool, permsReq []string, permsAny []string) *VueRouteComponent {
+func NewVueRouteComponent(api *PluginApi, name string, path string, handler sdkhttp.VueHandlerFn, comp string, permsReq []string, permsAny []string) *VueRouteComponent {
+	if name == "" {
+		name = sdkstr.Rand(8) + "-" + slug.Make(comp)
+	}
 
 	return &VueRouteComponent{
 		api:                 api,
@@ -20,7 +26,6 @@ func NewVueRouteComponent(api *PluginApi, name string, path string, handler sdkh
 		HttpDataPath:        api.HttpAPI.vueRouter.HttpDataPath(path),
 		VueRouteName:        api.HttpAPI.vueRouter.VueRouteName(name),
 		VueRoutePath:        api.HttpAPI.vueRouter.VueRoutePath(path),
-		RequireAuth:         auth,
 		PermissionsRequired: permsReq,
 		PermissionsAnyOf:    permsAny,
 	}
@@ -38,7 +43,6 @@ type VueRouteComponent struct {
 	HttpDataFullPath      string               `json:"http_data_full_path"`
 	VueRoutePath          string               `json:"vue_route_path"`
 	VueRouteName          string               `json:"vue_route_name"`
-	RequireAuth           bool                 `json:"require_auth"`
 	PermissionsRequired   []string             `json:"permissions_required"`
 	PermissionsAnyOf      []string             `json:"permissions_any_of"`
 }
@@ -47,7 +51,7 @@ func (self *VueRouteComponent) GetDataHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		res := NewVueResponse(self.api.HttpAPI.vueRouter, w, r)
 		if self.handler == nil {
-			response.Json(w, map[string]any{}, http.StatusOK)
+			res.JsonData(map[string]any{})
 			return
 		}
 		if err := self.handler(res, r); err != nil {
@@ -64,4 +68,40 @@ func (self *VueRouteComponent) GetComponentHandler() http.HandlerFunc {
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		response.Text(w, compfile, helpers, nil)
 	}
+}
+
+func (self *VueRouteComponent) MountRoute(dataRouter *mux.Router, middlewares ...func(http.Handler) http.Handler) {
+	rand := sdkstr.Rand(8)
+	compRouter := self.api.HttpAPI.httpRouter.pluginRouter.mux.PathPrefix("/vue/components/" + rand).Subrouter()
+	dataRouter = dataRouter.PathPrefix("/data/" + rand).Subrouter()
+
+	// mount vue component path
+	compRouter.
+		HandleFunc(self.HttpComponentPath, self.GetComponentHandler()).
+		Methods("GET").
+		Name(string(self.MuxCompRouteName))
+
+	// mount vue data path
+	var handlerFunc http.Handler
+	handler := http.HandlerFunc(self.GetDataHandler())
+
+	if middlewares != nil {
+		for _, m := range middlewares {
+			handlerFunc = m(handlerFunc)
+		}
+	} else {
+		handlerFunc = handler
+	}
+
+	dataRouter.
+		Handle(self.HttpDataPath, handlerFunc).
+		Methods("GET").
+		Name(string(self.MuxDataRouteName))
+
+	compR := compRouter.Get(string(self.MuxCompRouteName))
+	dataR := compRouter.Get(string(self.MuxDataRouteName))
+	comppath, _ := compR.GetPathTemplate()
+	datapath, _ := dataR.GetPathTemplate()
+	self.HttpComponentFullPath = comppath
+	self.HttpDataFullPath = datapath
 }

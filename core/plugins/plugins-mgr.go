@@ -34,9 +34,11 @@ func NewPluginMgr(d *db.Database, m *models.Models, paymgr *payments.PaymentsMgr
 		clntMgr: clntMgr,
 		plugins: []*PluginApi{},
 	}
-
-	pmgr.utils = NewPluginsMgrUtil(pmgr)
 	return pmgr
+}
+
+func (pmgr *PluginsMgr) InitUtils(coreApi *PluginApi) {
+    pmgr.utils = NewPluginsMgrUtil(pmgr, coreApi)
 }
 
 func (pmgr *PluginsMgr) Plugins() []*PluginApi {

@@ -7,28 +7,14 @@
  */
 (function (window) {
   var Vue = window.Vue;
-  var Vuex = window.Vuex;
   var $flare = window.$flare;
-
-  var $store = new Vuex.Store({
-    state: {
-      $view: {
-        loading: true,
-        data: {}
-      }
-    },
-    mutations: {
-      setLoading: function (state, loading) {
-        state.$view.loading = loading;
-      },
-      setData: function (state, data) {
-        state.$view.data = data;
-      }
-    }
-  });
+  var viewData = { view: { loading: false, data: {} } };
 
   Vue.component('flare-view', {
-    template: '<router-view></router-view>',
+    template: '<router-view :flare-view="view"></router-view>',
+    data: function () {
+      return viewData;
+    },
     mounted: function () {
       var router = $flare.router;
       if (router.currentRoute.meta.data_path) {
@@ -47,18 +33,19 @@
       var params = route.params;
       var data_uri = substitutePathParams(data_path, params);
 
+      viewData.view.loading = true;
       $flare.http
         .get(data_uri)
         .then(function (data) {
-          console.log(data);
-          $store.commit('setLoading', false);
-          $store.commit('setData', data);
+          console.log('View data:', data);
+          viewData.view.data = data;
+          console.log(viewData.view);
         })
         .finally(function () {
-          $store.commit('setLoading', false);
+          viewData.view.loading = false;
         });
     } else {
-      $store.commit('setData', {});
+      viewData.view.data = {};
     }
   }
 
@@ -76,6 +63,4 @@
 
     return substitutedPath;
   }
-
-  $flare.view = $store.state.$view;
 })(window);

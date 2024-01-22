@@ -15,20 +15,20 @@ type HttpApi struct {
 	api         *PluginApi
 	httpRouter  *HttpRouterApi
 	vueRouter   *VueRouterApi
-	response    *HttpResponse
+	httpResp    *HttpResponse
 	middlewares *PluginMiddlewares
 }
 
 func NewHttpApi(api *PluginApi, db *db.Database, clnt *connmgr.ClientRegister, mdls *models.Models, dmgr *connmgr.ClientRegister, pmgr *payments.PaymentsMgr) *HttpApi {
 	httpRouter := NewRouterApi(api, db, clnt)
 	vueRouter := NewVueRouterApi(api)
-	response := NewHttpResponse(api)
+	httpResp := NewHttpResponse(api)
 	middlewares := NewPluginMiddlewares(api.db, mdls, dmgr, pmgr)
 	return &HttpApi{
 		api:         api,
 		httpRouter:  httpRouter,
 		vueRouter:   vueRouter,
-		response:    response,
+		httpResp:    httpResp,
 		middlewares: middlewares,
 	}
 }
@@ -50,13 +50,17 @@ func (self *HttpApi) Middlewares() sdkhttp.Middlewares {
 }
 
 func (self *HttpApi) HttpResponse() sdkhttp.IHttpResponse {
-	return self.response
+	return self.httpResp
+}
+
+func (self *HttpApi) VueResponse(w http.ResponseWriter, r *http.Request) sdkhttp.IVueResponse {
+	return NewVueResponse(self.api.HttpAPI.vueRouter, w, r)
 }
 
 func (self *HttpApi) MuxVars(r *http.Request) map[string]string {
 	return mux.Vars(r)
 }
 
-func (self *HttpApi) VueRespones(w http.ResponseWriter, r *http.Request) *VueResponse {
-	return NewVueResponse(self.api.HttpAPI.vueRouter, w, r)
+func (self *HttpApi) GetAdminNavs(r *http.Request) []sdkhttp.AdminNavCategory {
+	return self.api.PluginsMgr.Utils().GetAdminNavs(r)
 }
