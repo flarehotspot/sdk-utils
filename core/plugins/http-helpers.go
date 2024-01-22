@@ -11,7 +11,6 @@ import (
 
 	"github.com/flarehotspot/core/sdk/api/http"
 	plugin "github.com/flarehotspot/core/sdk/api/plugin"
-	translate "github.com/flarehotspot/core/sdk/utils/translate"
 	"github.com/flarehotspot/core/web/response"
 	"github.com/flarehotspot/core/web/router"
 	rnames "github.com/flarehotspot/core/web/routes/names"
@@ -26,7 +25,7 @@ func NewViewHelpers(api *PluginApi) sdkhttp.IHelpers {
 }
 
 func (h *ViewHelpers) Translate(msgtype string, msgk string) string {
-	return h.api.Utl.Translate(translate.MsgType(msgtype), msgk)
+	return h.api.Utl.Translate(msgtype, msgk)
 }
 
 func (self *ViewHelpers) AssetPath(path string) string {

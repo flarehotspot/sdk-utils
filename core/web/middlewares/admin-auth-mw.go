@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"log"
 	"net/http"
 	"strings"
 
@@ -12,7 +11,6 @@ import (
 	"github.com/flarehotspot/core/config"
 	"github.com/flarehotspot/core/sdk/api/http"
 	"github.com/flarehotspot/core/sdk/libs/jwt"
-	translate "github.com/flarehotspot/core/sdk/utils/translate"
 	"github.com/flarehotspot/core/utils/jsonwebtoken"
 )
 
@@ -24,9 +22,7 @@ func AdminAuth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		acct, err := IsAdminAuthenticated(w, r)
 		if err != nil {
-			log.Println("Invalid login: ", err)
-			autherr := translate.Core(translate.Error, "unauthorized")
-			ErrUnauthorized(w, autherr)
+			ErrUnauthorized(w, err.Error())
 			return
 		}
 

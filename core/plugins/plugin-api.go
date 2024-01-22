@@ -20,7 +20,6 @@ import (
 	themes "github.com/flarehotspot/core/sdk/api/themes"
 	uci "github.com/flarehotspot/core/sdk/api/uci"
 	"github.com/flarehotspot/core/sdk/libs/slug"
-	translate "github.com/flarehotspot/core/sdk/utils/translate"
 	"github.com/flarehotspot/core/utils/migrate"
 )
 
@@ -142,7 +141,6 @@ func NewPluginApi(dir string, pmgr *PluginsMgr, trfkMgr *network.TrafficMgr) *Pl
 
 	pluginApi.info = info
 	pluginApi.slug = slug.Make(pluginApi.Pkg())
-	pluginApi.trnslt = translate.NewTranslator(dir)
 	pluginApi.models = NewPluginModels(pmgr.models)
 	pluginApi.AcctAPI = NewAcctApi(pluginApi)
 	pluginApi.HttpAPI = NewHttpApi(pluginApi, pmgr.db, pmgr.clntReg, pmgr.models, pmgr.clntReg, pmgr.paymgr)

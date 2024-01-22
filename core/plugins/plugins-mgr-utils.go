@@ -6,7 +6,6 @@ import (
 
 	"github.com/flarehotspot/core/config"
 	sdkhttp "github.com/flarehotspot/core/sdk/api/http"
-	translate "github.com/flarehotspot/core/sdk/utils/translate"
 )
 
 func NewPluginsMgrUtil(pmgr *PluginsMgr, coreApi *PluginApi) *PluginsMgrUtils {
@@ -98,7 +97,7 @@ func (utils *PluginsMgrUtils) GetAdminNavs(r *http.Request) []sdkhttp.AdminNavCa
 	navs := []sdkhttp.AdminNavCategory{}
 	categories := []sdkhttp.INavCategory{
 		sdkhttp.NavCategorySystem,
-        // sdkhttp.NavCategoryNetwork,
+		// sdkhttp.NavCategoryNetwork,
 	}
 
 	for _, category := range categories {
@@ -115,7 +114,7 @@ func (utils *PluginsMgrUtils) GetAdminNavs(r *http.Request) []sdkhttp.AdminNavCa
 		}
 
 		navs = append(navs, sdkhttp.AdminNavCategory{
-			Category: utils.coreApi.Utl.Translate(translate.Label, string(category)),
+			Category: utils.coreApi.Utl.Translate("label", string(category)),
 			Items:    navItems,
 		})
 	}

@@ -8,7 +8,6 @@ import (
 	"github.com/flarehotspot/core/config"
 	"github.com/flarehotspot/core/globals"
 	"github.com/flarehotspot/core/sdk/api/http"
-	translate "github.com/flarehotspot/core/sdk/utils/translate"
 	"github.com/flarehotspot/core/utils/jsonwebtoken"
 	"github.com/flarehotspot/core/web/middlewares"
 )
@@ -32,14 +31,14 @@ func (c *AdminAuthCtrl) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !acct.Auth(password) {
-		err = errors.New(translate.Core(translate.Error, "invalid_login"))
+		err = errors.New(c.g.CoreApi.Utl.Translate("error", "invalid_login"))
 		c.ErrorUnauthorized(w, err.Error())
 		return
 	}
 
 	appcfg, err := config.ReadApplicationConfig()
 	if err != nil {
-		err = errors.New(translate.Core(translate.Error, "invalid_login"))
+		err = errors.New(c.g.CoreApi.Utl.Translate("error", "invalid_login"))
 		c.ErrorUnauthorized(w, err.Error())
 		return
 	}

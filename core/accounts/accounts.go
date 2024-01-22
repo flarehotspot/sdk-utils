@@ -11,7 +11,6 @@ import (
 	accounts "github.com/flarehotspot/core/sdk/api/accounts"
 	fs "github.com/flarehotspot/core/sdk/utils/fs"
 	paths "github.com/flarehotspot/core/sdk/utils/paths"
-	translate "github.com/flarehotspot/core/sdk/utils/translate"
 )
 
 const (
@@ -21,13 +20,14 @@ const (
 )
 
 var (
-	perms        sync.Map
-	DefaultPerms = []string{PermMngUsers}
+	perms               sync.Map
+	DefaultPerms        = []string{PermMngUsers}
+	ErrNoAccount        = errors.New("Account does not exist")
 )
 
 func init() {
 	perms = sync.Map{}
-	perms.Store(PermMngUsers, translate.Core(translate.Label, "perm_manage_users"))
+	perms.Store(PermMngUsers, "Manage Users")
 }
 
 func DefaultAdminAcct() Account {
@@ -116,15 +116,14 @@ func AllAdmins() ([]*Account, error) {
 
 func Find(username string) (*Account, error) {
 	var acct Account
-	derr := errors.New(translate.Core(translate.Error, "account_not_exist"))
 	f := FilepathForUser(username)
 	b, err := os.ReadFile(f)
 	if err != nil {
-		return nil, derr
+		return nil, ErrNoAccount
 	}
 	err = json.Unmarshal(b, &acct)
 	if err != nil {
-		return &acct, derr
+		return &acct, ErrNoAccount
 	}
 	return &acct, nil
 }

@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	sdkhttp "github.com/flarehotspot/core/sdk/api/http"
-	translate "github.com/flarehotspot/core/sdk/utils/translate"
 	"github.com/flarehotspot/core/web/helpers"
 )
 
@@ -32,7 +31,7 @@ func NewVueAdminNav(api *PluginApi, r *http.Request, nav sdkhttp.VueAdminNav) (s
 		routepath = vueRoute.VueRoutePath
 	}
 
-	label := api.Utils().Translate(translate.Label, nav.TranslateLabel)
+	label := api.Utils().Translate("label", nav.TranslateLabel)
 
 	return sdkhttp.AdminNavItem{
 		Category:     nav.Category,

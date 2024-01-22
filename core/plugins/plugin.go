@@ -4,14 +4,12 @@ import (
 	"github.com/flarehotspot/core/config/plugincfg"
 	"github.com/flarehotspot/core/connmgr"
 	"github.com/flarehotspot/core/db"
-	translate "github.com/flarehotspot/core/sdk/utils/translate"
 )
 
 type PluginApi struct {
 	info             *plugincfg.PluginInfo
 	slug             string
 	dir              string
-	trnslt           translate.TranslateFn
 	db               *db.Database
 	models           *PluginModels
 	AcctAPI          *AccountsApi
