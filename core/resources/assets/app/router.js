@@ -1,8 +1,8 @@
 /**
- * @file             : router.tpl.js
+ * @file             : router.js
  * @author           : Adones Pitogo <adones.pitogo@adopisoft.com>
  * Date              : Jan 19, 2024
- * Last Modified Date: Jan 20, 2024
+ * Last Modified Date: Jan 22, 2024
  * Copyright 2021-2024 Flarego Technologies Corp. <business@flarego.ph>
  */
 
@@ -21,8 +21,7 @@
         name: r.name,
         path: r.path,
         component: VueLazyLoad(r.component),
-        meta: r.meta,
-        props: true
+        meta: r.meta
       };
 
       if (r.children) {

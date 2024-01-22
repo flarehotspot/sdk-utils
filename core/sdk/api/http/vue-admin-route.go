@@ -8,7 +8,6 @@ type VueAdminRoute struct {
 	Component           string
 	HandlerFunc           VueHandlerFn
 	Middlewares         []func(http.Handler) http.Handler
-	DisableCache        bool
 	PermissionsRequired []string
 	PermissionsAnyOf    []string
 }

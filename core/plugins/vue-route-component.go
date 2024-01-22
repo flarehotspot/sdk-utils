@@ -1,22 +1,19 @@
 package plugins
 
 import (
-	"fmt"
 	"net/http"
 	"path/filepath"
-	"time"
 
-	"github.com/flarehotspot/core/sdk/api/http"
+	sdkhttp "github.com/flarehotspot/core/sdk/api/http"
 	"github.com/flarehotspot/core/web/response"
 )
 
-func NewVueRouteComponent(api *PluginApi, name string, path string, handler sdkhttp.VueHandlerFn, comp string, nocache bool, auth bool, permsReq []string, permsAny []string) *VueRouteComponent {
+func NewVueRouteComponent(api *PluginApi, name string, path string, handler sdkhttp.VueHandlerFn, comp string, auth bool, permsReq []string, permsAny []string) *VueRouteComponent {
 
 	return &VueRouteComponent{
 		api:                 api,
 		handler:             handler,
 		component:           comp,
-		nocache:             nocache,
 		MuxCompRouteName:    api.HttpAPI.httpRouter.MuxRouteName(sdkhttp.PluginRouteName(name + ".component")),
 		MuxDataRouteName:    api.HttpAPI.httpRouter.MuxRouteName(sdkhttp.PluginRouteName(name + ".data")),
 		HttpComponentPath:   api.HttpAPI.vueRouter.HttpComponentPath(name),
@@ -33,7 +30,6 @@ type VueRouteComponent struct {
 	api                   *PluginApi           `json:"-"`
 	handler               sdkhttp.VueHandlerFn `json:"-"`
 	component             string               `json:"-"`
-	nocache               bool                 `json:"-"`
 	MuxCompRouteName      sdkhttp.MuxRouteName `json:"mux_component_route_name"`
 	MuxDataRouteName      sdkhttp.MuxRouteName `json:"mux_data_route_name"`
 	HttpComponentPath     string               `json:"http_component_path"`
@@ -66,17 +62,6 @@ func (self *VueRouteComponent) GetComponentHandler() http.HandlerFunc {
 		comp := self.component
 		compfile := self.api.Resource(filepath.Join("components", comp))
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
-
-		if self.nocache {
-			w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
-			w.Header().Set("Pragma", "no-cache")
-			w.Header().Set("Expires", "0")
-		} else {
-			w.Header().Set("Cache-Control", "max-age=604800")
-			w.Header().Set("Pragma", "cache")
-			w.Header().Set("Expires", fmt.Sprintf("%s", time.Now().AddDate(0, 6, 0).Format(http.TimeFormat)))
-		}
-
 		response.Text(w, compfile, helpers, nil)
 	}
 }

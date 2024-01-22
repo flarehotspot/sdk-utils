@@ -1,3 +1,10 @@
+/**
+ * @file             : notification.js
+ * @author           : Adones Pitogo <pitogo.adones@flarego.com>
+ * Date              : Jan 22, 2024
+ * Last Modified Date: Jan 22, 2024
+ * Copyright 2021-2024 Flarego Technologies Corp. <business@flarego.ph>
+ */
 (function (window) {
   var $flare = window.$flare;
   var colorSuccess = '#1fad45';

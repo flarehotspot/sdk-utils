@@ -5,14 +5,30 @@
  * Last Modified Date: Jan 21, 2024
  * Copyright 2021-2024 Flarego Technologies Corp. <business@flarego.ph>
  */
-(function ($flare) {
-  var viewData = { flareView: { loading: true, data: {} } };
+(function (window) {
+  var Vue = window.Vue;
+  var Vuex = window.Vuex;
+  var $flare = window.$flare;
+
+  var $store = new Vuex.Store({
+    state: {
+      $view: {
+        loading: true,
+        data: {}
+      }
+    },
+    mutations: {
+      setLoading: function (state, loading) {
+        state.$view.loading = loading;
+      },
+      setData: function (state, data) {
+        state.$view.data = data;
+      }
+    }
+  });
 
   Vue.component('flare-view', {
-    template: '<router-view :flare-view="flareView"></router-view>',
-    data: function () {
-      return viewData;
-    },
+    template: '<router-view></router-view>',
     mounted: function () {
       var router = $flare.router;
       if (router.currentRoute.meta.data_path) {
@@ -31,18 +47,18 @@
       var params = route.params;
       var data_uri = substitutePathParams(data_path, params);
 
-      viewData.flareView.loading = true;
       $flare.http
         .get(data_uri)
         .then(function (data) {
           console.log(data);
-          viewData.flareView.data = data;
+          $store.commit('setLoading', false);
+          $store.commit('setData', data);
         })
         .finally(function () {
-          viewData.flareView.loading = false;
+          $store.commit('setLoading', false);
         });
     } else {
-      viewData.flareView.data = {};
+      $store.commit('setData', {});
     }
   }
 
@@ -60,4 +76,6 @@
 
     return substitutedPath;
   }
-})(window.$flare);
+
+  $flare.view = $store.state.$view;
+})(window);

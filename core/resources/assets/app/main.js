@@ -6,18 +6,18 @@
  * Copyright 2021-2024 Flarego Technologies Corp. <business@flarego.ph>
  */
 
-// var vueNotifsPath = '<% .Helpers.AssetPath "libs/vue-notification.js" %>'
+(function (window) {
+  var $flare = window.$flare || {};
+  var Vue = window.Vue;
 
-(function ($flare, Vue) {
   define([], function () {
-    // console.log(VueNotif);
-
     var app = new Vue({
-      router: $flare.router,
+      router: $flare.router
+      // store: $flare.store
     });
 
     app.$mount('#app');
 
     $flare.app = app;
   });
-})(window.$flare, window.Vue);
+})(window);
