@@ -25,7 +25,7 @@
 
   function invalidResponse(res) {
     var err = res.error || res.message || 'Invalid server response';
-    $flare.notification.error(err);
+    $flare.notify.error(err);
   }
 
   function parseRespones(res) {
@@ -36,12 +36,12 @@
     }
 
     if ($res.flash) {
-      var toastFn = $flare.notification[$res.flash.type];
+      var toastFn = $flare.notify[$res.flash.type];
       if (toastFn) {
         toastFn($res.flash.msg);
       } else {
         console.error('Invalid flash type:', $res.flash.type);
-        $flare.notification.info($res.flash.msg);
+        $flare.notify.info($res.flash.msg);
       }
     }
 
@@ -54,4 +54,13 @@
       return res;
     }
   }
+
+  // handle unauthorized requests
+  window.BasicHttp.onUnauthorized = function () {
+    var pending = $flare.router.history.pending || {};
+    var current = $flare.router.history.current;
+    if (current.name != 'login' && pending.name != 'login') {
+      $flare.router.push({ name: 'login' });
+    }
+  };
 })(window.$flare);

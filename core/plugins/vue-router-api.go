@@ -126,9 +126,9 @@ func (self *VueRouterApi) GetPortalRoutes() []*VueRouteComponent {
 	return self.portalRoutes
 }
 
-func (self *VueRouterApi) FindAdminRoute(vueRouteName string) (*VueRouteComponent, bool) {
+func (self *VueRouterApi) FindAdminRoute(routename string) (*VueRouteComponent, bool) {
 	vueR := self.api.HttpAPI.vueRouter
-	routeName := vueR.VueRouteName(vueRouteName)
+	routeName := vueR.VueRouteName(routename)
 	for _, route := range self.GetAdminRoutes() {
 		if route.VueRouteName == routeName {
 			return route, true

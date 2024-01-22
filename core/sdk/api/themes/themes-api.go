@@ -7,8 +7,8 @@ type IThemesApi interface {
 
 type AdminTheme struct {
 	LayoutComponent    ThemeComponent
-	IndexComponentPath ThemeComponent
 	LoginComponentPath ThemeComponent
+	DashboardRoute     string
 	ThemeAssets        *ThemeAssets
 }
 

@@ -12,7 +12,7 @@
   var colorWarning = '#eb8634';
   var colorError = '#c72020';
 
-  $flare.notification = {
+  $flare.notify = {
     success: function (msg) {
       return createToast('success', msg);
     },

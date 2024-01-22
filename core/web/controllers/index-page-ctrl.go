@@ -37,9 +37,7 @@ func (c *IndexPageCtrl) PortalIndex(w http.ResponseWriter, r *http.Request) {
 	}
 
 	themesApi := themePlugin.ThemesApi().(*plugins.ThemesApi)
-
 	portalRoutes := c.portalRoutes()
-
 	c.render(w, r, themePlugin, portalRoutes, themesApi.GetPortalThemeAssets())
 }
 
@@ -89,16 +87,16 @@ func (c *IndexPageCtrl) adminRoutes(themesApi *plugins.ThemesApi) []map[string]a
 		})
 	}
 
+	indexRoute, _ := themesApi.GetDashboardVueRoute()
 	children = append(children, map[string]any{
-		"path":      "/",
-		"name":      "index",
-		"component": themesApi.AdminIndexComponentFullPath,
+		"path":     "*",
+		"redirect": indexRoute.VueRoutePath,
 	})
 
 	routesMap := []map[string]any{
 		{
-			"path":      "/",
-			"name":      "theme-layout",
+			"path":      "",
+			"name":      "layout",
 			"component": themesApi.AdminLayoutComponentFullPath,
 			"children":  children,
 			"meta": map[string]any{
@@ -148,7 +146,7 @@ func (c *IndexPageCtrl) render(w http.ResponseWriter, r *http.Request, themePlug
 		{File: c.g.CoreApi.Resource("assets/libs/vuex-global-4.1.0.js")},
 		{File: c.g.CoreApi.Resource("assets/app/vue-http.js")},
 		{File: c.g.CoreApi.Resource("assets/app/require-config.js")},
-		{File: c.g.CoreApi.Resource("assets/app/notification.js")},
+		{File: c.g.CoreApi.Resource("assets/app/notify.js")},
 		{File: c.g.CoreApi.Resource("assets/app/auth.js")},
 		{File: c.g.CoreApi.Resource("assets/app/router.js"), Data: routesData},
 		{File: c.g.CoreApi.Resource("assets/app/flare-view.js")},

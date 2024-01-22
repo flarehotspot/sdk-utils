@@ -7,44 +7,13 @@
  */
 
 (function ($flare) {
-  function VueLazyLoad(vueFile) {
-    return function (resolve) {
-      return require(['vue!' + vueFile], resolve);
-    };
-  }
-
-  function transformRoutes(routes) {
-    var newRoutes = [];
-    for (var i = 0; i < routes.length; i++) {
-      var r = routes[i];
-      var route = {
-        name: r.name,
-        path: r.path,
-        component: VueLazyLoad(r.component),
-        meta: r.meta
-      };
-
-      if (r.children) {
-        route.children = transformRoutes(r.children);
-      }
-
-      newRoutes.push(route);
-    }
-    return newRoutes;
-  }
-
   var VueRouter = window.VueRouter;
   var routes = JSON.parse('<% .Data.Routes %>');
-  console.log(routes);
-
   routes = transformRoutes(routes);
-
   console.log(routes);
+  var router = new VueRouter({ routes: routes });
 
-  var appRouter = new VueRouter({ routes: routes });
-  $flare.router = appRouter;
-
-  appRouter.beforeEach(function (to, _, next) {
+  router.beforeEach(function (to, _, next) {
     var hastoken = $flare.auth.hasAuthToken();
     console.log('has token', hastoken);
 
@@ -76,12 +45,37 @@
     }
   });
 
-  // handle unauthorized requests
-  window.BasicHttp.onUnauthorized = function () {
-    var pending = appRouter.history.pending || {};
-    var current = appRouter.history.current;
-    if (current.name != 'login' && pending.name != 'login') {
-      appRouter.push({ name: 'login' });
+  function VueLazyLoad(vueFile) {
+    return function (resolve) {
+      return require(['vue!' + vueFile], resolve);
+    };
+  }
+
+  function transformRoutes(routes) {
+    var newRoutes = [];
+    for (var i = 0; i < routes.length; i++) {
+      var r = routes[i];
+      var route = {};
+
+      if (!r.redirect) {
+        route = {
+          name: r.name,
+          path: r.path,
+          component: VueLazyLoad(r.component),
+          meta: r.meta
+        };
+
+        if (r.children) {
+          route.children = transformRoutes(r.children);
+        }
+      } else {
+        route = r;
+      }
+
+      newRoutes.push(route);
     }
-  };
+    return newRoutes;
+  }
+
+  $flare.router = router;
 })(window.$flare);

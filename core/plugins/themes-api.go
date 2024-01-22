@@ -16,36 +16,36 @@ func NewThemesApi(api *PluginApi) *ThemesApi {
 }
 
 type ThemesApi struct {
-	api                           *PluginApi
-	adminTheme                    themes.AdminTheme
-	portalTheme                   themes.PortalTheme
-	AdminLayoutComponentFullPath  string
-	AdminIndexComponentFullPath   string
-	AdminLoginComponentFullPath   string
-	PortalLayoutComponentFullPath string
-	PortalIndexComponentFullPath  string
+	api                             *PluginApi
+	adminTheme                      themes.AdminTheme
+	portalTheme                     themes.PortalTheme
+	AdminLayoutComponentFullPath    string
+	AdminDashboardComponentFullPath string
+	AdminLoginComponentFullPath     string
+	PortalLayoutComponentFullPath   string
+	PortalIndexComponentFullPath    string
 }
 
 func (t *ThemesApi) AdminThemeComponent(theme themes.AdminTheme) {
-	layoutRouteName := fmt.Sprintf("%s:%s", t.api.Pkg(), routenames.AdminThemeLayout)
-	indexRouterName := fmt.Sprintf("%s:%s", t.api.Pkg(), routenames.AdminThemeIndex)
-	loginRouterName := fmt.Sprintf("%s:%s", t.api.Pkg(), routenames.AdminThemeLogin)
-
-	httpRouter := t.api.HttpApi().HttpRouter().(*HttpRouterApi)
-	r := httpRouter.pluginRouter.mux
-	r = r.PathPrefix("/vue/theme/admin/components").Subrouter()
-	r.HandleFunc("/layout.vue", t.GetComponentHandler(theme.LayoutComponent)).Methods("GET").Name(layoutRouteName)
-	r.HandleFunc("/index.vue", t.GetComponentHandler(theme.IndexComponentPath)).Methods("GET").Name(indexRouterName)
-	r.HandleFunc("/login.vue", t.GetComponentHandler(theme.LoginComponentPath)).Methods("GET").Name(loginRouterName)
-
-	adminLayoutPath, _ := r.Get(layoutRouteName).GetPathTemplate()
-	adminIndexPath, _ := r.Get(indexRouterName).GetPathTemplate()
-	adminLoginPath, _ := r.Get(loginRouterName).GetPathTemplate()
-
-	t.AdminLayoutComponentFullPath = adminLayoutPath
-	t.AdminIndexComponentFullPath = adminIndexPath
-	t.AdminLoginComponentFullPath = adminLoginPath
 	t.adminTheme = theme
+
+	loginRouterName := fmt.Sprintf("%s:%s", t.api.Pkg(), routenames.AdminThemeLogin)
+	layoutRouteName := fmt.Sprintf("%s:%s", t.api.Pkg(), routenames.AdminThemeLayout)
+	dashRouteName := fmt.Sprintf("%s:%s", t.api.Pkg(), routenames.AdminThemeIndex)
+
+	r := t.api.HttpApi().HttpRouter().(*HttpRouterApi).pluginRouter.mux
+	r = r.PathPrefix("/vue/theme/admin/components").Subrouter()
+	r.HandleFunc("/login.vue", t.GetComponentHandler(theme.LoginComponentPath)).Methods("GET").Name(loginRouterName)
+	r.HandleFunc("/layout.vue", t.GetComponentHandler(theme.LayoutComponent)).Methods("GET").Name(layoutRouteName)
+	r.HandleFunc("/dashboard.vue", t.GetDashboarComponentHandler()).Methods("GET").Name(dashRouteName)
+
+	adminLoginPath, _ := r.Get(loginRouterName).GetPathTemplate()
+	adminLayoutPath, _ := r.Get(layoutRouteName).GetPathTemplate()
+	adminDashPath, _ := r.Get(dashRouteName).GetPathTemplate()
+
+	t.AdminLoginComponentFullPath = adminLoginPath
+	t.AdminLayoutComponentFullPath = adminLayoutPath
+	t.AdminDashboardComponentFullPath = adminDashPath
 }
 
 func (t *ThemesApi) PortalThemeComponent(theme themes.PortalTheme) {
@@ -86,6 +86,21 @@ func (t *ThemesApi) GetPortalThemeAssets() themes.ThemeAssets {
 		}
 	}
 	return assets
+}
+
+func (t *ThemesApi) GetDashboarComponentHandler() http.HandlerFunc {
+	route, ok := t.api.HttpAPI.vueRouter.FindAdminRoute(t.adminTheme.DashboardRoute)
+	if !ok {
+		return func(w http.ResponseWriter, r *http.Request) {
+			response.ErrorJson(w, "Invalid dashboard route: "+t.adminTheme.DashboardRoute)
+		}
+	}
+
+	return route.GetComponentHandler()
+}
+
+func (t *ThemesApi) GetDashboardVueRoute() (*VueRouteComponent, bool) {
+	return t.api.HttpAPI.vueRouter.FindAdminRoute(t.adminTheme.DashboardRoute)
 }
 
 func (t *ThemesApi) GetComponentHandler(comp themes.ThemeComponent) http.HandlerFunc {

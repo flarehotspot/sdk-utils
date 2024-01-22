@@ -12,11 +12,10 @@ import (
 var (
 	htmlTmplCache = sync.Map{}
 	textTmplCache = sync.Map{}
+	useCache = env.GoEnv != env.ENV_DEV
 )
 
 func GetHtmlTemplate(path string) (*htmltemplate.Template, error) {
-	useCache := env.GoEnv != env.ENV_DEV
-
 	if v, ok := htmlTmplCache.Load(path); ok && useCache {
 		return v.(*htmltemplate.Template), nil
 	}
@@ -36,7 +35,6 @@ func GetHtmlTemplate(path string) (*htmltemplate.Template, error) {
 }
 
 func GetTextTemplate(path string) (*texttemplate.Template, error) {
-	useCache := env.GoEnv != env.ENV_DEV
 	if v, ok := textTmplCache.Load(path); ok && useCache {
 		return v.(*texttemplate.Template), nil
 	}

@@ -56,3 +56,7 @@ func (self *HttpApi) HttpResponse() sdkhttp.IHttpResponse {
 func (self *HttpApi) MuxVars(r *http.Request) map[string]string {
 	return mux.Vars(r)
 }
+
+func (self *HttpApi) VueRespones(w http.ResponseWriter, r *http.Request) *VueResponse {
+	return NewVueResponse(self.api.HttpAPI.vueRouter, w, r)
+}
