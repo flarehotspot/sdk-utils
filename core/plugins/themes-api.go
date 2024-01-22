@@ -101,7 +101,7 @@ func (t *ThemesApi) GetDashboardVueRoute() (*VueRouteComponent, bool) {
 func (t *ThemesApi) GetComponentHandler(comp themes.ThemeComponent) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		helpers := t.api.HttpApi().Helpers()
-		compfile := filepath.Join(t.api.Resource(filepath.Join("components", comp.ComponentPath)))
+		compfile := filepath.Join(t.api.Utl.Resource(filepath.Join("components", comp.ComponentPath)))
 		data := comp.Data
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		response.Text(w, compfile, helpers, data)

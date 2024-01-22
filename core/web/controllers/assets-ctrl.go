@@ -20,7 +20,7 @@ type AssetsCtrl struct {
 }
 
 func (c *AssetsCtrl) GetFavicon(w http.ResponseWriter, r *http.Request) {
-	contents, err := os.ReadFile(c.g.CoreApi.Resource("assets/images/default-favicon-32x32.png"))
+	contents, err := os.ReadFile(c.g.CoreApi.Utl.Resource("assets/images/default-favicon-32x32.png"))
 	if err != nil {
 		response.ErrorHtml(w, err.Error())
 		return
@@ -39,7 +39,7 @@ func (c *AssetsCtrl) AssetWithHelpers(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	assetPath = filepath.Join(pluginApi.Resource("assets"), assetPath)
+	assetPath = filepath.Join(pluginApi.Utils().Resource("assets"), assetPath)
 	if !fs.Exists(assetPath) {
 		http.Error(w, "Asset not found: "+assetPath, 404)
 		return

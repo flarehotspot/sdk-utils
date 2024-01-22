@@ -26,7 +26,7 @@ func NewViewHelpers(api *PluginApi) sdkhttp.IHelpers {
 }
 
 func (h *ViewHelpers) Translate(msgtype string, msgk string) string {
-	return h.api.Translate(translate.MsgType(msgtype), msgk)
+	return h.api.Utl.Translate(translate.MsgType(msgtype), msgk)
 }
 
 func (self *ViewHelpers) AssetPath(path string) string {
@@ -46,7 +46,7 @@ func (self *ViewHelpers) AssetWithHelpersPath(path string) string {
 }
 
 func (self *ViewHelpers) EmbedJs(path string, data any) template.HTML {
-	jspath := self.api.Resource(filepath.Join("assets", path))
+	jspath := self.api.Utl.Resource(filepath.Join("assets", path))
 	tpljs, err := os.ReadFile(jspath)
 	if err != nil {
 		tpljs = []byte(fmt.Sprintf("console.error('%s: %s')", jspath, err.Error()))
@@ -71,7 +71,7 @@ func (self *ViewHelpers) EmbedJs(path string, data any) template.HTML {
 }
 
 func (self *ViewHelpers) EmbedCss(path string, data any) template.HTML {
-	csspath := self.api.Resource(filepath.Join("assets", path))
+	csspath := self.api.Utl.Resource(filepath.Join("assets", path))
 	tplcss, err := os.ReadFile(csspath)
 	if err != nil {
 		tplcss = []byte(fmt.Sprintf("/* %s: %s */", csspath, err.Error()))

@@ -22,10 +22,11 @@ type PluginsMgr struct {
 	clntMgr *connmgr.ClientMgr
 	trfkMgr *network.TrafficMgr
 	plugins []*PluginApi
+	utils   *PluginsMgrUtils
 }
 
 func NewPluginMgr(d *db.Database, m *models.Models, paymgr *payments.PaymentsMgr, clntReg *connmgr.ClientRegister, clntMgr *connmgr.ClientMgr, trfkMgr *network.TrafficMgr) *PluginsMgr {
-	return &PluginsMgr{
+	pmgr := &PluginsMgr{
 		db:      d,
 		models:  m,
 		paymgr:  paymgr,
@@ -33,6 +34,9 @@ func NewPluginMgr(d *db.Database, m *models.Models, paymgr *payments.PaymentsMgr
 		clntMgr: clntMgr,
 		plugins: []*PluginApi{},
 	}
+
+	pmgr.utils = NewPluginsMgrUtil(pmgr)
+	return pmgr
 }
 
 func (pmgr *PluginsMgr) Plugins() []*PluginApi {
@@ -87,24 +91,6 @@ func (pmgr *PluginsMgr) All() []plugin.IPluginApi {
 	return plugins
 }
 
-// func (pmgr *PluginsMgr) PortalPluginApi() *PluginApi {
-// 	themepkg := themecfg.Read().Portal
-// 	api, ok := pmgr.FindByPkg(themepkg)
-// 	return api.(*PluginApi)
-// }
-
-// func (pmgr *PluginsMgr) AdminPluginApi() *PluginApi {
-// 	themepkg := themecfg.Read().Admin
-// 	api, ok := pmgr.FindByPkg(themepkg)
-// 	return api.(*PluginApi)
-// }
-
-// func (pmgr *PluginsMgr) AuthPluginApi() *PluginApi {
-// 	themepkg := themecfg.Read().Auth
-// 	api, ok := pmgr.FindByPkg(themepkg)
-// 	return api.(*PluginApi)
-// }
-
 func (pmgr *PluginsMgr) PaymentMethods() []plugin.IPluginApi {
 	methods := []plugin.IPluginApi{}
 	for _, p := range pmgr.plugins {
@@ -114,4 +100,8 @@ func (pmgr *PluginsMgr) PaymentMethods() []plugin.IPluginApi {
 		}
 	}
 	return methods
+}
+
+func (pmgr *PluginsMgr) Utils() *PluginsMgrUtils {
+	return pmgr.utils
 }

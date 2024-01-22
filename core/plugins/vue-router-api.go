@@ -22,8 +22,8 @@ type VueRouterApi struct {
 	api          *PluginApi
 	adminRoutes  []*VueRouteComponent
 	portalRoutes []*VueRouteComponent
-	adminNavsFn  sdkhttp.VueAdminNavsHandler
-	portalNavsFn sdkhttp.VuePortalItemsHandler
+	adminNavsFn  sdkhttp.VueAdminNavsFunc
+	portalNavsFn sdkhttp.VuePortalItemsFunc
 }
 
 func (self *VueRouterApi) SetAdminRoutes(routes []sdkhttp.VueAdminRoute) {
@@ -137,7 +137,7 @@ func (self *VueRouterApi) FindAdminRoute(routename string) (*VueRouteComponent, 
 	return nil, false
 }
 
-func (self *VueRouterApi) AdminNavsFunc(fn sdkhttp.VueAdminNavsHandler) {
+func (self *VueRouterApi) AdminNavsFunc(fn sdkhttp.VueAdminNavsFunc) {
 	self.adminNavsFn = fn
 }
 
@@ -169,7 +169,7 @@ func (self *VueRouterApi) FindVueComponent(name string) (VueRouteComponent, bool
 	return VueRouteComponent{}, true
 }
 
-func (self *VueRouterApi) PortalItemsFunc(fn sdkhttp.VuePortalItemsHandler) {
+func (self *VueRouterApi) PortalItemsFunc(fn sdkhttp.VuePortalItemsFunc) {
 	self.portalNavsFn = fn
 }
 

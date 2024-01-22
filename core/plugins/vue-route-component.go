@@ -60,7 +60,7 @@ func (self *VueRouteComponent) GetComponentHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		helpers := self.api.HttpApi().Helpers()
 		comp := self.component
-		compfile := self.api.Resource(filepath.Join("components", comp))
+		compfile := self.api.Utl.Resource(filepath.Join("components", comp))
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		response.Text(w, compfile, helpers, nil)
 	}

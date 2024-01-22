@@ -3,5 +3,5 @@ package sdkhttp
 import "net/http"
 
 type VueHandlerFn func(w IVueResponse, r *http.Request) (err error)
-type VueAdminNavsHandler func(r *http.Request) []VueAdminNav
-type VuePortalItemsHandler func(r *http.Request) []VuePortalItem
+type VueAdminNavsFunc func(r *http.Request) []VueAdminNav
+type VuePortalItemsFunc func(r *http.Request) []VuePortalItem

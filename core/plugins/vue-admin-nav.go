@@ -15,7 +15,7 @@ func NewVueAdminNav(api *PluginApi, r *http.Request, nav sdkhttp.VueAdminNav) Vu
 		path = route.HttpDataPath
 	}
 
-	label := api.Translate(translate.Label, nav.TranslateLabel)
+	label := api.Utils().Translate(translate.Label, nav.TranslateLabel)
 	return VueAdminNav{
 		Category: nav.Category,
 		PermitFn: nav.PermitFn,

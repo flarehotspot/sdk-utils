@@ -21,7 +21,7 @@ func (c *AdminApiCtrl) GetAdminNavs(w http.ResponseWriter, r *http.Request) {
 	navs := []*plugins.VueAdminNavList{}
 
 	systemNavs := &plugins.VueAdminNavList{
-		MenuHead: c.g.CoreApi.Translate(translate.Label, "system"),
+		MenuHead: c.g.CoreApi.Utl.Translate(translate.Label, "system"),
 		Navs:     []plugins.VueAdminNav{},
 	}
 

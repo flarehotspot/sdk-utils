@@ -64,14 +64,6 @@ func (p *PluginApi) Dir() string {
 	return p.dir
 }
 
-func (p *PluginApi) Translate(msgtype translate.MsgType, msgk string) string {
-	return p.trnslt(msgtype, msgk)
-}
-
-func (p *PluginApi) Resource(path string) string {
-	return filepath.Join(p.dir, "resources", path)
-}
-
 func (p *PluginApi) DbApi() *sql.DB {
 	return p.db.SqlDB()
 }
@@ -128,15 +120,12 @@ func (p *PluginApi) ThemesApi() themes.IThemesApi {
 	return p.ThemesAPI
 }
 
-func NewPluginApi(dir string, pmgr *PluginsMgr, trfkMgr *network.TrafficMgr) *PluginApi {
-	info, err := plugincfg.GetPluginInfo(dir)
-	if err != nil {
-		log.Println("Error getting plugin info: ", err.Error())
-	}
+func (p *PluginApi) Utils() plugin.IPluginUtils {
+	return p.Utl
+}
 
+func NewPluginApi(dir string, pmgr *PluginsMgr, trfkMgr *network.TrafficMgr) *PluginApi {
 	pluginApi := &PluginApi{
-		info:       info,
-		slug:       slug.Make(info.Package),
 		dir:        dir,
 		db:         pmgr.db,
 		PluginsMgr: pmgr,
@@ -144,31 +133,26 @@ func NewPluginApi(dir string, pmgr *PluginsMgr, trfkMgr *network.TrafficMgr) *Pl
 		ClntMgr:    pmgr.clntMgr,
 	}
 
-	translateFn := translate.NewTranslator(dir)
-	mdls := NewPluginModels(pmgr.models)
-	acctApi := NewAcctApi(pluginApi)
-	httpApi := NewHttpApi(pluginApi, pmgr.db, pmgr.clntReg, pmgr.models, pmgr.clntReg, pmgr.paymgr)
-	configApi := NewConfigApi(pluginApi)
-	paymentsApi := NewPaymentsApi(pluginApi, pmgr.paymgr)
-	themesApi := NewThemesApi(pluginApi)
-	networkApi := NewNetworkApi(trfkMgr)
-	adsApi := NewAdsApi(pluginApi)
-	inappur := NewInAppPurchaseApi(pluginApi)
-	uciApi := NewUciApi()
-	utl := NewPluginUtils(pluginApi)
+	pluginApi.Utl = NewPluginUtils(pluginApi)
 
-	pluginApi.trnslt = translateFn
-	pluginApi.models = mdls
-	pluginApi.AcctAPI = acctApi
-	pluginApi.HttpAPI = httpApi
-	pluginApi.ConfigAPI = configApi
-	pluginApi.PaymentsAPI = paymentsApi
-	pluginApi.ThemesAPI = themesApi
-	pluginApi.NetworkAPI = networkApi
-	pluginApi.AdsAPI = adsApi
-	pluginApi.InAppPurchaseAPI = inappur
-	pluginApi.UciAPI = uciApi
-	pluginApi.Utl = utl
+	info, err := plugincfg.GetPluginInfo(dir)
+	if err != nil {
+		log.Println("Error getting plugin info: ", err.Error())
+	}
+
+	pluginApi.info = info
+	pluginApi.slug = slug.Make(pluginApi.Pkg())
+	pluginApi.trnslt = translate.NewTranslator(dir)
+	pluginApi.models = NewPluginModels(pmgr.models)
+	pluginApi.AcctAPI = NewAcctApi(pluginApi)
+	pluginApi.HttpAPI = NewHttpApi(pluginApi, pmgr.db, pmgr.clntReg, pmgr.models, pmgr.clntReg, pmgr.paymgr)
+	pluginApi.ConfigAPI = NewConfigApi(pluginApi)
+	pluginApi.PaymentsAPI = NewPaymentsApi(pluginApi, pmgr.paymgr)
+	pluginApi.ThemesAPI = NewThemesApi(pluginApi)
+	pluginApi.NetworkAPI = NewNetworkApi(trfkMgr)
+	pluginApi.AdsAPI = NewAdsApi(pluginApi)
+	pluginApi.InAppPurchaseAPI = NewInAppPurchaseApi(pluginApi)
+	pluginApi.UciAPI = NewUciApi()
 
 	log.Println("NewPluginApi: ", dir, " - ", info.Package, " - ", info.Name, " - ", info.Version, " - ", info.Description)
 

@@ -14,7 +14,7 @@ type HttpResponse struct {
 }
 
 func NewHttpResponse(api *PluginApi) *HttpResponse {
-	viewroot := paths.Strip(api.Resource("views"))
+	viewroot := paths.Strip(api.Utl.Resource("views"))
 	return &HttpResponse{api, viewroot}
 }
 
@@ -24,7 +24,7 @@ func (self *HttpResponse) AdminView(w http.ResponseWriter, r *http.Request, view
 	}
 
 	helpers := NewViewHelpers(self.api)
-	viewsDir := self.api.Resource("views/admin")
+	viewsDir := self.api.Utl.Resource("views/admin")
 	layoutFile := filepath.Join(viewsDir, "http-layout.html")
 	viewFile := filepath.Join(viewsDir, view)
 	resp.ViewWithLayout(w, layoutFile, viewFile, helpers, data)
@@ -36,7 +36,7 @@ func (self *HttpResponse) PortalView(w http.ResponseWriter, r *http.Request, vie
 	}
 
 	helpers := NewViewHelpers(self.api)
-	viewsDir := self.api.Resource("views/portal")
+	viewsDir := self.api.Utl.Resource("views/portal")
 	layoutFile := filepath.Join(viewsDir, "http-layout.html")
 	viewFile := filepath.Join(viewsDir, view)
 	resp.ViewWithLayout(w, layoutFile, viewFile, helpers, data)
@@ -48,7 +48,7 @@ func (self *HttpResponse) View(w http.ResponseWriter, r *http.Request, view stri
 	}
 
 	helpers := NewViewHelpers(self.api)
-	vdir := self.api.Resource("views")
+	vdir := self.api.Utl.Resource("views")
 	viewfile := filepath.Join(vdir, view)
 
 	resp.View(w, viewfile, helpers, data)
@@ -60,7 +60,7 @@ func (self *HttpResponse) Script(w http.ResponseWriter, r *http.Request, file st
 	}
 
 	helpers := NewViewHelpers(self.api)
-	file = self.api.Resource(file)
+	file = self.api.Utl.Resource(file)
 
 	w.Header().Set("Content-Type", "text/javascript")
 	resp.Text(w, file, helpers, data)
