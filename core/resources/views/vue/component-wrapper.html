@@ -8,8 +8,7 @@
         var compPath = 'vue!<% .Data.HttpComponentFullPath %>';
         var dataPath = '<% .Data.HttpDataFullPath %>';
 
-        define([compPath], function (comp, data) {
-            var compName = 'wrapped-component';
+        define([compPath], function (comp) {
             var viewData = {view: {loading: true, data: {}}};
 
             return {
