@@ -20,35 +20,30 @@ type ThemesApi struct {
 	adminTheme                      themes.AdminTheme
 	portalTheme                     themes.PortalTheme
 	AdminLayoutComponentFullPath    string
-	AdminDashboardComponentFullPath string
 	AdminLoginComponentFullPath     string
 	PortalLayoutComponentFullPath   string
 	PortalIndexComponentFullPath    string
 }
 
-func (t *ThemesApi) AdminThemeComponent(theme themes.AdminTheme) {
+func (t *ThemesApi) NewAdminTheme(theme themes.AdminTheme) {
 	t.adminTheme = theme
 
 	loginRouterName := fmt.Sprintf("%s:%s", t.api.Pkg(), routenames.AdminThemeLogin)
 	layoutRouteName := fmt.Sprintf("%s:%s", t.api.Pkg(), routenames.AdminThemeLayout)
-	dashRouteName := fmt.Sprintf("%s:%s", t.api.Pkg(), routenames.AdminThemeIndex)
 
 	r := t.api.HttpApi().HttpRouter().(*HttpRouterApi).pluginRouter.mux
 	r = r.PathPrefix("/vue/theme/admin/components").Subrouter()
-	r.HandleFunc("/login.vue", t.GetComponentHandler(theme.LoginComponentPath)).Methods("GET").Name(loginRouterName)
-	r.HandleFunc("/layout.vue", t.GetComponentHandler(theme.LayoutComponent)).Methods("GET").Name(layoutRouteName)
-	r.HandleFunc("/dashboard.vue", t.GetDashboarComponentHandler()).Methods("GET").Name(dashRouteName)
+	r.HandleFunc("/Login.vue", t.GetComponentHandler(theme.LoginComponentPath)).Methods("GET").Name(loginRouterName)
+	r.HandleFunc("/Layout.vue", t.GetComponentHandler(theme.LayoutComponent)).Methods("GET").Name(layoutRouteName)
 
 	adminLoginPath, _ := r.Get(loginRouterName).GetPathTemplate()
 	adminLayoutPath, _ := r.Get(layoutRouteName).GetPathTemplate()
-	adminDashPath, _ := r.Get(dashRouteName).GetPathTemplate()
 
 	t.AdminLoginComponentFullPath = adminLoginPath
 	t.AdminLayoutComponentFullPath = adminLayoutPath
-	t.AdminDashboardComponentFullPath = adminDashPath
 }
 
-func (t *ThemesApi) PortalThemeComponent(theme themes.PortalTheme) {
+func (t *ThemesApi) NewPortalTheme(theme themes.PortalTheme) {
 	t.portalTheme = theme
 	r := router.RootRouter
 	r = r.PathPrefix("/vue/theme/portal/components").Subrouter()

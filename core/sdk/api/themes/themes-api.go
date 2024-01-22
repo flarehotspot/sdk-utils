@@ -1,8 +1,8 @@
 package sdktheme
 
 type IThemesApi interface {
-	AdminThemeComponent(AdminTheme)
-	PortalThemeComponent(PortalTheme)
+	NewAdminTheme(AdminTheme)
+	NewPortalTheme(PortalTheme)
 }
 
 type AdminTheme struct {

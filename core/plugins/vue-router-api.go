@@ -26,7 +26,7 @@ type VueRouterApi struct {
 	portalNavsFn sdkhttp.VuePortalItemsHandler
 }
 
-func (self *VueRouterApi) AdminRoutes(routes []sdkhttp.VueAdminRoute) {
+func (self *VueRouterApi) SetAdminRoutes(routes []sdkhttp.VueAdminRoute) {
 	if routes != nil {
 		compRouter := self.api.HttpAPI.httpRouter.pluginRouter.mux.PathPrefix("/vue-route/admin-components").Subrouter()
 		dataRouter := self.api.HttpAPI.httpRouter.adminRouter.mux.PathPrefix("/vue-route/admin-data").Subrouter()
@@ -71,7 +71,7 @@ func (self *VueRouterApi) AdminRoutes(routes []sdkhttp.VueAdminRoute) {
 	}
 }
 
-func (self *VueRouterApi) PortalRoutes(routes []sdkhttp.VuePortalRoute) {
+func (self *VueRouterApi) SetPortalRoutes(routes []sdkhttp.VuePortalRoute) {
 	if routes != nil {
 
 		pluginRouter := self.api.HttpAPI.httpRouter.pluginRouter
@@ -137,7 +137,7 @@ func (self *VueRouterApi) FindAdminRoute(routename string) (*VueRouteComponent, 
 	return nil, false
 }
 
-func (self *VueRouterApi) AdminNavs(fn sdkhttp.VueAdminNavsHandler) {
+func (self *VueRouterApi) AdminNavsFunc(fn sdkhttp.VueAdminNavsHandler) {
 	self.adminNavsFn = fn
 }
 
@@ -169,7 +169,7 @@ func (self *VueRouterApi) FindVueComponent(name string) (VueRouteComponent, bool
 	return VueRouteComponent{}, true
 }
 
-func (self *VueRouterApi) PortalItems(fn sdkhttp.VuePortalItemsHandler) {
+func (self *VueRouterApi) PortalItemsFunc(fn sdkhttp.VuePortalItemsHandler) {
 	self.portalNavsFn = fn
 }
 
