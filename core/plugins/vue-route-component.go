@@ -1,11 +1,12 @@
 package plugins
 
 import (
+	"log"
 	"net/http"
 	"path/filepath"
 
 	sdkhttp "github.com/flarehotspot/core/sdk/api/http"
-	"github.com/flarehotspot/core/sdk/libs/slug"
+	sdkfs "github.com/flarehotspot/core/sdk/utils/fs"
 	sdkstr "github.com/flarehotspot/core/sdk/utils/strings"
 	"github.com/flarehotspot/core/utils/crypt"
 	"github.com/flarehotspot/core/web/response"
@@ -15,17 +16,23 @@ import (
 func NewVueRouteComponent(api *PluginApi, name string, path string, handler sdkhttp.VueHandlerFn, comp string, permsReq []string, permsAny []string) *VueRouteComponent {
 
 	compFile := filepath.Join(api.Utl.Resource("components/" + comp))
-    compHash, _ := crypt.SHA1Files(compFile)
-    compHash = sdkstr.Sha1Hash(name, path, comp, compHash)
+	if !sdkfs.IsFile(compFile) {
+		compFile = api.coreApi.Utl.Resource("views/vue/empty-component.vue")
+		comp = "empty-component.vue"
+	}
+
+	compHash, _ := crypt.SHA1Files(compFile)
+	compHash = sdkstr.Sha1Hash(name, path, compFile, compHash)
 
 	if name == "" {
-		name = compHash + "-" + slug.Make(comp) + "(empty)"
+		name = compHash
 	}
+
+	log.Println("CompFIle: ", compFile)
 
 	return &VueRouteComponent{
 		api:                  api,
 		handler:              handler,
-		component:            comp,
 		componentFile:        compFile,
 		componentHash:        compHash,
 		MuxCompRouteName:     api.HttpAPI.httpRouter.MuxRouteName(sdkhttp.PluginRouteName(name + ".component")),
@@ -44,7 +51,6 @@ func NewVueRouteComponent(api *PluginApi, name string, path string, handler sdkh
 type VueRouteComponent struct {
 	api                   *PluginApi           `json:"-"`
 	handler               sdkhttp.VueHandlerFn `json:"-"`
-	component             string               `json:"-"`
 	componentFile         string               `json:"-"`
 	componentHash         string               `json:"-"`
 	MuxCompRouteName      sdkhttp.MuxRouteName `json:"mux_component_route_name"`
@@ -78,16 +84,14 @@ func (self *VueRouteComponent) GetDataHandler() http.HandlerFunc {
 func (self *VueRouteComponent) GetComponentHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		helpers := self.api.HttpApi().Helpers()
-		comp := self.component
-		compfile := self.api.Utl.Resource(filepath.Join("components", comp))
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
-		response.Text(w, compfile, helpers, nil)
+		response.Text(w, self.componentFile, helpers, nil)
 	}
 }
 
 func (self *VueRouteComponent) GetComponentWrapperHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		wrapperFile := self.api.coreApi.Utl.Resource("views/vue/component-wrapper.html")
+		wrapperFile := self.api.coreApi.Utl.Resource("views/vue/component-wrapper.vue")
 		helpers := self.api.HttpApi().Helpers()
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		response.Text(w, wrapperFile, helpers, self)
