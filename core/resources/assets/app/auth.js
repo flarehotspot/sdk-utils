@@ -1,8 +1,8 @@
 /**
- * @file             : auth.tpl.js
+ * @file             : auth.js
  * @author           : Adones Pitogo <pitogo.adones@flarego.com>
  * Date              : Jan 20, 2024
- * Last Modified Date: Jan 20, 2024
+ * Last Modified Date: Jan 23, 2024
  * Copyright 2021-2024 Flarego Technologies Corp. <business@flarego.ph>
  */
 (function ($flare) {

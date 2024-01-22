@@ -16,13 +16,15 @@
 
 <body>
     <div id="app">
-        <p v-if="view.loading" id="loading-text">Loading...</p>
+        <div v-if="view.loading" style="margin: 12px;">
+            <i>Loading...</i>
+        </div>
         <router-view :flare-view="view"></router-view>
     </div>
 
     <script type="text/javascript" src="<% .Data.VendorScripts %>"></script>
     <script type="text/javascript" src='<% .Helpers.AssetPath "libs/require-2.3.6.min.js" %>'
-        data-main='<% .Helpers.AssetWithHelpersPath "app/main.js" %>'></script>
+        data-main='<% .Helpers.AssetPath "app/main.js" %>'></script>
 </body>
 
 </html>

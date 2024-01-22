@@ -26,19 +26,17 @@ type VueRouterApi struct {
 	portalNavsFn sdkhttp.VuePortalItemsFunc
 }
 
-func (self *VueRouterApi) SetAdminRoutes(routes []sdkhttp.VueAdminRoute) {
-	if routes != nil {
-		dataRouter := self.api.HttpAPI.httpRouter.adminRouter.mux
-		for _, r := range routes {
-			route := NewVueRouteComponent(self.api, r.RouteName, r.RoutePath, r.HandlerFunc, r.Component, nil, nil)
+func (self *VueRouterApi) RegisterAdminRoutes(routes ...sdkhttp.VueAdminRoute) {
+	dataRouter := self.api.HttpAPI.httpRouter.adminRouter.mux
+	for _, r := range routes {
+		route := NewVueRouteComponent(self.api, r.RouteName, r.RoutePath, r.HandlerFunc, r.Component, nil, nil)
 
-			if _, ok := self.FindAdminRoute(route.VueRouteName); ok {
-				log.Println("Warning: Admin route name \"" + r.RouteName + "\" already exists in admin routes ")
-			}
-
-			route.MountRoute(dataRouter, r.Middlewares...)
-			self.adminRoutes = append(self.adminRoutes, route)
+		if _, ok := self.FindAdminRoute(route.VueRouteName); ok {
+			log.Println("Warning: Admin route name \"" + r.RouteName + "\" already exists in admin routes ")
 		}
+
+		route.MountRoute(dataRouter, r.Middlewares...)
+		self.adminRoutes = append(self.adminRoutes, route)
 	}
 }
 
@@ -200,7 +198,7 @@ func (self *VueRouterApi) HttpComponentPath(path string) string {
 }
 
 func (self *VueRouterApi) HttpWrapperRouteName(name string) string {
-	name = fmt.Sprintf("%s.%s.%s", self.api.Pkg(), "wrapper", name, )
+	name = fmt.Sprintf("%s.%s.%s", self.api.Pkg(), "wrapper", name)
 	return name
 }
 

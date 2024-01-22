@@ -12,8 +12,8 @@ type VueHandlerFn func(w IVueResponse, r *http.Request) (err error)
 
 // IVueRouterApi is used to create navigation items in the application.
 type IVueRouterApi interface {
-	// Set admin vue routes
-	SetAdminRoutes([]VueAdminRoute)
+	// Set admin vue route
+	RegisterAdminRoutes(routes ...VueAdminRoute)
 
 	// Used to register a function that returns a slice of admin navs.
 	// Items returned from this function is added to the admin navigation menu.
