@@ -44,6 +44,21 @@
     }
   });
 
+  // progress bar
+  router.beforeResolve(function (from, to, next) {
+    // If this isn't an initial page load.
+    if (to.name) {
+      // Start the route progress bar.
+      NProgress.start();
+    }
+    next();
+  });
+
+  router.afterEach(function (to, from) {
+    // Complete the animation of the route progress bar.
+    NProgress.done();
+  });
+
   function VueLazyLoad(vueFile) {
     return function (resolve) {
       return require(['vue!' + vueFile], resolve);

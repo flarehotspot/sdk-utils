@@ -78,6 +78,7 @@ func (c *IndexPageCtrl) render(w http.ResponseWriter, r *http.Request, themePlug
 	routesData := map[string]any{"Routes": string(routesJson)}
 
 	jsFiles := []assets.AssetWithData{
+		{File: c.g.CoreApi.Utl.Resource("assets/libs/nprogress-0.2.0.js")},
 		{File: c.g.CoreApi.Utl.Resource("assets/libs/toastify-1.12.0.min.js")},
 		{File: c.g.CoreApi.Utl.Resource("assets/libs/basic-http-1.0.0.js")},
 		{File: c.g.CoreApi.Utl.Resource("assets/libs/promise-polyfill.min.js")},
@@ -96,9 +97,10 @@ func (c *IndexPageCtrl) render(w http.ResponseWriter, r *http.Request, themePlug
 		jsFiles = append(jsFiles, assets.AssetWithData{File: file})
 	}
 
-	cssFiles := []assets.AssetWithData{}
-
-	cssFiles = append(cssFiles, assets.AssetWithData{File: c.g.CoreApi.Utl.Resource("assets/libs/toastify-1.12.0.min.css")})
+	cssFiles := []assets.AssetWithData{
+        {File: c.g.CoreApi.Utl.Resource("assets/libs/nprogress-0.2.0.css")},
+        {File: c.g.CoreApi.Utl.Resource("assets/libs/toastify-1.12.0.min.css")},
+    }
 
 	for _, path := range themeAssets.Styles {
 		file := themePlugin.Utils().Resource(filepath.Join("assets", path))
