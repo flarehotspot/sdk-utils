@@ -4,18 +4,18 @@ import (
 	"log"
 	"path/filepath"
 
-	"github.com/flarehotspot/core/config/plugincfg"
-	"github.com/flarehotspot/core/config/themecfg"
+	"github.com/flarehotspot/core/config"
 	"github.com/flarehotspot/core/connmgr"
 	"github.com/flarehotspot/core/db"
 	"github.com/flarehotspot/core/db/models"
 	"github.com/flarehotspot/core/network"
 	"github.com/flarehotspot/core/payments"
+	plugin "github.com/flarehotspot/core/sdk/api/plugin"
 	"github.com/flarehotspot/core/utils/migrate"
-	"github.com/flarehotspot/core/sdk/api/plugin"
 )
 
 type PluginsMgr struct {
+	coreApi *PluginApi
 	db      *db.Database
 	models  *models.Models
 	paymgr  *payments.PaymentsMgr
@@ -23,10 +23,11 @@ type PluginsMgr struct {
 	clntMgr *connmgr.ClientMgr
 	trfkMgr *network.TrafficMgr
 	plugins []*PluginApi
+	utils   *PluginsMgrUtils
 }
 
 func NewPluginMgr(d *db.Database, m *models.Models, paymgr *payments.PaymentsMgr, clntReg *connmgr.ClientRegister, clntMgr *connmgr.ClientMgr, trfkMgr *network.TrafficMgr) *PluginsMgr {
-	return &PluginsMgr{
+	pmgr := &PluginsMgr{
 		db:      d,
 		models:  m,
 		paymgr:  paymgr,
@@ -34,6 +35,12 @@ func NewPluginMgr(d *db.Database, m *models.Models, paymgr *payments.PaymentsMgr
 		clntMgr: clntMgr,
 		plugins: []*PluginApi{},
 	}
+	return pmgr
+}
+
+func (pmgr *PluginsMgr) Init(coreApi *PluginApi) {
+	pmgr.coreApi = coreApi
+	pmgr.utils = NewPluginsMgrUtil(pmgr, coreApi)
 }
 
 func (pmgr *PluginsMgr) Plugins() []*PluginApi {
@@ -41,6 +48,7 @@ func (pmgr *PluginsMgr) Plugins() []*PluginApi {
 }
 
 func (pmgr *PluginsMgr) RegisterPlugin(p *PluginApi) {
+	p.InitCoreApi(pmgr.coreApi)
 	pmgr.plugins = append(pmgr.plugins, p)
 
 	err := p.Init()
@@ -50,7 +58,7 @@ func (pmgr *PluginsMgr) RegisterPlugin(p *PluginApi) {
 }
 
 func (pmgr *PluginsMgr) MigrateAll() {
-	pluginDirs := plugincfg.ListDirs()
+	pluginDirs := config.PluginDirList()
 	for _, pdir := range pluginDirs {
 		migdir := filepath.Join(pdir, "resources/migrations")
 		err := migrate.MigrateUp(migdir, pmgr.db.SqlDB())
@@ -62,22 +70,22 @@ func (pmgr *PluginsMgr) MigrateAll() {
 	}
 }
 
-func (pmgr *PluginsMgr) FindByName(name string) plugin.IPluginApi {
+func (pmgr *PluginsMgr) FindByName(name string) (plugin.IPluginApi, bool) {
 	for _, p := range pmgr.plugins {
 		if p.Name() == name {
-			return p
+			return p, true
 		}
 	}
-	return nil
+	return nil, false
 }
 
-func (pmgr *PluginsMgr) FindByPkg(pkg string) plugin.IPluginApi {
+func (pmgr *PluginsMgr) FindByPkg(pkg string) (plugin.IPluginApi, bool) {
 	for _, p := range pmgr.plugins {
 		if p.Pkg() == pkg {
-			return p
+			return p, true
 		}
 	}
-	return nil
+	return nil, false
 }
 
 func (pmgr *PluginsMgr) All() []plugin.IPluginApi {
@@ -86,24 +94,6 @@ func (pmgr *PluginsMgr) All() []plugin.IPluginApi {
 		plugins = append(plugins, p)
 	}
 	return plugins
-}
-
-func (pmgr *PluginsMgr) PortalPluginApi() *PluginApi {
-	themepkg := themecfg.Read().CaptivePortal
-	api := pmgr.FindByPkg(themepkg)
-	return api.(*PluginApi)
-}
-
-func (pmgr *PluginsMgr) AdminPluginApi() *PluginApi {
-	themepkg := themecfg.Read().WebAdmin
-	api := pmgr.FindByPkg(themepkg)
-	return api.(*PluginApi)
-}
-
-func (pmgr *PluginsMgr) AuthPluginApi() *PluginApi {
-	themepkg := themecfg.Read().Auth
-	api := pmgr.FindByPkg(themepkg)
-	return api.(*PluginApi)
 }
 
 func (pmgr *PluginsMgr) PaymentMethods() []plugin.IPluginApi {
@@ -115,4 +105,8 @@ func (pmgr *PluginsMgr) PaymentMethods() []plugin.IPluginApi {
 		}
 	}
 	return methods
+}
+
+func (pmgr *PluginsMgr) Utils() *PluginsMgrUtils {
+	return pmgr.utils
 }

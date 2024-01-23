@@ -1,4 +1,4 @@
-package uci
+package sdkuci
 
 type BrVlanPort struct {
 	Device   string

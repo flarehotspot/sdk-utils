@@ -1,4 +1,4 @@
-package fs
+package sdkfs
 
 import (
 	"os"
@@ -10,7 +10,7 @@ import (
 const d = "/tmp/lsdir"
 
 func TestLsFiles(t *testing.T) {
-  // testing none-recursive option
+	// testing none-recursive option
 
 	f := filepath.Join(d, "sample.txt")
 	if err := os.MkdirAll(d, os.ModePerm); err != nil {
@@ -21,8 +21,8 @@ func TestLsFiles(t *testing.T) {
 		t.Errorf("Unable to create test file: %s", f)
 	}
 
-	res, err := LsFiles(d, false)
-	if err != nil {
+	res := []string{}
+	if err := LsFiles(d, &res, false); err != nil {
 		t.Errorf("LsDir (non-recursive): %s", err.Error())
 	}
 
@@ -31,7 +31,7 @@ func TestLsFiles(t *testing.T) {
 		t.Error("Result is not right:\n", "Expected:", expected, "\nResult:", res)
 	}
 
-  // testing recursive option
+	// testing recursive option
 
 	d2 := filepath.Join(d, "dir2")
 	f2 := filepath.Join(d2, "sample2.txt")
@@ -44,8 +44,8 @@ func TestLsFiles(t *testing.T) {
 		t.Errorf("Unable to create test file: %s", f2)
 	}
 
-	res, err = LsFiles(d, true)
-	if err != nil {
+	res = []string{}
+	if err = LsFiles(d, &res, true); err != nil {
 		t.Errorf("Error in LsDir: %s", err.Error())
 	}
 

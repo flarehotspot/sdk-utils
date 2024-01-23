@@ -1,4 +1,4 @@
-package paths
+package sdkpaths
 
 import (
 	"os"
@@ -23,15 +23,16 @@ var (
 	CoreDir     = filepath.Join(AppDir, "core")
 	ConfigDir   = filepath.Join(AppDir, "config")
 	DefaultsDir = filepath.Join(ConfigDir, ".defaults")
-	PublicDir   = filepath.Join(AppDir, "public")
 	PluginsDir  = filepath.Join(AppDir, "plugins")
 	VendorDir   = filepath.Join(AppDir, "vendor")
+	PublicDir   = filepath.Join(AppDir, "public")
 	LogsDir     = filepath.Join(AppDir, "logs")
 	SdkDir      = filepath.Join(AppDir, "sdk")
 	CacheDir    = filepath.Join(AppDir, ".cache")
 	TmpDir      = filepath.Join(AppDir, ".tmp")
 )
 
+// Strip removes the project root directory prefix from absolute paths
 func Strip(p string) string {
 	return strings.Replace(p, AppDir+"/", "", 1)
 }

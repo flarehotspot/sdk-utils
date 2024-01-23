@@ -2,29 +2,30 @@ package plugins
 
 import (
 	"database/sql"
-	"html/template"
 	"log"
 	"path/filepath"
 
 	"github.com/flarehotspot/core/config/plugincfg"
 	"github.com/flarehotspot/core/network"
 	acct "github.com/flarehotspot/core/sdk/api/accounts"
-	"github.com/flarehotspot/core/sdk/api/ads"
-	"github.com/flarehotspot/core/sdk/api/config"
-	"github.com/flarehotspot/core/sdk/api/connmgr"
-	"github.com/flarehotspot/core/sdk/api/http"
-	Inav "github.com/flarehotspot/core/sdk/api/http/navigation"
-	"github.com/flarehotspot/core/sdk/api/inappur"
-	"github.com/flarehotspot/core/sdk/api/models"
+	ads "github.com/flarehotspot/core/sdk/api/ads"
+	config "github.com/flarehotspot/core/sdk/api/config"
+	connmgr "github.com/flarehotspot/core/sdk/api/connmgr"
+	http "github.com/flarehotspot/core/sdk/api/http"
+	inappur "github.com/flarehotspot/core/sdk/api/inappur"
+	models "github.com/flarehotspot/core/sdk/api/models"
 	sdknet "github.com/flarehotspot/core/sdk/api/network"
 	paymentsApi "github.com/flarehotspot/core/sdk/api/payments"
-	"github.com/flarehotspot/core/sdk/api/plugin"
-	"github.com/flarehotspot/core/sdk/api/themes"
-	"github.com/flarehotspot/core/sdk/api/uci"
+	plugin "github.com/flarehotspot/core/sdk/api/plugin"
+	themes "github.com/flarehotspot/core/sdk/api/themes"
+	uci "github.com/flarehotspot/core/sdk/api/uci"
 	"github.com/flarehotspot/core/sdk/libs/slug"
-	"github.com/flarehotspot/core/sdk/utils/translate"
 	"github.com/flarehotspot/core/utils/migrate"
 )
+
+func (p *PluginApi) InitCoreApi(coreApi *PluginApi) {
+	p.coreApi = coreApi
+}
 
 func (p *PluginApi) Migrate() error {
 	migdir := filepath.Join(p.dir, "resources/migrations")
@@ -39,27 +40,19 @@ func (p *PluginApi) Migrate() error {
 }
 
 func (p *PluginApi) Name() string {
-	info, err := plugincfg.GetPluginInfo(p.dir)
-	if err != nil {
-		return ""
-	}
-	return info.Name
+	return p.info.Name
 }
 
 func (p *PluginApi) Pkg() string {
-	info, err := plugincfg.GetPluginInfo(p.dir)
-	if err != nil {
-		return ""
-	}
-	return info.Package
+	return p.info.Package
 }
 
 func (p *PluginApi) Version() string {
-	info, err := plugincfg.GetPluginInfo(p.dir)
-	if err != nil {
-		return ""
-	}
-	return info.Version
+	return p.info.Version
+}
+
+func (p *PluginApi) Slug() string {
+	return p.slug
 }
 
 func (p *PluginApi) Description() string {
@@ -74,24 +67,12 @@ func (p *PluginApi) Dir() string {
 	return p.dir
 }
 
-func (p *PluginApi) Translate(msgtype translate.MsgType, msgk string) string {
-	return p.trnslt(msgtype, msgk)
-}
-
-func (p *PluginApi) Resource(f string) (path string) {
-	return filepath.Join(p.dir, "resources", f)
-}
-
 func (p *PluginApi) DbApi() *sql.DB {
 	return p.db.SqlDB()
 }
 
 func (p *PluginApi) ModelsApi() models.IModelsApi {
 	return p.models
-}
-
-func (p *PluginApi) FuncMap() template.FuncMap {
-	return p.vfmap
 }
 
 func (p *PluginApi) AcctApi() acct.IAcctApi {
@@ -102,20 +83,12 @@ func (p *PluginApi) HttpApi() http.IHttpApi {
 	return p.HttpAPI
 }
 
-func (p *PluginApi) NavApi() Inav.INavApi {
-	return p.NavAPI
-}
-
 func (p *PluginApi) ConfigApi() config.IConfigApi {
 	return p.ConfigAPI
 }
 
 func (p *PluginApi) PaymentsApi() paymentsApi.IPaymentsApi {
 	return p.PaymentsAPI
-}
-
-func (p *PluginApi) ThemesApi() themes.IThemesApi {
-	return p.ThemesAPI
 }
 
 func (p *PluginApi) AdsApi() ads.IAdsApi {
@@ -146,16 +119,16 @@ func (p *PluginApi) UciApi() uci.IUciApi {
 	return p.UciAPI
 }
 
+func (p *PluginApi) ThemesApi() themes.IThemesApi {
+	return p.ThemesAPI
+}
+
+func (p *PluginApi) Utils() plugin.IPluginUtils {
+	return p.Utl
+}
+
 func NewPluginApi(dir string, pmgr *PluginsMgr, trfkMgr *network.TrafficMgr) *PluginApi {
-	info, err := plugincfg.GetPluginInfo(dir)
-	if err != nil {
-		log.Println("Error getting plugin info: ", err.Error())
-	}
-
-    log.Println("NewPluginApi: ", dir, " - ", info.Package, " - ", info.Name, " - ", info.Version, " - ", info.Description)
-
 	pluginApi := &PluginApi{
-		slug:       slug.Make(info.Package),
 		dir:        dir,
 		db:         pmgr.db,
 		PluginsMgr: pmgr,
@@ -163,31 +136,27 @@ func NewPluginApi(dir string, pmgr *PluginsMgr, trfkMgr *network.TrafficMgr) *Pl
 		ClntMgr:    pmgr.clntMgr,
 	}
 
-	translateFn := translate.NewTranslator(dir)
-	mdls := NewPluginModels(pmgr.models)
-	acctApi := NewAcctApi(pluginApi)
-	httpApi := NewHttpApi(pluginApi, pmgr.models, pmgr.clntReg, pmgr.paymgr)
-	navApi := NewNavApi(pmgr, pluginApi)
-	configApi := NewConfigApi(pluginApi)
-	paymentsApi := NewPaymentsApi(pluginApi, pmgr.paymgr)
-	themesApi := NewThemesApi()
-	networkApi := NewNetworkApi(trfkMgr)
-	adsApi := NewAdsApi(pluginApi)
-	inappur := NewInAppPurchaseApi(pluginApi)
-	uciApi := NewUciApi()
+	pluginApi.Utl = NewPluginUtils(pluginApi)
 
-	pluginApi.trnslt = translateFn
-	pluginApi.models = mdls
-	pluginApi.AcctAPI = acctApi
-	pluginApi.HttpAPI = httpApi
-	pluginApi.NavAPI = navApi
-	pluginApi.ConfigAPI = configApi
-	pluginApi.PaymentsAPI = paymentsApi
-	pluginApi.ThemesAPI = themesApi
-	pluginApi.NetworkAPI = networkApi
-	pluginApi.AdsAPI = adsApi
-	pluginApi.InAppPurchaseAPI = inappur
-	pluginApi.UciAPI = uciApi
+	info, err := plugincfg.GetPluginInfo(dir)
+	if err != nil {
+		log.Println("Error getting plugin info: ", err.Error())
+	}
+
+	pluginApi.info = info
+	pluginApi.slug = slug.Make(pluginApi.Pkg())
+	pluginApi.models = NewPluginModels(pmgr.models)
+	pluginApi.AcctAPI = NewAcctApi(pluginApi)
+	pluginApi.HttpAPI = NewHttpApi(pluginApi, pmgr.db, pmgr.clntReg, pmgr.models, pmgr.clntReg, pmgr.paymgr)
+	pluginApi.ConfigAPI = NewConfigApi(pluginApi)
+	pluginApi.PaymentsAPI = NewPaymentsApi(pluginApi, pmgr.paymgr)
+	pluginApi.ThemesAPI = NewThemesApi(pluginApi)
+	pluginApi.NetworkAPI = NewNetworkApi(trfkMgr)
+	pluginApi.AdsAPI = NewAdsApi(pluginApi)
+	pluginApi.InAppPurchaseAPI = NewInAppPurchaseApi(pluginApi)
+	pluginApi.UciAPI = NewUciApi()
+
+	log.Println("NewPluginApi: ", dir, " - ", info.Package, " - ", info.Name, " - ", info.Version, " - ", info.Description)
 
 	return pluginApi
 }

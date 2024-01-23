@@ -1,4 +1,4 @@
-package config
+package sdkcfg
 
 type ExpPauseDenom struct {
 	// Matches sessions with minutes equal or above to this value.
@@ -30,20 +30,20 @@ type SessCfgData struct {
 
 	// List of pause limit and expiration denominations. This is used to determine the number of pause
 	// the session is allowed and its expiration time.
-	PauseLimitDenoms []*ExpPauseDenom
+	PauseLimitDenoms []ExpPauseDenom
 }
 
 // ISessionLimitsCfg is the configuration for session expiration and pause limit.
 type ISessionLimitsCfg interface {
 	// Reads the session limits configuration.
-	Read() (*SessCfgData, error)
+	Read() (SessCfgData, error)
 
 	// Writs the session limits configuration.
-	Write(*SessCfgData) error
+	Write(SessCfgData) error
 
 	// Computes the expiration days of a session based on the session's minutes and megabytes.
 	ComputeExpDays(minutes uint, mbytes uint) (days uint)
 
-  // Computes the pause limit of a session based on the session's minutes and megabytes.
+	// Computes the pause limit of a session based on the session's minutes and megabytes.
 	ComputePauseLimit(minutes uint, mbytes uint) (limit uint)
 }

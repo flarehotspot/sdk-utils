@@ -1,4 +1,4 @@
-package names
+package routenames
 
 const (
 	RouteSseEvents = "sse::events"

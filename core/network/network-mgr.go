@@ -8,7 +8,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/flarehotspot/core/config/bandwdcfg"
+	"github.com/flarehotspot/core/config"
 	jobque "github.com/flarehotspot/core/utils/job-que"
 	"github.com/flarehotspot/core/utils/ubus"
 )
@@ -61,7 +61,7 @@ func SetupLanInterfaces() (err error) {
 	}
 
 	for _, ifname := range ifaces {
-		cfg, err := bandwdcfg.Read()
+		cfg, err := config.ReadBandwidthConfig()
 		if err != nil {
 			return err
 		}

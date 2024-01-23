@@ -1,6 +1,6 @@
-package config
+package sdkcfg
 
-// BandwdData is the bandwidth configuration for a given interface.
+// BandwdData is the bandwidth configuration for a given interface. Each interface bandwidth is configured individually.
 type BandwdData struct {
 	// UseGlobal is true if the global bandwidth should be used.
 	UseGlobal bool
@@ -21,9 +21,9 @@ type BandwdData struct {
 // IBandwdCfg is used to get and set bandwidth configuration.
 type IBandwdCfg interface {
 	// GetConfig returns the bandwidth configuration for a given interface.
-	GetConfig(ifname string) (cfg *BandwdData, ok bool)
+	GetConfig(ifname string) (cfg BandwdData, ok bool)
 
 	// SetConfig sets the bandwidth configuration for a given interface.
   // It needs application restart for the changes to take effect.
-	SetConfig(ifname string, cfg *BandwdData) error
+	SetConfig(ifname string, cfg BandwdData) error
 }

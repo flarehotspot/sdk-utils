@@ -4,9 +4,9 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/flarehotspot/core/sdk/libs/yaml-3"
-	"github.com/flarehotspot/core/sdk/utils/paths"
-	"github.com/flarehotspot/core/sdk/utils/sse"
+	"encoding/json"
+	paths "github.com/flarehotspot/core/sdk/utils/paths"
+	sse "github.com/flarehotspot/core/sdk/utils/sse"
 )
 
 var (
@@ -14,9 +14,9 @@ var (
 )
 
 type Account struct {
-	Uname  string   `yaml:"username"`
-	Passwd string   `yaml:"password"`
-	Perms  []string `yaml:"permissions"`
+	Uname  string   `json:"username"`
+	Passwd string   `json:"password"`
+	Perms  []string `json:"permissions"`
 }
 
 // return the file path of yaml file
@@ -61,7 +61,7 @@ func (acct *Account) Emit(event string, data interface{}) {
 
 // Save saves the account to yaml file
 func (acct *Account) Save() error {
-	b, err := yaml.Marshal(acct)
+	b, err := json.Marshal(acct)
 	if err != nil {
 		return err
 	}

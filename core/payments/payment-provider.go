@@ -1,9 +1,9 @@
 package payments
 
 import (
-	"github.com/flarehotspot/core/sdk/api/connmgr"
-	"github.com/flarehotspot/core/sdk/api/payments"
-	"github.com/flarehotspot/core/sdk/api/plugin"
+	connmgr "github.com/flarehotspot/core/sdk/api/connmgr"
+	payments "github.com/flarehotspot/core/sdk/api/payments"
+	plugin "github.com/flarehotspot/core/sdk/api/plugin"
 )
 
 type PaymentProvider struct {

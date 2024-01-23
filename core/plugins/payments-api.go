@@ -5,11 +5,11 @@ import (
 	"net/http"
 
 	"github.com/flarehotspot/core/payments"
+	"github.com/flarehotspot/core/sdk/api/models"
+	"github.com/flarehotspot/core/sdk/api/payments"
 	"github.com/flarehotspot/core/web/response"
 	"github.com/flarehotspot/core/web/router"
 	"github.com/flarehotspot/core/web/routes/names"
-	"github.com/flarehotspot/core/sdk/api/models"
-	Ipayments "github.com/flarehotspot/core/sdk/api/payments"
 )
 
 type PaymentsApi struct {
@@ -17,38 +17,38 @@ type PaymentsApi struct {
 	paymentsMgr *payments.PaymentsMgr
 }
 
-func (self *PaymentsApi) Checkout(w http.ResponseWriter, r *http.Request, params *Ipayments.PurchaseRequest) {
-	url, err := router.UrlForRoute(names.RoutePaymentOptions)
+func (self *PaymentsApi) Checkout(w http.ResponseWriter, r *http.Request, params *sdkpayments.PurchaseRequest) {
+	url, err := router.UrlForRoute(routenames.RoutePaymentOptions)
 	if err != nil {
-		response.Error(w, err)
+		response.ErrorJson(w, err.Error())
 		return
 	}
 	query, err := params.ToQueryParams()
 	if err != nil {
-		response.Error(w, err)
+		response.ErrorJson(w, err.Error())
 	}
 	url = url + "?" + query
 	response.Redirect(w, r, url, http.StatusSeeOther)
 }
 
-func (self *PaymentsApi) ExecCallback(w http.ResponseWriter, r *http.Request, purchase models.IPurchase) {
+func (self *PaymentsApi) ExecCallback(w http.ResponseWriter, r *http.Request, purchase sdkmodels.IPurchase) {
 	url := purchase.CallbackUrl() + "?token=" + purchase.Token()
 	http.Redirect(w, r, url, http.StatusSeeOther)
 }
 
-func (self *PaymentsApi) ConfirmPurchase(w http.ResponseWriter, r *http.Request, purchase models.IPurchase) {
+func (self *PaymentsApi) ConfirmPurchase(w http.ResponseWriter, r *http.Request, purchase sdkmodels.IPurchase) {
 	log.Println("TODO: execute purchase")
 }
 
-func (self *PaymentsApi) CancelPurchase(w http.ResponseWriter, r *http.Request, purchase models.IPurchase) {
+func (self *PaymentsApi) CancelPurchase(w http.ResponseWriter, r *http.Request, purchase sdkmodels.IPurchase) {
 	log.Println("TODO: cancel purchase")
 }
 
-func (self *PaymentsApi) ParsePaymentInfo(r *http.Request) (*Ipayments.PaymentInfo, error) {
+func (self *PaymentsApi) ParsePaymentInfo(r *http.Request) (*sdkpayments.PaymentInfo, error) {
 	return payments.ParsePaymentInfo(self.api.db, self.api.models, r)
 }
 
-func (self *PaymentsApi) NewPaymentProvider(provider Ipayments.IPaymentProvider) {
+func (self *PaymentsApi) NewPaymentProvider(provider sdkpayments.IPaymentProvider) {
 	log.Println("Registering payment method:", provider.Name())
 	self.paymentsMgr.NewPaymentProvider(self.api, provider)
 }

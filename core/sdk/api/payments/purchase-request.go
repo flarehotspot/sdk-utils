@@ -1,9 +1,9 @@
-package payments
+package sdkpayments
 
 import (
 	"context"
 
-	"github.com/flarehotspot/core/sdk/api/models"
+	models "github.com/flarehotspot/core/sdk/api/models"
 	qs "github.com/flarehotspot/core/sdk/libs/urlquery"
 )
 

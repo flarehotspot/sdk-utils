@@ -5,12 +5,12 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/flarehotspot/core/sdk/utils/paths"
+	paths "github.com/flarehotspot/core/sdk/utils/paths"
 )
 
 func GetDistributorCode() (string, error) {
 	var p string
-	if GO_ENV != ENV_PRODUCTION {
+	if GoEnv != ENV_PRODUCTION {
 		p = filepath.Join(paths.AppDir, ".files", "distributor")
 	} else {
 		p = "/etc/distributor"

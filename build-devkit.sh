@@ -11,7 +11,7 @@ DEVKIT_FILES=(
     ./core/go.sum
     ./core/sdk
     ./core/resources
-    ./core/package.yml
+    ./core/plugin.json
     ./run.sh
     ./build-main.sh
     ./build-plugins.sh
@@ -36,16 +36,17 @@ default_configs() {
     mkdir -p $RELEASE_DIR/config
     cp -r ./config/.defaults/ $RELEASE_DIR/config/.defaults
 
-    # Generate application.yml with random secret
+    # Generate application.json with random secret
     secret=$(openssl rand -hex 16)
-    cat > $RELEASE_DIR/config/application.yml<<EOF
----
-secret: $secret
-lang: en
+    cat > $RELEASE_DIR/config/application.json<<EOF
+{
+    "secret": "$secret",
+    "lang": "en"
+}
 EOF
 
-    echo "Created config/application.yml:" && \
-        echo $(cat $RELEASE_DIR/config/application.yml)
+    echo "Created config/application.json:" && \
+        echo $(cat $RELEASE_DIR/config/application.json)
 }
 
 copy_extras_files() {

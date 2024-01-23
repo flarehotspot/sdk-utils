@@ -3,20 +3,20 @@
 package assets
 
 import (
-	"io/ioutil"
 	"log"
+	"os"
 	"strings"
 )
 
-func concatFiles(files []string) (concat string, err error) {
+func minifyFiles(files []string) (concat string, err error) {
 	var sb strings.Builder
 
 	for _, f := range files {
 		var content string
 
-		b, err := ioutil.ReadFile(f)
+		b, err := os.ReadFile(f)
 		if err != nil {
-			log.Println("Asset not found: ", f)
+			log.Printf("Error: %+v\n", err)
 		} else {
 			content = string(b)
 		}

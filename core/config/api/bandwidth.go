@@ -1,28 +1,28 @@
 package cfgapi
 
 import (
-	"github.com/flarehotspot/core/config/bandwdcfg"
+	"github.com/flarehotspot/core/config"
 	"github.com/flarehotspot/core/sdk/api/config"
 )
-
-type BandwdCfgApi struct{}
 
 func NewBandwdCfgApi() *BandwdCfgApi {
 	return &BandwdCfgApi{}
 }
 
-func (c *BandwdCfgApi) GetConfig(ifname string) (*config.BandwdData, bool) {
-	cfg, err := bandwdcfg.Read()
+type BandwdCfgApi struct{}
+
+func (c *BandwdCfgApi) GetConfig(ifname string) (sdkcfg.BandwdData, bool) {
+	cfg, err := config.ReadBandwidthConfig()
 	if err != nil {
-		return nil, false
+		return sdkcfg.BandwdData{}, false
 	}
 
 	bcfg, ok := cfg.Lans[ifname]
 	if !ok {
-		return nil, false
+		return sdkcfg.BandwdData{}, false
 	}
 
-	return &config.BandwdData{
+	return sdkcfg.BandwdData{
 		UseGlobal:       bcfg.UseGlobal,
 		GlobalDownMbits: bcfg.GlobalDownMbits,
 		GlobalUpMbits:   bcfg.GlobalUpMbits,
@@ -31,13 +31,13 @@ func (c *BandwdCfgApi) GetConfig(ifname string) (*config.BandwdData, bool) {
 	}, true
 }
 
-func (c *BandwdCfgApi) SetConfig(ifname string, cfg *config.BandwdData) error {
-	oldCfg, err := bandwdcfg.Read()
+func (c *BandwdCfgApi) SetConfig(ifname string, cfg sdkcfg.BandwdData) error {
+	oldCfg, err := config.ReadBandwidthConfig()
 	if err != nil {
 		return err
 	}
 
-	oldCfg.Lans[ifname] = &bandwdcfg.IfCfg{
+	oldCfg.Lans[ifname] = config.IfCfg{
 		UseGlobal:       cfg.UseGlobal,
 		GlobalDownMbits: cfg.GlobalDownMbits,
 		GlobalUpMbits:   cfg.GlobalUpMbits,
@@ -45,5 +45,5 @@ func (c *BandwdCfgApi) SetConfig(ifname string, cfg *config.BandwdData) error {
 		UserUpMbits:     cfg.UserUpMbits,
 	}
 
-	return bandwdcfg.Save(oldCfg)
+	return config.WriteBandwidthConfig(oldCfg)
 }

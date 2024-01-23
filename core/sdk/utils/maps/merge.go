@@ -1,4 +1,4 @@
-package maps
+package sdkmaps
 
 func Merge[T map[any]any](maps ...T) T {
 	merged := make(T)

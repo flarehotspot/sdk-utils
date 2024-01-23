@@ -1,4 +1,4 @@
-package models
+package sdkmodels
 
 // List of possible session types.
 const (

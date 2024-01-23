@@ -1,7 +1,7 @@
-package syslog
+package sdksyslog
 
 import (
-	"io/ioutil"
+	"os"
 	"path"
 	"time"
 
@@ -26,7 +26,7 @@ func Log(msg string) error {
 
 func write(t LogType, msg string) error {
 	stamp := time.Now().Format("20060102150405")
-	file := path.Join(paths.LogsDir, string(t)+"-"+stamp+".log")
-	err := ioutil.WriteFile(file, []byte(msg), 0644)
+	file := path.Join(sdkpaths.LogsDir, string(t)+"-"+stamp+".log")
+	err := os.WriteFile(file, []byte(msg), 0644)
 	return err
 }

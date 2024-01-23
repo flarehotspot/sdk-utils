@@ -7,18 +7,18 @@ import (
 	"time"
 
 	"github.com/flarehotspot/core/db"
-	coreM "github.com/flarehotspot/core/db/models"
-	"github.com/flarehotspot/core/sdk/api/connmgr"
+	"github.com/flarehotspot/core/db/models"
+	connmgr "github.com/flarehotspot/core/sdk/api/connmgr"
 	"github.com/flarehotspot/core/sdk/api/models"
 )
 
 type ClientSession struct {
 	mu        sync.RWMutex
 	db        *db.Database
-	mdls      *coreM.Models
+	mdls      *models.Models
 	id        int64
 	devId     int64
-	t         models.SessionType
+	t         sdkmodels.SessionType
 	timeSecs  uint
 	dataMb    float64
 	timeCons  uint
@@ -31,7 +31,7 @@ type ClientSession struct {
 	createdAt time.Time
 }
 
-func NewClientSession(dtb *db.Database, mdls *coreM.Models, s models.ISession) connmgr.IClientSession {
+func NewClientSession(dtb *db.Database, mdls *models.Models, s sdkmodels.ISession) connmgr.IClientSession {
 	cs := &ClientSession{db: dtb, mdls: mdls}
 	cs.load(s)
 	return cs
@@ -49,7 +49,7 @@ func (cs *ClientSession) DeviceId() int64 {
 	return cs.devId
 }
 
-func (cs *ClientSession) Type() models.SessionType {
+func (cs *ClientSession) Type() sdkmodels.SessionType {
 	cs.mu.RLock()
 	defer cs.mu.RUnlock()
 	return cs.t
@@ -225,10 +225,10 @@ func (cs *ClientSession) Save(ctx context.Context) error {
 	return err
 }
 
-func (cs *ClientSession) SessionModel() models.ISession {
+func (cs *ClientSession) SessionModel() sdkmodels.ISession {
 	cs.mu.RLock()
 	defer cs.mu.RUnlock()
-	return coreM.BuildSession(
+	return models.BuildSession(
 		cs.id,
 		cs.devId,
 		cs.t.ToUint8(),
@@ -270,10 +270,10 @@ func (cs *ClientSession) expiresAt() *time.Time {
 	return nil
 }
 
-func (cs *ClientSession) load(s models.ISession) {
+func (cs *ClientSession) load(s sdkmodels.ISession) {
 	cs.id = s.Id()
 	cs.devId = s.DeviceId()
-	cs.t = models.SessionType(s.SessionType())
+	cs.t = sdkmodels.SessionType(s.SessionType())
 	cs.timeSecs = s.TimeSecs()
 	cs.dataMb = s.DataMbyte()
 	cs.timeCons = s.TimeConsumed()

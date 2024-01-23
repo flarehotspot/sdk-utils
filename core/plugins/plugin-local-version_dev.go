@@ -1,4 +1,5 @@
 //go:build dev
+
 package plugins
 
 import (
@@ -7,9 +8,9 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/flarehotspot/core/sdk/utils/fs"
-	"github.com/flarehotspot/core/sdk/utils/paths"
-	"github.com/flarehotspot/core/sdk/utils/strings"
+	fs "github.com/flarehotspot/core/sdk/utils/fs"
+	paths "github.com/flarehotspot/core/sdk/utils/paths"
+	strings "github.com/flarehotspot/core/sdk/utils/strings"
 )
 
 func UserLocalVersion(w io.Writer, pkg string) (ok bool) {

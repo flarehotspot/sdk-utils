@@ -5,7 +5,7 @@ import (
 	"sync"
 
 	"github.com/flarehotspot/core/db"
-	coreM "github.com/flarehotspot/core/db/models"
+	"github.com/flarehotspot/core/db/models"
 	"github.com/flarehotspot/core/sdk/api/connmgr"
 	"github.com/flarehotspot/core/sdk/api/models"
 )
@@ -13,14 +13,14 @@ import (
 type ClientDevice struct {
 	mu       sync.RWMutex
 	db       *db.Database
-	mdls     *coreM.Models
+	mdls     *models.Models
 	id       int64
 	mac      string
 	ip       string
 	hostname string
 }
 
-func NewClientDevice(dtb *db.Database, mdls *coreM.Models, d models.IDevice) *ClientDevice {
+func NewClientDevice(dtb *db.Database, mdls *models.Models, d sdkmodels.IDevice) *ClientDevice {
 	return &ClientDevice{
 		db:       dtb,
 		mdls:     mdls,
@@ -71,7 +71,7 @@ func (self *ClientDevice) Update(ctx context.Context, mac string, ip string, hos
 	return nil
 }
 
-func (self *ClientDevice) ValidSession(ctx context.Context) (connmgr.IClientSession, error) {
+func (self *ClientDevice) ValidSession(ctx context.Context) (sdkconnmgr.IClientSession, error) {
 	self.mu.RLock()
 	defer self.mu.RUnlock()
 

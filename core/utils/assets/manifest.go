@@ -2,9 +2,8 @@ package assets
 
 import (
 	"encoding/json"
-	"github.com/flarehotspot/core/sdk/utils/fs"
-	"github.com/flarehotspot/core/sdk/utils/paths"
-	"io/ioutil"
+	fs "github.com/flarehotspot/core/sdk/utils/fs"
+	paths "github.com/flarehotspot/core/sdk/utils/paths"
 	"log"
 	"os"
 	"path/filepath"
@@ -22,23 +21,23 @@ func manifestFile(f string) string {
 	return filepath.Join(manifestDir, f+".json")
 }
 
-func readManifest(f string) (*CacheData, error) {
+func readManifest(f string) (CacheData, error) {
 	var cache CacheData
 	file := manifestFile(f)
-	byteManifest, err := ioutil.ReadFile(file)
+	byteManifest, err := os.ReadFile(file)
 	if err != nil {
-		return nil, err
+		return CacheData{}, err
 	}
 
 	err = json.Unmarshal(byteManifest, &cache)
 	if err != nil {
-		return nil, err
+		return CacheData{}, err
 	}
 
-	return &cache, nil
+	return cache, nil
 }
 
-func writeManifest(k string, cd *CacheData) (err error) {
+func writeManifest(k string, cd CacheData) (err error) {
 	file := manifestFile(k)
 	data, err := json.MarshalIndent(cd, "", "  ")
 	if err != nil {
@@ -52,7 +51,7 @@ func writeManifest(k string, cd *CacheData) (err error) {
 		return err
 	}
 
-	err = ioutil.WriteFile(file, data, 0644)
+	err = os.WriteFile(file, data, 0644)
 	if err != nil {
 		log.Println("Error writing to file: ", file)
 		return err

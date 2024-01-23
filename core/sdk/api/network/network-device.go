@@ -1,4 +1,4 @@
-package network
+package sdknet
 
 type NetDevType string
 

@@ -1,4 +1,4 @@
-package accounts
+package sdkacct
 
 // IAccount represents a system account.
 type IAccount interface {

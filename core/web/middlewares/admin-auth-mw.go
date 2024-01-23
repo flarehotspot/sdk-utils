@@ -2,60 +2,53 @@ package middlewares
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"net/http"
+	"strings"
 
-	coreAcct "github.com/flarehotspot/core/accounts"
-	"github.com/flarehotspot/core/config/appcfg"
-	"github.com/flarehotspot/core/web/router"
-	"github.com/flarehotspot/core/web/routes/names"
-	"github.com/flarehotspot/core/utils/jsonwebtoken"
+	"github.com/flarehotspot/core/accounts"
+	"github.com/flarehotspot/core/config"
+	"github.com/flarehotspot/core/sdk/api/http"
 	"github.com/flarehotspot/core/sdk/libs/jwt"
-	"github.com/flarehotspot/core/sdk/utils/contexts"
-	"github.com/flarehotspot/core/sdk/utils/cookie"
-	"github.com/flarehotspot/core/sdk/utils/flash"
-	"github.com/flarehotspot/core/sdk/utils/translate"
+	"github.com/flarehotspot/core/utils/jsonwebtoken"
+)
+
+const (
+	AuthTokenCookie = "auth-token"
 )
 
 func AdminAuth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		acct, err := IsAdminAuthenticated(w, r)
 		if err != nil {
-			autherr := translate.Core(translate.Error, "unauthorized")
-			flash.SetFlashMsg(w, flash.Error, autherr)
-			loginUrl, _ := router.UrlForRoute(names.RouteAuthLogin)
-			http.Redirect(w, r, loginUrl, http.StatusSeeOther)
+			ErrUnauthorized(w, err.Error())
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), contexts.SysAcctCtxKey, acct)
+		ctx := context.WithValue(r.Context(), sdkhttp.SysAcctCtxKey, acct)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
 
-func MustBeLoggedOut(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		_, err := IsAdminAuthenticated(w, r)
-		if err != nil {
-			next.ServeHTTP(w, r)
-		} else {
-			http.Redirect(w, r, "/admin", http.StatusSeeOther)
+func IsAdminAuthenticated(w http.ResponseWriter, r *http.Request) (*accounts.Account, error) {
+	authtoken, err := sdkhttp.GetCookie(r, AuthTokenCookie)
+	if err != nil {
+		bearer := r.Header.Get("Authorization")
+		splitToken := strings.Split(bearer, "Bearer ")
+		if len(splitToken) != 2 {
+			return nil, errors.New("invalid auth token")
 		}
-	})
-}
 
-func IsAdminAuthenticated(w http.ResponseWriter, r *http.Request) (*coreAcct.Account, error) {
-	authtoken, err := cookie.GetCookie(r, "auth-token")
+		authtoken = splitToken[1]
+	}
+
+	appcfg, err := config.ReadApplicationConfig()
 	if err != nil {
 		return nil, err
 	}
 
-	cfg, err := appcfg.ReadConfig()
-	if err != nil {
-		return nil, err
-	}
-
-	token, err := jsonwebtoken.VerifyToken(authtoken, cfg.Secret)
+	token, err := jsonwebtoken.VerifyToken(authtoken, appcfg.Secret)
 	if err != nil {
 		return nil, err
 	}
@@ -67,5 +60,13 @@ func IsAdminAuthenticated(w http.ResponseWriter, r *http.Request) (*coreAcct.Acc
 
 	username := claims["username"].(string)
 
-	return coreAcct.Find(username)
+	return accounts.Find(username)
+}
+
+func ErrUnauthorized(w http.ResponseWriter, msg string) {
+	data := map[string]string{"error": msg}
+	jsonData, _ := json.Marshal(data)
+	w.WriteHeader(http.StatusUnauthorized)
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(jsonData)
 }

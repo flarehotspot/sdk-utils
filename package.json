@@ -15,7 +15,5 @@
   "devDependencies": {
     "eslint": "^8.49.0"
   },
-  "dependencies": {
-    "yaml": "^2.3.2"
-  }
+  "dependencies": {}
 }

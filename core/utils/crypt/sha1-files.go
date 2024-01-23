@@ -8,7 +8,7 @@ import (
 	"os"
 )
 
-func SHA1Files(files []string) (string, error) {
+func SHA1Files(files ...string) (string, error) {
 	hash := sha1.New()
 
 	for _, f := range files {

@@ -1,45 +1,60 @@
 package plugincfg
 
-import (
-	"log"
-	"os"
-	"path/filepath"
+// import (
+// 	"encoding/json"
+// 	paths "github.com/flarehotspot/core/sdk/utils/paths"
+// 	"log"
+// 	"os"
+// 	"path/filepath"
+// )
 
-	"github.com/flarehotspot/core/sdk/libs/yaml-3"
-	"github.com/flarehotspot/core/sdk/utils/paths"
-)
+// const (
+// 	PluginSrcGit   PluginSrc = "git"
+// 	PluginSrcStore PluginSrc = "store"
+// )
 
-type PluginList []*PluginSrcDef
+// type PluginSrc string
 
-func readConfigFile(f string) PluginList {
-	content, err := os.ReadFile(f)
-	if err != nil {
-		log.Println(err)
-		return PluginList{}
-	}
+// // A plugin can be from store or from a git repo.
+// type PluginSrcDef struct {
+// 	Src          PluginSrc `json:"src"`           // git | strore
+// 	StorePackage string    `json:"store_pacakge"` // if src is "store"
+// 	StoreVersion string    `json:"store_version"` // if src is "store"
+// 	GitURL       string    `json:"git_url"`       // if src is "git"
+// 	GitRef       string    `json:"git_ref"`       // can be a branch, tag or commit hash
+// }
 
-	var cfg PluginList
-	if err = yaml.Unmarshal(content, &cfg); err != nil {
-		log.Println(err)
-		return PluginList{}
-	}
+// type PluginList []*PluginSrcDef
 
-	return cfg
-}
+// func readConfigFile(f string) PluginList {
+// 	content, err := os.ReadFile(f)
+// 	if err != nil {
+// 		log.Println(err)
+// 		return PluginList{}
+// 	}
 
-func DefaultPluginSrc() PluginList {
-	defaultsYaml := filepath.Join(paths.DefaultsDir, "plugins.yml")
-	log.Printf("%+v", defaultsYaml)
-	return readConfigFile(defaultsYaml)
-}
+// 	var cfg PluginList
+// 	if err = json.Unmarshal(content, &cfg); err != nil {
+// 		log.Println(err)
+// 		return PluginList{}
+// 	}
 
-func UserPluginSrc() PluginList {
-	cfgPath := filepath.Join(paths.ConfigDir, "plugins.yml")
-	return readConfigFile(cfgPath)
-}
+// 	return cfg
+// }
 
-func AllPluginSrc() PluginList {
-	defaultPlugins := DefaultPluginSrc()
-	userPlugins := UserPluginSrc()
-	return append(defaultPlugins, userPlugins...)
-}
+// func DefaultPluginSrc() PluginList {
+// 	defaultsYaml := filepath.Join(paths.DefaultsDir, "plugins.json")
+// 	log.Printf("%+v", defaultsYaml)
+// 	return readConfigFile(defaultsYaml)
+// }
+
+// func UserPluginSrc() PluginList {
+// 	cfgPath := filepath.Join(paths.ConfigDir, "plugins.json")
+// 	return readConfigFile(cfgPath)
+// }
+
+// func AllPluginSrc() PluginList {
+// 	defaultPlugins := DefaultPluginSrc()
+// 	userPlugins := UserPluginSrc()
+// 	return append(defaultPlugins, userPlugins...)
+// }

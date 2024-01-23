@@ -1,12 +1,32 @@
-package themes
+package sdktheme
 
-import (
-	"net/http"
-)
+import sdkhttp "github.com/flarehotspot/core/sdk/api/http"
 
-// IThemesApi is used to configure and process themes.
 type IThemesApi interface {
+	NewAdminTheme(AdminTheme)
+	NewPortalTheme(PortalTheme)
+}
 
-	// Define the handler for the index view of the captive portal.
-	PortalIndexHandler(func(w http.ResponseWriter, r *http.Request))
+type AdminTheme struct {
+	LayoutComponent    ThemeComponent
+	LoginComponent     ThemeComponent
+	DashboardComponent ThemeComponent
+	ThemeAssets        *ThemeAssets
+}
+
+type PortalTheme struct {
+	LayoutComponent ThemeComponent
+	IndexComponent  ThemeComponent
+	ThemeAssets     *ThemeAssets
+}
+
+type ThemeComponent struct {
+    RouteName string
+	HandlerFunc   sdkhttp.VueHandlerFn
+	ComponentPath string
+}
+
+type ThemeAssets struct {
+	Scripts []string
+	Styles  []string
 }

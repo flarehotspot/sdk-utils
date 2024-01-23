@@ -1,10 +1,10 @@
-package payments
+package sdkpayments
 
 import (
 	"net/http"
 
-	"github.com/flarehotspot/core/sdk/api/connmgr"
-	"github.com/flarehotspot/core/sdk/api/models"
+	connmgr "github.com/flarehotspot/core/sdk/api/connmgr"
+	models "github.com/flarehotspot/core/sdk/api/models"
 )
 
 // IPaymentOpt represents a payment option.

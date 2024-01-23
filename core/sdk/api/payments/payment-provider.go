@@ -1,6 +1,8 @@
-package payments
+package sdkpayments
 
-import "github.com/flarehotspot/core/sdk/api/connmgr"
+import (
+	connmgr "github.com/flarehotspot/core/sdk/api/connmgr"
+)
 
 // IPaymentProvider represents a payment provider.
 // A payment provider can have many payment options.

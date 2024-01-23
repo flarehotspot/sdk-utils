@@ -1,41 +1,72 @@
-package fs
+package sdkfs
 
 import (
-	"io/fs"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 )
 
 // LsDirs returns directories inside dir. Directory paths are prepended with dir
-func LsDirs(dir string, recursive bool) ([]string, error) {
-	darr := []string{}
-
-	if !recursive {
-		files, err := ioutil.ReadDir(dir)
-		if err != nil {
-			return darr, err
-		}
-		for _, f := range files {
-			if f.IsDir() {
-				darr = append(darr, filepath.Join(dir, f.Name()))
-			}
-		}
-		return darr, nil
+func LsDirs(path string, directories *[]string, recursive bool) error {
+	stat, err := os.Stat(path)
+	if err != nil {
+		return err
 	}
 
-	err := filepath.WalkDir(dir, func(s string, d fs.DirEntry, err error) error {
+	if stat.Mode() == os.ModeSymlink {
+		target, err := os.Readlink(path)
 		if err != nil {
 			return err
 		}
-		if d.IsDir() {
-			darr = append(darr, s)
+
+		path = target
+	}
+
+	dirEntries, err := os.ReadDir(path)
+	if err != nil {
+		return err
+	}
+
+	for _, entry := range dirEntries {
+		if IsDir(filepath.Join(path, entry.Name())) {
+			*directories = append(*directories, filepath.Join(path, entry.Name()))
+
+			if recursive {
+				subdirPath := filepath.Join(path, entry.Name())
+				err := LsDirs(subdirPath, directories, recursive)
+				if err != nil {
+					return err
+				}
+			}
 		}
-		return nil
-	})
+	}
 
-  if err != nil {
-    return darr, err
-  }
+	return nil
+}
 
-	return darr, nil
+// IsDir returns true if path is a directory. It follows symlinks.
+func IsDir(path string) bool {
+	stat, err := os.Stat(path)
+	if err != nil {
+		return false
+	}
+
+	if stat.IsDir() {
+		return true // It's a directory
+	}
+
+	if stat.Mode() == os.ModeSymlink {
+		target, err := os.Readlink(path)
+		if err != nil {
+			return false // Error reading symbolic link target
+		}
+
+		targetInfo, err := os.Stat(target)
+		if err != nil {
+			return false // Error getting information about the target
+		}
+
+		return targetInfo.IsDir()
+	}
+
+	return false
 }

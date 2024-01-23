@@ -3,55 +3,57 @@ package cfgapi
 import (
 	"log"
 
-	"github.com/flarehotspot/core/config/ratescfg"
-	"github.com/flarehotspot/core/sdk/api/config"
-	"github.com/flarehotspot/core/sdk/api/models"
-	"github.com/flarehotspot/core/sdk/utils/strings"
+	"github.com/flarehotspot/core/config"
+	sdkcfg "github.com/flarehotspot/core/sdk/api/config"
+	sdkmodels "github.com/flarehotspot/core/sdk/api/models"
+	sdkslices "github.com/flarehotspot/core/sdk/utils/slices"
+	sdkstr "github.com/flarehotspot/core/sdk/utils/strings"
+	networkutil "github.com/flarehotspot/core/utils/network"
 )
 
-type SessionRatesApi struct{}
-
-func NewWifiRatesCfgApi() *SessionRatesApi {
+func NewSessionRatesCfgApi() *SessionRatesApi {
 	return &SessionRatesApi{}
 }
 
-func (c *SessionRatesApi) All() ([]*config.SessionRate, error) {
-	cfg, err := ratescfg.Read()
+type SessionRatesApi struct{}
+
+func (c *SessionRatesApi) All() ([]sdkcfg.SessionRate, error) {
+	cfg, err := config.ReadWifiRatesConfig()
 	if err != nil {
 		return nil, err
 	}
 
-	rates := []*config.SessionRate{}
+	rates := []sdkcfg.SessionRate{}
 	for _, r := range cfg {
-		rate := config.SessionRate(*r)
-		rates = append(rates, &rate)
+		rate := sdkcfg.SessionRate(*r)
+		rates = append(rates, rate)
 	}
 
 	return rates, nil
 }
 
-func (c *SessionRatesApi) AllByNet(network string) ([]*config.SessionRate, error) {
-	cfg, err := ratescfg.Read()
+func (c *SessionRatesApi) AllByNet(network string) ([]sdkcfg.SessionRate, error) {
+	cfg, err := config.ReadWifiRatesConfig()
 	if err != nil {
 		return nil, err
 	}
 
-	cfg, err = ratescfg.FilterByNet(network, cfg)
+	cfg, err = c.FilterByNet(network, cfg)
 	if err != nil {
 		return nil, err
 	}
 
-	rates := []*config.SessionRate{}
+	rates := []sdkcfg.SessionRate{}
 	for _, r := range cfg {
-		rate := config.SessionRate(*r)
-		rates = append(rates, &rate)
+		rate := sdkcfg.SessionRate(*r)
+		rates = append(rates, rate)
 	}
 
 	return rates, nil
 }
 
-func (c *SessionRatesApi) Save(rate *config.SessionRate) error {
-	cfg, err := ratescfg.Read()
+func (c *SessionRatesApi) Save(rate sdkcfg.SessionRate) error {
+	cfg, err := config.ReadWifiRatesConfig()
 	if err != nil {
 		return err
 	}
@@ -66,33 +68,33 @@ func (c *SessionRatesApi) Save(rate *config.SessionRate) error {
 		}
 	}
 
-	r := ratescfg.WifiRate(*rate)
+	r := config.SessionRate(rate)
 	if !exists {
-		rate.Uuid = strings.Rand(8)
+		rate.Uuid = sdkstr.Rand(8)
 		cfg = append(cfg, &r)
 	} else {
 		cfg[index] = &r
 	}
 
-	return ratescfg.Write(cfg)
+	return config.WriteWifiRatesConfig(cfg)
 }
 
-func (c *SessionRatesApi) Write(rates []*config.SessionRate) ([]*config.SessionRate, error) {
-	cfg := []*ratescfg.WifiRate{}
+func (c *SessionRatesApi) Write(rates []sdkcfg.SessionRate) ([]sdkcfg.SessionRate, error) {
+	cfg := []*config.SessionRate{}
 	for i, r := range rates {
-		rate := ratescfg.WifiRate(*r)
+		rate := config.SessionRate(r)
 		if rate.Uuid == "" {
-			rates[i].Uuid = strings.Rand(8)
+			rates[i].Uuid = sdkstr.Rand(8)
 		}
 		cfg = append(cfg, &rate)
 	}
 
 	log.Println("Config to save: ")
 	for _, r := range rates {
-		log.Println(*r)
+		log.Println(r)
 	}
 
-	err := ratescfg.Write(cfg)
+	err := config.WriteWifiRatesConfig(cfg)
 	if err != nil {
 		return nil, err
 	}
@@ -100,10 +102,21 @@ func (c *SessionRatesApi) Write(rates []*config.SessionRate) ([]*config.SessionR
 	return rates, nil
 }
 
-func (c *SessionRatesApi) ComputeSession(clientIP string, amount float64, t models.SessionType) (*config.SessionResult, error) {
+func (c *SessionRatesApi) ComputeSession(clientIP string, amount float64, t sdkmodels.SessionType) (sdkcfg.SessionResult, error) {
 	log.Println("TODO: ComputeSession()")
-	return &config.SessionResult{
+	return sdkcfg.SessionResult{
 		TimeMins:   100,
 		DataMbytes: 100,
 	}, nil
+}
+
+func (c *SessionRatesApi) FilterByNet(ip string, rates []*config.SessionRate) ([]*config.SessionRate, error) {
+	rates = sdkslices.Filter(rates, func(r *config.SessionRate) bool {
+		ok, err := networkutil.IpInSubnet(ip, r.Network)
+		if err != nil {
+			return false
+		}
+		return ok
+	})
+	return config.SortSessionRates(rates), nil
 }

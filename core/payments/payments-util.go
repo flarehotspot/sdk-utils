@@ -5,11 +5,11 @@ import (
 	"net/http"
 
 	"github.com/flarehotspot/core/db"
-	"github.com/flarehotspot/core/sdk/api/connmgr"
-	"github.com/flarehotspot/core/sdk/api/models"
-	"github.com/flarehotspot/core/sdk/api/payments"
+	connmgr "github.com/flarehotspot/core/sdk/api/connmgr"
+	contexts "github.com/flarehotspot/core/sdk/api/http"
+	models "github.com/flarehotspot/core/sdk/api/models"
+	payments "github.com/flarehotspot/core/sdk/api/payments"
 	qs "github.com/flarehotspot/core/sdk/libs/urlquery"
-	"github.com/flarehotspot/core/sdk/utils/contexts"
 )
 
 func ParsePurchaseReq(r *http.Request) (*payments.PurchaseRequest, error) {

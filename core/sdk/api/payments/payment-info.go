@@ -1,8 +1,8 @@
-package payments
+package sdkpayments
 
 import (
-	"github.com/flarehotspot/core/sdk/api/connmgr"
-	"github.com/flarehotspot/core/sdk/api/models"
+	connmgr "github.com/flarehotspot/core/sdk/api/connmgr"
+	models "github.com/flarehotspot/core/sdk/api/models"
 )
 
 // PaymentInfo represents a payment information.

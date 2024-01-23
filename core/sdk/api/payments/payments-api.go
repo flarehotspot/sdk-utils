@@ -1,7 +1,7 @@
-package payments
+package sdkpayments
 
 import (
-	"github.com/flarehotspot/core/sdk/api/models"
+	models "github.com/flarehotspot/core/sdk/api/models"
 	"net/http"
 )
 

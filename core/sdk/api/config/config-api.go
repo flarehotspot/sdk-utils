@@ -1,4 +1,4 @@
-package config
+package sdkcfg
 
 // IConfigApi is used to access the configuration API.
 type IConfigApi interface {
@@ -11,8 +11,8 @@ type IConfigApi interface {
 	// Get the database configuration api.
 	Database() IDatabaseCfg
 
-	// Get the http wifi rates configuration api.
-	WifiRates() ISessionRatesCfg
+	// Get the http session rates configuration api.
+	SessionRates() ISessionRatesCfg
 
 	// Get the sessions configuration api.
 	Sessions() ISessionLimitsCfg

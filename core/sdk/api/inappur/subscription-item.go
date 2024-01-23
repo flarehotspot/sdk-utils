@@ -1,4 +1,4 @@
-package inappur
+package sdkinappur
 
 // InAppSubscriptionItem represents an in-app subscription item.
 type InAppSubscriptionItem struct {

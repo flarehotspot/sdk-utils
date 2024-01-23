@@ -4,42 +4,81 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"strings"
 
-	"github.com/flarehotspot/core/web/views"
+	httpI "github.com/flarehotspot/core/sdk/api/http"
+	tmplcache "github.com/flarehotspot/core/utils/flaretmpl"
 )
 
-// ViewWithLayout renders a content inside a layout.
-// Note that function map 'fmap' can only be set once for each pair of layout and content
-// and will be cached for the rest of the application lifetime.
-func ViewWithLayout(w http.ResponseWriter, layout *views.ViewInput, content string, fmap template.FuncMap, data any) {
-	fmap = MergeFuncMaps(GlobalFuncMap, layout.FuncMap, fmap)
-	view := &views.ViewInput{File: content}
-
-	tmpl, err := views.ViewProc(fmap, layout, view)
-	if err != nil {
-		Error(w, err)
-		return
-	}
-
-	err = tmpl.Execute(w, data)
-	if err != nil {
-		log.Println("Error executing "+content+":", err)
-	}
+type ViewData struct {
+	PageContent template.HTML
+	ViewData    any
+	ViewHelpers httpI.IHelpers
 }
 
-// View renders a view file.
-// Note that function map 'fmap' can only be set once for each view and will be cached for the rest of the application lifetime.
-func View(w http.ResponseWriter, view *views.ViewInput, fmap template.FuncMap, data any) {
-	fmap = MergeFuncMaps(GlobalFuncMap, view.FuncMap, fmap)
-	tmpl, err := views.ViewProc(fmap, view)
+func (vd *ViewData) ContentHtml() template.HTML {
+	return vd.PageContent
+}
 
+func (vd *ViewData) Helpers() httpI.IHelpers {
+	return vd.ViewHelpers
+}
+
+func (vd *ViewData) Data() any {
+	return vd.ViewData
+}
+
+func ViewWithLayout(w http.ResponseWriter, layout string, content string, helpers httpI.IHelpers, data any) {
+	contentHtml, err := viewProc(content, nil, helpers, data)
 	if err != nil {
-		Error(w, err)
+		log.Printf("View error: %+v", err)
+		ErrorJson(w, err.Error())
 		return
 	}
 
-	err = tmpl.Execute(w, data)
+	html, err := viewProc(layout, &contentHtml, helpers, data)
 	if err != nil {
-		log.Println("Error executing "+view.File+":", err)
+		log.Printf("View error: %+v", err)
+		ErrorJson(w, err.Error())
+		return
 	}
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.Write([]byte(html))
+}
+
+func View(w http.ResponseWriter, viewpath string, helpers httpI.IHelpers, data any) {
+	html, err := viewProc(viewpath, nil, helpers, data)
+	if err != nil {
+		log.Printf("View error: %+v", err)
+		ErrorJson(w, err.Error())
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.Write([]byte(html))
+}
+
+func viewProc(layout string, contentHtml *template.HTML, helpers httpI.IHelpers, data any) (html template.HTML, err error) {
+	tmpl, err := tmplcache.GetHtmlTemplate(layout)
+	if err != nil {
+		return "", err
+	}
+
+	vdata := &ViewData{
+		ViewHelpers: helpers,
+		ViewData:    data,
+	}
+
+	if contentHtml != nil {
+		vdata.PageContent = *contentHtml
+	}
+
+	var output strings.Builder
+	err = tmpl.Execute(&output, vdata)
+	if err != nil {
+		return "", err
+	}
+
+	return template.HTML(output.String()), nil
 }

@@ -1,4 +1,4 @@
-package uci
+package sdkuci
 
 var (
 	// source: https://openwrt.org/docs/guide-user/network/wifi/basic

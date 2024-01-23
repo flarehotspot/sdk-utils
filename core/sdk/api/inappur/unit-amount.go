@@ -1,4 +1,4 @@
-package inappur
+package sdkinappur
 
 // UnitAmount represents the payment amount and currency of items.
 type UnitAmount struct {

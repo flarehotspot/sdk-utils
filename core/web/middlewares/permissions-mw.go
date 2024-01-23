@@ -4,13 +4,13 @@ import (
 	"net/http"
 
 	acct "github.com/flarehotspot/core/accounts"
-	"github.com/flarehotspot/core/sdk/utils/contexts"
+	"github.com/flarehotspot/core/sdk/api/http"
 )
 
 func PermsMiddleware(perms []string) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			acctsym := r.Context().Value(contexts.SysAcctCtxKey)
+			acctsym := r.Context().Value(sdkhttp.SysAcctCtxKey)
 			if acctsym == nil {
 				w.WriteHeader(http.StatusUnauthorized)
 				return

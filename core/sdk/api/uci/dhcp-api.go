@@ -1,4 +1,4 @@
-package uci
+package sdkuci
 
 // DhcpCfg represents the DHCP configuration
 type DhcpCfg struct {

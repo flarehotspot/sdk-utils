@@ -7,11 +7,10 @@ import (
 	"path/filepath"
 	"sync"
 
-	"github.com/flarehotspot/core/sdk/api/accounts"
-	"github.com/flarehotspot/core/sdk/libs/yaml-3"
-	"github.com/flarehotspot/core/sdk/utils/fs"
-	"github.com/flarehotspot/core/sdk/utils/paths"
-	"github.com/flarehotspot/core/sdk/utils/translate"
+	"encoding/json"
+	accounts "github.com/flarehotspot/core/sdk/api/accounts"
+	fs "github.com/flarehotspot/core/sdk/utils/fs"
+	paths "github.com/flarehotspot/core/sdk/utils/paths"
 )
 
 const (
@@ -21,18 +20,19 @@ const (
 )
 
 var (
-	perms        sync.Map
-	DefaultPerms = []string{PermMngUsers}
+	perms               sync.Map
+	DefaultPerms        = []string{PermMngUsers}
+	ErrNoAccount        = errors.New("Account does not exist")
 )
 
 func init() {
 	perms = sync.Map{}
-	perms.Store(PermMngUsers, translate.Core(translate.Label, "perm_manage_users"))
+	perms.Store(PermMngUsers, "Manage Users")
 }
 
 func DefaultAdminAcct() Account {
 	var acct Account
-	f := filepath.Join(paths.DefaultsDir, "admin.yml")
+	f := filepath.Join(paths.DefaultsDir, "admin.json")
 
 	perms := []string{}
 	for _, p := range DefaultPerms {
@@ -50,7 +50,7 @@ func DefaultAdminAcct() Account {
 		return defAcct
 	}
 
-	err = yaml.Unmarshal(bytes, &acct)
+	err = json.Unmarshal(bytes, &acct)
 	if err != nil {
 		return defAcct
 	}
@@ -62,7 +62,7 @@ func EnsureAdminAcct() error {
 	f := FilepathForUser(AdminUsername)
 	if !fs.Exists(f) {
 		acct := DefaultAdminAcct()
-		content, err := yaml.Marshal(acct)
+		content, err := json.Marshal(acct)
 		if err != nil {
 			return err
 		}
@@ -75,8 +75,8 @@ func EnsureAdminAcct() error {
 }
 
 func All() (accounts []*Account, err error) {
-	files, err := fs.LsFiles(AcctDir, false)
-	if err != nil {
+	files := []string{}
+	if err := fs.LsFiles(AcctDir, &files, false); err != nil {
 		return nil, err
 	}
 
@@ -87,7 +87,7 @@ func All() (accounts []*Account, err error) {
 		}
 
 		var acct Account
-		err = yaml.Unmarshal(b, &acct)
+		err = json.Unmarshal(b, &acct)
 		if err != nil {
 			return nil, err
 		}
@@ -116,15 +116,14 @@ func AllAdmins() ([]*Account, error) {
 
 func Find(username string) (*Account, error) {
 	var acct Account
-	derr := errors.New(translate.Core(translate.Error, "account_not_exist"))
 	f := FilepathForUser(username)
 	b, err := os.ReadFile(f)
 	if err != nil {
-		return nil, derr
+		return nil, ErrNoAccount
 	}
-	err = yaml.Unmarshal(b, &acct)
+	err = json.Unmarshal(b, &acct)
 	if err != nil {
-		return &acct, derr
+		return &acct, ErrNoAccount
 	}
 	return &acct, nil
 }
@@ -136,7 +135,7 @@ func Create(uname string, passwd string, perms []string) (*Account, error) {
 		Perms:  perms,
 	}
 
-	b, err := yaml.Marshal(&acct)
+	b, err := json.Marshal(&acct)
 	if err != nil {
 		return nil, err
 	}
@@ -182,7 +181,7 @@ func Update(prevName string, newName string, pass string, perms []string) (*Acco
 		return nil, errors.New("Super admin account must have manage users permission.")
 	}
 
-	b, err := yaml.Marshal(&acct)
+	b, err := json.Marshal(&acct)
 	if err != nil {
 		return nil, err
 	}
@@ -207,8 +206,8 @@ func Delete(uname string) error {
 		return fmt.Errorf("Deleting the super admin account is not allowed.")
 	}
 
-	files, err := fs.LsFiles(AcctDir, false)
-	if err != nil {
+	files := []string{}
+	if err := fs.LsFiles(AcctDir, &files, false); err != nil {
 		return err
 	}
 
@@ -225,7 +224,7 @@ func Delete(uname string) error {
 }
 
 func FilepathForUser(uname string) string {
-	return filepath.Join(AcctDir, uname+".yml")
+	return filepath.Join(AcctDir, uname+".json")
 }
 
 // Permissions returns all permissions from perms.SyncMap as map[string]string

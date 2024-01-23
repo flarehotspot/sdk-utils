@@ -3,7 +3,7 @@
 package env
 
 const (
-	GO_ENV   int8   = ENV_SANDBOX
+	GoEnv   int8   = ENV_SANDBOX
 	HttpPort int    = 80
 	BaseURL  string = "http://api.adopisoft.xyz"
 )

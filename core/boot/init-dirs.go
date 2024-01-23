@@ -1,7 +1,7 @@
 package boot
 
 import (
-	"github.com/flarehotspot/core/sdk/utils/paths"
+	paths "github.com/flarehotspot/core/sdk/utils/paths"
 	"log"
 	"os"
 	"path/filepath"
@@ -11,10 +11,9 @@ import (
 func InitDirs() {
 	dirs := []string{
 		paths.ConfigDir,
-		paths.PublicDir,
 		paths.VendorDir,
 		paths.CacheDir,
-		paths.LogsDir,
+		paths.PublicDir,
 		filepath.Join(paths.CacheDir, "assets"),
 		filepath.Join(paths.ConfigDir, "plugins"),
 		filepath.Join(paths.ConfigDir, "accounts"),

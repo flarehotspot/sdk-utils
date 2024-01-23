@@ -1,4 +1,4 @@
-package network
+package sdknet
 
 type ClientStat struct {
 	Packets uint

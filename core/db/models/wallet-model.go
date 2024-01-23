@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/flarehotspot/core/db"
-	"github.com/flarehotspot/core/sdk/api/models"
+	models "github.com/flarehotspot/core/sdk/api/models"
 )
 
 type WalletModel struct {

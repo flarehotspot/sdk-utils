@@ -3,7 +3,8 @@ package router
 import (
 	"errors"
 	"fmt"
-	"github.com/flarehotspot/core/sdk/api/http/router"
+
+	"github.com/flarehotspot/core/sdk/api/http"
 	"github.com/gorilla/mux"
 )
 
@@ -12,36 +13,32 @@ const (
 )
 
 var (
-	bootingRouter *mux.Router
-	rootRouter    *mux.Router
-	adminRouter   *mux.Router
-	pluginRouter  *mux.Router
+	RootRouter    *mux.Router
+	BootingRouter *mux.Router
+	PluginRouter  *mux.Router
+	AssetsRouter  *mux.Router
+)
+
+var (
+	ApiRouter       *mux.Router
+	AdminApiRouter  *mux.Router
+	PortalApiRouter *mux.Router
+	AuthApiRouter   *mux.Router
 )
 
 func init() {
-	bootingRouter = mux.NewRouter().StrictSlash(true)
-	rootRouter = mux.NewRouter().StrictSlash(true)
-	pluginRouter = rootRouter.PathPrefix("/plugin").Subrouter()
-	adminRouter = rootRouter.PathPrefix("/admin").Subrouter()
+	RootRouter = mux.NewRouter().StrictSlash(true)
+	BootingRouter = mux.NewRouter().StrictSlash(true)
+	PluginRouter = RootRouter.PathPrefix("/plugin").Subrouter()
+	AssetsRouter = RootRouter.PathPrefix("/assets").Subrouter()
+
+	ApiRouter = RootRouter.PathPrefix("/api").Subrouter()
+	AdminApiRouter = ApiRouter.PathPrefix("/admin").Subrouter()
+	PortalApiRouter = ApiRouter.PathPrefix("/portal").Subrouter()
+	AuthApiRouter = ApiRouter.PathPrefix("/auth").Subrouter()
 }
 
-func BootingRrouter() *mux.Router {
-	return bootingRouter
-}
-
-func RootRouter() *mux.Router {
-	return rootRouter
-}
-
-func AdminRouter() *mux.Router {
-	return adminRouter
-}
-
-func PluginRouter() *mux.Router {
-	return pluginRouter
-}
-
-func UrlForRoute(muxname router.MuxRouteName, pairs ...string) (string, error) {
+func UrlForRoute(muxname sdkhttp.MuxRouteName, pairs ...string) (string, error) {
 	route := FindRoute(muxname)
 	if route != nil {
 		if url, err := route.URL(pairs...); err == nil {
@@ -51,6 +48,6 @@ func UrlForRoute(muxname router.MuxRouteName, pairs ...string) (string, error) {
 	return "", errors.New(fmt.Sprintf("Route name not found: \"%s\"", muxname))
 }
 
-func FindRoute(muxname router.MuxRouteName) *mux.Route {
-	return rootRouter.Get(string(muxname))
+func FindRoute(muxname sdkhttp.MuxRouteName) *mux.Route {
+	return RootRouter.Get(string(muxname))
 }

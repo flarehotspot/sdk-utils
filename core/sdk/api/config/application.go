@@ -1,4 +1,4 @@
-package config
+package sdkcfg
 
 // AppCfg is the application configuration.
 type AppCfg struct {
@@ -14,6 +14,6 @@ type AppCfg struct {
 
 // IApplicationCfg is used to read and write application configuration.
 type IApplicationCfg interface {
-	Read() (*AppCfg, error)
-	Write(*AppCfg) error
+	Read() (AppCfg, error)
+	Write(AppCfg) error
 }

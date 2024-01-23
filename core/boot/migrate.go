@@ -5,8 +5,8 @@ import (
 	"path/filepath"
 
 	"github.com/flarehotspot/core/globals"
+	paths "github.com/flarehotspot/core/sdk/utils/paths"
 	"github.com/flarehotspot/core/utils/migrate"
-	"github.com/flarehotspot/core/sdk/utils/paths"
 )
 
 func RunMigrations(g *globals.CoreGlobals) {

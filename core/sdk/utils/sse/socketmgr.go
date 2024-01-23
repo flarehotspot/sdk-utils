@@ -1,4 +1,4 @@
-package sse
+package sdksse
 
 import (
 	"log"

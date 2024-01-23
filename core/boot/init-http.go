@@ -13,7 +13,7 @@ import (
 
 func InitHttpServer(g *globals.CoreGlobals) {
 	web.SetupBootRoutes(g)
-	server := web.StartServer(router.BootingRrouter(), false)
+	server := web.StartServer(router.BootingRouter, false)
 
 	err := <-g.BootProgress.DONE_C
 	if err != nil {
@@ -38,5 +38,5 @@ func InitHttpServer(g *globals.CoreGlobals) {
 	// Restart the server with all routes
 	web.SetupAllRoutes(g)
 	log.Println("Starting server...")
-	web.StartServer(router.RootRouter(), true)
+	web.StartServer(router.RootRouter, true)
 }

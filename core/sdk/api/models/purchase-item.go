@@ -1,4 +1,4 @@
-package models
+package sdkmodels
 
 // IPurchaseItem represents a purchase item record in the purchase_items table in the database.
 type IPurchaseItem interface {

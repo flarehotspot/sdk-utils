@@ -1,4 +1,4 @@
-package uci
+package sdkuci
 
 import "github.com/flarehotspot/core/sdk/libs/go-uci"
 

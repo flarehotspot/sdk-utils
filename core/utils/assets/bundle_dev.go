@@ -2,27 +2,31 @@
 
 package assets
 
-import jobque "github.com/flarehotspot/core/utils/job-que"
+import (
+	"github.com/flarehotspot/core/env"
+	jobque "github.com/flarehotspot/core/utils/job-que"
+)
 
 var bundleQue = jobque.NewJobQues()
 
-func Bundle(outfile string, files []string) (string, error) {
+func Bundle(files []string) (data CacheData, err error) {
 	result, err := bundleQue.Exec(func() (interface{}, error) {
 		if len(files) == 0 {
 			return "", ErrNoAssets
 		}
 
-		if cache, ok := cacheExists(files); ok {
-			return cache.PublicPath, nil
+        useCache := env.GoEnv != env.ENV_DEV
+		if cache, ok := cacheExists(files); ok && useCache {
+			return cache, nil
 		}
 
-		concat, err := concatFiles(files)
+		concat, err := minifyFiles(files)
 		if err != nil {
-			return "", err
+			return CacheData{}, err
 		}
 
-		return writeCache(outfile, concat, files)
+		return writeCache(concat, files)
 	})
 
-	return result.(string), err
+	return result.(CacheData), err
 }

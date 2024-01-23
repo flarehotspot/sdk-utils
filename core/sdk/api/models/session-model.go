@@ -1,4 +1,4 @@
-package models
+package sdkmodels
 
 import (
 	"context"
