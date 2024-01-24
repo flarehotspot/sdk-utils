@@ -60,13 +60,6 @@ func (c *IndexPageCtrl) AdminIndex(w http.ResponseWriter, r *http.Request) {
 	c.render(w, r, themePlugin, adminRoutes, themesApi.GetAdminThemeAssets())
 }
 
-// func (c *IndexPageCtrl) MainJs(w http.ResponseWriter, r *http.Request) {
-// 	mainjs := filepath.Join(c.g.CoreApi.Utl.Resource("views/scripts/main.tpl.js"))
-// 	helpers := c.g.CoreApi.HttpApi().Helpers()
-// 	w.Header().Set("Content-Type", "application/javascript")
-// 	response.Text(w, mainjs, helpers, nil)
-// }
-
 func (c *IndexPageCtrl) render(w http.ResponseWriter, r *http.Request, themePlugin plugin.IPluginApi, routes any, themeAssets themes.ThemeAssets) {
 
 	appcfg, err := config.ReadApplicationConfig()

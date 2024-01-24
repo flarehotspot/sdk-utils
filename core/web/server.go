@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/flarehotspot/core/globals"
-	"github.com/flarehotspot/core/web/middlewares"
 	"github.com/flarehotspot/core/web/router"
 	"github.com/flarehotspot/core/web/routes"
 	"github.com/gorilla/mux"
@@ -17,10 +16,8 @@ func SetupBootRoutes(g *globals.CoreGlobals) {
 }
 
 func SetupAllRoutes(g *globals.CoreGlobals) {
-	router.AdminApiRouter.Use(middlewares.AdminAuth)
 	routes.IndexRoutes(g)
 	routes.AssetsRoutes(g)
-	routes.ApiRoutes(g)
 	// routes.AuthRoutes(g)
 	// routes.AdminRoutes(g)
 	// routes.PaymentRoutes(g)

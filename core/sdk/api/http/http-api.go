@@ -29,5 +29,5 @@ type IHttpApi interface {
 	MuxVars(r *http.Request) map[string]string
 
 	// Returns the consolidated vue navigation list from all plugins for the admin dashboard.
-	GetAdminNavs(r *http.Request) []AdminNavCategory
+	GetAdminNavs(r *http.Request) []AdminNavList
 }

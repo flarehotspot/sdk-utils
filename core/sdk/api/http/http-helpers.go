@@ -45,4 +45,6 @@ type IHelpers interface {
     // Returns the vue route name for a named route which can be used in vue router, e.g.
     //   $this.push({name: '<% .Helpers.VueRouteName "login" %>'})
 	VueRouteName(name string) string
+
+    VueRoutePath(name string) string
 }

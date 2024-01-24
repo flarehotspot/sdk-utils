@@ -6,7 +6,8 @@ import (
 
 	"github.com/flarehotspot/core/connmgr"
 	"github.com/flarehotspot/core/db"
-	"github.com/flarehotspot/core/sdk/api/http"
+	sdkhttp "github.com/flarehotspot/core/sdk/api/http"
+	"github.com/flarehotspot/core/web/middlewares"
 	"github.com/flarehotspot/core/web/router"
 )
 
@@ -19,7 +20,9 @@ type HttpRouterApi struct {
 func NewHttpRouterApi(api *PluginApi, db *db.Database, clnt *connmgr.ClientRegister) *HttpRouterApi {
 	prefix := fmt.Sprintf("/%s/%s", api.Pkg(), api.Version())
 	pluginMux := router.PluginRouter.PathPrefix(prefix).Subrouter()
+
 	adminMux := pluginMux.PathPrefix("/admin").Subrouter()
+	adminMux.Use(middlewares.AdminAuth)
 
 	pluginRouter := &HttpRouter{api, pluginMux}
 	adminRouter := &HttpRouter{api, adminMux}

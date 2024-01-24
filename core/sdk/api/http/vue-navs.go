@@ -1,8 +1,8 @@
 package sdkhttp
 
-type AdminNavCategory struct {
-	Category string         `json:"category"`
-	Items    []AdminNavItem `json:"items"`
+type AdminNavList struct {
+	Label string         `json:"label"`
+	Items []AdminNavItem `json:"items"`
 }
 
 type AdminNavItem struct {

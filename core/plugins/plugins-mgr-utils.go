@@ -56,7 +56,7 @@ func (util *PluginsMgrUtils) GetAdminRoutes() []map[string]any {
 
 	routesMap := []map[string]any{
 		{
-			"path":      "",
+			"path":      sdkhttp.VueLayoutPath,
 			"name":      "layout",
 			"component": themesApi.AdminLayoutRoute.HttpWrapperFullPath,
 			"children":  children,
@@ -87,8 +87,8 @@ func (utils *PluginsMgrUtils) GetPortalRoutes() []*VueRouteComponent {
 	return routes
 }
 
-func (utils *PluginsMgrUtils) GetAdminNavs(r *http.Request) []sdkhttp.AdminNavCategory {
-	navs := []sdkhttp.AdminNavCategory{}
+func (utils *PluginsMgrUtils) GetAdminNavs(r *http.Request) []sdkhttp.AdminNavList {
+	navs := []sdkhttp.AdminNavList{}
 	categories := []sdkhttp.INavCategory{
 		sdkhttp.NavCategorySystem,
 		// sdkhttp.NavCategoryNetwork,
@@ -107,8 +107,8 @@ func (utils *PluginsMgrUtils) GetAdminNavs(r *http.Request) []sdkhttp.AdminNavCa
 			}
 		}
 
-		navs = append(navs, sdkhttp.AdminNavCategory{
-			Category: utils.coreApi.Utl.Translate("label", string(category)),
+		navs = append(navs, sdkhttp.AdminNavList{
+			Label: utils.coreApi.Utl.Translate("label", string(category)),
 			Items:    navItems,
 		})
 	}

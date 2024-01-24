@@ -68,6 +68,6 @@ func (self *HttpApi) MuxVars(r *http.Request) map[string]string {
 	return mux.Vars(r)
 }
 
-func (self *HttpApi) GetAdminNavs(r *http.Request) []sdkhttp.AdminNavCategory {
+func (self *HttpApi) GetAdminNavs(r *http.Request) []sdkhttp.AdminNavList {
 	return self.api.PluginsMgr.Utils().GetAdminNavs(r)
 }
