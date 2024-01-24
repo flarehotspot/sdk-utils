@@ -12,7 +12,7 @@ import (
 
 type CoreGlobals struct {
 	Db             *db.Database
-	CoreApi        *plugins.PluginApi
+	CoreAPI        *plugins.PluginApi
 	ClientRegister *connmgr.ClientRegister
 	ClientMgr      *connmgr.ClientMgr
 	TrafficMgr     *network.TrafficMgr
@@ -36,9 +36,7 @@ func New() *CoreGlobals {
 
 	plgnMgr := plugins.NewPluginMgr(db, mdls, pmtMgr, clntReg, clntMgr, trfcMgr)
 	coreApi := plugins.NewPluginApi(paths.CoreDir, plgnMgr, trfcMgr)
-
-	plgnMgr.Init(coreApi)
-	plgnMgr.RegisterPlugin(coreApi)
+	plgnMgr.InitCoreApi(coreApi)
 
 	return &CoreGlobals{db, coreApi, clntReg, clntMgr, trfcMgr, bp, mdls, plgnMgr, pmtMgr}
 }

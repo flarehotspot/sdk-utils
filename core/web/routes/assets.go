@@ -46,9 +46,9 @@ func AssetsRoutes(g *globals.CoreGlobals) {
 }
 
 func CoreAssets(g *globals.CoreGlobals) {
-	assetsDir := g.CoreApi.Utl.Resource("assets")
+	assetsDir := g.CoreAPI.Utl.Resource("assets")
 	fs := http.FileServer(http.Dir(assetsDir))
-	prefix := g.CoreApi.HttpApi().Helpers().AssetPath("")
+	prefix := g.CoreAPI.HttpApi().Helpers().AssetPath("")
 	fileserver := middlewares.AssetPath(http.StripPrefix(prefix, fs))
 	router.RootRouter.PathPrefix(prefix).Handler(fileserver)
 }

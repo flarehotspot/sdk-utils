@@ -35,7 +35,7 @@ func (self *AuthApi) AuthenticateAdmin(username string, password string) (acct.I
 	}
 
 	if !acct.Auth(password) {
-		return nil, errors.New(self.api.coreApi.Utl.Translate("error", "invalid_login"))
+		return nil, errors.New(self.api.CoreAPI.Utl.Translate("error", "invalid_login"))
 	}
 
 	return acct, nil
@@ -44,7 +44,7 @@ func (self *AuthApi) AuthenticateAdmin(username string, password string) (acct.I
 func (self *AuthApi) SignInAdmin(w http.ResponseWriter, acct acct.IAccount) {
 	appcfg, err := config.ReadApplicationConfig()
 	if err != nil {
-		msg := self.api.coreApi.Utl.Translate("error", "app_cfg_error")
+		msg := self.api.CoreAPI.Utl.Translate("error", "app_cfg_error")
 		response.ErrorJson(w, msg, 500)
 		return
 	}

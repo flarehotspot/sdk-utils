@@ -7,12 +7,12 @@ import (
 )
 
 type PluginApi struct {
-	coreApi          *PluginApi
 	info             *plugincfg.PluginInfo
 	slug             string
 	dir              string
 	db               *db.Database
 	models           *PluginModels
+	CoreAPI          *PluginApi
 	AcctAPI          *AccountsApi
 	HttpAPI          *HttpApi
 	ConfigAPI        *ConfigApi

@@ -24,7 +24,7 @@ import (
 )
 
 func (p *PluginApi) InitCoreApi(coreApi *PluginApi) {
-	p.coreApi = coreApi
+	p.CoreAPI = coreApi
 }
 
 func (p *PluginApi) Migrate() error {

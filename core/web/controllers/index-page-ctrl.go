@@ -77,18 +77,18 @@ func (c *IndexPageCtrl) render(w http.ResponseWriter, r *http.Request, themePlug
 	routesData := map[string]any{"Routes": string(routesJson)}
 
 	jsFiles := []assets.AssetWithData{
-		{File: c.g.CoreApi.Utl.Resource("assets/libs/corejs-3.35.1.min.js")},
-		{File: c.g.CoreApi.Utl.Resource("assets/libs/nprogress-0.2.0.js")},
-		{File: c.g.CoreApi.Utl.Resource("assets/libs/toastify-1.12.0.min.js")},
-		{File: c.g.CoreApi.Utl.Resource("assets/libs/basic-http-1.0.0.js")},
-		{File: c.g.CoreApi.Utl.Resource("assets/libs/promise-polyfill.min.js")},
-		{File: c.g.CoreApi.Utl.Resource("assets/libs/event-source.polyfill.min.js")},
-		{File: c.g.CoreApi.Utl.Resource("assets/libs/vue-2.7.16.min.js")},
-		{File: c.g.CoreApi.Utl.Resource("assets/libs/vue-router-3.6.5.min.js")},
-		{File: c.g.CoreApi.Utl.Resource("assets/app/vue-http.js")},
-		{File: c.g.CoreApi.Utl.Resource("assets/app/require-config.js")},
-		{File: c.g.CoreApi.Utl.Resource("assets/app/notify.js")},
-		{File: c.g.CoreApi.Utl.Resource("assets/app/router.js"), Data: routesData},
+		{File: c.g.CoreAPI.Utl.Resource("assets/libs/corejs-3.35.1.min.js")},
+		{File: c.g.CoreAPI.Utl.Resource("assets/libs/nprogress-0.2.0.js")},
+		{File: c.g.CoreAPI.Utl.Resource("assets/libs/toastify-1.12.0.min.js")},
+		{File: c.g.CoreAPI.Utl.Resource("assets/libs/basic-http-1.0.0.js")},
+		{File: c.g.CoreAPI.Utl.Resource("assets/libs/promise-polyfill.min.js")},
+		{File: c.g.CoreAPI.Utl.Resource("assets/libs/event-source.polyfill.min.js")},
+		{File: c.g.CoreAPI.Utl.Resource("assets/libs/vue-2.7.16.min.js")},
+		{File: c.g.CoreAPI.Utl.Resource("assets/libs/vue-router-3.6.5.min.js")},
+		{File: c.g.CoreAPI.Utl.Resource("assets/app/vue-http.js")},
+		{File: c.g.CoreAPI.Utl.Resource("assets/app/require-config.js")},
+		{File: c.g.CoreAPI.Utl.Resource("assets/app/notify.js")},
+		{File: c.g.CoreAPI.Utl.Resource("assets/app/router.js"), Data: routesData},
 	}
 
 	for _, path := range themeAssets.Scripts {
@@ -97,8 +97,8 @@ func (c *IndexPageCtrl) render(w http.ResponseWriter, r *http.Request, themePlug
 	}
 
 	cssFiles := []assets.AssetWithData{
-		{File: c.g.CoreApi.Utl.Resource("assets/libs/nprogress-0.2.0.css")},
-		{File: c.g.CoreApi.Utl.Resource("assets/libs/toastify-1.12.0.min.css")},
+		{File: c.g.CoreAPI.Utl.Resource("assets/libs/nprogress-0.2.0.css")},
+		{File: c.g.CoreAPI.Utl.Resource("assets/libs/toastify-1.12.0.min.css")},
 	}
 
 	for _, path := range themeAssets.Styles {
@@ -106,13 +106,13 @@ func (c *IndexPageCtrl) render(w http.ResponseWriter, r *http.Request, themePlug
 		cssFiles = append(cssFiles, assets.AssetWithData{File: file})
 	}
 
-	jsBundle, err := c.g.CoreApi.Utl.BundleAssetsWithHelper(w, r, jsFiles...)
+	jsBundle, err := c.g.CoreAPI.Utl.BundleAssetsWithHelper(w, r, jsFiles...)
 	if err != nil {
 		response.ErrorHtml(w, err.Error())
 		return
 	}
 
-	cssBundle, err := c.g.CoreApi.Utl.BundleAssetsWithHelper(w, r, cssFiles...)
+	cssBundle, err := c.g.CoreAPI.Utl.BundleAssetsWithHelper(w, r, cssFiles...)
 	if err != nil {
 		response.ErrorHtml(w, err.Error())
 		return
@@ -124,6 +124,6 @@ func (c *IndexPageCtrl) render(w http.ResponseWriter, r *http.Request, themePlug
 		"VendorStyles":  cssBundle.PublicPath,
 	}
 
-	api := c.g.CoreApi
+	api := c.g.CoreAPI
 	api.HttpApi().HttpResponse().View(w, r, "index.html", vdata)
 }
