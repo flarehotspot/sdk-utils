@@ -12,7 +12,7 @@ func NewVuePortalItem(api *PluginApi, r *http.Request, nav sdkhttp.VuePortalItem
 	path := sdkhttp.VueNotFoundPath
 
 	if route, ok := vueRouter.FindPortalRoute(nav.RouteName); ok {
-		path = route.HttpDataPath
+		path = route.HttpDataPath()
 	}
 
 	return VuePortalItem{

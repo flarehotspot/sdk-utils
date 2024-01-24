@@ -2,6 +2,7 @@ package plugins
 
 import (
 	"net/http"
+	"path/filepath"
 
 	"github.com/flarehotspot/core/web/response"
 )
@@ -37,6 +38,13 @@ func (self *VueResponse) Json(w http.ResponseWriter, data any, status int) {
 		rootjson: newdata,
 	}
 	response.Json(w, data, status)
+}
+
+func (self *VueResponse) Component(w http.ResponseWriter, vuefile string, data any) {
+	vuefile = self.router.api.Utl.Resource(filepath.Join("components", vuefile))
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	helpers := self.router.api.HttpAPI.Helpers()
+	response.Text(w, vuefile, helpers, data)
 }
 
 func (res *VueResponse) Redirect(w http.ResponseWriter, routename string, pairs ...string) {

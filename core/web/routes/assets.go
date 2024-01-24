@@ -22,6 +22,11 @@ func AssetsRoutes(g *globals.CoreGlobals) {
 		Methods("GET").
 		Name(routenames.AssetWithHelpers)
 
+	router.AssetsRouter.
+		HandleFunc("/vue/components/{pkg}/{version}/{path:.*}", assetsCtrl.VueComponent).
+		Methods("GET").
+		Name(routenames.AssetVueComponent)
+
 	allPlugins := g.PluginMgr.All()
 	for _, p := range allPlugins {
 		assetsDir := filepath.Join(p.Utils().Resource("assets"))
@@ -31,8 +36,8 @@ func AssetsRoutes(g *globals.CoreGlobals) {
 		router.RootRouter.PathPrefix(prefix).Handler(fileserver)
 	}
 
-    cacheMw := middlewares.CacheResponse(90)
-    assetPathMw := middlewares.AssetPath
+	cacheMw := middlewares.CacheResponse(90)
+	assetPathMw := middlewares.AssetPath
 	publicDir := paths.PublicDir
 	fs := http.FileServer(http.Dir(publicDir))
 	prefix := "/public"

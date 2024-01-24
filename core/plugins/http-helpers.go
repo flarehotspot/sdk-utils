@@ -44,6 +44,18 @@ func (self *HttpHelpers) AssetWithHelpersPath(path string) string {
 	return url.String()
 }
 
+func (self *HttpHelpers) VueComponentPath(path string) string {
+	r := router.AssetsRouter.Get(rnames.AssetVueComponent)
+	pluginApi := self.api
+	url, err := r.URL("pkg", pluginApi.Pkg(), "version", pluginApi.Version(), "path", path)
+	if err != nil {
+		log.Println("Error: ", err.Error())
+		return ""
+	}
+
+	return url.String()
+}
+
 func (self *HttpHelpers) EmbedJs(path string, data any) template.HTML {
 	jspath := self.api.Utl.Resource(filepath.Join("assets", path))
 	tpljs, err := os.ReadFile(jspath)

@@ -23,6 +23,10 @@ type IHelpers interface {
 	// The file is parsed using text/template go module with access to <% .Helpers %> object.
 	AssetWithHelpersPath(path string) (uri string)
 
+	// Returns the uri path of a file in resources/components directory from your plugin.
+	// The file is parsed using text/template go module with access to <% .Helpers %> object.
+    VueComponentPath(path string) (uri string)
+
 	// Returns the html for the ads view.
     AdView() (html template.HTML)
 

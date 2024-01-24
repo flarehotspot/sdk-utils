@@ -47,3 +47,17 @@ func (c *AssetsCtrl) AssetWithHelpers(w http.ResponseWriter, r *http.Request) {
 
 	response.File(w, assetPath, c.g.CoreApi.HttpApi().Helpers(), nil)
 }
+
+func (c *AssetsCtrl) VueComponent(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	pkg := vars["pkg"]
+	componentPath := vars["path"]
+	pluginApi, ok := c.g.PluginMgr.FindByPkg(pkg)
+	if !ok {
+		c.g.CoreApi.HttpAPI.VueResponse().Component(w, "empty-component.vue", vars)
+		return
+	}
+
+	res := pluginApi.HttpApi().VueResponse()
+	res.Component(w, componentPath, nil)
+}
