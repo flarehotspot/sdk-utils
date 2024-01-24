@@ -1,5 +1,3 @@
-//go:build dev
-
 package assets
 
 import (
@@ -8,7 +6,7 @@ import (
 	"strings"
 )
 
-func minifyFiles(files []string) (concat string, err error) {
+func concatFiles(files []string) (concat string, err error) {
 	var sb strings.Builder
 
 	for _, f := range files {

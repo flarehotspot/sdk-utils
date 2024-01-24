@@ -1,5 +1,3 @@
-//go:build dev
-
 package assets
 
 import (
@@ -15,7 +13,7 @@ func Bundle(files []string) (data CacheData, err error) {
 			return "", ErrNoAssets
 		}
 
-        useCache := env.GoEnv != env.ENV_DEV
+		useCache := env.GoEnv != env.ENV_DEV
 		if cache, ok := cacheExists(files); ok && useCache {
 			return cache, nil
 		}
@@ -29,4 +27,8 @@ func Bundle(files []string) (data CacheData, err error) {
 	})
 
 	return result.(CacheData), err
+}
+
+func minifyFiles(files []string) (concat string, err error) {
+	return concatFiles(files)
 }

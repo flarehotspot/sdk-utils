@@ -60,14 +60,20 @@ func (c *IndexPageCtrl) AdminIndex(w http.ResponseWriter, r *http.Request) {
 	c.render(w, r, themePlugin, adminRoutes, themesApi.GetAdminThemeAssets())
 }
 
-func (c *IndexPageCtrl) MainJs(w http.ResponseWriter, r *http.Request) {
-	mainjs := filepath.Join(c.g.CoreApi.Utl.Resource("views/scripts/main.tpl.js"))
-	helpers := c.g.CoreApi.HttpApi().Helpers()
-	w.Header().Set("Content-Type", "application/javascript")
-	response.Text(w, mainjs, helpers, nil)
-}
+// func (c *IndexPageCtrl) MainJs(w http.ResponseWriter, r *http.Request) {
+// 	mainjs := filepath.Join(c.g.CoreApi.Utl.Resource("views/scripts/main.tpl.js"))
+// 	helpers := c.g.CoreApi.HttpApi().Helpers()
+// 	w.Header().Set("Content-Type", "application/javascript")
+// 	response.Text(w, mainjs, helpers, nil)
+// }
 
 func (c *IndexPageCtrl) render(w http.ResponseWriter, r *http.Request, themePlugin plugin.IPluginApi, routes any, themeAssets themes.ThemeAssets) {
+
+	appcfg, err := config.ReadApplicationConfig()
+	if err != nil {
+		response.ErrorHtml(w, err.Error())
+		return
+	}
 
 	routesJson, err := json.Marshal(routes)
 	if err != nil {
@@ -78,6 +84,7 @@ func (c *IndexPageCtrl) render(w http.ResponseWriter, r *http.Request, themePlug
 	routesData := map[string]any{"Routes": string(routesJson)}
 
 	jsFiles := []assets.AssetWithData{
+		{File: c.g.CoreApi.Utl.Resource("assets/libs/corejs-3.35.1.min.js")},
 		{File: c.g.CoreApi.Utl.Resource("assets/libs/nprogress-0.2.0.js")},
 		{File: c.g.CoreApi.Utl.Resource("assets/libs/toastify-1.12.0.min.js")},
 		{File: c.g.CoreApi.Utl.Resource("assets/libs/basic-http-1.0.0.js")},
@@ -97,9 +104,9 @@ func (c *IndexPageCtrl) render(w http.ResponseWriter, r *http.Request, themePlug
 	}
 
 	cssFiles := []assets.AssetWithData{
-        {File: c.g.CoreApi.Utl.Resource("assets/libs/nprogress-0.2.0.css")},
-        {File: c.g.CoreApi.Utl.Resource("assets/libs/toastify-1.12.0.min.css")},
-    }
+		{File: c.g.CoreApi.Utl.Resource("assets/libs/nprogress-0.2.0.css")},
+		{File: c.g.CoreApi.Utl.Resource("assets/libs/toastify-1.12.0.min.css")},
+	}
 
 	for _, path := range themeAssets.Styles {
 		file := themePlugin.Utils().Resource(filepath.Join("assets", path))
@@ -119,6 +126,7 @@ func (c *IndexPageCtrl) render(w http.ResponseWriter, r *http.Request, themePlug
 	}
 
 	vdata := map[string]any{
+		"Lang":          appcfg.Lang,
 		"VendorScripts": jsBundle.PublicPath,
 		"VendorStyles":  cssBundle.PublicPath,
 	}

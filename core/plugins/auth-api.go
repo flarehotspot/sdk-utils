@@ -58,7 +58,7 @@ func (self *AuthApi) SignInAdmin(w http.ResponseWriter, acct acct.IAccount) {
 
 	sdkhttp.SetCookie(w, middlewares.AuthTokenCookie, token)
 	data := map[string]string{"token": token}
-	self.api.HttpApi().HttpResponse().Json(w, data, http.StatusOK)
+	self.api.HttpAPI.VueResponse().Json(w, data, 200)
 }
 
 func (self *AuthApi) SignOutAdmin(w http.ResponseWriter) {

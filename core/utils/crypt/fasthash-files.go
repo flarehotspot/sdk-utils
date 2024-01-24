@@ -6,6 +6,7 @@ import (
 	"os"
 )
 
+// Hash files based on last modified time
 func FastHashFiles(files ...string) (string, error) {
 	hash := md5.New()
 	for _, f := range files {

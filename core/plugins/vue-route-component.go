@@ -60,11 +60,10 @@ func (self *VueRouteComponent) HttpWrapperRouteName() string {
 }
 
 func (self *VueRouteComponent) HttpWrapperRoutePath() string {
-	path := filepath.Join("/wrapper", self.hash, "path", self.path, "name", slug.Make(self.name), "file", self.file)
+	path := filepath.Join("/vue/components/wrapper", self.hash, "name", slug.Make(self.name), "file", self.file)
 	if !strings.HasSuffix(path, ".vue") {
 		path = path + ".vue"
 	}
-	path = strings.Replace(path, ".vue", ".wrapper.vue", 1)
 	return path
 }
 
@@ -102,7 +101,6 @@ func (self *VueRouteComponent) GetComponentWrapperHandler() http.HandlerFunc {
 
 func (self *VueRouteComponent) MountRoute(dataRouter *mux.Router, middlewares ...func(http.Handler) http.Handler) {
 	compRouter := self.api.HttpAPI.httpRouter.pluginRouter.mux
-	// dataRouter = dataRouter.PathPrefix("/vue/data/" + self.hash).Subrouter()
 
 	// mount wrapper handler
 	wrapHandler := self.GetComponentWrapperHandler()
@@ -114,9 +112,9 @@ func (self *VueRouteComponent) MountRoute(dataRouter *mux.Router, middlewares ..
 		// mount vue data path
 	handler := http.Handler(self.GetDataHandler())
 	if middlewares != nil {
-		for _, m := range middlewares {
+		for i := len(middlewares) - 1; i >= 0; i-- {
+			m := middlewares[i]
 			handler = m(handler)
-			dataRouter.Use(m)
 		}
 	}
 

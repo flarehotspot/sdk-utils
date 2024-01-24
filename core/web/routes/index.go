@@ -18,7 +18,7 @@ func IndexRoutes(g *globals.CoreGlobals) {
 
 	rootR.Handle("/", portalIndexCtrl).Methods("GET").Name(routenames.RoutePortalIndex)
 	rootR.HandleFunc("/admin", indexCtrl.AdminIndex).Methods("GET").Name(routenames.RouteAdminIndex)
-	rootR.HandleFunc("/scripts/main-"+g.CoreApi.Version()+".js", indexCtrl.MainJs).Methods("GET").Name(routenames.AssetMainJs)
+	// rootR.HandleFunc("/scripts/main-"+g.CoreApi.Version()+".js", indexCtrl.MainJs).Methods("GET").Name(routenames.AssetMainJs)
 
 	// portal assets subpath
 	// assetsR := router.AssetsApiRouterV1
