@@ -72,7 +72,7 @@ func (self *VueRouteComponent) GetDataHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		res := NewVueResponse(self.api.HttpAPI.vueRouter)
 		if self.handler == nil {
-			res.JsonData(w, map[string]any{}, http.StatusOK)
+			res.Json(w, map[string]any{}, http.StatusOK)
 			return
 		}
 		self.handler(w, r)

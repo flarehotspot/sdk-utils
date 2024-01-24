@@ -30,7 +30,7 @@ func (self *VueResponse) FlashMsg(msgType string, msg string) {
 	self.data[rootjson] = newdata
 }
 
-func (self *VueResponse) JsonData(w http.ResponseWriter, data any, status int) {
+func (self *VueResponse) Json(w http.ResponseWriter, data any, status int) {
 	newdata := self.data[rootjson].(map[string]any)
 	newdata["data"] = data
 	data = map[string]any{

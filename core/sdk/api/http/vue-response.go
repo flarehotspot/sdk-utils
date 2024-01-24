@@ -10,7 +10,7 @@ type IVueResponse interface {
 	FlashMsg(msgType string, msg string)
 
 	// Respond with json data.
-	JsonData(w http.ResponseWriter, data any, status int)
+	Json(w http.ResponseWriter, data any, status int)
 
 	// Redirect to another vue route. "pairs" are param pairs, e.g. "id", "123", "name", "john".
 	Redirect(w http.ResponseWriter, routename string, pairs ...string)
