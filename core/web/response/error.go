@@ -5,11 +5,11 @@ import (
 	"net/http"
 )
 
-func ErrorJson(w http.ResponseWriter, err string) {
+func ErrorJson(w http.ResponseWriter, err string, status int) {
 	data, _ := json.Marshal(map[string]any{
 		"error": err,
 	})
-	w.WriteHeader(http.StatusInternalServerError)
+	w.WriteHeader(status)
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(data)
 }

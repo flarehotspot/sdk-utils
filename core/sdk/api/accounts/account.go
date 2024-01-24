@@ -6,9 +6,6 @@ type IAccount interface {
   // Returns the username for this account.
 	Username() string
 
-  // Returns true if the password is correct.
-	Auth(password string) bool
-
 	// Check if this account is an admin.
 	IsAdmin() bool
 

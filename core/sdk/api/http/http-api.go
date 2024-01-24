@@ -6,6 +6,7 @@ import (
 
 // IHttpApi is used to process and respond to http requests.
 type IHttpApi interface {
+	Auth() IAuthApi
 
 	// Returns the router API.
 	HttpRouter() IHttpRouterApi
@@ -21,7 +22,7 @@ type IHttpApi interface {
 	HttpResponse() IHttpResponse
 
 	// Returns the http response writer API for vue requests
-	VueResponse(w http.ResponseWriter, r *http.Request) IVueResponse
+	VueResponse() IVueResponse
 
 	// Returns the http variables in your routes. For example, if your route path is "/some/path/{varname}",
 	// then you can get the value of "varname" by calling GetMuxVars(r)["varname"].

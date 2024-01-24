@@ -13,7 +13,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func NewVueRouteComponent(api *PluginApi, name string, path string, handler sdkhttp.VueHandlerFn, comp string, permsReq []string, permsAny []string) *VueRouteComponent {
+func NewVueRouteComponent(api *PluginApi, name string, path string, handler http.HandlerFunc, comp string, permsReq []string, permsAny []string) *VueRouteComponent {
 
 	compFile := filepath.Join(api.Utl.Resource("components/" + comp))
 	if !sdkfs.IsFile(compFile) {
@@ -50,7 +50,7 @@ func NewVueRouteComponent(api *PluginApi, name string, path string, handler sdkh
 
 type VueRouteComponent struct {
 	api                   *PluginApi           `json:"-"`
-	handler               sdkhttp.VueHandlerFn `json:"-"`
+	handler               http.HandlerFunc     `json:"-"`
 	componentFile         string               `json:"-"`
 	componentHash         string               `json:"-"`
 	MuxCompRouteName      sdkhttp.MuxRouteName `json:"mux_component_route_name"`
@@ -70,14 +70,12 @@ type VueRouteComponent struct {
 
 func (self *VueRouteComponent) GetDataHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		res := NewVueResponse(self.api.HttpAPI.vueRouter, w, r)
+		res := NewVueResponse(self.api.HttpAPI.vueRouter)
 		if self.handler == nil {
-			res.JsonData(map[string]any{})
+			res.JsonData(w, map[string]any{}, http.StatusOK)
 			return
 		}
-		if err := self.handler(res, r); err != nil {
-			response.ErrorJson(w, err.Error())
-		}
+		self.handler(w, r)
 	}
 }
 

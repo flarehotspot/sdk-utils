@@ -14,7 +14,7 @@
   var router = new VueRouter({ routes: routes });
 
   router.beforeEach(function (to, _, next) {
-    var hastoken = $flare.auth.hasAuthToken();
+    var hastoken = hasAuthToken();
 
     if (
       to.matched.some(function (route) {
@@ -22,25 +22,8 @@
       })
     ) {
       hastoken ? next() : next({ name: 'login' });
-    }
-
-    if (
-      hastoken &&
-      to.matched.some(function (route) {
-        return route.meta.requireNoAuth;
-      })
-    ) {
-      $flare.auth
-        .isAuthenticated()
-        .then(function () {
-          next({ name: 'index' });
-        })
-        .catch(function (err) {
-          console.error(err);
-          next();
-        });
     } else {
-      return next();
+      next();
     }
   });
 
@@ -89,6 +72,19 @@
       newRoutes.push(route);
     }
     return newRoutes;
+  }
+
+  function hasAuthToken() {
+    var segmnts = document.cookie.split(';');
+    var hastoken = false;
+    for (var i = 0; i < segmnts.length; i++) {
+      var seg = segmnts[i].split('=');
+      if (seg[0].trim() === 'auth-token' && seg[1].length > 0) {
+        hastoken = true;
+        break;
+      }
+    }
+    return hastoken;
   }
 
   $flare.router = router;

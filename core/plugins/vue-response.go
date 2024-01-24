@@ -10,15 +10,13 @@ const (
 	rootjson = "$$response"
 )
 
-func NewVueResponse(vr *VueRouterApi, w http.ResponseWriter, r *http.Request) *VueResponse {
-	return &VueResponse{w, r, vr, map[string]any{
+func NewVueResponse(vr *VueRouterApi) *VueResponse {
+	return &VueResponse{vr, map[string]any{
 		rootjson: map[string]any{},
 	}}
 }
 
 type VueResponse struct {
-	w      http.ResponseWriter
-	r      *http.Request
 	router *VueRouterApi
 	data   map[string]any
 }
@@ -32,19 +30,19 @@ func (self *VueResponse) FlashMsg(msgType string, msg string) {
 	self.data[rootjson] = newdata
 }
 
-func (self *VueResponse) JsonData(data any) {
+func (self *VueResponse) JsonData(w http.ResponseWriter, data any, status int) {
 	newdata := self.data[rootjson].(map[string]any)
 	newdata["data"] = data
 	data = map[string]any{
 		rootjson: newdata,
 	}
-	response.Json(self.w, data, http.StatusOK)
+	response.Json(w, data, status)
 }
 
-func (res *VueResponse) Redirect(routename string, pairs ...string) {
+func (res *VueResponse) Redirect(w http.ResponseWriter, routename string, pairs ...string) {
 	route, ok := res.router.FindVueRoute(routename)
 	if !ok {
-		response.ErrorJson(res.w, "Vue route \""+routename+"\" not found")
+		response.ErrorJson(w, "Vue route \""+routename+"\" not found", 500)
 		return
 	}
 
@@ -59,5 +57,5 @@ func (res *VueResponse) Redirect(routename string, pairs ...string) {
 	newdata["params"] = params
 	data := map[string]any{rootjson: newdata}
 
-	response.Json(res.w, data, http.StatusOK)
+	response.Json(w, data, http.StatusOK)
 }

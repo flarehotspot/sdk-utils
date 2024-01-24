@@ -11,7 +11,7 @@ func AssetPath(next http.Handler) http.Handler {
 		if helpers.IsAssetPath(r.URL.Path) {
 			next.ServeHTTP(w, r)
 		} else {
-			response.ErrorJson(w, "Invalid asset path: "+r.URL.Path)
+			response.ErrorJson(w, "Invalid asset path: "+r.URL.Path, 404)
 		}
 	})
 }

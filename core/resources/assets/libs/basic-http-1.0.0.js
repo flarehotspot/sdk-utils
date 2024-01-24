@@ -47,14 +47,13 @@ var BasicHttp = (function () {
     if (body) {
       try {
         var data = JSON.parse(body);
-        error = data.error || data.message || error;
-        errorCb({ error: error });
+        errorCb(data);
       } catch (e) {
         console.error(e);
         errorCb({ error: error });
       }
     } else {
-      errorCb({ error: error });
+      errorCb(client);
     }
   }
 

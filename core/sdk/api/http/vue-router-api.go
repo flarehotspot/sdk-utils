@@ -8,7 +8,6 @@ const (
 
 type VueAdminNavsFunc func(r *http.Request) []VueAdminNav
 type VuePortalItemsFunc func(r *http.Request) []VuePortalItem
-type VueHandlerFn func(w IVueResponse, r *http.Request) (err error)
 
 // IVueRouterApi is used to create navigation items in the application.
 type IVueRouterApi interface {

@@ -17,19 +17,19 @@ func DeviceMiddleware(dtb *db.Database, clntMgr *connmgr.ClientRegister) func(ne
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			ip, _, err := net.SplitHostPort(r.RemoteAddr)
 			if err != nil {
-				response.ErrorJson(w, err.Error())
+				response.ErrorJson(w, err.Error(), 500)
 				return
 			}
 
 			h, err := hostfinder.FindByIp(ip)
 			if err != nil {
-				response.ErrorJson(w, err.Error())
+				response.ErrorJson(w, err.Error(), 500)
 				return
 			}
 
 			clnt, err := clntMgr.Register(r.Context(), h.MacAddr, h.IpAddr, h.Hostname)
 			if err != nil {
-				response.ErrorJson(w, err.Error())
+				response.ErrorJson(w, err.Error(), 500)
 				return
 			}
 

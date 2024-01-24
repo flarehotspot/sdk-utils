@@ -88,7 +88,6 @@ func (c *IndexPageCtrl) render(w http.ResponseWriter, r *http.Request, themePlug
 		{File: c.g.CoreApi.Utl.Resource("assets/app/vue-http.js")},
 		{File: c.g.CoreApi.Utl.Resource("assets/app/require-config.js")},
 		{File: c.g.CoreApi.Utl.Resource("assets/app/notify.js")},
-		{File: c.g.CoreApi.Utl.Resource("assets/app/auth.js")},
 		{File: c.g.CoreApi.Utl.Resource("assets/app/router.js"), Data: routesData},
 	}
 

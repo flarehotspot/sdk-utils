@@ -32,14 +32,14 @@ func ViewWithLayout(w http.ResponseWriter, layout string, content string, helper
 	contentHtml, err := viewProc(content, nil, helpers, data)
 	if err != nil {
 		log.Printf("View error: %+v", err)
-		ErrorJson(w, err.Error())
+		ErrorJson(w, err.Error(), 500)
 		return
 	}
 
 	html, err := viewProc(layout, &contentHtml, helpers, data)
 	if err != nil {
 		log.Printf("View error: %+v", err)
-		ErrorJson(w, err.Error())
+		ErrorJson(w, err.Error(), 500)
 		return
 	}
 
@@ -51,7 +51,7 @@ func View(w http.ResponseWriter, viewpath string, helpers httpI.IHelpers, data a
 	html, err := viewProc(viewpath, nil, helpers, data)
 	if err != nil {
 		log.Printf("View error: %+v", err)
-		ErrorJson(w, err.Error())
+		ErrorJson(w, err.Error(), 500)
 		return
 	}
 

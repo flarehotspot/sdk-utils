@@ -12,15 +12,25 @@
   $flare.http = vueHttp;
 
   vueHttp.get = function (url, params) {
-    return http.GetJson(url, params).then(function (data) {
-      return parseRespones(data);
-    });
+    return http
+      .GetJson(url, params)
+      .then(function (data) {
+        return parseRespones(data);
+      })
+      .catch(function (res) {
+        return Promise.reject(parseRespones(res));
+      });
   };
 
   vueHttp.post = function (url, params) {
-    return http.PostJson(url, params).then(function (data) {
-      return parseRespones(data);
-    });
+    return http
+      .PostJson(url, params)
+      .then(function (data) {
+        return parseRespones(data);
+      })
+      .catch(function (res) {
+        return Promise.reject(parseRespones(res));
+      });
   };
 
   function invalidResponse(res) {
@@ -29,6 +39,7 @@
   }
 
   function parseRespones(res) {
+    console.log(res);
     var $res = res[rootres];
     if (!$res) {
       invalidResponse(res);
@@ -47,6 +58,7 @@
 
     if ($res.redirect) {
       $flare.router.push({ name: $res.route_name });
+      return {};
     } else if ($res.data) {
       return $res.data;
     } else {

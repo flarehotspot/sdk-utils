@@ -7,7 +7,6 @@ import (
 	"github.com/flarehotspot/core/connmgr"
 	"github.com/flarehotspot/core/db"
 	"github.com/flarehotspot/core/sdk/api/http"
-	"github.com/flarehotspot/core/web/middlewares"
 	"github.com/flarehotspot/core/web/router"
 )
 
@@ -17,13 +16,10 @@ type HttpRouterApi struct {
 	pluginRouter *HttpRouter
 }
 
-func NewRouterApi(api *PluginApi, db *db.Database, clnt *connmgr.ClientRegister) *HttpRouterApi {
+func NewHttpRouterApi(api *PluginApi, db *db.Database, clnt *connmgr.ClientRegister) *HttpRouterApi {
 	prefix := fmt.Sprintf("/%s/%s", api.Pkg(), api.Version())
 	pluginMux := router.PluginRouter.PathPrefix(prefix).Subrouter()
 	adminMux := pluginMux.PathPrefix("/admin").Subrouter()
-
-	authMw := middlewares.AdminAuth
-	adminMux.Use(authMw)
 
 	pluginRouter := &HttpRouter{api, pluginMux}
 	adminRouter := &HttpRouter{api, adminMux}
@@ -44,8 +40,13 @@ func (self *HttpRouterApi) MuxRouteName(name sdkhttp.PluginRouteName) sdkhttp.Mu
 	return sdkhttp.MuxRouteName(muxname)
 }
 
-func (util *HttpRouterApi) UrlForMuxRoute(muxname sdkhttp.MuxRouteName, pairs ...string) string {
+func (self *HttpRouterApi) UrlForMuxRoute(muxname sdkhttp.MuxRouteName, pairs ...string) string {
 	route := router.RootRouter.Get(string(muxname))
+	if route == nil {
+		log.Println("Error: route not found for " + string(muxname))
+		return "Error: route not found for " + string(muxname)
+	}
+
 	url, err := route.URL(pairs...)
 	if err != nil {
 		log.Println("Error: " + err.Error())
@@ -55,7 +56,7 @@ func (util *HttpRouterApi) UrlForMuxRoute(muxname sdkhttp.MuxRouteName, pairs ..
 	return url.String()
 }
 
-func (util *HttpRouterApi) UrlForRoute(name sdkhttp.PluginRouteName, pairs ...string) string {
-	muxname := util.MuxRouteName(name)
-	return util.UrlForMuxRoute(muxname, pairs...)
+func (self *HttpRouterApi) UrlForRoute(name sdkhttp.PluginRouteName, pairs ...string) string {
+	muxname := self.MuxRouteName(name)
+	return self.UrlForMuxRoute(muxname, pairs...)
 }
