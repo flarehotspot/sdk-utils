@@ -15,13 +15,15 @@
 
   router.beforeEach(function (to, _, next) {
     var hastoken = hasAuthToken();
+    console.log('Has token: ', hastoken);
+    console.log('LoginVueName: ', '<% .Data.LoginVueName %>');
 
     if (
       to.matched.some(function (route) {
         return route.meta.requireAuth;
       })
     ) {
-      hastoken ? next() : next({ name: 'login' });
+      hastoken ? next() : next({ name: '<% .Data.LoginVueName %>' });
     } else {
       next();
     }

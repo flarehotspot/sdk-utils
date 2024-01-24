@@ -36,27 +36,16 @@ func (t *ThemesApi) NewAdminTheme(theme themes.AdminTheme) {
 
 	dashComp := NewVueRouteComponent(t.api, theme.DashboardComponent.RouteName, "/theme/dashboard", theme.DashboardComponent.HandlerFunc, theme.DashboardComponent.ComponentPath, nil, nil)
 	dashComp.MountRoute(adminRouter)
-	// register dashbord component to admin routes
-	t.api.HttpAPI.vueRouter.adminRoutes = append(t.api.HttpAPI.vueRouter.adminRoutes, dashComp)
 
 	t.AdminLayoutRoute = layoutComp
 	t.AdminDashboardRoute = dashComp
 	t.AdminLoginRoute = loginComp
+	t.api.HttpAPI.vueRouter.AddAdminRoutes(dashComp)
+	t.api.HttpAPI.vueRouter.SetLoginRoute(loginComp)
 	t.adminTheme = theme
 }
 
 func (t *ThemesApi) NewPortalTheme(theme themes.PortalTheme) {
-	// t.portalTheme = theme
-	// r := router.RootRouter
-	// r = r.PathPrefix("/vue/theme/portal/components").Subrouter()
-	// r.HandleFunc("/layout.vue", t.GetComponentHandler(theme.LayoutComponent)).Methods("GET").Name(routenames.PortalThemeLayout)
-	// r.HandleFunc("/index.vue", t.GetComponentHandler(theme.IndexComponent)).Methods("GET").Name(routenames.PortalThemeIndex)
-
-	// portalLayoutPath, _ := r.Get(routenames.PortalThemeLayout).GetPathTemplate()
-	// portalIndexPath, _ := r.Get(routenames.PortalThemeIndex).GetPathTemplate()
-
-	// t.PortalLayoutComponentFullPath = portalLayoutPath
-	// t.PortalIndexComponentFullPath = portalIndexPath
 }
 
 func (t *ThemesApi) GetAdminThemeAssets() themes.ThemeAssets {

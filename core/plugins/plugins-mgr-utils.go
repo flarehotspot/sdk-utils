@@ -25,7 +25,7 @@ func (util *PluginsMgrUtils) GetAdminRoutes() []map[string]any {
 	routes := []*VueRouteComponent{}
 	for _, p := range util.pmgr.All() {
 		vueR := p.HttpApi().VueRouter().(*VueRouterApi)
-		adminRoutes := vueR.GetAdminRoutes()
+		adminRoutes := vueR.adminRoutes
 		routes = append(routes, adminRoutes...)
 	}
 
@@ -56,8 +56,8 @@ func (util *PluginsMgrUtils) GetAdminRoutes() []map[string]any {
 
 	routesMap := []map[string]any{
 		{
-			"path":      sdkhttp.VueLayoutPath,
-			"name":      "layout",
+			"path":      "/",
+			"name":      themesApi.AdminLayoutRoute.VueRouteName,
 			"component": themesApi.AdminLayoutRoute.HttpWrapperFullPath,
 			"children":  children,
 			"meta": map[string]any{
@@ -65,8 +65,8 @@ func (util *PluginsMgrUtils) GetAdminRoutes() []map[string]any {
 			},
 		},
 		{
-			"path":      "/login",
-			"name":      "login",
+			"path":      themesApi.AdminLoginRoute.VueRoutePath,
+			"name":      themesApi.AdminLoginRoute.VueRouteName,
 			"component": themesApi.AdminLoginRoute.HttpWrapperFullPath,
 			"meta": map[string]any{
 				"requireNoAuth": true,
@@ -79,11 +79,11 @@ func (util *PluginsMgrUtils) GetAdminRoutes() []map[string]any {
 
 func (utils *PluginsMgrUtils) GetPortalRoutes() []*VueRouteComponent {
 	routes := []*VueRouteComponent{}
-	for _, p := range utils.pmgr.All() {
-		vueR := p.HttpApi().VueRouter().(*VueRouterApi)
-		portalRoutes := vueR.GetPortalRoutes()
-		routes = append(routes, portalRoutes...)
-	}
+	// for _, p := range utils.pmgr.All() {
+	// 	vueR := p.HttpApi().VueRouter().(*VueRouterApi)
+	// 	portalRoutes := vueR.GetPortalRoutes()
+	// 	routes = append(routes, portalRoutes...)
+	// }
 	return routes
 }
 
@@ -109,7 +109,7 @@ func (utils *PluginsMgrUtils) GetAdminNavs(r *http.Request) []sdkhttp.AdminNavLi
 
 		navs = append(navs, sdkhttp.AdminNavList{
 			Label: utils.coreApi.Utl.Translate("label", string(category)),
-			Items:    navItems,
+			Items: navItems,
 		})
 	}
 

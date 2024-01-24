@@ -11,7 +11,6 @@ import (
 	"github.com/flarehotspot/core/utils/jsonwebtoken"
 	"github.com/flarehotspot/core/web/helpers"
 	"github.com/flarehotspot/core/web/middlewares"
-	"github.com/flarehotspot/core/web/response"
 )
 
 func NewAuthApi(api *PluginApi) *AuthApi {
@@ -41,28 +40,23 @@ func (self *AuthApi) AuthenticateAdmin(username string, password string) (acct.I
 	return acct, nil
 }
 
-func (self *AuthApi) SignInAdmin(w http.ResponseWriter, acct acct.IAccount) {
+func (self *AuthApi) SignInAdmin(w http.ResponseWriter, acct acct.IAccount) error {
 	appcfg, err := config.ReadApplicationConfig()
 	if err != nil {
-		msg := self.api.CoreAPI.Utl.Translate("error", "app_cfg_error")
-		response.ErrorJson(w, msg, 500)
-		return
+		return err
 	}
 
 	payload := map[string]string{"username": acct.Username()}
 	token, err := jsonwebtoken.GenerateToken(payload, appcfg.Secret)
 	if err != nil {
-		response.ErrorJson(w, err.Error(), 500)
-		return
+		return err
 	}
 
 	sdkhttp.SetCookie(w, middlewares.AuthTokenCookie, token)
-	data := map[string]string{"token": token}
-	self.api.HttpAPI.VueResponse().Json(w, data, 200)
+	return nil
 }
 
-func (self *AuthApi) SignOutAdmin(w http.ResponseWriter) {
+func (self *AuthApi) SignOutAdmin(w http.ResponseWriter) error {
 	sdkhttp.SetCookie(w, middlewares.AuthTokenCookie, "")
-	data := map[string]string{"message": "Logout success"}
-	self.api.HttpApi().HttpResponse().Json(w, data, http.StatusOK)
+	return nil
 }

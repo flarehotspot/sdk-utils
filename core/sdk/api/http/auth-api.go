@@ -13,7 +13,9 @@ type IAuthApi interface {
 
 	AuthenticateAdmin(username string, password string) (sdkacct.IAccount, error)
 
-	SignInAdmin(w http.ResponseWriter, acct sdkacct.IAccount)
+    // Sets the auth-token cookie in response header
+	SignInAdmin(w http.ResponseWriter, acct sdkacct.IAccount) error
 
-	SignOutAdmin(w http.ResponseWriter)
+    // Sets empty auth-token cooke response header
+	SignOutAdmin(w http.ResponseWriter) error
 }

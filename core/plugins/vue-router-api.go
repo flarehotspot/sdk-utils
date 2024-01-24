@@ -22,8 +22,17 @@ type VueRouterApi struct {
 	api          *PluginApi
 	adminRoutes  []*VueRouteComponent
 	portalRoutes []*VueRouteComponent
+	loginRoute   *VueRouteComponent
 	adminNavsFn  sdkhttp.VueAdminNavsFunc
 	portalNavsFn sdkhttp.VuePortalItemsFunc
+}
+
+func (self *VueRouterApi) AddAdminRoutes(route ...*VueRouteComponent) {
+	self.adminRoutes = append(self.adminRoutes, route...)
+}
+
+func (self *VueRouterApi) SetLoginRoute(route *VueRouteComponent) {
+	self.loginRoute = route
 }
 
 func (self *VueRouterApi) RegisterAdminRoutes(routes ...sdkhttp.VueAdminRoute) {
@@ -31,78 +40,16 @@ func (self *VueRouterApi) RegisterAdminRoutes(routes ...sdkhttp.VueAdminRoute) {
 	for _, r := range routes {
 		route := NewVueRouteComponent(self.api, r.RouteName, r.RoutePath, r.HandlerFunc, r.Component, nil, nil)
 
-		if _, ok := self.FindAdminRoute(route.VueRouteName); ok {
+		if _, ok := self.FindVueRoute(route.VueRouteName); ok {
 			log.Println("Warning: Admin route name \"" + r.RouteName + "\" already exists in admin routes ")
 		}
 
 		route.MountRoute(dataRouter, r.Middlewares...)
-		self.adminRoutes = append(self.adminRoutes, route)
+		self.AddAdminRoutes(route)
 	}
 }
 
 func (self *VueRouterApi) SetPortalRoutes(routes []sdkhttp.VuePortalRoute) {
-	if routes != nil {
-
-		// pluginRouter := self.api.HttpAPI.httpRouter.pluginRouter
-		// compRouter := pluginRouter.mux.PathPrefix("/vue-route/portal-components").Subrouter()
-		// dataRouter := pluginRouter.mux.PathPrefix("/vue-route/portal-data").Subrouter()
-		// for _, r := range routes {
-		// 	route := NewVueRouteComponent(self.api, r.RouteName, r.RoutePath, r.HandlerFn, r.Component, nil, nil)
-
-		// 	if _, ok := self.FindPortalRoute(route.VueRouteName); ok {
-		// 		log.Println("Warning: Portal route name \"" + r.RouteName + "\" already exists in portal routes ")
-		// 	}
-
-		// 	// compRouter.
-		// 	// 	HandleFunc(route.HttpComponentPath, route.GetComponentHandler()).
-		// 	// 	Methods("GET").
-		// 	// 	Name(string(route.MuxCompRouteName))
-
-		// 	handler := http.HandlerFunc(route.GetDataHandler())
-
-		// 	var handlerFunc http.Handler
-		// 	if r.Middlewares != nil {
-		// 		for _, m := range r.Middlewares {
-		// 			handlerFunc = m(handlerFunc)
-		// 		}
-		// 	} else {
-		// 		handlerFunc = handler
-		// 	}
-
-		// 	dataRouter.
-		// 		Handle(route.HttpDataPath, handlerFunc).
-		// 		Methods("GET").
-		// 		Name(string(route.MuxDataRouteName))
-
-		// 	router := compRouter
-		// 	// compR := router.Get(string(route.MuxCompRouteName))
-		// 	dataR := router.Get(string(route.MuxDataRouteName))
-		// 	// comppath, _ := compR.GetPathTemplate()
-		// 	datapath, _ := dataR.GetPathTemplate()
-		// 	// route.HttpComponentFullPath = comppath
-		// 	route.HttpDataFullPath = datapath
-		// 	self.portalRoutes = append(self.portalRoutes, route)
-		// }
-
-	}
-}
-
-func (self *VueRouterApi) GetAdminRoutes() []*VueRouteComponent {
-	return self.adminRoutes
-}
-
-func (self *VueRouterApi) GetPortalRoutes() []*VueRouteComponent {
-	return self.portalRoutes
-}
-
-func (self *VueRouterApi) FindAdminRoute(routename string) (*VueRouteComponent, bool) {
-	routeName := self.VueRouteName(routename)
-	for _, route := range self.GetAdminRoutes() {
-		if route.VueRouteName == routeName {
-			return route, true
-		}
-	}
-	return nil, false
 }
 
 func (self *VueRouterApi) AdminNavsFunc(fn sdkhttp.VueAdminNavsFunc) {
@@ -121,22 +68,6 @@ func (self *VueRouterApi) GetAdminNavs(r *http.Request) []sdkhttp.AdminNavItem {
 	}
 
 	return navs
-}
-
-func (self *VueRouterApi) FindPortalRoute(name string) (*VueRouteComponent, bool) {
-	routeName := self.VueRouteName(name)
-
-	for _, route := range self.GetPortalRoutes() {
-		if route.VueRouteName == routeName {
-			return route, true
-		}
-	}
-
-	return nil, false
-}
-
-func (self *VueRouterApi) FindVueComponent(name string) (VueRouteComponent, bool) {
-	return VueRouteComponent{}, true
 }
 
 func (self *VueRouterApi) PortalItemsFunc(fn sdkhttp.VuePortalItemsFunc) {
@@ -159,16 +90,22 @@ func (self *VueRouterApi) GetPortalItems(r *http.Request) []VuePortalItem {
 
 func (self *VueRouterApi) FindVueRoute(name string) (*VueRouteComponent, bool) {
 	routeName := self.VueRouteName(name)
-	for _, route := range self.GetAdminRoutes() {
+	for _, route := range self.adminRoutes {
 		if route.VueRouteName == routeName {
 			return route, true
 		}
 	}
-	for _, route := range self.GetPortalRoutes() {
+
+	for _, route := range self.portalRoutes {
 		if route.VueRouteName == routeName {
 			return route, true
 		}
 	}
+
+	if self.loginRoute != nil && self.loginRoute.VueRouteName == self.VueRouteName(name) {
+		return self.loginRoute, true
+	}
+
 	return nil, false
 }
 
@@ -181,19 +118,6 @@ func (self *VueRouterApi) VueRoutePath(path string) string {
 	path = filepath.Join("/", self.api.Pkg(), path)
 	return strings.TrimSuffix(path, "/")
 }
-
-// func (self *VueRouterApi) HttpWrapperRouteName(name string) string {
-// 	name = fmt.Sprintf("%s.%s.%s", self.api.Pkg(), "wrapper", name)
-// 	return name
-// }
-
-// func (self *VueRouterApi) HttpWrapperRoutePath(path string, name string) string {
-// 	name = filepath.Join("/wrapper", path, name)
-// 	if !strings.HasSuffix(name, ".vue") {
-// 		name = name + ".vue"
-// 	}
-// 	return name
-// }
 
 func (self *VueRouterApi) VuePathToMuxPath(path string) string {
 	if !strings.HasPrefix(path, "/") {

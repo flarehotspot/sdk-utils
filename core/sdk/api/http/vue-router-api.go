@@ -4,7 +4,6 @@ import "net/http"
 
 const (
 	VueNotFoundPath = "/404"
-	VueLayoutPath   = "/"
 )
 
 type VueAdminNavsFunc func(r *http.Request) []VueAdminNav

@@ -59,7 +59,7 @@
     if ($res.redirect) {
       $flare.router.push({ name: $res.route_name });
       return {};
-    } else if ($res.data) {
+    } else if ($res.data !== undefined) {
       return $res.data;
     } else {
       invalidResponse(res);
@@ -71,8 +71,10 @@
   window.BasicHttp.onUnauthorized = function () {
     var pending = $flare.router.history.pending || {};
     var current = $flare.router.history.current;
-    if (current.name != 'login' && pending.name != 'login') {
-      $flare.router.push({ name: 'login' });
+    var loginRouteName = '<% .Data.LoginRouteName %>';
+    console.log('loginRouteName: ', loginRouteName);
+    if (current.name != loginRouteName && pending.name != loginRouteName) {
+      $flare.router.push({ name: loginRouteName });
     }
   };
 })(window.$flare);

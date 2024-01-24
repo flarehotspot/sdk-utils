@@ -74,7 +74,11 @@ func (c *IndexPageCtrl) render(w http.ResponseWriter, r *http.Request, themePlug
 		return
 	}
 
-	routesData := map[string]any{"Routes": string(routesJson)}
+	loginVueName := themePlugin.ThemesApi().(*plugins.ThemesApi).AdminLoginRoute.VueRouteName
+	routesData := map[string]any{
+		"Routes":       string(routesJson),
+		"LoginVueName": loginVueName,
+	}
 
 	jsFiles := []assets.AssetWithData{
 		{File: c.g.CoreAPI.Utl.Resource("assets/libs/corejs-3.35.1.min.js")},
@@ -85,9 +89,9 @@ func (c *IndexPageCtrl) render(w http.ResponseWriter, r *http.Request, themePlug
 		{File: c.g.CoreAPI.Utl.Resource("assets/libs/event-source.polyfill.min.js")},
 		{File: c.g.CoreAPI.Utl.Resource("assets/libs/vue-2.7.16.min.js")},
 		{File: c.g.CoreAPI.Utl.Resource("assets/libs/vue-router-3.6.5.min.js")},
-		{File: c.g.CoreAPI.Utl.Resource("assets/app/vue-http.js")},
 		{File: c.g.CoreAPI.Utl.Resource("assets/app/require-config.js")},
 		{File: c.g.CoreAPI.Utl.Resource("assets/app/notify.js")},
+		{File: c.g.CoreAPI.Utl.Resource("assets/app/vue-http.js"), Data: routesData},
 		{File: c.g.CoreAPI.Utl.Resource("assets/app/router.js"), Data: routesData},
 	}
 
