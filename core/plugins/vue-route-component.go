@@ -10,6 +10,7 @@ import (
 	"github.com/flarehotspot/core/sdk/libs/slug"
 	sdkstr "github.com/flarehotspot/core/sdk/utils/strings"
 	"github.com/flarehotspot/core/utils/crypt"
+	"github.com/flarehotspot/core/web/middlewares"
 	"github.com/flarehotspot/core/web/response"
 	"github.com/gorilla/mux"
 )
@@ -99,25 +100,27 @@ func (self *VueRouteComponent) GetComponentWrapperHandler() http.HandlerFunc {
 	}
 }
 
-func (self *VueRouteComponent) MountRoute(dataRouter *mux.Router, middlewares ...func(http.Handler) http.Handler) {
+func (self *VueRouteComponent) MountRoute(dataRouter *mux.Router, mw ...func(http.Handler) http.Handler) {
 	compRouter := self.api.HttpAPI.httpRouter.pluginRouter.mux
+	cacheMw := middlewares.CacheResponse(365)
 
 	// mount wrapper handler
-	wrapHandler := self.GetComponentWrapperHandler()
+	wrapHandler := cacheMw(self.GetComponentWrapperHandler())
 	compRouter.
 		Handle(self.HttpWrapperRoutePath(), wrapHandler).
 		Methods("GET").
 		Name(self.HttpWrapperRouteName())
 
-		// mount vue data path
+		// attache middlewares
 	handler := http.Handler(self.GetDataHandler())
-	if middlewares != nil {
-		for i := len(middlewares) - 1; i >= 0; i-- {
-			m := middlewares[i]
+	if mw != nil {
+		for i := len(mw) - 1; i >= 0; i-- {
+			m := mw[i]
 			handler = m(handler)
 		}
 	}
 
+	// mount vue data path
 	dataRouter.
 		Handle(self.HttpDataPath(), handler).
 		Methods("GET").

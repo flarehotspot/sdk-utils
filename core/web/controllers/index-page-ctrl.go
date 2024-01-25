@@ -141,7 +141,6 @@ func (c *IndexPageCtrl) AdminIndex(w http.ResponseWriter, r *http.Request) {
 	}
 
 	jsFiles := []assets.AssetWithData{
-		{File: c.g.CoreAPI.Utl.Resource("assets/libs/corejs-3.35.1.min.js")},
 		{File: c.g.CoreAPI.Utl.Resource("assets/libs/nprogress-0.2.0.js")},
 		{File: c.g.CoreAPI.Utl.Resource("assets/libs/toastify-1.12.0.min.js")},
 		{File: c.g.CoreAPI.Utl.Resource("assets/libs/promise-polyfill.min.js")},

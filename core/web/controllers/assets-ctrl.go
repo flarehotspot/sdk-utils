@@ -5,7 +5,9 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/flarehotspot/core/config"
 	"github.com/flarehotspot/core/globals"
+	"github.com/flarehotspot/core/plugins"
 	fs "github.com/flarehotspot/core/sdk/utils/fs"
 	"github.com/flarehotspot/core/web/response"
 	"github.com/gorilla/mux"
@@ -60,4 +62,30 @@ func (c *AssetsCtrl) VueComponent(w http.ResponseWriter, r *http.Request) {
 
 	res := pluginApi.HttpApi().VueResponse()
 	res.Component(w, componentPath, nil)
+}
+
+func (c *AssetsCtrl) FormField(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	comp := vars["component"] // e.g. input.vue
+
+	cfg, err := config.ReadThemesConfig()
+	if err != nil {
+		response.ErrorHtml(w, err.Error())
+		return
+	}
+
+	theme, ok := c.g.PluginMgr.FindByPkg(cfg.Admin)
+	if !ok {
+		response.ErrorHtml(w, "Theme not found")
+		return
+	}
+
+	inputFile := filepath.Join(theme.Utils().Resource("components/forms/" + comp))
+	if !fs.IsFile(inputFile) {
+		themesApi := theme.ThemesApi().(*plugins.ThemesApi)
+		csslib := themesApi.AdminTheme.CssLib
+		inputFile = filepath.Join(c.g.CoreAPI.Utils().Resource("components/forms/" + string(csslib) + "/" + comp))
+	}
+
+	response.File(w, inputFile, nil, 200)
 }

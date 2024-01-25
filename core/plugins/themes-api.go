@@ -2,9 +2,6 @@ package plugins
 
 import (
 	themes "github.com/flarehotspot/core/sdk/api/themes"
-	// "github.com/flarehotspot/core/web/middlewares"
-	// "github.com/flarehotspot/core/web/router"
-	// routenames "github.com/flarehotspot/core/web/routes/names"
 )
 
 func NewThemesApi(api *PluginApi) *ThemesApi {
@@ -13,8 +10,8 @@ func NewThemesApi(api *PluginApi) *ThemesApi {
 
 type ThemesApi struct {
 	api         *PluginApi
-	adminTheme  themes.AdminTheme
-	portalTheme themes.PortalTheme
+	AdminTheme  themes.AdminTheme
+	PortalTheme themes.PortalTheme
 
 	AdminLayoutRoute    *VueRouteComponent
 	AdminDashboardRoute *VueRouteComponent
@@ -42,7 +39,7 @@ func (t *ThemesApi) NewAdminTheme(theme themes.AdminTheme) {
 	t.AdminLoginRoute = loginComp
 	t.api.HttpAPI.vueRouter.AddAdminRoutes(dashComp)
 	t.api.HttpAPI.vueRouter.SetLoginRoute(loginComp)
-	t.adminTheme = theme
+	t.AdminTheme = theme
 }
 
 func (t *ThemesApi) NewPortalTheme(theme themes.PortalTheme) {
@@ -57,17 +54,17 @@ func (t *ThemesApi) NewPortalTheme(theme themes.PortalTheme) {
 	t.PortalLayoutRoute = layoutComp
 	t.PortalIndexRoute = indexComp
 	t.api.HttpAPI.vueRouter.AddPortalRoutes(indexComp)
-	t.portalTheme = theme
+	t.PortalTheme = theme
 }
 
 func (t *ThemesApi) GetAdminThemeAssets() themes.ThemeAssets {
 	assets := themes.ThemeAssets{Scripts: []string{}, Styles: []string{}}
-	if t.adminTheme.ThemeAssets != nil {
-		if t.adminTheme.ThemeAssets.Scripts != nil {
-			assets.Scripts = t.adminTheme.ThemeAssets.Scripts
+	if t.AdminTheme.ThemeAssets != nil {
+		if t.AdminTheme.ThemeAssets.Scripts != nil {
+			assets.Scripts = t.AdminTheme.ThemeAssets.Scripts
 		}
-		if t.adminTheme.ThemeAssets.Styles != nil {
-			assets.Styles = t.adminTheme.ThemeAssets.Styles
+		if t.AdminTheme.ThemeAssets.Styles != nil {
+			assets.Styles = t.AdminTheme.ThemeAssets.Styles
 		}
 	}
 	return assets
@@ -75,12 +72,12 @@ func (t *ThemesApi) GetAdminThemeAssets() themes.ThemeAssets {
 
 func (t *ThemesApi) GetPortalThemeAssets() themes.ThemeAssets {
 	assets := themes.ThemeAssets{Scripts: []string{}, Styles: []string{}}
-	if t.portalTheme.ThemeAssets != nil {
-		if t.portalTheme.ThemeAssets.Scripts != nil {
-			assets.Scripts = t.portalTheme.ThemeAssets.Scripts
+	if t.PortalTheme.ThemeAssets != nil {
+		if t.PortalTheme.ThemeAssets.Scripts != nil {
+			assets.Scripts = t.PortalTheme.ThemeAssets.Scripts
 		}
-		if t.portalTheme.ThemeAssets.Styles != nil {
-			assets.Styles = t.portalTheme.ThemeAssets.Styles
+		if t.PortalTheme.ThemeAssets.Styles != nil {
+			assets.Styles = t.PortalTheme.ThemeAssets.Styles
 		}
 	}
 	return assets

@@ -32,6 +32,9 @@ func (self *VueResponse) FlashMsg(msgType string, msg string) {
 }
 
 func (self *VueResponse) Json(w http.ResponseWriter, data any, status int) {
+	if data == nil {
+		data = map[string]any{}
+	}
 	newdata := self.data[rootjson].(map[string]any)
 	newdata["data"] = data
 	data = map[string]any{
