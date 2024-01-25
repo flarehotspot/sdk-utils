@@ -6,7 +6,7 @@ type VuePortalRoute struct {
 	RouteName    string
 	RoutePath    string
 	Component    string
-	HandlerFn    http.HandlerFunc
+	HandlerFunc  http.HandlerFunc
 	Middlewares  []func(http.Handler) http.Handler
 	DisableCache bool
 }

@@ -29,7 +29,7 @@ func (c *IndexPageCtrl) PortalIndex(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	themePkg := cfg.Admin
+	themePkg := cfg.Portal
 	themePlugin, ok := c.g.PluginMgr.FindByPkg(themePkg)
 	if !ok {
 		http.Error(w, "Invalid admin theme", 500)
@@ -37,7 +37,7 @@ func (c *IndexPageCtrl) PortalIndex(w http.ResponseWriter, r *http.Request) {
 	}
 
 	themesApi := themePlugin.ThemesApi().(*plugins.ThemesApi)
-	routes := c.g.PluginMgr.Utils().GetAdminRoutes()
+	routes := c.g.PluginMgr.Utils().GetPortalRoutes()
 
 	appcfg, err := config.ReadApplicationConfig()
 	if err != nil {
@@ -51,10 +51,8 @@ func (c *IndexPageCtrl) PortalIndex(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	loginVueName := themesApi.AdminLoginRoute.VueRouteName
 	routesData := map[string]any{
-		"Routes":       string(routesJson),
-		"LoginRouteName": loginVueName,
+		"Routes": string(routesJson),
 	}
 
 	jsFiles := []assets.AssetWithData{
@@ -72,8 +70,8 @@ func (c *IndexPageCtrl) PortalIndex(w http.ResponseWriter, r *http.Request) {
 		{File: c.g.CoreAPI.Utl.Resource("assets/portal/router.js"), Data: routesData},
 	}
 
-	adminAssets := themesApi.GetAdminThemeAssets()
-	for _, path := range adminAssets.Scripts {
+	portalAssets := themesApi.GetAdminThemeAssets()
+	for _, path := range portalAssets.Scripts {
 		file := themePlugin.Utils().Resource(filepath.Join("assets", path))
 		jsFiles = append(jsFiles, assets.AssetWithData{File: file})
 	}
@@ -83,7 +81,7 @@ func (c *IndexPageCtrl) PortalIndex(w http.ResponseWriter, r *http.Request) {
 		{File: c.g.CoreAPI.Utl.Resource("assets/libs/toastify-1.12.0.min.css")},
 	}
 
-	for _, path := range adminAssets.Styles {
+	for _, path := range portalAssets.Styles {
 		file := themePlugin.Utils().Resource(filepath.Join("assets", path))
 		cssFiles = append(cssFiles, assets.AssetWithData{File: file})
 	}
@@ -141,7 +139,7 @@ func (c *IndexPageCtrl) AdminIndex(w http.ResponseWriter, r *http.Request) {
 
 	loginVueName := themesApi.AdminLoginRoute.VueRouteName
 	routesData := map[string]any{
-		"Routes":       string(routesJson),
+		"Routes":         string(routesJson),
 		"LoginRouteName": loginVueName,
 	}
 

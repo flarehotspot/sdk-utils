@@ -20,19 +20,19 @@ type ThemesApi struct {
 	AdminDashboardRoute *VueRouteComponent
 	AdminLoginRoute     *VueRouteComponent
 
-	PortalLayoutComponentFullPath string
-	PortalIndexComponentFullPath  string
+	PortalLayoutRoute *VueRouteComponent
+	PortalIndexRoute  *VueRouteComponent
 }
 
 func (t *ThemesApi) NewAdminTheme(theme themes.AdminTheme) {
 	adminRouter := t.api.HttpAPI.httpRouter.adminRouter.mux
-	router := t.api.HttpAPI.httpRouter.pluginRouter.mux
+	compRouter := t.api.HttpAPI.httpRouter.pluginRouter.mux
 
 	layoutComp := NewVueRouteComponent(t.api, theme.LayoutComponent.RouteName, "/theme/layout", theme.LayoutComponent.HandlerFunc, theme.LayoutComponent.ComponentPath, nil, nil)
-	layoutComp.MountRoute(router)
+	layoutComp.MountRoute(compRouter)
 
 	loginComp := NewVueRouteComponent(t.api, theme.LoginComponent.RouteName, "/theme/login", theme.LoginComponent.HandlerFunc, theme.LoginComponent.ComponentPath, nil, nil)
-	loginComp.MountRoute(router)
+	loginComp.MountRoute(compRouter)
 
 	dashComp := NewVueRouteComponent(t.api, theme.DashboardComponent.RouteName, "/theme/dashboard", theme.DashboardComponent.HandlerFunc, theme.DashboardComponent.ComponentPath, nil, nil)
 	dashComp.MountRoute(adminRouter)
@@ -46,6 +46,18 @@ func (t *ThemesApi) NewAdminTheme(theme themes.AdminTheme) {
 }
 
 func (t *ThemesApi) NewPortalTheme(theme themes.PortalTheme) {
+	compRouter := t.api.HttpAPI.httpRouter.pluginRouter.mux.PathPrefix("/portal/vue/components").Subrouter()
+
+	layoutComp := NewVueRouteComponent(t.api, theme.LayoutComponent.RouteName, "/theme/layout", theme.LayoutComponent.HandlerFunc, theme.LayoutComponent.ComponentPath, nil, nil)
+	layoutComp.MountRoute(compRouter)
+
+	indexComp := NewVueRouteComponent(t.api, theme.IndexComponent.RouteName, "/theme/index", theme.IndexComponent.HandlerFunc, theme.IndexComponent.ComponentPath, nil, nil)
+	indexComp.MountRoute(compRouter)
+
+	t.PortalLayoutRoute = layoutComp
+	t.PortalIndexRoute = indexComp
+	t.api.HttpAPI.vueRouter.AddPortalRoutes(indexComp)
+	t.portalTheme = theme
 }
 
 func (t *ThemesApi) GetAdminThemeAssets() themes.ThemeAssets {
@@ -73,16 +85,3 @@ func (t *ThemesApi) GetPortalThemeAssets() themes.ThemeAssets {
 	}
 	return assets
 }
-
-func (t *ThemesApi) GetThemeRouteComponent(comp themes.ThemeComponent, name string, path string) *VueRouteComponent {
-	return NewVueRouteComponent(t.api, name, path, comp.HandlerFunc, comp.ComponentPath, nil, nil)
-}
-
-// func (t *ThemesApi) GetComponentHandler(comp themes.ThemeComponent) http.HandlerFunc {
-// 	return func(w http.ResponseWriter, r *http.Request) {
-// 		helpers := t.api.HttpApi().Helpers()
-// 		compfile := filepath.Join(t.api.Utl.Resource(filepath.Join("components", comp.ComponentPath)))
-// 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
-// 		response.Text(w, compfile, helpers, nil)
-// 	}
-// }

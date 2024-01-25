@@ -21,7 +21,6 @@ type PluginsMgrUtils struct {
 }
 
 func (util *PluginsMgrUtils) GetAdminRoutes() []map[string]any {
-
 	routes := []*VueRouteComponent{}
 	for _, p := range util.pmgr.All() {
 		vueR := p.HttpApi().VueRouter().(*VueRouterApi)
@@ -77,14 +76,49 @@ func (util *PluginsMgrUtils) GetAdminRoutes() []map[string]any {
 	return routesMap
 }
 
-func (utils *PluginsMgrUtils) GetPortalRoutes() []*VueRouteComponent {
+func (util *PluginsMgrUtils) GetPortalRoutes() []map[string]any {
 	routes := []*VueRouteComponent{}
-	// for _, p := range utils.pmgr.All() {
-	// 	vueR := p.HttpApi().VueRouter().(*VueRouterApi)
-	// 	portalRoutes := vueR.GetPortalRoutes()
-	// 	routes = append(routes, portalRoutes...)
-	// }
-	return routes
+	for _, p := range util.pmgr.All() {
+		vueR := p.HttpApi().VueRouter().(*VueRouterApi)
+		portalRoutes := vueR.portalRoutes
+		routes = append(routes, portalRoutes...)
+	}
+
+	children := []map[string]any{}
+	for _, r := range routes {
+		children = append(children, map[string]any{
+			"path":      r.VueRoutePath,
+			"name":      r.VueRouteName,
+			"component": r.HttpWrapperFullPath,
+		})
+	}
+
+	themecfg, err := config.ReadThemesConfig()
+	if err != nil {
+		log.Println("Error reading themes config: ", err)
+	}
+
+	themesPlugin, ok := util.pmgr.FindByPkg(themecfg.Portal)
+	if !ok {
+		log.Println("Invalid portal theme: ", themecfg.Portal)
+	}
+
+	themesApi := themesPlugin.ThemesApi().(*ThemesApi)
+	children = append(children, map[string]any{
+		"path":     "*",
+		"redirect": themesApi.PortalIndexRoute.VueRoutePath,
+	})
+
+	routesMap := []map[string]any{
+		{
+			"path":      "/",
+			"name":      themesApi.PortalLayoutRoute.VueRouteName,
+			"component": themesApi.PortalLayoutRoute.HttpWrapperFullPath,
+			"children":  children,
+		},
+	}
+
+	return routesMap
 }
 
 func (utils *PluginsMgrUtils) GetAdminNavs(r *http.Request) []sdkhttp.AdminNavList {
