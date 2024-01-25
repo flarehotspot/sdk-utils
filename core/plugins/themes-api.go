@@ -2,6 +2,7 @@ package plugins
 
 import (
 	themes "github.com/flarehotspot/core/sdk/api/themes"
+	sdkfs "github.com/flarehotspot/core/sdk/utils/fs"
 )
 
 func NewThemesApi(api *PluginApi) *ThemesApi {
@@ -81,4 +82,13 @@ func (t *ThemesApi) GetPortalThemeAssets() themes.ThemeAssets {
 		}
 	}
 	return assets
+}
+
+func (t *ThemesApi) GetFormFieldPath(vuefile string) (uri string) {
+	file := t.api.Utl.Resource("assets/components/forms/" + vuefile)
+	if sdkfs.IsFile(file) {
+		return t.api.HttpAPI.Helpers().VueComponentPath("forms/" + vuefile)
+	}
+	vuepath := "forms/" + string(t.AdminTheme.CssLib) + "/" + vuefile
+	return t.api.CoreAPI.HttpAPI.Helpers().VueComponentPath(vuepath)
 }

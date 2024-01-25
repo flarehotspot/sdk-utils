@@ -46,14 +46,13 @@ func BundleWithData(entries ...AssetWithData) (CacheData, error) {
 		}
 
 		for _, entry := range entries {
-			vdata := entry.Data
 			var entryCont strings.Builder
 			tmpl, err := tmplcache.GetTextTemplate(entry.File)
 			if err != nil {
 				return CacheData{}, err
 			}
 
-			if err := tmpl.Execute(&entryCont, vdata); err != nil {
+			if err := tmpl.Execute(&entryCont, entry.Data); err != nil {
 				return CacheData{}, err
 			}
 

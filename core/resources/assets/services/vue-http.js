@@ -39,7 +39,6 @@
   }
 
   function parseRespones(res) {
-    console.log(res);
     var $res = res[rootres];
     if (!$res) {
       invalidResponse(res);

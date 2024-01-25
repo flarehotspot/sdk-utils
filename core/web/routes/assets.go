@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"path/filepath"
 
-	"github.com/flarehotspot/core/config"
 	"github.com/flarehotspot/core/globals"
 	paths "github.com/flarehotspot/core/sdk/utils/paths"
 	"github.com/flarehotspot/core/web/controllers"
@@ -14,12 +13,12 @@ import (
 )
 
 func AssetsRoutes(g *globals.CoreGlobals) {
+	cacheMw := middlewares.CacheResponse(365)
 	assetsCtrl := controllers.NewAssetsCtrl(g)
 
-	router.RootRouter.HandleFunc("/favicon.ico", assetsCtrl.GetFavicon)
+	router.RootRouter.Handle("/favicon.ico", cacheMw(http.HandlerFunc(assetsCtrl.GetFavicon)))
 
 	vueR := router.RootRouter.PathPrefix("/vue-dynamic-components").Subrouter()
-	cacheMw := middlewares.CacheResponse(365)
 	vueR.Use(cacheMw)
 
 	vueR.HandleFunc("/with-helper/{pkg}/{version}/{path:.*}", assetsCtrl.AssetWithHelpers).
@@ -29,13 +28,6 @@ func AssetsRoutes(g *globals.CoreGlobals) {
 	vueR.HandleFunc("/plugin-components/{pkg}/{version}/{path:.*}", assetsCtrl.VueComponent).
 		Methods("GET").
 		Name(routenames.AssetVueComponent)
-
-	themecfg, _ := config.ReadThemesConfig()
-	themePlugin, _ := g.PluginMgr.FindByPkg(themecfg.Admin)
-	formFieldPath := filepath.Join("/theme-form-fields/plugin", themePlugin.Pkg(), themePlugin.Version()) + "/{component:.*}"
-	vueR.HandleFunc(formFieldPath, assetsCtrl.FormField).
-		Methods("GET").
-		Name(routenames.AssetFormField)
 
 	allPlugins := g.PluginMgr.All()
 	for _, p := range allPlugins {

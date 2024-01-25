@@ -13,7 +13,7 @@
   "author": "Flarego Technologies Corporation <support@flarego.ph>",
   "license": "ISC",
   "devDependencies": {
-    "eslint": "^8.49.0"
-  },
-  "dependencies": {}
+    "eslint": "^8.49.0",
+    "typescript": "^5.3.3"
+  }
 }

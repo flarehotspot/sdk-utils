@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"html/template"
 	"log"
-	"os"
 	"path/filepath"
 	"strings"
 	texttemplate "text/template"
 
-	"github.com/flarehotspot/core/sdk/api/http"
+	sdkhttp "github.com/flarehotspot/core/sdk/api/http"
 	plugin "github.com/flarehotspot/core/sdk/api/plugin"
+	"github.com/flarehotspot/core/utils/flaretmpl"
 	"github.com/flarehotspot/core/web/response"
 	"github.com/flarehotspot/core/web/router"
 	rnames "github.com/flarehotspot/core/web/routes/names"
@@ -58,16 +58,12 @@ func (self *HttpHelpers) VueComponentPath(path string) string {
 
 func (self *HttpHelpers) EmbedJs(path string, data any) template.HTML {
 	jspath := self.api.Utl.Resource(filepath.Join("assets", path))
-	tpljs, err := os.ReadFile(jspath)
-	if err != nil {
-		tpljs = []byte(fmt.Sprintf("console.error('%s: %s')", jspath, err.Error()))
-	}
 
 	var output strings.Builder
 
-	jstmpl, err := texttemplate.New("").Parse(string(tpljs))
+	jstmpl, err := flaretmpl.GetTextTemplate(jspath)
 	if err != nil {
-		jstmpl, _ = texttemplate.New("").Parse(fmt.Sprintf("console.log('%s: %s')", jspath, err.Error()))
+		jstmpl, _ = texttemplate.New("").Parse(fmt.Sprintf("console.error('%s: %s')", jspath, err.Error()))
 	}
 
 	vdata := &response.ViewData{
@@ -77,20 +73,16 @@ func (self *HttpHelpers) EmbedJs(path string, data any) template.HTML {
 
 	jstmpl.Execute(&output, vdata)
 
-	scriptTag := fmt.Sprintf("<script>%s</script>", output.String())
+	scriptTag := fmt.Sprintf("<script>\n%s\n</script>", output.String())
 	return template.HTML(scriptTag)
 }
 
 func (self *HttpHelpers) EmbedCss(path string, data any) template.HTML {
 	csspath := self.api.Utl.Resource(filepath.Join("assets", path))
-	tplcss, err := os.ReadFile(csspath)
-	if err != nil {
-		tplcss = []byte(fmt.Sprintf("/* %s: %s */", csspath, err.Error()))
-	}
 
 	var output strings.Builder
 
-	csstmpl, err := texttemplate.New("").Parse(string(tplcss))
+	csstmpl, err := flaretmpl.GetTextTemplate(csspath)
 	if err != nil {
 		csstmpl, _ = texttemplate.New("").Parse(fmt.Sprintf("/* %s: %s */", csspath, err.Error()))
 	}
@@ -102,7 +94,7 @@ func (self *HttpHelpers) EmbedCss(path string, data any) template.HTML {
 
 	csstmpl.Execute(&output, vdata)
 
-	styleTag := fmt.Sprintf("<style>%s</style>", output.String())
+	styleTag := fmt.Sprintf("<style>\n%s\n</style>", output.String())
 	return template.HTML(styleTag)
 }
 
@@ -137,5 +129,5 @@ func (h *HttpHelpers) VueRoutePath(name string) string {
 		path = sdkhttp.VueNotFoundPath
 	}
 	path = route.VueRoutePath
-    return path
+	return path
 }

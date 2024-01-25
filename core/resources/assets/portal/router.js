@@ -15,7 +15,7 @@
   $flare.router = router;
 
   // progress bar
-  router.beforeResolve(function (from, to, next) {
+  router.beforeResolve(function (_, to, next) {
     // If this isn't an initial page load.
     if (to.name) {
       // Start the route progress bar.
@@ -24,16 +24,10 @@
     next();
   });
 
-  router.afterEach(function (to, from) {
+  router.afterEach(function () {
     // Complete the animation of the route progress bar.
     NProgress.done();
   });
-
-  function VueLazyLoad(vueFile) {
-    return function (resolve) {
-      return require(['vue!' + vueFile], resolve);
-    };
-  }
 
   function transformRoutes(routes) {
     var newRoutes = [];
@@ -45,7 +39,7 @@
         route = {
           name: r.name,
           path: r.path,
-          component: VueLazyLoad(r.component),
+          component: $flare.vueLazyLoad(r.component),
           meta: r.meta
         };
 

@@ -54,15 +54,19 @@ func (c *IndexPageCtrl) PortalIndex(w http.ResponseWriter, r *http.Request) {
 	}
 
 	jsFiles := []assets.AssetWithData{
+		// libs
 		{File: c.g.CoreAPI.Utl.Resource("assets/libs/nprogress-0.2.0.js")},
 		{File: c.g.CoreAPI.Utl.Resource("assets/libs/toastify-1.12.0.min.js")},
 		{File: c.g.CoreAPI.Utl.Resource("assets/libs/promise-polyfill.min.js")},
 		{File: c.g.CoreAPI.Utl.Resource("assets/libs/event-source.polyfill.min.js")},
 		{File: c.g.CoreAPI.Utl.Resource("assets/libs/vue-2.7.16.min.js")},
 		{File: c.g.CoreAPI.Utl.Resource("assets/libs/vue-router-3.6.5.min.js")},
-		{File: c.g.CoreAPI.Utl.Resource("assets/libs/basic-http-1.0.0.js")},
-		{File: c.g.CoreAPI.Utl.Resource("assets/services/vue-http.js")},
+
+		// app
 		{File: c.g.CoreAPI.Utl.Resource("assets/services/require-config.js")},
+		{File: c.g.CoreAPI.Utl.Resource("assets/services/vue-lazy-load.js")},
+		{File: c.g.CoreAPI.Utl.Resource("assets/services/basic-http.js")},
+		{File: c.g.CoreAPI.Utl.Resource("assets/services/vue-http.js")},
 		{File: c.g.CoreAPI.Utl.Resource("assets/services/notify.js")},
 		{File: c.g.CoreAPI.Utl.Resource("assets/portal/router.js"), Data: routesData},
 	}
@@ -141,15 +145,19 @@ func (c *IndexPageCtrl) AdminIndex(w http.ResponseWriter, r *http.Request) {
 	}
 
 	jsFiles := []assets.AssetWithData{
+		// libs
 		{File: c.g.CoreAPI.Utl.Resource("assets/libs/nprogress-0.2.0.js")},
 		{File: c.g.CoreAPI.Utl.Resource("assets/libs/toastify-1.12.0.min.js")},
 		{File: c.g.CoreAPI.Utl.Resource("assets/libs/promise-polyfill.min.js")},
 		{File: c.g.CoreAPI.Utl.Resource("assets/libs/event-source.polyfill.min.js")},
 		{File: c.g.CoreAPI.Utl.Resource("assets/libs/vue-2.7.16.min.js")},
 		{File: c.g.CoreAPI.Utl.Resource("assets/libs/vue-router-3.6.5.min.js")},
-		{File: c.g.CoreAPI.Utl.Resource("assets/libs/basic-http-1.0.0.js")},
-		{File: c.g.CoreAPI.Utl.Resource("assets/services/vue-http.js")},
+
+		// app
 		{File: c.g.CoreAPI.Utl.Resource("assets/services/require-config.js")},
+		{File: c.g.CoreAPI.Utl.Resource("assets/services/vue-lazy-load.js")},
+		{File: c.g.CoreAPI.Utl.Resource("assets/services/basic-http.js")},
+		{File: c.g.CoreAPI.Utl.Resource("assets/services/vue-http.js")},
 		{File: c.g.CoreAPI.Utl.Resource("assets/services/notify.js")},
 		{File: c.g.CoreAPI.Utl.Resource("assets/admin/router.js"), Data: routesData},
 	}
@@ -184,6 +192,7 @@ func (c *IndexPageCtrl) AdminIndex(w http.ResponseWriter, r *http.Request) {
 
 	vdata := map[string]any{
 		"Lang":          appcfg.Lang,
+		"ThemesApi":     themesApi,
 		"VendorScripts": jsBundle.PublicPath,
 		"VendorStyles":  cssBundle.PublicPath,
 	}
