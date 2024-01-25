@@ -8,8 +8,6 @@ import (
 	"github.com/flarehotspot/core/config"
 	"github.com/flarehotspot/core/globals"
 	"github.com/flarehotspot/core/plugins"
-	// plugin "github.com/flarehotspot/core/sdk/api/plugin"
-	// themes "github.com/flarehotspot/core/sdk/api/themes"
 	"github.com/flarehotspot/core/utils/assets"
 	"github.com/flarehotspot/core/web/response"
 )
@@ -56,7 +54,6 @@ func (c *IndexPageCtrl) PortalIndex(w http.ResponseWriter, r *http.Request) {
 	}
 
 	jsFiles := []assets.AssetWithData{
-		{File: c.g.CoreAPI.Utl.Resource("assets/libs/corejs-3.35.1.min.js")},
 		{File: c.g.CoreAPI.Utl.Resource("assets/libs/nprogress-0.2.0.js")},
 		{File: c.g.CoreAPI.Utl.Resource("assets/libs/toastify-1.12.0.min.js")},
 		{File: c.g.CoreAPI.Utl.Resource("assets/libs/promise-polyfill.min.js")},
