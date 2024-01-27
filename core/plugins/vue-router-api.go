@@ -88,8 +88,8 @@ func (self *VueRouterApi) PortalItemsFunc(fn sdkhttp.VuePortalItemsFunc) {
 	self.portalNavsFn = fn
 }
 
-func (self *VueRouterApi) GetPortalItems(r *http.Request) []VuePortalItem {
-	navs := []VuePortalItem{}
+func (self *VueRouterApi) GetPortalItems(r *http.Request) []sdkhttp.PortalItem {
+	navs := []sdkhttp.PortalItem{}
 
 	if self.portalNavsFn != nil {
 		for _, nav := range self.portalNavsFn(r) {

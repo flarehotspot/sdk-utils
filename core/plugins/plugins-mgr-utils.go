@@ -149,3 +149,15 @@ func (utils *PluginsMgrUtils) GetAdminNavs(r *http.Request) []sdkhttp.AdminNavLi
 
 	return navs
 }
+
+func (utils *PluginsMgrUtils) GetPortalItems(r *http.Request) []sdkhttp.PortalItem {
+	items := []sdkhttp.PortalItem{}
+	for _, p := range utils.pmgr.All() {
+		vueR := p.HttpApi().VueRouter().(*VueRouterApi)
+		portalItems := vueR.GetPortalItems(r)
+		for _, item := range portalItems {
+			items = append(items, item)
+		}
+	}
+	return items
+}

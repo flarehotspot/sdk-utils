@@ -71,3 +71,7 @@ func (self *HttpApi) MuxVars(r *http.Request) map[string]string {
 func (self *HttpApi) GetAdminNavs(r *http.Request) []sdkhttp.AdminNavList {
 	return self.api.PluginsMgr.Utils().GetAdminNavs(r)
 }
+
+func (self *HttpApi) GetPortalItems(r *http.Request) []sdkhttp.PortalItem {
+	return self.api.PluginsMgr.Utils().GetPortalItems(r)
+}

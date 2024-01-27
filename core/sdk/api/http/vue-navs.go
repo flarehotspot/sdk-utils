@@ -11,3 +11,10 @@ type AdminNavItem struct {
 	VueRouteName string       `json:"route_name"`
 	VueRoutePath string       `json:"route_path"`
 }
+
+type PortalItem struct {
+	IconUri      string `json:"icon_uri"`
+	Label        string `json:"label"`
+	VueRouteName string `json:"route_name"`
+	VueRoutePath string `json:"route_path"`
+}

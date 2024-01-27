@@ -30,4 +30,7 @@ type IHttpApi interface {
 
 	// Returns the consolidated vue navigation list from all plugins for the admin dashboard.
 	GetAdminNavs(r *http.Request) []AdminNavList
+
+    // Returns the consolidated vue navigation list from all plugins for the portal.
+	GetPortalItems(r *http.Request) []PortalItem
 }

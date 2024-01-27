@@ -6,22 +6,20 @@ import (
 	"github.com/flarehotspot/core/sdk/api/http"
 )
 
-func NewVuePortalItem(api *PluginApi, r *http.Request, nav sdkhttp.VuePortalItem) VuePortalItem {
-	label := api.Utils().Translate("label", nav.TranslateLabel)
-	path := sdkhttp.VueNotFoundPath
+func NewVuePortalItem(api *PluginApi, r *http.Request, nav sdkhttp.VuePortalItem) sdkhttp.PortalItem {
+	var routePath, routeName string
+	routePath = sdkhttp.VueNotFoundPath
 
-	// vueRouter := api.HttpApi().VueRouter().(*VueRouterApi)
-	// if route, ok := vueRouter.FindPortalRoute(nav.RouteName); ok {
-	// 	path = route.HttpDataPath()
-	// }
-
-	return VuePortalItem{
-		Label:     label,
-		RoutePath: path,
+	vueRouter := api.HttpApi().VueRouter().(*VueRouterApi)
+	if route, ok := vueRouter.FindVueRoute(nav.RouteName); ok {
+		routePath = route.VueRoutePath
+		routeName = route.VueRouteName
 	}
-}
 
-type VuePortalItem struct {
-	Label     string `json:"label"`
-	RoutePath string `json:"path"`
+	return sdkhttp.PortalItem{
+		Label:        api.Utils().Translate("label", nav.TranslateLabel),
+		IconUri:      api.HttpAPI.Helpers().AssetPath(nav.IconPath),
+		VueRouteName: routeName,
+		VueRoutePath: routePath,
+	}
 }
