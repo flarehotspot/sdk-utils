@@ -56,7 +56,7 @@ func (self *HttpHelpers) VueComponentPath(path string) string {
 	return url.String()
 }
 
-func (self *HttpHelpers) EmbedJs(path string, data any) template.HTML {
+func (self *HttpHelpers) EmbedJs(path string, data any) template.JS {
 	jspath := self.api.Utl.Resource(filepath.Join("assets", path))
 
 	var output strings.Builder
@@ -73,11 +73,10 @@ func (self *HttpHelpers) EmbedJs(path string, data any) template.HTML {
 
 	jstmpl.Execute(&output, vdata)
 
-	scriptTag := fmt.Sprintf("<script>\n%s\n</script>", output.String())
-	return template.HTML(scriptTag)
+	return template.JS(output.String())
 }
 
-func (self *HttpHelpers) EmbedCss(path string, data any) template.HTML {
+func (self *HttpHelpers) EmbedCss(path string, data any) template.CSS {
 	csspath := self.api.Utl.Resource(filepath.Join("assets", path))
 
 	var output strings.Builder
@@ -94,8 +93,7 @@ func (self *HttpHelpers) EmbedCss(path string, data any) template.HTML {
 
 	csstmpl.Execute(&output, vdata)
 
-	styleTag := fmt.Sprintf("<style>\n%s\n</style>", output.String())
-	return template.HTML(styleTag)
+	return template.CSS(output.String())
 }
 
 func (h *HttpHelpers) PluginMgr() plugin.IPluginMgr {
