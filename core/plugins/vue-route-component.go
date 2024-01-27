@@ -70,7 +70,7 @@ func (self *VueRouteComponent) HttpWrapperRoutePath() string {
 
 func (self *VueRouteComponent) HttpComponentFullPath() string {
 	if self.file == "" {
-		return self.api.CoreAPI.HttpAPI.Helpers().VueComponentPath("empty-component.vue")
+		return self.api.CoreAPI.HttpAPI.Helpers().VueComponentPath("Empty.vue")
 	}
 	return self.api.HttpAPI.Helpers().VueComponentPath(self.file)
 }
@@ -93,7 +93,7 @@ func (self *VueRouteComponent) GetDataHandler() http.HandlerFunc {
 
 func (self *VueRouteComponent) GetComponentWrapperHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		wrapperFile := self.api.CoreAPI.Utl.Resource("components/component-wrapper.vue")
+		wrapperFile := self.api.CoreAPI.Utl.Resource("components/Wrapper.vue")
 		helpers := self.api.HttpApi().Helpers()
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		response.Text(w, wrapperFile, helpers, self)

@@ -9,7 +9,7 @@
   var dataPath = '<% .Data.HttpDataFullPath %>';
 
   define([compPath], function (comp) {
-    var viewData = { view: { loading: true, data: {}, error: {} } };
+    var viewData = { view: { loading: true, data: {}, errors: {} } };
 
     return {
       template: template,
@@ -29,7 +29,7 @@
             viewData.view.data = data;
           })
           .catch(function (res) {
-            viewData.view.error = res;
+            viewData.view.errors = res;
           })
           .finally(function () {
             viewData.view.loading = false;

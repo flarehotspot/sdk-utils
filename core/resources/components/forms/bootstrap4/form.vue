@@ -1,6 +1,9 @@
 <template>
-  <form @submit="submit" class="mt-3 mt-md-5">
-    <h3>{{ title }}</h3>
+  <form v-on="$listeners" class="mt-3" novalidate>
+    <div class="text-center">
+      <h3>{{ heading }}</h3>
+    </div>
+    <hr />
     <slot></slot>
   </form>
 </template>
@@ -9,14 +12,8 @@
 (function () {
   define(function () {
     return {
-      props: ['title'],
-      template: template,
-      methods: {
-        submit: function (e) {
-          e.preventDefault();
-          this.$emit('submit');
-        }
-      }
+      props: ['heading'],
+      template: template
     };
   });
 })();
