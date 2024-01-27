@@ -152,7 +152,7 @@ func (c *IndexPageCtrl) AdminIndex(w http.ResponseWriter, r *http.Request) {
 		{File: c.g.CoreAPI.Utl.Resource("assets/libs/event-source.polyfill.min.js")},
 		{File: c.g.CoreAPI.Utl.Resource("assets/libs/vue-2.7.16.min.js")},
 		{File: c.g.CoreAPI.Utl.Resource("assets/libs/vue-router-3.6.5.min.js")},
-		{File: c.g.CoreAPI.Utl.Resource("assets/libs/vue-demi-5.19.2.min.js")},
+		{File: c.g.CoreAPI.Utl.Resource("assets/libs/vue-demi-0.14.6.js")},
 		{File: c.g.CoreAPI.Utl.Resource("assets/libs/vuelidate-core.min.js")},
 		{File: c.g.CoreAPI.Utl.Resource("assets/libs/vuelidate-validators.min.js")},
 
