@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	sdkfs "github.com/flarehotspot/core/sdk/utils/fs"
 	paths "github.com/flarehotspot/core/sdk/utils/paths"
 	"github.com/flarehotspot/core/utils/crypt"
 )
@@ -116,7 +117,9 @@ func writeCache(concat string, files []string) (data CacheData, err error) {
 }
 
 func filePathComment(f string) string {
-	return fmt.Sprintf("\n/%s\nFile: %s\n%s/\n", stars, paths.Strip(f), stars)
+    stat, _ := os.Stat(f)
+    size := sdkfs.PrettyByteSize(int(stat.Size()))
+	return fmt.Sprintf("\n/%s\nFile: %s(%s)\n%s/\n", stars, paths.Strip(f), size, stars)
 }
 
 func filesComment(files ...string) string {
@@ -124,7 +127,9 @@ func filesComment(files ...string) string {
 	comment += stars
 	comment += "\nFiles:\n"
 	for _, f := range files {
-		comment += fmt.Sprintf("%s\n", paths.Strip(f))
+        stat, _ := os.Stat(f)
+        size := sdkfs.PrettyByteSize(int(stat.Size()))
+		comment += fmt.Sprintf("%s\t\t%s\n", size, paths.Strip(f))
 	}
 	comment += stars + "/\n"
 	return comment

@@ -71,7 +71,7 @@ func (c *IndexPageCtrl) PortalIndex(w http.ResponseWriter, r *http.Request) {
 		{File: c.g.CoreAPI.Utl.Resource("assets/portal/router.js"), Data: routesData},
 	}
 
-	portalAssets := themesApi.GetAdminThemeAssets()
+	portalAssets := themesApi.GetPortalThemeAssets()
 	for _, path := range portalAssets.Scripts {
 		file := themePlugin.Utils().Resource(filepath.Join("assets", path))
 		jsFiles = append(jsFiles, assets.AssetWithData{File: file})
