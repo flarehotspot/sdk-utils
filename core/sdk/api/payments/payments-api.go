@@ -12,6 +12,7 @@ type IPaymentsApi interface {
 	Checkout(w http.ResponseWriter, r *http.Request, purchaseRequest *PurchaseRequest)
 
 	// Executes the callback URL of a purchase instance after the customer paid for the purchase item(s).
+    // It informs the payment requestor that the customer has paid for the purchase.
 	ExecCallback(w http.ResponseWriter, r *http.Request, purchase models.IPurchase)
 
 	// Confirms the purchase request. All purchase transactions will be commited to the database.

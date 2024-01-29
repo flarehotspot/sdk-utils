@@ -17,8 +17,8 @@
 <script>
 define(function () {
   return {
+    props: ['type', 'variant', 'disabled', 'to'],
     inheritAttrs: false,
-    props: ['type', 'variant', 'disabled'],
     template: template
   };
 });

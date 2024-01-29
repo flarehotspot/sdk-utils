@@ -20,6 +20,12 @@
         var $flare = {};
     </script>
     <script type="text/javascript" src="<% .Data.VendorScripts %>"></script>
+
+    <!-- Embed these assets to void cache -->
+    <script>
+      <% .Helpers.EmbedJs "services/forms.js" .Data %>
+    </script>
+
     <script type="text/javascript" src='<% .Helpers.AssetPath "libs/require-2.3.6.min.js" %>'
         data-main='<% .Helpers.AssetPath "portal/main.js" %>'></script>
 </body>

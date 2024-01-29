@@ -101,9 +101,12 @@ func (c *IndexPageCtrl) PortalIndex(w http.ResponseWriter, r *http.Request) {
 
 	vdata := map[string]any{
 		"Lang":          appcfg.Lang,
+		"ThemesApi":     themesApi,
 		"VendorScripts": jsBundle.PublicPath,
 		"VendorStyles":  cssBundle.PublicPath,
 	}
+
+
 
 	api := c.g.CoreAPI
 	api.HttpApi().HttpResponse().View(w, r, "portal/index.html", vdata)
