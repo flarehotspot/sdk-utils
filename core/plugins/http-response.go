@@ -25,7 +25,7 @@ func (self *HttpResponse) AdminView(w http.ResponseWriter, r *http.Request, view
 
 	helpers := NewViewHelpers(self.api)
 	viewsDir := self.api.Utl.Resource("views/admin")
-	layoutFile := filepath.Join(viewsDir, "http-layout.html")
+	layoutFile := filepath.Join(viewsDir, "layout.html")
 	viewFile := filepath.Join(viewsDir, view)
 	resp.ViewWithLayout(w, layoutFile, viewFile, helpers, data)
 }
@@ -37,7 +37,7 @@ func (self *HttpResponse) PortalView(w http.ResponseWriter, r *http.Request, vie
 
 	helpers := NewViewHelpers(self.api)
 	viewsDir := self.api.Utl.Resource("views/portal")
-	layoutFile := filepath.Join(viewsDir, "http-layout.html")
+	layoutFile := filepath.Join(viewsDir, "layout.html")
 	viewFile := filepath.Join(viewsDir, view)
 	resp.ViewWithLayout(w, layoutFile, viewFile, helpers, data)
 }
