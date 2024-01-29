@@ -59,6 +59,7 @@ func PortalIndexPage(g *globals.CoreGlobals) http.Handler {
 			{File: g.CoreAPI.Utl.Resource("assets/services/require-config.js")},
 			{File: g.CoreAPI.Utl.Resource("assets/services/vue-lazy-load.js")},
 			{File: g.CoreAPI.Utl.Resource("assets/services/basic-http.js")},
+			{File: g.CoreAPI.Utl.Resource("assets/services/utils.js")},
 			{File: g.CoreAPI.Utl.Resource("assets/services/vue-http.js")},
 			{File: g.CoreAPI.Utl.Resource("assets/services/notify.js")},
 			{File: g.CoreAPI.Utl.Resource("assets/portal/router.js"), Data: routesData},

@@ -8,7 +8,7 @@ type ClientChangedHookFn func(w http.ResponseWriter, r *http.Request, current IC
 type ClientModifierHookFn func(w http.ResponseWriter, r *http.Request, current IClientDevice) (IClientDevice, error)
 
 type IClientRegister interface {
-  CurrentClient(r *http.Request) (IClientDevice, error)
+	// CurrentClient(r *http.Request) (IClientDevice, error)
 	ClientFindHook(ClientFindHookFn)
 	ClientCreatedHook(ClientCreatedHookFn)
 	ClientChangedHook(ClientChangedHookFn)

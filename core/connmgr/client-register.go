@@ -5,13 +5,11 @@ import (
 	"database/sql"
 	"errors"
 	"log"
-	"net/http"
 
 	"github.com/flarehotspot/core/db"
 	"github.com/flarehotspot/core/db/models"
 	connmgr "github.com/flarehotspot/core/sdk/api/connmgr"
-	"github.com/flarehotspot/core/sdk/api/http"
-	"github.com/flarehotspot/core/sdk/api/models"
+	sdkmodels "github.com/flarehotspot/core/sdk/api/models"
 	jobque "github.com/flarehotspot/core/utils/job-que"
 )
 
@@ -89,14 +87,5 @@ func (reg *ClientRegister) Register(ctx context.Context, mac string, ip string, 
 		// TODO: Update connection with new mac and ip
 	}
 
-	return clnt, nil
-}
-
-func (reg *ClientRegister) CurrentClient(r *http.Request) (connmgr.IClientDevice, error) {
-	sym := r.Context().Value(sdkhttp.ClientCtxKey)
-	clnt, ok := sym.(connmgr.IClientDevice)
-	if !ok {
-		return nil, errors.New("Can't determine client device")
-	}
 	return clnt, nil
 }

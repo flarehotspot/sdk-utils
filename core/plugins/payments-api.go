@@ -35,7 +35,7 @@ func (self *PaymentsApi) Checkout(w http.ResponseWriter, r *http.Request, p sdkp
 
 		route, ok := self.api.HttpAPI.vueRouter.FindVueRoute(p.CallbackVueRouteName)
 		if !ok {
-			res.FlashMsg("error", "Invalid callback route name")
+			res.FlashMsg("error", "Invalid payment callback route name: "+p.CallbackVueRouteName)
 			res.Json(w, nil, http.StatusInternalServerError)
 			return
 		}
