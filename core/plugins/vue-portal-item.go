@@ -12,7 +12,11 @@ func NewVuePortalItem(api *PluginApi, r *http.Request, nav sdkhttp.VuePortalItem
 
 	vueRouter := api.HttpApi().VueRouter().(*VueRouterApi)
 	if route, ok := vueRouter.FindVueRoute(nav.RouteName); ok {
-		routePath = route.VueRoutePath
+		pairs := []string{}
+		for k, v := range nav.RouteParams {
+			pairs = append(pairs, k, v)
+		}
+		routePath = route.VueRoutePath.URL(pairs...)
 		routeName = route.VueRouteName
 	}
 

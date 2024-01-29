@@ -50,7 +50,7 @@ type VueRouteComponent struct {
 	MuxDataRouteName    sdkhttp.MuxRouteName `json:"mux_data_route_name"`
 	HttpDataFullPath    string               `json:"http_data_full_path"`
 	HttpWrapperFullPath string               `json:"http_wrapper_full_path"`
-	VueRoutePath        string               `json:"vue_route_path"`
+	VueRoutePath        VueRoutePath         `json:"vue_route_path"`
 	VueRouteName        string               `json:"vue_route_name"`
 	PermissionsRequired []string             `json:"permissions_required"`
 	PermissionsAnyOf    []string             `json:"permissions_any_of"`

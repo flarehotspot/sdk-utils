@@ -128,9 +128,9 @@ func (self *VueRouterApi) VueRouteName(name string) string {
 	return name
 }
 
-func (self *VueRouterApi) VueRoutePath(path string) string {
+func (self *VueRouterApi) VueRoutePath(path string) VueRoutePath {
 	path = filepath.Join("/", self.api.Pkg(), path)
-	return strings.TrimSuffix(path, "/")
+	return VueRoutePath(strings.TrimSuffix(path, "/"))
 }
 
 func (self *VueRouterApi) VuePathToMuxPath(path string) string {

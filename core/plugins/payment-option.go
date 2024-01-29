@@ -12,7 +12,11 @@ func NewPaymentOpt(api plugin.IPluginApi, opt payments.PaymentOpt) PaymentOption
 	var path, name string
 	path = sdkhttp.VueNotFoundPath
 	if route, ok := vrouter.FindVueRoute(opt.VueRouteName); ok {
-		path = route.VueRoutePath
+		pairs := []string{}
+		for k, v := range opt.RouteParams {
+			pairs = append(pairs, k, v)
+		}
+		path = route.VueRoutePath.URL(pairs...)
 		name = route.VueRouteName
 	}
 

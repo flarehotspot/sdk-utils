@@ -25,10 +25,10 @@ type IHelpers interface {
 
 	// Returns the uri path of a file in resources/components directory from your plugin.
 	// The file is parsed using text/template go module with access to <% .Helpers %> object.
-    VueComponentPath(path string) (uri string)
+	VueComponentPath(path string) (uri string)
 
 	// Returns the html for the ads view.
-    AdView() (html template.HTML)
+	AdView() (html template.HTML)
 
 	// Returns the muxnmame for the route name in your plugin.
 	// "muxname" is a route name that can be used for the UrlForMuxRoute() method.
@@ -42,9 +42,9 @@ type IHelpers interface {
 	// The difference between UrlForMuxRoute() vs UrlForRoute() is that UrlForMuxRoute() only accepts route names built-in to the core system.
 	UrlForRoute(name string, pairs ...string) (uri string)
 
-    // Returns the vue route name for a named route which can be used in vue router, e.g.
-    //   $this.push({name: '<% .Helpers.VueRouteName "login" %>'})
+	// Returns the vue route name for a named route which can be used in vue router, e.g.
+	//   $this.push({name: '<% .Helpers.VueRouteName "login" %>'})
 	VueRouteName(name string) string
 
-    VueRoutePath(name string) string
+	VueRoutePath(name string, pairs ...string) string
 }

@@ -59,7 +59,7 @@ func (res *VueResponse) Redirect(w http.ResponseWriter, routename string, pairs 
 	}
 
 	paramKeys := []string{}
-	pathsegs := strings.Split(route.VueRoutePath, "/")
+	pathsegs := strings.Split(route.VueRoutePath.GetTemplate(), "/")
 	for _, seg := range pathsegs {
 		if strings.HasPrefix(seg, ":") {
 			paramKeys = append(paramKeys, seg[1:])
