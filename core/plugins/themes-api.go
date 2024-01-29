@@ -49,8 +49,9 @@ func (t *ThemesApi) NewPortalTheme(theme themes.PortalTheme) {
 	layoutComp := NewVueRouteComponent(t.api, theme.LayoutComponent.RouteName, "/theme/layout", theme.LayoutComponent.HandlerFunc, theme.LayoutComponent.ComponentPath, nil, nil)
 	layoutComp.MountRoute(compRouter)
 
+    purMw := t.api.HttpAPI.middlewares.PendingPurchaseMw()
 	indexComp := NewVueRouteComponent(t.api, theme.IndexComponent.RouteName, "/theme/index", theme.IndexComponent.HandlerFunc, theme.IndexComponent.ComponentPath, nil, nil)
-	indexComp.MountRoute(compRouter)
+	indexComp.MountRoute(compRouter, purMw)
 
 	t.PortalLayoutRoute = layoutComp
 	t.PortalIndexRoute = indexComp

@@ -9,7 +9,7 @@ import (
 // IPurchaseModel is used to query the purchases table in the database.
 type IPurchaseModel interface {
 	// Creates a new purchase in the purchases table using a database transaction.
-	CreateTx(tx *sql.Tx, ctx context.Context, deviceId int64, vprice bool, cburl string) (IPurchase, error)
+	CreateTx(tx *sql.Tx, ctx context.Context, deviceId int64, sku string, name string, desc string, price float64, vprice bool, cburl string) (IPurchase, error)
 
 	// Finds a purchase in the purchases table by its id using a database transaction.
 	FindTx(tx *sql.Tx, ctx context.Context, id int64) (IPurchase, error)
@@ -24,7 +24,7 @@ type IPurchaseModel interface {
 	FindByTokenTx(tx *sql.Tx, ctx context.Context, token string) (IPurchase, error)
 
 	// Creates a new purchase in the purchases table.
-	Create(ctx context.Context, deviceId int64, vprice bool, cburl string) (IPurchase, error)
+	Create(ctx context.Context, deviceId int64, sku string, name string, desc string, price float64, vprice bool, routename string) (IPurchase, error)
 
 	// Finds a purchase in the purchases table by its id.
 	Find(ctx context.Context, id int64) (IPurchase, error)

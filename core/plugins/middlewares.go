@@ -1,15 +1,24 @@
 package plugins
 
 import (
+	"database/sql"
+	"errors"
+	"net/http"
+
 	"github.com/flarehotspot/core/connmgr"
-	"github.com/flarehotspot/core/db"
 	"github.com/flarehotspot/core/db/models"
-	"github.com/flarehotspot/core/sdk/api/http"
+	sdkhttp "github.com/flarehotspot/core/sdk/api/http"
+	"github.com/flarehotspot/core/web/helpers"
 	"github.com/flarehotspot/core/web/middlewares"
+	routenames "github.com/flarehotspot/core/web/routes/names"
 )
 
+func NewPluginMiddlewares(api *PluginApi, mdls *models.Models, dmgr *connmgr.ClientRegister, pmgr *PaymentsMgr) *PluginMiddlewares {
+	return &PluginMiddlewares{api, mdls, dmgr, pmgr}
+}
+
 type PluginMiddlewares struct {
-	db     *db.Database
+	api    *PluginApi
 	models *models.Models
 	creg   *connmgr.ClientRegister
 	pmgr   *PaymentsMgr
@@ -20,13 +29,53 @@ func (mw *PluginMiddlewares) AdminAuth() sdkhttp.HttpMiddleware {
 }
 
 func (mw *PluginMiddlewares) Device() sdkhttp.HttpMiddleware {
-	return middlewares.DeviceMiddleware(mw.db, mw.creg)
+	return middlewares.DeviceMiddleware(mw.api.db, mw.creg)
 }
 
 func (mw *PluginMiddlewares) CacheResponse(days int) sdkhttp.HttpMiddleware {
 	return middlewares.CacheResponse(days)
 }
 
-func NewPluginMiddlewares(dtb *db.Database, mdls *models.Models, dmgr *connmgr.ClientRegister, pmgr *PaymentsMgr) *PluginMiddlewares {
-	return &PluginMiddlewares{dtb, mdls, dmgr, pmgr}
+func (mw *PluginMiddlewares) PendingPurchaseMw() sdkhttp.HttpMiddleware {
+	return func(next http.Handler) http.Handler {
+		handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			ctx := r.Context()
+			errCode := http.StatusInternalServerError
+			res := mw.api.CoreAPI.HttpAPI.VueResponse()
+
+			client, err := helpers.CurrentClient(r)
+			if err != nil {
+				res.FlashMsg("error", err.Error())
+				res.Json(w, nil, errCode)
+				return
+			}
+
+			mdls := mw.api.models
+			device, err := mdls.Device().Find(ctx, client.Id())
+			if err != nil {
+				res.FlashMsg("error", err.Error())
+				res.Json(w, nil, errCode)
+				return
+			}
+
+			purchase, err := mdls.Purchase().PendingPurchase(ctx, device.Id())
+			if err != nil && !errors.Is(err, sql.ErrNoRows) {
+				res.FlashMsg("error", err.Error())
+				res.Json(w, nil, errCode)
+				return
+			}
+
+			if purchase != nil {
+				res.Redirect(w, routenames.RoutePaymentOptions)
+				return
+			}
+
+			next.ServeHTTP(w, r)
+
+		})
+
+		deviceMw := mw.Device()
+		return deviceMw(handler)
+	}
+
 }

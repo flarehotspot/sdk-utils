@@ -113,9 +113,9 @@ func (self *VueRouteComponent) MountRoute(dataRouter *mux.Router, mws ...func(ht
 
 		// attache middlewares
 	finalHandler := self.GetDataHandler()
-    for i := len(mws) - 1; i >= 0; i-- {
-        finalHandler = mws[i](finalHandler)
-    }
+	for i := len(mws) - 1; i >= 0; i-- {
+		finalHandler = mws[i](finalHandler)
+	}
 
 	// mount vue data path
 	dataRouter.

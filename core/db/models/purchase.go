@@ -4,34 +4,37 @@ import (
 	"context"
 	"database/sql"
 	"log"
-	"strings"
 	"time"
 
 	"github.com/flarehotspot/core/db"
 	models "github.com/flarehotspot/core/sdk/api/models"
 )
 
-type Purchase struct {
-	db              *db.Database
-	models          *Models
-	id              int64
-	deviceId        int64
-	token           string
-	varPrice        bool
-	callbackUrl     string
-	walletDebit     float64
-	walletTxId      *int64
-	confirmedAt     *time.Time
-	cancelledAt     *time.Time
-	cancelledReason *string
-	createdAt       time.Time
-}
-
 func NewPurchase(dtb *db.Database, mdls *Models) *Purchase {
 	return &Purchase{
 		db:     dtb,
 		models: mdls,
 	}
+}
+
+type Purchase struct {
+	db                   *db.Database
+	models               *Models
+	id                   int64
+	deviceId             int64
+	token                string
+	sku                  string
+	name                 string
+	description          string
+	price                float64
+	anyPrice             bool
+	callbackVueRouteName string
+	walletDebit          float64
+	walletTxId           *int64
+	confirmedAt          *time.Time
+	cancelledAt          *time.Time
+	cancelledReason      *string
+	createdAt            time.Time
 }
 
 func (self *Purchase) Id() int64 {
@@ -46,8 +49,24 @@ func (self *Purchase) Token() string {
 	return self.token
 }
 
-func (self *Purchase) VarPrice() bool {
-	return self.varPrice
+func (self *Purchase) Sku() string {
+	return self.sku
+}
+
+func (self *Purchase) Name() string {
+	return self.name
+}
+
+func (self *Purchase) Description() string {
+	return self.description
+}
+
+func (self *Purchase) Price() float64 {
+	return self.price
+}
+
+func (self *Purchase) AnyPrice() bool {
+	return self.anyPrice
 }
 
 func (self *Purchase) WalletDebit() float64 {
@@ -75,7 +94,7 @@ func (self *Purchase) CreatedAt() time.Time {
 }
 
 func (self *Purchase) CallbackUrl() string {
-	return self.callbackUrl
+	return self.callbackVueRouteName
 }
 
 func (self *Purchase) IsConfirmed() bool {
@@ -88,19 +107,6 @@ func (self *Purchase) IsCancelled() bool {
 
 func (self *Purchase) IsProcessed() bool {
 	return self.IsCancelled() || self.IsConfirmed()
-}
-
-func (self *Purchase) ItemsDescTx(tx *sql.Tx, ctx context.Context) (string, error) {
-	items, err := self.PurchaseItemsTx(tx, ctx)
-	if err != nil {
-		log.Println(err)
-		return "", err
-	}
-	names := []string{}
-	for _, item := range items {
-		names = append(names, item.Name())
-	}
-	return strings.Join(names, ","), nil
 }
 
 func (self *Purchase) DeviceTx(tx *sql.Tx, ctx context.Context) (models.IDevice, error) {
@@ -130,12 +136,7 @@ func (self *Purchase) ConfirmTx(tx *sql.Tx, ctx context.Context) error {
 			return nil
 		}
 
-		desc, err := self.ItemsDescTx(tx, ctx)
-		if err != nil {
-			return err
-		}
-
-		desc = "Partial payment for " + desc
+		desc := "Partial payment for " + self.description
 		trns, err := self.models.walletTrnsModel.CreateTx(tx, ctx, wallet.Id(), -dbt, newBal, desc)
 		if err != nil {
 			return err
@@ -161,13 +162,7 @@ func (self *Purchase) CancelTx(tx *sql.Tx, ctx context.Context) error {
 		return err
 	}
 
-	desc, err := self.ItemsDescTx(tx, ctx)
-	if err != nil {
-		log.Println(err)
-		return err
-	}
-
-	desc = "Cancelled purchase for items: " + desc
+	desc := "Cancelled purchase: " + self.description
 	dbt := self.walletDebit
 	cancelledAt := time.Now()
 
@@ -219,10 +214,6 @@ func (self *Purchase) PaymentsTotalTx(tx *sql.Tx, ctx context.Context) (float64,
 	}
 
 	return total, nil
-}
-
-func (self *Purchase) PurchaseItemsTx(tx *sql.Tx, ctx context.Context) ([]models.IPurchaseItem, error) {
-	return self.models.purchaseItemModel.FindByPurchaseTx(tx, ctx, self.id)
 }
 
 func (self *Purchase) StatTx(tx *sql.Tx, ctx context.Context) (*models.PurchaseStat, error) {
@@ -341,21 +332,6 @@ func (self *Purchase) PaymentsTotal(ctx context.Context) (float64, error) {
 	}
 
 	return total, tx.Commit()
-}
-
-func (self *Purchase) PurchaseItems(ctx context.Context) ([]models.IPurchaseItem, error) {
-	tx, err := self.db.SqlDB().BeginTx(ctx, nil)
-	if err != nil {
-		return nil, err
-	}
-	defer tx.Rollback()
-
-	items, err := self.PurchaseItemsTx(tx, ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	return items, tx.Commit()
 }
 
 func (self *Purchase) Stat(ctx context.Context) (*models.PurchaseStat, error) {

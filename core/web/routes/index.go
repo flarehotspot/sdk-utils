@@ -3,14 +3,13 @@ package routes
 import (
 	"github.com/flarehotspot/core/globals"
 	"github.com/flarehotspot/core/web/controllers"
-	"github.com/flarehotspot/core/web/middlewares"
 	"github.com/flarehotspot/core/web/router"
 	"github.com/flarehotspot/core/web/routes/names"
 )
 
 func IndexRoutes(g *globals.CoreGlobals) {
 	rootR := router.RootRouter
-	deviceMw := middlewares.DeviceMiddleware(g.Db, g.ClientRegister)
+    deviceMw := g.CoreAPI.HttpAPI.Middlewares().Device()
 	portalIndexCtrl := deviceMw(controllers.PortalIndexPage(g))
 	adminIndexCtrl := controllers.AdminIndexPage(g)
 

@@ -21,10 +21,6 @@ func (self *PluginModels) Purchase() sdkmodels.IPurchaseModel {
 	return self.models.Purchase()
 }
 
-func (self *PluginModels) PurchaseItem() sdkmodels.IPurchaseItemModel {
-	return self.models.PurchaseItem()
-}
-
 func (self *PluginModels) Payment() sdkmodels.IPaymentModel {
 	return self.models.Payment()
 }

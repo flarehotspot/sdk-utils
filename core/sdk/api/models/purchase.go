@@ -34,8 +34,16 @@ type IPurchase interface {
 	// Returns the purchase token.
 	Token() string
 
+	Sku() string
+
+	Name() string
+
+	Description() string
+
+	Price() float64
+
 	// Returns true if the purchase has variable price.
-	VarPrice() bool
+	AnyPrice() bool
 
 	// Returns the amount deducted from the wallet balance.
 	WalletDebit() float64
@@ -73,9 +81,6 @@ type IPurchase interface {
 	// Cancels the purchase using a database transaction.
 	CancelTx(tx *sql.Tx, ctx context.Context) error
 
-	// Returns the purchase items using a database transaction.
-	PurchaseItemsTx(tx *sql.Tx, ctx context.Context) ([]IPurchaseItem, error)
-
 	// Adds a payment record for this purchase using a database transaction.
 	AddPaymentTx(tx *sql.Tx, ctx context.Context, amount float64, desc string) (IPayment, error)
 
@@ -96,9 +101,6 @@ type IPurchase interface {
 
 	// Cancels the purchase.
 	Cancel(ctx context.Context) error
-
-	// Returns the purchase items.
-	PurchaseItems(ctx context.Context) ([]IPurchaseItem, error)
 
 	// Adds a payment record for this purchase.
 	AddPayment(ctx context.Context, amount float64, desc string) (IPayment, error)

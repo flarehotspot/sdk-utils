@@ -12,9 +12,6 @@ type IModelsApi interface {
 	// Returns the purchases model.
 	Purchase() IPurchaseModel
 
-	// Returns the purchase items model.
-	PurchaseItem() IPurchaseItemModel
-
 	// Returns the payments model.
 	Payment() IPaymentModel
 

@@ -15,7 +15,8 @@ func NewHttpApi(api *PluginApi, db *db.Database, clnt *connmgr.ClientRegister, m
 	httpRouter := NewHttpRouterApi(api, db, clnt)
 	vueRouter := NewVueRouterApi(api)
 	httpResp := NewHttpResponse(api)
-	middlewares := NewPluginMiddlewares(api.db, mdls, dmgr, pmgr)
+	middlewares := NewPluginMiddlewares(api, mdls, dmgr, pmgr)
+
 	return &HttpApi{
 		api:         api,
 		auth:        auth,

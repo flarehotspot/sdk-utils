@@ -8,7 +8,6 @@ type Models struct {
 	deviceModel       *DeviceModel
 	sessionModel      *SessionModel
 	purchaseModel     *PurchaseModel
-	purchaseItemModel *PurchaseItemModel
 	paymentModel      *PaymentModel
 	walletModel       *WalletModel
 	walletTrnsModel   *WalletTrnsModel
@@ -20,7 +19,6 @@ func New(dtb *db.Database) *Models {
 	deviceModel := NewDeviceModel(dtb, &models)
 	sessionModel := NewSessionModel(dtb, &models)
 	purchaseModel := NewPurchaseModel(dtb, &models)
-	purchaseItemModel := NewPurchaseItemModel(dtb, &models)
 	paymentModel := NewPaymentModel(dtb, &models)
 	walletModel := NewWalletModel(dtb, &models)
 	walletTrnsModel := NewWalletTrnsModel(dtb, &models)
@@ -28,7 +26,6 @@ func New(dtb *db.Database) *Models {
 	models.deviceModel = deviceModel
 	models.sessionModel = sessionModel
 	models.purchaseModel = purchaseModel
-	models.purchaseItemModel = purchaseItemModel
 	models.paymentModel = paymentModel
 	models.walletModel = walletModel
 	models.walletTrnsModel = walletTrnsModel
@@ -46,10 +43,6 @@ func (self *Models) Session() *SessionModel {
 
 func (self *Models) Purchase() *PurchaseModel {
 	return self.purchaseModel
-}
-
-func (self *Models) PurchaseItem() *PurchaseItemModel {
-	return self.purchaseItemModel
 }
 
 func (self *Models) Payment() *PaymentModel {

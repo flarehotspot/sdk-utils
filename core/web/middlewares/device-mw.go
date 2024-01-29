@@ -15,6 +15,12 @@ import (
 func DeviceMiddleware(dtb *db.Database, clntMgr *connmgr.ClientRegister) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			clntSym := r.Context().Value(sdkhttp.ClientCtxKey)
+			if clntSym != nil {
+				next.ServeHTTP(w, r)
+				return
+			}
+
 			ip, _, err := net.SplitHostPort(r.RemoteAddr)
 			if err != nil {
 				response.ErrorJson(w, err.Error(), 500)
