@@ -19,6 +19,7 @@ usage() {
     echo
     echo "To use the installed go binary, add these lines to your .bashrc or .zshrc file."
     echo "      export PATH=\"${GO_CUSTOM_PATH}/go/bin:\$PATH\""
+    echo "      export PATH=\"${GO_CUSTOM_PATH}/bin:\$PATH\""
     echo "      export GOROOT=\"${GO_CUSTOM_PATH}/go\""
     echo "      export GOPATH=\"$(dirname $GO_CUSTOM_PATH)/go\""
 }
