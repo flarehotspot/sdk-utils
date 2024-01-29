@@ -1,7 +1,6 @@
 package plugins
 
 import (
-	"errors"
 	"net/http"
 
 	"github.com/flarehotspot/core/connmgr"
@@ -9,6 +8,7 @@ import (
 	"github.com/flarehotspot/core/db/models"
 	sdkconnmgr "github.com/flarehotspot/core/sdk/api/connmgr"
 	sdkhttp "github.com/flarehotspot/core/sdk/api/http"
+	"github.com/flarehotspot/core/web/helpers"
 	"github.com/gorilla/mux"
 )
 
@@ -43,13 +43,7 @@ func (self *HttpApi) Auth() sdkhttp.IAuthApi {
 }
 
 func (self *HttpApi) ClientDevice(r *http.Request) (sdkconnmgr.IClientDevice, error) {
-	sym := r.Context().Value(sdkhttp.ClientCtxKey)
-	clnt, ok := sym.(sdkconnmgr.IClientDevice)
-	if !ok {
-		return nil, errors.New("Can't determine client device")
-	}
-	return clnt, nil
-
+	return helpers.CurrentClient(r)
 }
 
 func (self *HttpApi) HttpRouter() sdkhttp.IHttpRouterApi {
