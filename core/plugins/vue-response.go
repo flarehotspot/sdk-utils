@@ -3,6 +3,7 @@ package plugins
 import (
 	"net/http"
 	"path/filepath"
+	"strings"
 
 	"github.com/flarehotspot/core/web/response"
 )
@@ -57,15 +58,37 @@ func (res *VueResponse) Redirect(w http.ResponseWriter, routename string, pairs 
 		return
 	}
 
-	params := map[string]string{}
+	paramKeys := []string{}
+	pathsegs := strings.Split(route.VueRoutePath, "/")
+	for _, seg := range pathsegs {
+		if strings.HasPrefix(seg, ":") {
+			paramKeys = append(paramKeys, seg[1:])
+		}
+	}
+
+	paramsMap := map[string]string{}
 	for i := 0; i < len(pairs); i += 2 {
-		params[pairs[i]] = pairs[i+1]
+		key := pairs[i]
+		paramsMap[key] = pairs[i+1]
+	}
+
+	params := map[string]string{}
+	for _, key := range paramKeys {
+		params[key] = paramsMap[key]
+	}
+
+	query := map[string]string{}
+	for key, val := range paramsMap {
+		if _, ok := params[key]; !ok {
+			query[key] = val
+		}
 	}
 
 	newdata := res.data[rootjson].(map[string]any)
 	newdata["redirect"] = true
 	newdata["route_name"] = route.VueRouteName
 	newdata["params"] = params
+	newdata["query"] = query
 	data := map[string]any{rootjson: newdata}
 
 	response.Json(w, data, http.StatusOK)

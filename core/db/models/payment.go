@@ -14,7 +14,7 @@ type Payment struct {
 	id         int64
 	purchaseId int64
 	amount     float64
-	method     string
+	optname    string
 	createdAt  time.Time
 }
 
@@ -37,8 +37,8 @@ func (self *Payment) Amount() float64 {
 	return self.amount
 }
 
-func (self *Payment) Method() string {
-	return self.method
+func (self *Payment) OptName() string {
+	return self.optname
 }
 
 func (self *Payment) CreatedAt() time.Time {

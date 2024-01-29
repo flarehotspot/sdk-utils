@@ -19,7 +19,7 @@ func NewPaymentModel(dtb *db.Database, mdls *Models) *PaymentModel {
 }
 
 func (self *PaymentModel) CreateTx(tx *sql.Tx, ctx context.Context, purid int64, amt float64, mtd string) (models.IPayment, error) {
-	query := "INSERT INTO payments (purchase_id, amount, method) VALUES(?, ?, ?)"
+	query := "INSERT INTO payments (purchase_id, amount, optname) VALUES(?, ?, ?)"
 	result, err := tx.ExecContext(ctx, query, purid, amt, mtd)
 	if err != nil {
 		log.Println("SQL Exec Error: ", err)
@@ -37,21 +37,21 @@ func (self *PaymentModel) CreateTx(tx *sql.Tx, ctx context.Context, purid int64,
 
 func (self *PaymentModel) FindTx(tx *sql.Tx, ctx context.Context, id int64) (models.IPayment, error) {
 	payment := NewPayment(self.db, self.models)
-	query := "SELECT id, purchase_id, amount, method, created_at FROM payments WHERE id = ? LIMIT 1"
+	query := "SELECT id, purchase_id, amount, optname, created_at FROM payments WHERE id = ? LIMIT 1"
 	err := tx.QueryRowContext(ctx, query, id).
-		Scan(&payment.id, &payment.purchaseId, &payment.amount, &payment.method, &payment.createdAt)
+		Scan(&payment.id, &payment.purchaseId, &payment.amount, &payment.optname, &payment.createdAt)
 
 	return payment, err
 }
 
 func (self *PaymentModel) FindAllByPurchaseTx(tx *sql.Tx, ctx context.Context, purId int64) ([]models.IPayment, error) {
 	payments := []models.IPayment{}
-	query := "SELECT id, purchase_id, amount, method, created_at FROM payments WHERE purchase_id = ?"
+	query := "SELECT id, purchase_id, amount, optname, created_at FROM payments WHERE purchase_id = ?"
 	rows, err := tx.QueryContext(ctx, query, purId)
 
 	for rows.Next() {
 		pmt := NewPayment(self.db, self.models)
-		err = rows.Scan(&pmt.id, &pmt.purchaseId, &pmt.amount, &pmt.method, &pmt.createdAt)
+		err = rows.Scan(&pmt.id, &pmt.purchaseId, &pmt.amount, &pmt.optname, &pmt.createdAt)
 		if err != nil {
 			return nil, err
 		}

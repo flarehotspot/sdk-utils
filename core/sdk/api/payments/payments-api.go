@@ -9,7 +9,10 @@ import (
 type IPaymentsApi interface {
 
 	// Creates a purchase request and prompts the user for payment.
-	Checkout(w http.ResponseWriter, r *http.Request, purchaseRequest PurchaseRequest)
+	Checkout(w http.ResponseWriter, r *http.Request, purchreq PurchaseRequest)
+
+    // Update the paid amount of the purchase request.
+    PaymentReceived(token string, optname string, amount float64) error
 
 	// Executes the callback URL of a purchase instance after the customer paid for the purchase item(s).
     // It informs the payment requestor that the customer has paid for the purchase.

@@ -18,7 +18,7 @@ type IPayment interface {
 	Amount() float64
 
 	// Returns the payment method.
-	Method() string
+	OptName() string
 
 	// Returns when the payment was created.
 	CreatedAt() time.Time

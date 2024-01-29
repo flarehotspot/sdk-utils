@@ -54,6 +54,10 @@ func (self *PaymentsApi) Checkout(w http.ResponseWriter, r *http.Request, p sdkp
 	purMw(http.HandlerFunc(handler)).ServeHTTP(w, r)
 }
 
+func (self *PaymentsApi) PaymentReceived(token string, optname string, amount float64) error {
+	return nil
+}
+
 func (self *PaymentsApi) ExecCallback(w http.ResponseWriter, r *http.Request, purchase sdkmodels.IPurchase) {
 }
 
