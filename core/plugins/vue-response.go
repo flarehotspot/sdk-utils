@@ -86,7 +86,7 @@ func (res *VueResponse) Redirect(w http.ResponseWriter, routename string, pairs 
 
 	newdata := res.data[rootjson].(map[string]any)
 	newdata["redirect"] = true
-	newdata["route_name"] = route.VueRouteName
+	newdata["routename"] = route.VueRouteName
 	newdata["params"] = params
 	newdata["query"] = query
 	data := map[string]any{rootjson: newdata}
