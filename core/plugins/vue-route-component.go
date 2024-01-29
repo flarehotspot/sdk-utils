@@ -80,15 +80,15 @@ func (self *VueRouteComponent) HttpDataPath() string {
 	return strings.TrimSuffix(path, "/")
 }
 
-func (self *VueRouteComponent) GetDataHandler() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func (self *VueRouteComponent) GetDataHandler() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		res := NewVueResponse(self.api.HttpAPI.vueRouter)
 		if self.handler == nil {
 			res.Json(w, map[string]any{}, http.StatusOK)
 			return
 		}
 		self.handler(w, r)
-	}
+	})
 }
 
 func (self *VueRouteComponent) GetComponentWrapperHandler() http.HandlerFunc {
@@ -100,7 +100,7 @@ func (self *VueRouteComponent) GetComponentWrapperHandler() http.HandlerFunc {
 	}
 }
 
-func (self *VueRouteComponent) MountRoute(dataRouter *mux.Router, mw ...func(http.Handler) http.Handler) {
+func (self *VueRouteComponent) MountRoute(dataRouter *mux.Router, mws ...func(http.Handler) http.Handler) {
 	compRouter := self.api.HttpAPI.httpRouter.pluginRouter.mux
 	cacheMw := middlewares.CacheResponse(365)
 
@@ -112,17 +112,14 @@ func (self *VueRouteComponent) MountRoute(dataRouter *mux.Router, mw ...func(htt
 		Name(self.HttpWrapperRouteName())
 
 		// attache middlewares
-	handler := http.Handler(self.GetDataHandler())
-	if mw != nil {
-		for i := len(mw) - 1; i >= 0; i-- {
-			m := mw[i]
-			handler = m(handler)
-		}
-	}
+	finalHandler := self.GetDataHandler()
+    for i := len(mws) - 1; i >= 0; i-- {
+        finalHandler = mws[i](finalHandler)
+    }
 
 	// mount vue data path
 	dataRouter.
-		Handle(self.HttpDataPath(), handler).
+		Handle(self.HttpDataPath(), finalHandler).
 		Methods("GET").
 		Name(string(self.MuxDataRouteName))
 

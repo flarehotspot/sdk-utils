@@ -9,7 +9,6 @@ import (
 	"github.com/flarehotspot/core/db"
 	"github.com/flarehotspot/core/db/models"
 	"github.com/flarehotspot/core/network"
-	"github.com/flarehotspot/core/payments"
 	plugin "github.com/flarehotspot/core/sdk/api/plugin"
 	"github.com/flarehotspot/core/utils/migrate"
 )
@@ -18,7 +17,7 @@ type PluginsMgr struct {
 	CoreAPI *PluginApi
 	db      *db.Database
 	models  *models.Models
-	paymgr  *payments.PaymentsMgr
+	paymgr  *PaymentsMgr
 	clntReg *connmgr.ClientRegister
 	clntMgr *connmgr.ClientMgr
 	trfkMgr *network.TrafficMgr
@@ -26,7 +25,7 @@ type PluginsMgr struct {
 	utils   *PluginsMgrUtils
 }
 
-func NewPluginMgr(d *db.Database, m *models.Models, paymgr *payments.PaymentsMgr, clntReg *connmgr.ClientRegister, clntMgr *connmgr.ClientMgr, trfkMgr *network.TrafficMgr) *PluginsMgr {
+func NewPluginMgr(d *db.Database, m *models.Models, paymgr *PaymentsMgr, clntReg *connmgr.ClientRegister, clntMgr *connmgr.ClientMgr, trfkMgr *network.TrafficMgr) *PluginsMgr {
 	pmgr := &PluginsMgr{
 		db:      d,
 		models:  m,
@@ -41,7 +40,7 @@ func NewPluginMgr(d *db.Database, m *models.Models, paymgr *payments.PaymentsMgr
 func (pmgr *PluginsMgr) InitCoreApi(coreApi *PluginApi) {
 	pmgr.CoreAPI = coreApi
 	pmgr.utils = NewPluginsMgrUtil(pmgr, coreApi)
-    pmgr.RegisterPlugin(coreApi)
+	pmgr.RegisterPlugin(coreApi)
 }
 
 func (pmgr *PluginsMgr) Plugins() []*PluginApi {

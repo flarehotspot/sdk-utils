@@ -5,7 +5,6 @@ import (
 	"github.com/flarehotspot/core/db"
 	"github.com/flarehotspot/core/db/models"
 	"github.com/flarehotspot/core/network"
-	"github.com/flarehotspot/core/payments"
 	"github.com/flarehotspot/core/plugins"
 	paths "github.com/flarehotspot/core/sdk/utils/paths"
 )
@@ -19,7 +18,7 @@ type CoreGlobals struct {
 	BootProgress   *BootProgress
 	Models         *models.Models
 	PluginMgr      *plugins.PluginsMgr
-	PaymentsMgr    *payments.PaymentsMgr
+	PaymentsMgr    *plugins.PaymentsMgr
 }
 
 func New() *CoreGlobals {
@@ -29,7 +28,7 @@ func New() *CoreGlobals {
 	clntReg := connmgr.NewClientRegister(db, mdls)
 	clntMgr := connmgr.NewClientMgr(db, mdls)
 	trfcMgr := network.NewTrafficMgr()
-	pmtMgr := payments.NewPaymentMgr()
+	pmtMgr := plugins.NewPaymentMgr()
 
 	trfcMgr.Start()
 	clntMgr.ListenTraffic(trfcMgr)

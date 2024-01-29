@@ -1,25 +1,37 @@
 package routes
 
 import (
+	"net/http"
+
 	"github.com/flarehotspot/core/globals"
-	// "github.com/flarehotspot/core/web/controllers/paymentsctrl"
-	// "github.com/flarehotspot/core/web/middlewares"
-	// "github.com/flarehotspot/core/web/router"
-	// "github.com/flarehotspot/core/web/routes/names"
+	sdkhttp "github.com/flarehotspot/core/sdk/api/http"
+	"github.com/flarehotspot/core/web/helpers"
+	routenames "github.com/flarehotspot/core/web/routes/names"
 )
 
 func PaymentRoutes(g *globals.CoreGlobals) {
-	// ctrl := paymentsctrl.NewPaymentsCtrl(g)
-	// deviceMw := middlewares.DeviceMiddleware(g.Db, g.ClientRegister)
-	// r := router.RootRouter().PathPrefix("/payments").Subrouter()
+	g.CoreAPI.HttpAPI.VueRouter().RegisterPortalRoutes(sdkhttp.VuePortalRoute{
+		RouteName: routenames.RoutePaymentOptions,
+		RoutePath: "/payments/options",
+		Component: "payments/customer/PaymentOptions.vue",
+		HandlerFunc: func(w http.ResponseWriter, r *http.Request) {
+			res := g.CoreAPI.HttpAPI.VueResponse()
+			clnt, err := helpers.CurrentClient(r)
+			if err != nil {
+				res.FlashMsg("error", err.Error())
+				res.Json(w, nil, http.StatusInternalServerError)
+				return
+			}
 
-	// r.Use(deviceMw)
-	// r.HandleFunc("/options", ctrl.PaymentOptions).
-	// 	Methods("GET").Name(names.RoutePaymentOptions)
+			methods := map[string]string{}
+			for _, opt := range g.PaymentsMgr.Options(clnt) {
+				methods[opt.Opt.OptName] = opt.VueRoutePath
+			}
 
-	// r.HandleFunc("/{uuid}/selected", ctrl.PaymentOptionSelected).
-	// 	Methods("GET").Name(names.RoutePaymentSelected)
-
-	// r.HandleFunc("/cancel", ctrl.CancelPurchase).
-	// 	Methods("GET").Name(names.RoutePaymentCancel)
+			res.Json(w, methods, http.StatusOK)
+		},
+		Middlewares: []func(http.Handler) http.Handler{
+			g.CoreAPI.HttpAPI.Middlewares().Device(),
+		},
+	})
 }

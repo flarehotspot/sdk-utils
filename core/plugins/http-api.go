@@ -6,12 +6,11 @@ import (
 	"github.com/flarehotspot/core/connmgr"
 	"github.com/flarehotspot/core/db"
 	"github.com/flarehotspot/core/db/models"
-	"github.com/flarehotspot/core/payments"
 	sdkhttp "github.com/flarehotspot/core/sdk/api/http"
 	"github.com/gorilla/mux"
 )
 
-func NewHttpApi(api *PluginApi, db *db.Database, clnt *connmgr.ClientRegister, mdls *models.Models, dmgr *connmgr.ClientRegister, pmgr *payments.PaymentsMgr) *HttpApi {
+func NewHttpApi(api *PluginApi, db *db.Database, clnt *connmgr.ClientRegister, mdls *models.Models, dmgr *connmgr.ClientRegister, pmgr *PaymentsMgr) *HttpApi {
 	auth := NewAuthApi(api)
 	httpRouter := NewHttpRouterApi(api, db, clnt)
 	vueRouter := NewVueRouterApi(api)

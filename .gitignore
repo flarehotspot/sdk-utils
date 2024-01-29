@@ -18,3 +18,4 @@
 main_mono.go
 plugin-init_mono.go
 
+__debug_bin*

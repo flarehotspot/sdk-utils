@@ -18,10 +18,7 @@ func SetupBootRoutes(g *globals.CoreGlobals) {
 func SetupAllRoutes(g *globals.CoreGlobals) {
 	routes.IndexRoutes(g)
 	routes.AssetsRoutes(g)
-	// routes.AuthRoutes(g)
-	// routes.AdminRoutes(g)
-	// routes.PaymentRoutes(g)
-	// routes.ApiRoutes(g)
+	routes.PaymentRoutes(g)
 
 	router.RootRouter.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", http.StatusFound)

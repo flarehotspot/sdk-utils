@@ -12,5 +12,5 @@ type IPaymentProvider interface {
 	Name() string
 
 	// Returns a list of available payment options.
-	PaymentOpts(clnt connmgr.IClientDevice) []IPaymentOpt
+	PaymentOpts(clnt connmgr.IClientDevice) []PaymentOpt
 }
