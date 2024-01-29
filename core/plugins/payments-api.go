@@ -40,14 +40,15 @@ func (self *PaymentsApi) Checkout(w http.ResponseWriter, r *http.Request, p sdkp
 			return
 		}
 
-		if _, err := mdls.Purchase().Create(r.Context(), clnt.Id(), p.Sku, p.Name, p.Description, p.Price, p.AnyPrice, route.VueRouteName); err != nil {
+		purchase, err := mdls.Purchase().Create(r.Context(), clnt.Id(), p.Sku, p.Name, p.Description, p.Price, p.AnyPrice, route.VueRouteName)
+		if err != nil {
 			res.FlashMsg("error", err.Error())
 			res.Json(w, nil, http.StatusInternalServerError)
 			return
 		}
 
 		coreApi := self.api.CoreAPI
-		coreApi.HttpAPI.VueResponse().Redirect(w, routenames.RoutePaymentOptions)
+		coreApi.HttpAPI.VueResponse().Redirect(w, routenames.RoutePaymentOptions, "token", purchase.Token())
 	}
 
 	purMw := self.api.HttpAPI.middlewares.PendingPurchaseMw()

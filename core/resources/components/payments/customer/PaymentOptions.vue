@@ -12,7 +12,10 @@
 define(function () {
     return {
         props: ['flareView'],
-        template: template
+        template: template,
+        mounted: function () {
+            console.log(this.$route);
+        }
     };
 });
 </script>
