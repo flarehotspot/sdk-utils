@@ -4,18 +4,18 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/flarehotspot/core/globals"
+	"github.com/flarehotspot/core/plugins"
 	"github.com/flarehotspot/core/web/router"
 	"github.com/flarehotspot/core/web/routes"
 	"github.com/gorilla/mux"
 )
 
-func SetupBootRoutes(g *globals.CoreGlobals) {
+func SetupBootRoutes(g *plugins.CoreGlobals) {
 	routes.BootRoutes(g)
 	routes.CoreAssets(g)
 }
 
-func SetupAllRoutes(g *globals.CoreGlobals) {
+func SetupAllRoutes(g *plugins.CoreGlobals) {
 	routes.IndexRoutes(g)
 	routes.AssetsRoutes(g)
 	routes.PaymentRoutes(g)

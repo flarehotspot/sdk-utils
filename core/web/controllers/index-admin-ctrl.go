@@ -6,13 +6,12 @@ import (
 	"path/filepath"
 
 	"github.com/flarehotspot/core/config"
-	"github.com/flarehotspot/core/globals"
 	"github.com/flarehotspot/core/plugins"
 	"github.com/flarehotspot/core/utils/assets"
 	"github.com/flarehotspot/core/web/response"
 )
 
-func AdminIndexPage(g *globals.CoreGlobals) http.Handler {
+func AdminIndexPage(g *plugins.CoreGlobals) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		cfg, err := config.ReadThemesConfig()
 		if err != nil {

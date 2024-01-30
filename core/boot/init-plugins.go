@@ -4,11 +4,10 @@ import (
 	"log"
 
 	"github.com/flarehotspot/core/config"
-	"github.com/flarehotspot/core/globals"
 	"github.com/flarehotspot/core/plugins"
 )
 
-func InitPlugins(g *globals.CoreGlobals) error {
+func InitPlugins(g *plugins.CoreGlobals) error {
 	bp := g.BootProgress
 
 	out := plugins.InstallPlugins()

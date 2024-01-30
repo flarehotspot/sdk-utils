@@ -4,12 +4,12 @@ package main
 
 import (
 	"github.com/flarehotspot/core/boot"
-	"github.com/flarehotspot/core/globals"
+	"github.com/flarehotspot/core/plugins"
 )
 
 func main() {}
 
 func Init() {
-	g := globals.New()
+	g := plugins.New()
 	boot.Init(g)
 }

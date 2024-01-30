@@ -1,4 +1,4 @@
-package sdkmodels
+package sdkmdls
 
 // IModelsApi is the database models API.
 type IModelsApi interface {

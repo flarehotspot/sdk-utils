@@ -1,4 +1,4 @@
-package sdkmodels
+package sdkmdls
 
 import "errors"
 

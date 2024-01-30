@@ -18,7 +18,7 @@ type ClientSession struct {
 	mdls      *models.Models
 	id        int64
 	devId     int64
-	t         sdkmodels.SessionType
+	t         sdkmdls.SessionType
 	timeSecs  uint
 	dataMb    float64
 	timeCons  uint
@@ -31,7 +31,7 @@ type ClientSession struct {
 	createdAt time.Time
 }
 
-func NewClientSession(dtb *db.Database, mdls *models.Models, s sdkmodels.ISession) connmgr.IClientSession {
+func NewClientSession(dtb *db.Database, mdls *models.Models, s sdkmdls.ISession) connmgr.IClientSession {
 	cs := &ClientSession{db: dtb, mdls: mdls}
 	cs.load(s)
 	return cs
@@ -49,7 +49,7 @@ func (cs *ClientSession) DeviceId() int64 {
 	return cs.devId
 }
 
-func (cs *ClientSession) Type() sdkmodels.SessionType {
+func (cs *ClientSession) Type() sdkmdls.SessionType {
 	cs.mu.RLock()
 	defer cs.mu.RUnlock()
 	return cs.t
@@ -225,7 +225,7 @@ func (cs *ClientSession) Save(ctx context.Context) error {
 	return err
 }
 
-func (cs *ClientSession) SessionModel() sdkmodels.ISession {
+func (cs *ClientSession) SessionModel() sdkmdls.ISession {
 	cs.mu.RLock()
 	defer cs.mu.RUnlock()
 	return models.BuildSession(
@@ -270,10 +270,10 @@ func (cs *ClientSession) expiresAt() *time.Time {
 	return nil
 }
 
-func (cs *ClientSession) load(s sdkmodels.ISession) {
+func (cs *ClientSession) load(s sdkmdls.ISession) {
 	cs.id = s.Id()
 	cs.devId = s.DeviceId()
-	cs.t = sdkmodels.SessionType(s.SessionType())
+	cs.t = sdkmdls.SessionType(s.SessionType())
 	cs.timeSecs = s.TimeSecs()
 	cs.dataMb = s.DataMbyte()
 	cs.timeCons = s.TimeConsumed()

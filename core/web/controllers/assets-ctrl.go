@@ -5,18 +5,18 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/flarehotspot/core/globals"
+	"github.com/flarehotspot/core/plugins"
 	fs "github.com/flarehotspot/core/sdk/utils/fs"
 	"github.com/flarehotspot/core/web/response"
 	"github.com/gorilla/mux"
 )
 
-func NewAssetsCtrl(g *globals.CoreGlobals) *AssetsCtrl {
+func NewAssetsCtrl(g *plugins.CoreGlobals) *AssetsCtrl {
 	return &AssetsCtrl{g}
 }
 
 type AssetsCtrl struct {
-	g *globals.CoreGlobals
+	g *plugins.CoreGlobals
 }
 
 func (c *AssetsCtrl) GetFavicon(w http.ResponseWriter, r *http.Request) {

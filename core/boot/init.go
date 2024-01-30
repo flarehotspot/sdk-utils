@@ -5,10 +5,10 @@ import (
 	"log"
 	"time"
 
-	"github.com/flarehotspot/core/globals"
+	"github.com/flarehotspot/core/plugins"
 )
 
-func Init(g *globals.CoreGlobals) {
+func Init(g *plugins.CoreGlobals) {
 	bp := g.BootProgress
 	now := time.Now()
 

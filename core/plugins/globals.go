@@ -1,24 +1,23 @@
-package globals
+package plugins
 
 import (
 	"github.com/flarehotspot/core/connmgr"
 	"github.com/flarehotspot/core/db"
 	"github.com/flarehotspot/core/db/models"
 	"github.com/flarehotspot/core/network"
-	"github.com/flarehotspot/core/plugins"
 	paths "github.com/flarehotspot/core/sdk/utils/paths"
 )
 
 type CoreGlobals struct {
 	Db             *db.Database
-	CoreAPI        *plugins.PluginApi
+	CoreAPI        *PluginApi
 	ClientRegister *connmgr.ClientRegister
 	ClientMgr      *connmgr.ClientMgr
 	TrafficMgr     *network.TrafficMgr
 	BootProgress   *BootProgress
 	Models         *models.Models
-	PluginMgr      *plugins.PluginsMgr
-	PaymentsMgr    *plugins.PaymentsMgr
+	PluginMgr      *PluginsMgr
+	PaymentsMgr    *PaymentsMgr
 }
 
 func New() *CoreGlobals {
@@ -28,13 +27,13 @@ func New() *CoreGlobals {
 	clntReg := connmgr.NewClientRegister(db, mdls)
 	clntMgr := connmgr.NewClientMgr(db, mdls)
 	trfcMgr := network.NewTrafficMgr()
-	pmtMgr := plugins.NewPaymentMgr()
+	pmtMgr := NewPaymentMgr()
 
 	trfcMgr.Start()
 	clntMgr.ListenTraffic(trfcMgr)
 
-	plgnMgr := plugins.NewPluginMgr(db, mdls, pmtMgr, clntReg, clntMgr, trfcMgr)
-	coreApi := plugins.NewPluginApi(paths.CoreDir, plgnMgr, trfcMgr)
+	plgnMgr := NewPluginMgr(db, mdls, pmtMgr, clntReg, clntMgr, trfcMgr)
+	coreApi := NewPluginApi(paths.CoreDir, plgnMgr, trfcMgr)
 	plgnMgr.InitCoreApi(coreApi)
 
 	return &CoreGlobals{db, coreApi, clntReg, clntMgr, trfcMgr, bp, mdls, plgnMgr, pmtMgr}

@@ -1,4 +1,4 @@
-package sdkmodels
+package sdkmdls
 
 func SessionToMap(model ISession) map[string]any {
 	return map[string]any{

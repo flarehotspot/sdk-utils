@@ -3,13 +3,13 @@ package routes
 import (
 	"net/http"
 
-	"github.com/flarehotspot/core/globals"
+	"github.com/flarehotspot/core/plugins"
 	sdkhttp "github.com/flarehotspot/core/sdk/api/http"
 	"github.com/flarehotspot/core/web/helpers"
 	routenames "github.com/flarehotspot/core/web/routes/names"
 )
 
-func PaymentRoutes(g *globals.CoreGlobals) {
+func PaymentRoutes(g *plugins.CoreGlobals) {
 	g.CoreAPI.HttpAPI.VueRouter().RegisterPortalRoutes(sdkhttp.VuePortalRoute{
 		RouteName: routenames.RoutePaymentOptions,
 		RoutePath: "/payments/options",

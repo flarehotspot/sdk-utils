@@ -3,17 +3,17 @@ package apictrl
 import (
 	"net/http"
 
-	"github.com/flarehotspot/core/globals"
+	"github.com/flarehotspot/core/plugins"
 	"github.com/flarehotspot/core/web/helpers"
 	"github.com/flarehotspot/core/web/response"
 	models "github.com/flarehotspot/core/sdk/api/models"
 )
 
 type ClientApiCtrl struct {
-	g *globals.CoreGlobals
+	g *plugins.CoreGlobals
 }
 
-func NewClientApiCtrl(g *globals.CoreGlobals) *ClientApiCtrl {
+func NewClientApiCtrl(g *plugins.CoreGlobals) *ClientApiCtrl {
 	return &ClientApiCtrl{g}
 }
 

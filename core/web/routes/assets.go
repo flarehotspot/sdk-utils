@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"path/filepath"
 
-	"github.com/flarehotspot/core/globals"
+	"github.com/flarehotspot/core/plugins"
 	paths "github.com/flarehotspot/core/sdk/utils/paths"
 	"github.com/flarehotspot/core/web/controllers"
 	"github.com/flarehotspot/core/web/middlewares"
@@ -12,7 +12,7 @@ import (
 	routenames "github.com/flarehotspot/core/web/routes/names"
 )
 
-func AssetsRoutes(g *globals.CoreGlobals) {
+func AssetsRoutes(g *plugins.CoreGlobals) {
 	cacheMw := middlewares.CacheResponse(365)
 	assetsCtrl := controllers.NewAssetsCtrl(g)
 
@@ -46,7 +46,7 @@ func AssetsRoutes(g *globals.CoreGlobals) {
 	router.RootRouter.PathPrefix(prefix).Handler(fileserver)
 }
 
-func CoreAssets(g *globals.CoreGlobals) {
+func CoreAssets(g *plugins.CoreGlobals) {
 	assetsDir := g.CoreAPI.Utl.Resource("assets")
 	fs := http.FileServer(http.Dir(assetsDir))
 	prefix := g.CoreAPI.HttpApi().Helpers().AssetPath("")

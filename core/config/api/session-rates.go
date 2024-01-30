@@ -5,7 +5,7 @@ import (
 
 	"github.com/flarehotspot/core/config"
 	sdkcfg "github.com/flarehotspot/core/sdk/api/config"
-	sdkmodels "github.com/flarehotspot/core/sdk/api/models"
+	sdkmdls "github.com/flarehotspot/core/sdk/api/models"
 	sdkslices "github.com/flarehotspot/core/sdk/utils/slices"
 	sdkstr "github.com/flarehotspot/core/sdk/utils/strings"
 	networkutil "github.com/flarehotspot/core/utils/network"
@@ -102,7 +102,7 @@ func (c *SessionRatesApi) Write(rates []sdkcfg.SessionRate) ([]sdkcfg.SessionRat
 	return rates, nil
 }
 
-func (c *SessionRatesApi) ComputeSession(clientIP string, amount float64, t sdkmodels.SessionType) (sdkcfg.SessionResult, error) {
+func (c *SessionRatesApi) ComputeSession(clientIP string, amount float64, t sdkmdls.SessionType) (sdkcfg.SessionResult, error) {
 	log.Println("TODO: ComputeSession()")
 	return sdkcfg.SessionResult{
 		TimeMins:   100,

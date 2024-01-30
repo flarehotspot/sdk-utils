@@ -9,27 +9,27 @@ type PluginModels struct {
 	models *models.Models
 }
 
-func (self *PluginModels) Device() sdkmodels.IDeviceModel {
+func (self *PluginModels) Device() sdkmdls.IDeviceModel {
 	return self.models.Device()
 }
 
-func (self *PluginModels) Session() sdkmodels.ISessionModel {
+func (self *PluginModels) Session() sdkmdls.ISessionModel {
 	return self.models.Session()
 }
 
-func (self *PluginModels) Purchase() sdkmodels.IPurchaseModel {
+func (self *PluginModels) Purchase() sdkmdls.IPurchaseModel {
 	return self.models.Purchase()
 }
 
-func (self *PluginModels) Payment() sdkmodels.IPaymentModel {
+func (self *PluginModels) Payment() sdkmdls.IPaymentModel {
 	return self.models.Payment()
 }
 
-func (self *PluginModels) Wallet() sdkmodels.IWalletModel {
+func (self *PluginModels) Wallet() sdkmdls.IWalletModel {
 	return self.models.Wallet()
 }
 
-func (self *PluginModels) WalletTrns() sdkmodels.IWalletTrnsModel {
+func (self *PluginModels) WalletTrns() sdkmdls.IWalletTrnsModel {
 	return self.models.WalletTrns()
 }
 

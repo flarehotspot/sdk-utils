@@ -6,12 +6,12 @@ import (
 	"log"
 	"time"
 
-	"github.com/flarehotspot/core/globals"
+	"github.com/flarehotspot/core/plugins"
 	"github.com/flarehotspot/core/web"
 	"github.com/flarehotspot/core/web/router"
 )
 
-func InitHttpServer(g *globals.CoreGlobals) {
+func InitHttpServer(g *plugins.CoreGlobals) {
 	web.SetupBootRoutes(g)
 	server := web.StartServer(router.BootingRouter, false)
 

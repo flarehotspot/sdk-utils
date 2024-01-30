@@ -20,7 +20,7 @@ type ClientDevice struct {
 	hostname string
 }
 
-func NewClientDevice(dtb *db.Database, mdls *models.Models, d sdkmodels.IDevice) *ClientDevice {
+func NewClientDevice(dtb *db.Database, mdls *models.Models, d sdkmdls.IDevice) *ClientDevice {
 	return &ClientDevice{
 		db:       dtb,
 		mdls:     mdls,

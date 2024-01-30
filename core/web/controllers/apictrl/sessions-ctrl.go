@@ -3,17 +3,17 @@ package apictrl
 import (
 	"net/http"
 
-	"github.com/flarehotspot/core/globals"
+	"github.com/flarehotspot/core/plugins"
+	sdkmdls "github.com/flarehotspot/core/sdk/api/models"
 	"github.com/flarehotspot/core/web/helpers"
 	"github.com/flarehotspot/core/web/response"
-	models "github.com/flarehotspot/core/sdk/api/models"
 )
 
 type SessionsApiCtrl struct {
-	g *globals.CoreGlobals
+	g *plugins.CoreGlobals
 }
 
-func NewSessionsApiCtrl(g *globals.CoreGlobals) *SessionsApiCtrl {
+func NewSessionsApiCtrl(g *plugins.CoreGlobals) *SessionsApiCtrl {
 	return &SessionsApiCtrl{g}
 }
 
@@ -33,12 +33,12 @@ func (self *SessionsApiCtrl) Index(w http.ResponseWriter, r *http.Request) {
 	var currmap map[string]any
 	curr, ok := self.g.ClientMgr.CurrSession(clnt)
 	if ok {
-		currmap = models.SessionToMap(curr.SessionModel())
+		currmap = sdkmdls.SessionToMap(curr.SessionModel())
 	}
 
 	smap := []map[string]any{}
 	for _, s := range sessions {
-		m := models.SessionToMap(s)
+		m := sdkmdls.SessionToMap(s)
 		smap = append(smap, m)
 	}
 

@@ -4,12 +4,12 @@ import (
 	"log"
 	"path/filepath"
 
-	"github.com/flarehotspot/core/globals"
+	"github.com/flarehotspot/core/plugins"
 	paths "github.com/flarehotspot/core/sdk/utils/paths"
 	"github.com/flarehotspot/core/utils/migrate"
 )
 
-func RunMigrations(g *globals.CoreGlobals) {
+func RunMigrations(g *plugins.CoreGlobals) {
 	db := g.Db.SqlDB()
 
 	err := migrate.Init(db)

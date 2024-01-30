@@ -60,7 +60,7 @@ func (self *Device) ReloadTx(tx *sql.Tx, ctx context.Context) error {
 	return nil
 }
 
-func (self *Device) WalletTx(tx *sql.Tx, ctx context.Context) (sdkmodels.IWallet, error) {
+func (self *Device) WalletTx(tx *sql.Tx, ctx context.Context) (sdkmdls.IWallet, error) {
 	wallet, err := self.models.walletModel.FindByDeviceTx(tx, ctx, self.id)
 	if err != nil && errors.Is(err, sql.ErrNoRows) {
 		wallet, err = self.models.walletModel.CreateTx(tx, ctx, self.id, 0)
@@ -80,11 +80,11 @@ func (self *Device) UpdateTx(tx *sql.Tx, ctx context.Context, mac string, ip str
 	return nil
 }
 
-func (self *Device) NextSessionTx(tx *sql.Tx, ctx context.Context) (sdkmodels.ISession, error) {
+func (self *Device) NextSessionTx(tx *sql.Tx, ctx context.Context) (sdkmdls.ISession, error) {
 	return self.models.sessionModel.AvlForDevTx(tx, ctx, self.id)
 }
 
-func (self *Device) SessionsTx(tx *sql.Tx, ctx context.Context) ([]sdkmodels.ISession, error) {
+func (self *Device) SessionsTx(tx *sql.Tx, ctx context.Context) ([]sdkmdls.ISession, error) {
 	return self.models.sessionModel.SessionsForDevTx(tx, ctx, self.id)
 }
 
@@ -118,7 +118,7 @@ func (self *Device) Update(ctx context.Context, mac string, ip string, hostname 
 	return tx.Commit()
 }
 
-func (self *Device) Wallet(ctx context.Context) (sdkmodels.IWallet, error) {
+func (self *Device) Wallet(ctx context.Context) (sdkmdls.IWallet, error) {
 	tx, err := self.db.SqlDB().BeginTx(ctx, nil)
 	if err != nil {
 		return nil, err
@@ -133,7 +133,7 @@ func (self *Device) Wallet(ctx context.Context) (sdkmodels.IWallet, error) {
 	return wallet, tx.Commit()
 }
 
-func (self *Device) NextSession(ctx context.Context) (sdkmodels.ISession, error) {
+func (self *Device) NextSession(ctx context.Context) (sdkmdls.ISession, error) {
 	tx, err := self.db.SqlDB().BeginTx(ctx, nil)
 	if err != nil {
 		return nil, err
@@ -148,7 +148,7 @@ func (self *Device) NextSession(ctx context.Context) (sdkmodels.ISession, error)
 	return s, tx.Commit()
 }
 
-func (self *Device) Sessions(ctx context.Context) ([]sdkmodels.ISession, error) {
+func (self *Device) Sessions(ctx context.Context) ([]sdkmdls.ISession, error) {
 	tx, err := self.db.SqlDB().BeginTx(ctx, nil)
 	if err != nil {
 		return nil, err

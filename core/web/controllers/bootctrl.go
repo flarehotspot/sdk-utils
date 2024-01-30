@@ -3,7 +3,6 @@ package controllers
 import (
 	"net/http"
 
-	"github.com/flarehotspot/core/globals"
 	"github.com/flarehotspot/core/plugins"
 	sse "github.com/flarehotspot/core/sdk/utils/sse"
 	"github.com/flarehotspot/core/web/helpers"
@@ -11,7 +10,7 @@ import (
 )
 
 type BootCtrl struct {
-	bp   *globals.BootProgress
+	bp   *plugins.BootProgress
 	pmgr *plugins.PluginsMgr
 	api  *plugins.PluginApi
 }
@@ -56,6 +55,6 @@ func (b *BootCtrl) Middleware(next http.Handler) http.Handler {
 	})
 }
 
-func NewBootCtrl(g *globals.CoreGlobals, pmgr *plugins.PluginsMgr, api *plugins.PluginApi) BootCtrl {
+func NewBootCtrl(g *plugins.CoreGlobals, pmgr *plugins.PluginsMgr, api *plugins.PluginApi) BootCtrl {
 	return BootCtrl{g.BootProgress, pmgr, api}
 }

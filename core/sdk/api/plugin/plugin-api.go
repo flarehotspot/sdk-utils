@@ -9,7 +9,7 @@ import (
 	sdkconnmgr "github.com/flarehotspot/core/sdk/api/connmgr"
 	sdkhttp "github.com/flarehotspot/core/sdk/api/http"
 	sdkinappur "github.com/flarehotspot/core/sdk/api/inappur"
-	sdkmodels "github.com/flarehotspot/core/sdk/api/models"
+	sdkmdls "github.com/flarehotspot/core/sdk/api/models"
 	sdknet "github.com/flarehotspot/core/sdk/api/network"
 	sdkpayments "github.com/flarehotspot/core/sdk/api/payments"
 	sdktheme "github.com/flarehotspot/core/sdk/api/themes"
@@ -41,7 +41,7 @@ type IPluginApi interface {
 	DbApi() *sql.DB
 
 	// Returns an instance of models api.
-	ModelsApi() sdkmodels.IModelsApi
+	ModelsApi() sdkmdls.IModelsApi
 
 	// Returns an instance of accounts api.
 	AcctApi() sdkacct.IAcctApi

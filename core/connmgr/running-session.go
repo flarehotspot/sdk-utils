@@ -309,12 +309,12 @@ func (rs *RunningSession) isConsumed() bool {
 	s := rs.session
 	t := s.Type()
 
-	if t == sdkmodels.SessionTypeTime || t == sdkmodels.SessionTypeTimeOrData {
+	if t == sdkmdls.SessionTypeTime || t == sdkmdls.SessionTypeTimeOrData {
 		isTimeConsumed := s.TimeConsumption() >= s.TimeSecs()
 		return isTimeConsumed || rs.expired()
 	}
 
-	if t == sdkmodels.SessionTypeData || t == sdkmodels.SessionTypeTimeOrData {
+	if t == sdkmdls.SessionTypeData || t == sdkmdls.SessionTypeTimeOrData {
 		isDataConsumed := s.DataConsumption() >= s.DataMb()
 		return isDataConsumed || rs.expired()
 	}
