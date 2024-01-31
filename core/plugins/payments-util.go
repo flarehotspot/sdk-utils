@@ -22,7 +22,7 @@ func ParsePurchaseReq(r *http.Request) (*payments.PurchaseRequest, error) {
 	return &params, nil
 }
 
-func ParsePaymentInfo(dtb *db.Database, mdls models.IModelsApi, r *http.Request) (*payments.PaymentInfo, error) {
+func ParsePaymentInfo(dtb *db.Database, mdls models.IModels, r *http.Request) (*payments.PaymentInfo, error) {
 	ctx := r.Context()
 	tx, err := dtb.SqlDB().BeginTx(ctx, nil)
 	if err != nil {

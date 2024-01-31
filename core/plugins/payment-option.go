@@ -8,7 +8,7 @@ import (
 
 func NewPaymentOpt(api plugin.IPluginApi, opt payments.PaymentOpt) PaymentOption {
 	uuid := api.Pkg() + "::" + opt.OptName
-	vrouter := api.HttpApi().VueRouter().(*VueRouterApi)
+	vrouter := api.Http().VueRouter().(*VueRouterApi)
 	var path, name string
 	path = sdkhttp.VueNotFoundPath
 	if route, ok := vrouter.FindVueRoute(opt.VueRouteName); ok {

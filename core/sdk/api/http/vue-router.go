@@ -9,8 +9,8 @@ const (
 type VueAdminNavsFunc func(r *http.Request) []VueAdminNav
 type VuePortalItemsFunc func(r *http.Request) []VuePortalItem
 
-// IVueRouterApi is used to create navigation items in the application.
-type IVueRouterApi interface {
+// IVueRouter is used to create navigation items in the application.
+type IVueRouter interface {
 	// Set admin vue route
 	RegisterAdminRoutes(routes ...VueAdminRoute)
 

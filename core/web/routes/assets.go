@@ -33,7 +33,7 @@ func AssetsRoutes(g *plugins.CoreGlobals) {
 	for _, p := range allPlugins {
 		assetsDir := filepath.Join(p.Utils().Resource("assets"))
 		fs := http.FileServer(http.Dir(assetsDir))
-		prefix := p.HttpApi().Helpers().AssetPath("")
+		prefix := p.Http().Helpers().AssetPath("")
 		fileserver := middlewares.AssetPath(http.StripPrefix(prefix, fs))
 		router.RootRouter.PathPrefix(prefix).Handler(fileserver)
 	}
@@ -49,7 +49,7 @@ func AssetsRoutes(g *plugins.CoreGlobals) {
 func CoreAssets(g *plugins.CoreGlobals) {
 	assetsDir := g.CoreAPI.Utl.Resource("assets")
 	fs := http.FileServer(http.Dir(assetsDir))
-	prefix := g.CoreAPI.HttpApi().Helpers().AssetPath("")
+	prefix := g.CoreAPI.Http().Helpers().AssetPath("")
 	fileserver := middlewares.AssetPath(http.StripPrefix(prefix, fs))
 	router.RootRouter.PathPrefix(prefix).Handler(fileserver)
 }

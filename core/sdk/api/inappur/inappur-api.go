@@ -2,8 +2,8 @@ package sdkinappur
 
 import "net/http"
 
-// InAppPurchaseApi is used to perform purchases and subscriptions.
-type InAppPurchaseApi interface {
+// InAppPurchases is used to perform purchases and subscriptions.
+type InAppPurchases interface {
 	// Verify if user has already purchased the item.
 	VerifyPurchase(InAppCheckoutItem) error
 

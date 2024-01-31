@@ -1,7 +1,7 @@
 package sdkcfg
 
-// IConfigApi is used to access the configuration API.
-type IConfigApi interface {
+// IConfig is used to access the configuration API.
+type IConfig interface {
 	// Get the plugin configuration guration api.
 	Plugin() IPluginCfg
 

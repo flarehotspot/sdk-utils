@@ -38,31 +38,31 @@ type IPluginApi interface {
 	Dir() string
 
 	// Returns an instance of database/sql package from go standard library.
-	DbApi() *sql.DB
+	Db() *sql.DB
 
 	// Returns an instance of models api.
-	ModelsApi() sdkmdls.IModelsApi
+	Models() sdkmdls.IModels
 
 	// Returns an instance of accounts api.
-	AcctApi() sdkacct.IAcctApi
+	Acct() sdkacct.IAcct
 
 	// Returns an instance of http api.
-	HttpApi() sdkhttp.IHttpApi
+	Http() sdkhttp.IHttp
 
 	// Returns an instance of config api.
-	ConfigApi() sdkcfg.IConfigApi
+	Config() sdkcfg.IConfig
 
 	// Returns an instance of payments api.
-	PaymentsApi() sdkpayments.IPaymentsApi
+	Payments() sdkpayments.IPayments
 
 	// Returns an instance of network api.
-	NetworkApi() sdknet.INetworkApi
+	Network() sdknet.INetwork
 
 	// Returns an instance of ads api.
-	AdsApi() sdkads.IAdsApi
+	Ads() sdkads.IAdsApi
 
 	// Returns an instance of in-app purchase api.
-	InAppPurchaseApi() sdkinappur.InAppPurchaseApi
+	InAppPurchases() sdkinappur.InAppPurchases
 
 	// Returns an instance of the plugin manager.
 	PluginMgr() IPluginMgr
@@ -74,9 +74,9 @@ type IPluginApi interface {
 	ClientMgr() sdkconnmgr.IClientMgr
 
 	// Returns an instance of the uci api.
-	UciApi() sdkuci.IUciApi
+	Uci() sdkuci.IUciApi
 
-	ThemesApi() sdktheme.IThemesApi
+	Themes() sdktheme.IThemesApi
 
 	Utils() IPluginUtils
 }

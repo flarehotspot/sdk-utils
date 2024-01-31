@@ -25,7 +25,7 @@ func (r *HttpRouter) Post(path string, h http.HandlerFunc) sdkhttp.IHttpRoute {
 	return &HttpRoute{r.api, route}
 }
 
-func (r *HttpRouter) Group(path string, fn func(sdkhttp.IHttpRouter)) {
+func (r *HttpRouter) Group(path string, fn func(sdkhttp.IRouter)) {
 	router := r.mux.PathPrefix(path).Subrouter()
 	newrouter := &HttpRouter{api: r.api, mux: router}
 	fn(newrouter)

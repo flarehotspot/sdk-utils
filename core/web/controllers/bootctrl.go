@@ -22,7 +22,7 @@ func (b *BootCtrl) IndexPage(w http.ResponseWriter, r *http.Request) {
 		"done":   b.bp.IsDone(),
 	}
 
-	b.api.HttpApi().HttpResponse().View(w, r, "booting/index.html", data)
+	b.api.Http().HttpResponse().View(w, r, "booting/index.html", data)
 }
 
 func (b *BootCtrl) SseHandler(w http.ResponseWriter, r *http.Request) {

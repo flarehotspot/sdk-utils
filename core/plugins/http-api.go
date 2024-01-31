@@ -38,7 +38,7 @@ type HttpApi struct {
 	middlewares *PluginMiddlewares
 }
 
-func (self *HttpApi) Auth() sdkhttp.IAuthApi {
+func (self *HttpApi) Auth() sdkhttp.IAuth {
 	return self.auth
 }
 
@@ -46,11 +46,11 @@ func (self *HttpApi) GetDevice(r *http.Request) (sdkconnmgr.IClientDevice, error
 	return helpers.CurrentClient(r)
 }
 
-func (self *HttpApi) HttpRouter() sdkhttp.IHttpRouterApi {
+func (self *HttpApi) HttpRouter() sdkhttp.IHttpRouter {
 	return self.httpRouter
 }
 
-func (self *HttpApi) VueRouter() sdkhttp.IVueRouterApi {
+func (self *HttpApi) VueRouter() sdkhttp.IVueRouter {
 	return self.vueRouter
 }
 

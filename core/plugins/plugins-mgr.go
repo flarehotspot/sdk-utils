@@ -99,7 +99,7 @@ func (pmgr *PluginsMgr) All() []plugin.IPluginApi {
 func (pmgr *PluginsMgr) PaymentMethods() []plugin.IPluginApi {
 	methods := []plugin.IPluginApi{}
 	for _, p := range pmgr.plugins {
-		pmnt := p.PaymentsApi().(*PaymentsApi)
+		pmnt := p.Payments().(*PaymentsApi)
 		if pmnt.paymentsMgr != nil {
 			methods = append(methods, p)
 		}

@@ -26,7 +26,7 @@ func AdminIndexPage(g *plugins.CoreGlobals) http.Handler {
 			return
 		}
 
-		themesApi := themePlugin.ThemesApi().(*plugins.ThemesApi)
+		themesApi := themePlugin.Themes().(*plugins.ThemesApi)
 		routes := g.PluginMgr.Utils().GetAdminRoutes()
 
 		appcfg, err := config.ReadApplicationConfig()
@@ -105,6 +105,6 @@ func AdminIndexPage(g *plugins.CoreGlobals) http.Handler {
 		}
 
 		api := g.CoreAPI
-		api.HttpApi().HttpResponse().View(w, r, "admin/index.html", vdata)
+		api.Http().HttpResponse().View(w, r, "admin/index.html", vdata)
 	})
 }

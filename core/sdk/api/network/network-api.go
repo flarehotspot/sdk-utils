@@ -1,7 +1,7 @@
 package sdknet
 
-// INetworkApi is used to get network data from the system.
-type INetworkApi interface {
+// INetwork is used to get network data from the system.
+type INetwork interface {
 
 	// Returns a list of all network devices.
 	ListDevices() ([]INetworkDevice, error)

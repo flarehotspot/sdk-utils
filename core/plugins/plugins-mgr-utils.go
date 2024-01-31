@@ -23,7 +23,7 @@ type PluginsMgrUtils struct {
 func (util *PluginsMgrUtils) GetAdminRoutes() []map[string]any {
 	routes := []*VueRouteComponent{}
 	for _, p := range util.pmgr.All() {
-		vueR := p.HttpApi().VueRouter().(*VueRouterApi)
+		vueR := p.Http().VueRouter().(*VueRouterApi)
 		adminRoutes := vueR.adminRoutes
 		routes = append(routes, adminRoutes...)
 	}
@@ -47,7 +47,7 @@ func (util *PluginsMgrUtils) GetAdminRoutes() []map[string]any {
 		log.Println("Invalid admin theme: ", themecfg.Admin)
 	}
 
-	themesApi := themesPlugin.ThemesApi().(*ThemesApi)
+	themesApi := themesPlugin.Themes().(*ThemesApi)
 	children = append(children, map[string]any{
 		"path":     "*",
 		"redirect": themesApi.AdminDashboardRoute.VueRoutePath,
@@ -79,7 +79,7 @@ func (util *PluginsMgrUtils) GetAdminRoutes() []map[string]any {
 func (util *PluginsMgrUtils) GetPortalRoutes() []map[string]any {
 	routes := []*VueRouteComponent{}
 	for _, p := range util.pmgr.All() {
-		vueR := p.HttpApi().VueRouter().(*VueRouterApi)
+		vueR := p.Http().VueRouter().(*VueRouterApi)
 		portalRoutes := vueR.portalRoutes
 		routes = append(routes, portalRoutes...)
 	}
@@ -103,7 +103,7 @@ func (util *PluginsMgrUtils) GetPortalRoutes() []map[string]any {
 		log.Println("Invalid portal theme: ", themecfg.Portal)
 	}
 
-	themesApi := themesPlugin.ThemesApi().(*ThemesApi)
+	themesApi := themesPlugin.Themes().(*ThemesApi)
 	children = append(children, map[string]any{
 		"path":     "*",
 		"redirect": themesApi.PortalIndexRoute.VueRoutePath,
@@ -132,7 +132,7 @@ func (utils *PluginsMgrUtils) GetAdminNavs(r *http.Request) []sdkhttp.AdminNavLi
 		navItems := []sdkhttp.AdminNavItem{}
 
 		for _, p := range utils.pmgr.All() {
-			vueR := p.HttpApi().VueRouter().(*VueRouterApi)
+			vueR := p.Http().VueRouter().(*VueRouterApi)
 			adminNavs := vueR.GetAdminNavs(r)
 			for _, nav := range adminNavs {
 				if nav.Category == category {
@@ -153,7 +153,7 @@ func (utils *PluginsMgrUtils) GetAdminNavs(r *http.Request) []sdkhttp.AdminNavLi
 func (utils *PluginsMgrUtils) GetPortalItems(r *http.Request) []sdkhttp.PortalItem {
 	items := []sdkhttp.PortalItem{}
 	for _, p := range utils.pmgr.All() {
-		vueR := p.HttpApi().VueRouter().(*VueRouterApi)
+		vueR := p.Http().VueRouter().(*VueRouterApi)
 		portalItems := vueR.GetPortalItems(r)
 		for _, item := range portalItems {
 			items = append(items, item)

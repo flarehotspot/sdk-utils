@@ -67,31 +67,31 @@ func (p *PluginApi) Dir() string {
 	return p.dir
 }
 
-func (p *PluginApi) DbApi() *sql.DB {
+func (p *PluginApi) Db() *sql.DB {
 	return p.db.SqlDB()
 }
 
-func (p *PluginApi) ModelsApi() models.IModelsApi {
+func (p *PluginApi) Models() models.IModels {
 	return p.models
 }
 
-func (p *PluginApi) AcctApi() acct.IAcctApi {
+func (p *PluginApi) Acct() acct.IAcct {
 	return p.AcctAPI
 }
 
-func (p *PluginApi) HttpApi() http.IHttpApi {
+func (p *PluginApi) Http() http.IHttp {
 	return p.HttpAPI
 }
 
-func (p *PluginApi) ConfigApi() config.IConfigApi {
+func (p *PluginApi) Config() config.IConfig {
 	return p.ConfigAPI
 }
 
-func (p *PluginApi) PaymentsApi() paymentsApi.IPaymentsApi {
+func (p *PluginApi) Payments() paymentsApi.IPayments {
 	return p.PaymentsAPI
 }
 
-func (p *PluginApi) AdsApi() ads.IAdsApi {
+func (p *PluginApi) Ads() ads.IAdsApi {
 	return p.AdsAPI
 }
 
@@ -99,11 +99,11 @@ func (p *PluginApi) PluginMgr() plugin.IPluginMgr {
 	return p.PluginsMgr
 }
 
-func (p *PluginApi) InAppPurchaseApi() inappur.InAppPurchaseApi {
+func (p *PluginApi) InAppPurchases() inappur.InAppPurchases {
 	return p.InAppPurchaseAPI
 }
 
-func (p *PluginApi) NetworkApi() sdknet.INetworkApi {
+func (p *PluginApi) Network() sdknet.INetwork {
 	return p.NetworkAPI
 }
 
@@ -115,11 +115,11 @@ func (p *PluginApi) ClientMgr() connmgr.IClientMgr {
 	return p.ClntMgr
 }
 
-func (p *PluginApi) UciApi() uci.IUciApi {
+func (p *PluginApi) Uci() uci.IUciApi {
 	return p.UciAPI
 }
 
-func (p *PluginApi) ThemesApi() themes.IThemesApi {
+func (p *PluginApi) Themes() themes.IThemesApi {
 	return p.ThemesAPI
 }
 

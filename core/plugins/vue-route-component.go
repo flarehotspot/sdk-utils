@@ -95,7 +95,7 @@ func (self *VueRouteComponent) GetDataHandler() http.Handler {
 func (self *VueRouteComponent) GetComponentWrapperHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		wrapperFile := self.api.CoreAPI.Utl.Resource("components/Wrapper.vue")
-		helpers := self.api.HttpApi().Helpers()
+		helpers := self.api.Http().Helpers()
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		response.Text(w, wrapperFile, helpers, self)
 	}

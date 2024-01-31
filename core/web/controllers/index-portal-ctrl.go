@@ -26,7 +26,7 @@ func PortalIndexPage(g *plugins.CoreGlobals) http.Handler {
 			return
 		}
 
-		themesApi := themePlugin.ThemesApi().(*plugins.ThemesApi)
+		themesApi := themePlugin.Themes().(*plugins.ThemesApi)
 		routes := g.PluginMgr.Utils().GetPortalRoutes()
 
 		appcfg, err := config.ReadApplicationConfig()
@@ -100,6 +100,6 @@ func PortalIndexPage(g *plugins.CoreGlobals) http.Handler {
 		}
 
 		api := g.CoreAPI
-		api.HttpApi().HttpResponse().View(w, r, "portal/index.html", vdata)
+		api.Http().HttpResponse().View(w, r, "portal/index.html", vdata)
 	})
 }

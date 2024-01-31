@@ -6,14 +6,14 @@ import (
 	sdkconnmgr "github.com/flarehotspot/core/sdk/api/connmgr"
 )
 
-// IHttpApi is used to process and respond to http requests.
-type IHttpApi interface {
-	Auth() IAuthApi
+// IHttp is used to process and respond to http requests.
+type IHttp interface {
+	Auth() IAuth
 
 	// Returns the router API.
-	HttpRouter() IHttpRouterApi
+	HttpRouter() IHttpRouter
 
-	VueRouter() IVueRouterApi
+	VueRouter() IVueRouter
 
 	Helpers() IHelpers
 

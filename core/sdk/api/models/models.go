@@ -1,7 +1,7 @@
 package sdkmdls
 
-// IModelsApi is the database models API.
-type IModelsApi interface {
+// IModels is the database models API.
+type IModels interface {
 
 	// Returns the devices model.
 	Device() IDeviceModel

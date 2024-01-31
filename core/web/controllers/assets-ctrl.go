@@ -45,7 +45,7 @@ func (c *AssetsCtrl) AssetWithHelpers(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response.File(w, assetPath, c.g.CoreAPI.HttpApi().Helpers(), nil)
+	response.File(w, assetPath, c.g.CoreAPI.Http().Helpers(), nil)
 }
 
 func (c *AssetsCtrl) VueComponent(w http.ResponseWriter, r *http.Request) {
@@ -58,6 +58,6 @@ func (c *AssetsCtrl) VueComponent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res := pluginApi.HttpApi().VueResponse()
+	res := pluginApi.Http().VueResponse()
 	res.Component(w, componentPath, nil)
 }

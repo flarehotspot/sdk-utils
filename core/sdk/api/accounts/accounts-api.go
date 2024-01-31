@@ -1,7 +1,7 @@
 package sdkacct
 
-// IAcctApi is used to manage accounts.
-type IAcctApi interface {
+// IAcct is used to manage accounts.
+type IAcct interface {
 
 	// Create a new system account. The list of available permissions
 	// can be obtained from IAcctApi.Permissions().
