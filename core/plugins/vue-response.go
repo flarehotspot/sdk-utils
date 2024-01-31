@@ -93,3 +93,11 @@ func (res *VueResponse) Redirect(w http.ResponseWriter, routename string, pairs 
 
 	response.Json(w, data, http.StatusOK)
 }
+
+func (res *VueResponse) Error(w http.ResponseWriter, err string, status int) {
+	res.FlashMsg("error", err)
+	data := res.data[rootjson].(map[string]any)
+	data["error"] = err
+	data = map[string]any{rootjson: data}
+	res.Json(w, data, status)
+}

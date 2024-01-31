@@ -17,4 +17,6 @@ type IVueResponse interface {
 
 	// Redirect to another vue route. "pairs" are param pairs, e.g. "id", "123", "name", "john".
 	Redirect(w http.ResponseWriter, routename string, pairs ...string)
+
+    Error(w http.ResponseWriter, err string, status int)
 }

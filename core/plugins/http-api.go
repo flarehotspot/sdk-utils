@@ -42,7 +42,7 @@ func (self *HttpApi) Auth() sdkhttp.IAuthApi {
 	return self.auth
 }
 
-func (self *HttpApi) ClientDevice(r *http.Request) (sdkconnmgr.IClientDevice, error) {
+func (self *HttpApi) GetDevice(r *http.Request) (sdkconnmgr.IClientDevice, error) {
 	return helpers.CurrentClient(r)
 }
 

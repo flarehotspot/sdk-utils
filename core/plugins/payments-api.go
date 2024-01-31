@@ -1,6 +1,7 @@
 package plugins
 
 import (
+	"context"
 	"log"
 	"net/http"
 
@@ -28,22 +29,19 @@ func (self *PaymentsApi) Checkout(w http.ResponseWriter, r *http.Request, p sdkp
 		res := self.api.HttpAPI.VueResponse()
 		clnt, err := helpers.CurrentClient(r)
 		if err != nil {
-			res.FlashMsg("error", err.Error())
-			res.Json(w, nil, http.StatusInternalServerError)
+			res.Error(w, err.Error(), 500)
 			return
 		}
 
 		route, ok := self.api.HttpAPI.vueRouter.FindVueRoute(p.CallbackVueRouteName)
 		if !ok {
-			res.FlashMsg("error", "Invalid payment callback route name: "+p.CallbackVueRouteName)
-			res.Json(w, nil, http.StatusInternalServerError)
+			res.Error(w, "Invalid payment callback route name: "+p.CallbackVueRouteName, 500)
 			return
 		}
 
 		purchase, err := mdls.Purchase().Create(r.Context(), clnt.Id(), p.Sku, p.Name, p.Description, p.Price, p.AnyPrice, route.VueRouteName)
 		if err != nil {
-			res.FlashMsg("error", err.Error())
-			res.Json(w, nil, http.StatusInternalServerError)
+			res.Error(w, err.Error(), 500)
 			return
 		}
 
@@ -55,7 +53,13 @@ func (self *PaymentsApi) Checkout(w http.ResponseWriter, r *http.Request, p sdkp
 	purMw(http.HandlerFunc(handler)).ServeHTTP(w, r)
 }
 
-func (self *PaymentsApi) PaymentReceived(token string, optname string, amount float64) error {
+func (self *PaymentsApi) PaymentReceived(ctx context.Context, token string, optname string, amount float64) error {
+	// purchase, err := self.api.models.Purchase().FindByToken(token)
+	// if err != nil {
+	//     return err
+	// }
+
+	// err = purchase.Update(ctx, )
 	return nil
 }
 

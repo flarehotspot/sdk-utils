@@ -1,8 +1,10 @@
 package sdkpayments
 
 import (
-	models "github.com/flarehotspot/core/sdk/api/models"
+	"context"
 	"net/http"
+
+	models "github.com/flarehotspot/core/sdk/api/models"
 )
 
 // IPaymentsApi is used to handle customer payments.
@@ -11,11 +13,11 @@ type IPaymentsApi interface {
 	// Creates a purchase request and prompts the user for payment.
 	Checkout(w http.ResponseWriter, r *http.Request, purchreq PurchaseRequest)
 
-    // Update the paid amount of the purchase request.
-    PaymentReceived(token string, optname string, amount float64) error
+	// Update the paid amount of the purchase request.
+	PaymentReceived(ctx context.Context, token string, optname string, amount float64) error
 
 	// Executes the callback URL of a purchase instance after the customer paid for the purchase item(s).
-    // It informs the payment requestor that the customer has paid for the purchase.
+	// It informs the payment requestor that the customer has paid for the purchase.
 	ExecCallback(w http.ResponseWriter, r *http.Request, purchase models.IPurchase)
 
 	// Confirms the purchase request. All purchase transactions will be commited to the database.
