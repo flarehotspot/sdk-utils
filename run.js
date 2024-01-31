@@ -5,9 +5,9 @@ const prod = process.env.NODE_ENV === 'production';
 const buildTags = 'mono' + (!prod ? ' dev' : '');
 
 if (isWin) {
-  execFile(
+  spawn(
     path.join(process.cwd(), 'main/main.exe'),
-    { shell: true },
+    { stdio: 'inherit' },
     (err, stdout) => {
       if (err) {
         console.log(err);

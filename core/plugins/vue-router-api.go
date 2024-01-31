@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"path/filepath"
+	"path"
 	"strings"
 
-	"github.com/flarehotspot/core/sdk/api/http"
+	sdkhttp "github.com/flarehotspot/core/sdk/api/http"
 )
 
 func NewVueRouterApi(api *PluginApi) *VueRouterApi {
@@ -128,9 +128,9 @@ func (self *VueRouterApi) VueRouteName(name string) string {
 	return name
 }
 
-func (self *VueRouterApi) VueRoutePath(path string) VueRoutePath {
-	path = filepath.Join("/", self.api.Pkg(), path)
-	return VueRoutePath(strings.TrimSuffix(path, "/"))
+func (self *VueRouterApi) VueRoutePath(p string) VueRoutePath {
+	p = path.Join("/", self.api.Pkg(), p)
+	return VueRoutePath(strings.TrimSuffix(p, "/"))
 }
 
 func (self *VueRouterApi) VuePathToMuxPath(path string) string {

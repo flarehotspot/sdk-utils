@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 
@@ -72,7 +73,7 @@ func writeCache(concat string, files []string) (data CacheData, err error) {
 		return CacheData{}, err
 	}
 
-	pubUriPath := filepath.Join("/public", pubSubDir, hash+ext)
+	pubUriPath := path.Join("/public", pubSubDir, hash+ext)
 	absPath := filepath.Join(paths.AppDir, pubUriPath)
 	sum, err := crypt.FastHashFiles(files...)
 	if err != nil {
@@ -117,8 +118,8 @@ func writeCache(concat string, files []string) (data CacheData, err error) {
 }
 
 func filePathComment(f string) string {
-    stat, _ := os.Stat(f)
-    size := sdkfs.PrettyByteSize(int(stat.Size()))
+	stat, _ := os.Stat(f)
+	size := sdkfs.PrettyByteSize(int(stat.Size()))
 	return fmt.Sprintf("\n/%s\nFile: %s(%s)\n%s/\n", stars, paths.Strip(f), size, stars)
 }
 
@@ -127,8 +128,8 @@ func filesComment(files ...string) string {
 	comment += stars
 	comment += "\nFiles:\n"
 	for _, f := range files {
-        stat, _ := os.Stat(f)
-        size := sdkfs.PrettyByteSize(int(stat.Size()))
+		stat, _ := os.Stat(f)
+		size := sdkfs.PrettyByteSize(int(stat.Size()))
 		comment += fmt.Sprintf("%s\t\t%s\n", size, paths.Strip(f))
 	}
 	comment += stars + "/\n"

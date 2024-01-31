@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"html/template"
 	"log"
+	"path"
 	"path/filepath"
 	"strings"
 	texttemplate "text/template"
@@ -28,8 +29,8 @@ func (h *HttpHelpers) Translate(msgtype string, msgk string) string {
 	return h.api.Utl.Translate(msgtype, msgk)
 }
 
-func (self *HttpHelpers) AssetPath(path string) string {
-	return filepath.Join("/plugin", self.api.Pkg(), self.api.Version(), "assets", path)
+func (self *HttpHelpers) AssetPath(p string) string {
+	return path.Join("/plugin", self.api.Pkg(), self.api.Version(), "assets", p)
 }
 
 func (self *HttpHelpers) AssetWithHelpersPath(path string) string {

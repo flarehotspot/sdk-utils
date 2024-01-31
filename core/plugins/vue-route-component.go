@@ -3,6 +3,7 @@ package plugins
 import (
 	"fmt"
 	"net/http"
+	"path"
 	"path/filepath"
 	"strings"
 
@@ -15,11 +16,11 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func NewVueRouteComponent(api *PluginApi, name string, path string, handler http.HandlerFunc, file string, permsReq []string, permsAny []string) *VueRouteComponent {
+func NewVueRouteComponent(api *PluginApi, name string, p string, handler http.HandlerFunc, file string, permsReq []string, permsAny []string) *VueRouteComponent {
 
 	compPath := filepath.Join(api.Utl.Resource("components/" + file))
 	compHash, _ := crypt.SHA1Files(compPath)
-	compHash = sdkstr.Sha1Hash(name, path, compPath, compHash)
+	compHash = sdkstr.Sha1Hash(name, p, compPath, compHash)
 
 	if name == "" {
 		name = "empty-route-name-" + compHash
@@ -27,14 +28,14 @@ func NewVueRouteComponent(api *PluginApi, name string, path string, handler http
 
 	return &VueRouteComponent{
 		api:                 api,
-		path:                path,
+		path:                p,
 		name:                name,
 		file:                file,
 		hash:                compHash,
 		handler:             handler,
 		MuxDataRouteName:    api.HttpAPI.httpRouter.MuxRouteName(sdkhttp.PluginRouteName(name + ".data")),
 		VueRouteName:        api.HttpAPI.vueRouter.VueRouteName(name),
-		VueRoutePath:        api.HttpAPI.vueRouter.VueRoutePath(path),
+		VueRoutePath:        api.HttpAPI.vueRouter.VueRoutePath(p),
 		PermissionsRequired: permsReq,
 		PermissionsAnyOf:    permsAny,
 	}
@@ -61,11 +62,11 @@ func (self *VueRouteComponent) HttpWrapperRouteName() string {
 }
 
 func (self *VueRouteComponent) HttpWrapperRoutePath() string {
-	path := filepath.Join("/vue/components/wrapper", self.hash, "name", slug.Make(self.name), "file", self.file)
-	if !strings.HasSuffix(path, ".vue") {
-		path = path + ".vue"
+	p := path.Join("/vue/components/wrapper", self.hash, "name", slug.Make(self.name), "file", self.file)
+	if !strings.HasSuffix(p, ".vue") {
+		p = p + ".vue"
 	}
-	return path
+	return p
 }
 
 func (self *VueRouteComponent) HttpComponentFullPath() string {
@@ -76,8 +77,8 @@ func (self *VueRouteComponent) HttpComponentFullPath() string {
 }
 
 func (self *VueRouteComponent) HttpDataPath() string {
-	path := self.api.HttpAPI.vueRouter.VuePathToMuxPath(filepath.Join("/vue/data", self.hash, self.path))
-	return strings.TrimSuffix(path, "/")
+	p := self.api.HttpAPI.vueRouter.VuePathToMuxPath(path.Join("/vue/data", self.hash, self.path))
+	return strings.TrimSuffix(p, "/")
 }
 
 func (self *VueRouteComponent) GetDataHandler() http.Handler {
@@ -106,7 +107,7 @@ func (self *VueRouteComponent) MountRoute(dataRouter *mux.Router, mws ...func(ht
 
 	// mount wrapper handler
 	wrapHandler := cacheMw(self.GetComponentWrapperHandler())
-	compRouter.
+	wrapperR := compRouter.
 		Handle(self.HttpWrapperRoutePath(), wrapHandler).
 		Methods("GET").
 		Name(self.HttpWrapperRouteName())
@@ -118,13 +119,13 @@ func (self *VueRouteComponent) MountRoute(dataRouter *mux.Router, mws ...func(ht
 	}
 
 	// mount vue data path
-	dataRouter.
+	dataR := dataRouter.
 		Handle(self.HttpDataPath(), finalHandler).
 		Methods("GET").
 		Name(string(self.MuxDataRouteName))
 
-	wrapperR := compRouter.Get(self.HttpWrapperRouteName())
-	dataR := compRouter.Get(string(self.MuxDataRouteName))
+	// wrapperR := compRouter.Get(self.HttpWrapperRouteName())
+	// dataR := dataRouter.Get(string(self.MuxDataRouteName))
 
 	wrapperpath, _ := wrapperR.GetPathTemplate()
 	datapath, _ := dataR.GetPathTemplate()
