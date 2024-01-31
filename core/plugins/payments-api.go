@@ -54,13 +54,24 @@ func (self *PaymentsApi) Checkout(w http.ResponseWriter, r *http.Request, p sdkp
 }
 
 func (self *PaymentsApi) PaymentReceived(ctx context.Context, token string, optname string, amount float64) error {
-	// purchase, err := self.api.models.Purchase().FindByToken(token)
-	// if err != nil {
-	//     return err
-	// }
+	db := self.api.db
+	tx, err := db.SqlDB().BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+    defer tx.Rollback()
 
-	// err = purchase.Update(ctx, )
-	return nil
+	purchase, err := self.api.models.Purchase().FindByTokenTx(tx, ctx, token)
+	if err != nil {
+		return err
+	}
+
+	_, err = self.api.models.Payment().CreateTx(tx, ctx, purchase.Id(), amount, optname)
+	if err != nil {
+		return err
+	}
+
+    return tx.Commit()
 }
 
 func (self *PaymentsApi) ExecCallback(w http.ResponseWriter, r *http.Request, purchase sdkmdls.IPurchase) {
