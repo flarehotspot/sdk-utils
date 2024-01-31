@@ -1,6 +1,6 @@
 /config/accounts
 /config/plugins
-/config/*.yml
+/config/*.json
 /public
 /openwrt-files
 /.cache
