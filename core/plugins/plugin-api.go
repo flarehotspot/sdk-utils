@@ -75,7 +75,7 @@ func (p *PluginApi) Models() models.IModels {
 	return p.models
 }
 
-func (p *PluginApi) Acct() acct.IAcct {
+func (p *PluginApi) Acct() acct.IAccounts {
 	return p.AcctAPI
 }
 

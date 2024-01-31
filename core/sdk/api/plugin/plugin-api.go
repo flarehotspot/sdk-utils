@@ -44,7 +44,7 @@ type IPluginApi interface {
 	Models() sdkmdls.IModels
 
 	// Returns an instance of accounts api.
-	Acct() sdkacct.IAcct
+	Acct() sdkacct.IAccounts
 
 	// Returns an instance of http api.
 	Http() sdkhttp.IHttp
