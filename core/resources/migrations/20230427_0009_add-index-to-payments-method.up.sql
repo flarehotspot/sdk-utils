@@ -1,1 +1,1 @@
-CREATE INDEX IF NOT EXISTS index_method ON payments(method);
+CREATE INDEX IF NOT EXISTS index_optname ON payments(optname);

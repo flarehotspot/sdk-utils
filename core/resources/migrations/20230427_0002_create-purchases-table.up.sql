@@ -12,8 +12,8 @@ CREATE TABLE IF NOT EXISTS purchases (
     wallet_debit DECIMAL(8, 2) NOT NULL DEFAULT 0.0,
     wallet_tx_id INT DEFAULT NULL,
 
-    confirmed_at TIMESTAMP,
-    cancelled_at TIMESTAMP,
+    confirmed_at TIMESTAMP NULL,
+    cancelled_at TIMESTAMP NULL,
     cancelled_reason TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
