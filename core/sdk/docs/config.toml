@@ -1,7 +1,7 @@
 # The URL the site will be built for
-base_url = "https://adidoks.netlify.com"
-title = "AdiDoks"
-description = "AdiDoks is a Zola theme helping you build modern documentation websites, which is a port of the Hugo theme Doks for Zola."
+base_url = "https://developer.flarehotspot.com"
+title = "Developer"
+description = "Build amazing plugins for Flare Hotspot."
 
 # The site theme to use.
 theme = "adidoks"
@@ -61,7 +61,7 @@ theme_color = "#fff"
 
 # More about site's title
 title_separator = "|"  # set as |, -, _, etc
-title_addition = "Modern Documentation Theme"
+title_addition = "Flare Hotspot Docs"
 
 
 # Set date format in blog publish metadata
@@ -110,10 +110,10 @@ url = "/docs/getting-started/introduction/"
 weight = 10
 
 [[extra.menu.main]]
-name = "Blog"
+name = "Resources"
 section = "blog"
 url = "/blog/"
-weight = 20
+weight = 30
 
 [[extra.menu.social]]
 name = "Twitter"
