@@ -9,27 +9,27 @@ type ConfigApi struct {
 	api *PluginApi
 }
 
-func (self *ConfigApi) Plugin() sdkcfg.IPluginCfg {
+func (self *ConfigApi) Plugin() sdkcfg.PluginCfg {
 	return NewPLuginConfig(self.api)
 }
 
-func (self *ConfigApi) Application() sdkcfg.IApplicationCfg {
+func (self *ConfigApi) Application() sdkcfg.ApplicationCfg {
 	return cfgapi.NewAppCfgApi()
 }
 
-func (self *ConfigApi) Database() sdkcfg.IDatabaseCfg {
+func (self *ConfigApi) Database() sdkcfg.DbCfg {
 	return cfgapi.NewDbCfgApi()
 }
 
-func (self *ConfigApi) SessionRates() sdkcfg.ISessionRatesCfg {
+func (self *ConfigApi) SessionRates() sdkcfg.SessionRatesCfg {
 	return cfgapi.NewSessionRatesCfgApi()
 }
 
-func (self *ConfigApi) Sessions() sdkcfg.ISessionLimitsCfg {
+func (self *ConfigApi) Sessions() sdkcfg.SessionLimitsCfg {
 	return cfgapi.NewSessionsCfg()
 }
 
-func (self *ConfigApi) Bandwidth() sdkcfg.IBandwdCfg {
+func (self *ConfigApi) Bandwidth() sdkcfg.BandwidthCfg {
 	return cfgapi.NewBandwdCfgApi()
 }
 

@@ -9,7 +9,7 @@ type DhcpCfg struct {
 	LeaseHour uint
 }
 
-type IDhcpApi interface {
+type DhcpApi interface {
 	GetSection(ifname string) (section string, ok bool)
 	GetConfig(section string) (dhcp *DhcpCfg, ok bool)
 	SetConfig(ifname string, cfg *DhcpCfg) error

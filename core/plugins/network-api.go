@@ -2,8 +2,8 @@ package plugins
 
 import (
 	cnet "github.com/flarehotspot/core/network"
-	"github.com/flarehotspot/core/utils/ubus"
 	sdknet "github.com/flarehotspot/core/sdk/api/network"
+	"github.com/flarehotspot/core/utils/ubus"
 )
 
 type NetworkApi struct {
@@ -14,13 +14,13 @@ func NewNetworkApi(trfk *cnet.TrafficMgr) *NetworkApi {
 	return &NetworkApi{trfk}
 }
 
-func (self *NetworkApi) ListDevices() (netdevs []sdknet.INetworkDevice, err error) {
+func (self *NetworkApi) ListDevices() (netdevs []sdknet.NetworkDevice, err error) {
 	devices, err := ubus.GetNetworkDevices()
 	if err != nil {
 		return nil, err
 	}
 
-	netdevs = []sdknet.INetworkDevice{}
+	netdevs = []sdknet.NetworkDevice{}
 	for _, v := range devices {
 		dev := cnet.NewNetworkDevice(v)
 		netdevs = append(netdevs, dev)
@@ -29,7 +29,7 @@ func (self *NetworkApi) ListDevices() (netdevs []sdknet.INetworkDevice, err erro
 	return netdevs, nil
 }
 
-func (self *NetworkApi) ListInterfaces() (interfaces []sdknet.INetworkInterface, err error) {
+func (self *NetworkApi) ListInterfaces() (interfaces []sdknet.NetworkInterface, err error) {
 	ifaces, err := ubus.GetNetworkInterfaces()
 	if err != nil {
 		return nil, err
@@ -43,7 +43,7 @@ func (self *NetworkApi) ListInterfaces() (interfaces []sdknet.INetworkInterface,
 	return interfaces, nil
 }
 
-func (self *NetworkApi) GetDevice(name string) (sdknet.INetworkDevice, error) {
+func (self *NetworkApi) GetDevice(name string) (sdknet.NetworkDevice, error) {
 	dev, err := ubus.GetNetworkDevice(name)
 	if err != nil {
 		return nil, err
@@ -51,7 +51,7 @@ func (self *NetworkApi) GetDevice(name string) (sdknet.INetworkDevice, error) {
 	return cnet.NewNetworkDevice(dev), nil
 }
 
-func (self *NetworkApi) GetInterface(name string) (sdknet.INetworkInterface, error) {
+func (self *NetworkApi) GetInterface(name string) (sdknet.NetworkInterface, error) {
 	_, err := ubus.GetNetworkInterface(name)
 	if err != nil {
 		return nil, err
@@ -59,7 +59,7 @@ func (self *NetworkApi) GetInterface(name string) (sdknet.INetworkInterface, err
 	return cnet.NewNetworkInterface(name), nil
 }
 
-func (self *NetworkApi) FindByIp(clientIp string) (sdknet.INetworkInterface, error) {
+func (self *NetworkApi) FindByIp(clientIp string) (sdknet.NetworkInterface, error) {
 	iface, err := cnet.FindByIp(clientIp)
 	if err != nil {
 		return nil, err
@@ -68,6 +68,6 @@ func (self *NetworkApi) FindByIp(clientIp string) (sdknet.INetworkInterface, err
 	return cnet.NewNetworkInterface(iface.Name()), nil
 }
 
-func (self *NetworkApi) Traffic() sdknet.ITrafficApi {
+func (self *NetworkApi) Traffic() sdknet.TrafficApi {
 	return self.trfk
 }

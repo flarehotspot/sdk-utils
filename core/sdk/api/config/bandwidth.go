@@ -18,8 +18,8 @@ type BandwdData struct {
 	UserUpMbits int
 }
 
-// IBandwdCfg is used to get and set bandwidth configuration.
-type IBandwdCfg interface {
+// BandwidthCfg is used to get and set bandwidth configuration.
+type BandwidthCfg interface {
 	// GetConfig returns the bandwidth configuration for a given interface.
 	GetConfig(ifname string) (cfg BandwdData, ok bool)
 

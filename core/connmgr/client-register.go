@@ -52,7 +52,7 @@ func (reg *ClientRegister) ClientModifierHook(fn connmgr.ClientModifierHookFn) {
 	reg.modifiedHooks = append(reg.modifiedHooks, fn)
 }
 
-func (reg *ClientRegister) Register(ctx context.Context, mac string, ip string, hostname string) (connmgr.IClientDevice, error) {
+func (reg *ClientRegister) Register(ctx context.Context, mac string, ip string, hostname string) (connmgr.ClientDevice, error) {
 	var (
 		clnt *ClientDevice
 		dev  sdkmdls.IDevice

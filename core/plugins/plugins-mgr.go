@@ -70,7 +70,7 @@ func (pmgr *PluginsMgr) MigrateAll() {
 	}
 }
 
-func (pmgr *PluginsMgr) FindByName(name string) (plugin.IPluginApi, bool) {
+func (pmgr *PluginsMgr) FindByName(name string) (plugin.PluginApi, bool) {
 	for _, p := range pmgr.plugins {
 		if p.Name() == name {
 			return p, true
@@ -79,7 +79,7 @@ func (pmgr *PluginsMgr) FindByName(name string) (plugin.IPluginApi, bool) {
 	return nil, false
 }
 
-func (pmgr *PluginsMgr) FindByPkg(pkg string) (plugin.IPluginApi, bool) {
+func (pmgr *PluginsMgr) FindByPkg(pkg string) (plugin.PluginApi, bool) {
 	for _, p := range pmgr.plugins {
 		if p.Pkg() == pkg {
 			return p, true
@@ -88,16 +88,16 @@ func (pmgr *PluginsMgr) FindByPkg(pkg string) (plugin.IPluginApi, bool) {
 	return nil, false
 }
 
-func (pmgr *PluginsMgr) All() []plugin.IPluginApi {
-	plugins := []plugin.IPluginApi{}
+func (pmgr *PluginsMgr) All() []plugin.PluginApi {
+	plugins := []plugin.PluginApi{}
 	for _, p := range pmgr.plugins {
 		plugins = append(plugins, p)
 	}
 	return plugins
 }
 
-func (pmgr *PluginsMgr) PaymentMethods() []plugin.IPluginApi {
-	methods := []plugin.IPluginApi{}
+func (pmgr *PluginsMgr) PaymentMethods() []plugin.PluginApi {
+	methods := []plugin.PluginApi{}
 	for _, p := range pmgr.plugins {
 		pmnt := p.Payments().(*PaymentsApi)
 		if pmnt.paymentsMgr != nil {

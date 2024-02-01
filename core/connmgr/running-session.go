@@ -25,11 +25,11 @@ type RunningSession struct {
 	tcFilter   *tc.TcFilter
 	timeTicker *time.Ticker
 	tickerDone chan bool
-	session    connmgr.IClientSession
+	session    connmgr.ClientSession
 	callbacks  []chan error
 }
 
-func NewRunningSession(mac string, ip string, s connmgr.IClientSession, classid *tc.TcClassId) (*RunningSession, error) {
+func NewRunningSession(mac string, ip string, s connmgr.ClientSession, classid *tc.TcClassId) (*RunningSession, error) {
 	lan, err := network.FindByIp(ip)
 	if err != nil {
 		return nil, err
@@ -47,7 +47,7 @@ func NewRunningSession(mac string, ip string, s connmgr.IClientSession, classid 
 	return &rs, nil
 }
 
-func (rs *RunningSession) GetSession() connmgr.IClientSession {
+func (rs *RunningSession) GetSession() connmgr.ClientSession {
 	rs.mu.RLock()
 	defer rs.mu.RUnlock()
 	return rs.session
@@ -68,7 +68,7 @@ func (rs *RunningSession) Done() <-chan error {
 	return ch
 }
 
-func (rs *RunningSession) Start(ctx context.Context, s connmgr.IClientSession) error {
+func (rs *RunningSession) Start(ctx context.Context, s connmgr.ClientSession) error {
 	_, err := sessionQ.Exec(func() (interface{}, error) {
 		rs.mu.Lock()
 		defer rs.mu.Unlock()
@@ -98,7 +98,7 @@ func (rs *RunningSession) Start(ctx context.Context, s connmgr.IClientSession) e
 	return err
 }
 
-func (rs *RunningSession) Change(cs connmgr.IClientSession) error {
+func (rs *RunningSession) Change(cs connmgr.ClientSession) error {
 	_, err := sessionQ.Exec(func() (interface{}, error) {
 		rs.mu.Lock()
 		defer rs.mu.Unlock()

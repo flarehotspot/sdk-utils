@@ -21,7 +21,7 @@ func (api *PluginApi) Init() error {
 		return err
 	}
 
-	initFn := initSym.(func(sdk.IPluginApi))
+	initFn := initSym.(func(sdk.PluginApi))
 	initFn(api)
 
 	return nil

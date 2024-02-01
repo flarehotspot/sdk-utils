@@ -16,8 +16,8 @@ import (
 	sdkuci "github.com/flarehotspot/core/sdk/api/uci"
 )
 
-// IPluginApi is the root of all plugin APIs.
-type IPluginApi interface {
+// PluginApi is the root of all plugin APIs.
+type PluginApi interface {
 
 	// Returns the name of the plugin as defined in package.yml "name" field.
 	Name() string
@@ -28,55 +28,59 @@ type IPluginApi interface {
 	// Returns the version of the plugin as defined in package.yml "version" field.
 	Version() string
 
-	// Returns the slug name of the plugin
-	Slug() string
-
 	// Returns the description of plugin.
 	Description() string
 
 	// Returns the root directory of the plugin's installation path.
 	Dir() string
 
+	// Translate a message to the user's language.
+	Translate(t string, msgk string, pairs ...any) string
+
+	// Returns the absolute path to the given file in /resources folder of your plugin.
+	// For example, if you have the following code:
+	//  api.Utils().Resource("some-file.txt")
+	// then it will return the absolute path to the file "[plugin_root_dir]/resources/some-file.txt" under the plugin's root directory.
+	Resource(f string) (path string)
+
 	// Returns an instance of database/sql package from go standard library.
-	Db() *sql.DB
+	SqlDb() *sql.DB
 
 	// Returns an instance of models api.
 	Models() sdkmdls.IModels
 
 	// Returns an instance of accounts api.
-	Acct() sdkacct.IAccounts
+	Acct() sdkacct.AccountsApi
 
 	// Returns an instance of http api.
-	Http() sdkhttp.IHttp
+	Http() sdkhttp.HttpApi
 
 	// Returns an instance of config api.
-	Config() sdkcfg.IConfig
+	Config() sdkcfg.ConfigApi
 
 	// Returns an instance of payments api.
-	Payments() sdkpayments.IPayments
+	Payments() sdkpayments.PaymentsApi
 
 	// Returns an instance of network api.
-	Network() sdknet.INetwork
+	Network() sdknet.Network
 
 	// Returns an instance of ads api.
-	Ads() sdkads.IAdsApi
+	Ads() sdkads.AdsApi
 
 	// Returns an instance of in-app purchase api.
-	InAppPurchases() sdkinappur.InAppPurchases
+	InAppPurchases() sdkinappur.InAppPurchasesApi
 
 	// Returns an instance of the plugin manager.
-	PluginMgr() IPluginMgr
+	PluginsMgr() PluginsMgrApi
 
 	// Returns an instance of the client register.
-	ClientReg() sdkconnmgr.IClientRegister
+	DeviceHooks() sdkconnmgr.DeviceHooksApi
 
 	// Returns an instance of the client manager.
-	ClientMgr() sdkconnmgr.IClientMgr
+	SessionsMgr() sdkconnmgr.SessionsMgrApi
 
 	// Returns an instance of the uci api.
-	Uci() sdkuci.IUciApi
+	Uci() sdkuci.UciApi
 
-	Themes() sdktheme.IThemesApi
-
-	Utils() IPluginUtils
+	Themes() sdktheme.ThemesApi
 }

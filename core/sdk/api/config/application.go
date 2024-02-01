@@ -12,8 +12,8 @@ type AppCfg struct {
 	Secret   string
 }
 
-// IApplicationCfg is used to read and write application configuration.
-type IApplicationCfg interface {
+// ApplicationCfg is used to read and write application configuration.
+type ApplicationCfg interface {
 	Read() (AppCfg, error)
 	Write(AppCfg) error
 }

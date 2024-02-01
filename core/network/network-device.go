@@ -41,6 +41,6 @@ func (self *NetworkDevice) TxBytes() uint {
 	return self.netdev.Stats.TxBytes
 }
 
-func NewNetworkDevice(d *ubus.NetworkDevice) sdknet.INetworkDevice {
+func NewNetworkDevice(d *ubus.NetworkDevice) sdknet.NetworkDevice {
 	return &NetworkDevice{d}
 }

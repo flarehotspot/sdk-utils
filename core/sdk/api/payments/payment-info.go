@@ -9,7 +9,7 @@ import (
 type PaymentInfo struct {
 
 	// Client is the client device.
-	Client connmgr.IClientDevice
+	Client connmgr.ClientDevice
 
 	// Purchase is the purchase record.
 	Purchase models.IPurchase

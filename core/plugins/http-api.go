@@ -42,7 +42,7 @@ func (self *HttpApi) Auth() sdkhttp.IAuth {
 	return self.auth
 }
 
-func (self *HttpApi) GetDevice(r *http.Request) (sdkconnmgr.IClientDevice, error) {
+func (self *HttpApi) GetDevice(r *http.Request) (sdkconnmgr.ClientDevice, error) {
 	return helpers.CurrentClient(r)
 }
 
@@ -75,9 +75,9 @@ func (self *HttpApi) MuxVars(r *http.Request) map[string]string {
 }
 
 func (self *HttpApi) GetAdminNavs(r *http.Request) []sdkhttp.AdminNavList {
-	return self.api.PluginsMgr.Utils().GetAdminNavs(r)
+	return self.api.PluginsMgrApi.Utils().GetAdminNavs(r)
 }
 
 func (self *HttpApi) GetPortalItems(r *http.Request) []sdkhttp.PortalItem {
-	return self.api.PluginsMgr.Utils().GetPortalItems(r)
+	return self.api.PluginsMgrApi.Utils().GetPortalItems(r)
 }

@@ -39,7 +39,7 @@ func (c *AssetsCtrl) AssetWithHelpers(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	assetPath = filepath.Join(pluginApi.Utils().Resource("assets"), assetPath)
+	assetPath = filepath.Join(pluginApi.Resource("assets"), assetPath)
 	if !fs.Exists(assetPath) {
 		http.Error(w, "Asset not found: "+assetPath, 404)
 		return

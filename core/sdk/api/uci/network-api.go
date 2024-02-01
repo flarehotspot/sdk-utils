@@ -1,7 +1,7 @@
 package sdkuci
 
-// INetworkApi is used to get/set network configuration
-type INetworkApi interface {
+// NetworkApi is used to get/set network configuration
+type NetworkApi interface {
 	// device
 	GetDevice(section string) (dev string, err error)
 	GetDeviceSec(name string) (section string, err error)

@@ -8,7 +8,7 @@ const (
 	CssLibBootstrap4 CssLib = "bootstrap4"
 )
 
-type IThemesApi interface {
+type ThemesApi interface {
 	NewAdminTheme(AdminTheme)
 	NewPortalTheme(PortalTheme)
 }

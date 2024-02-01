@@ -1,7 +1,7 @@
 package sdkcfg
 
-// IPluginCfg is used to read and write custom configuration for your plugin.
-type IPluginCfg interface {
+// PluginCfg is used to read and write custom configuration for your plugin.
+type PluginCfg interface {
 	// Read reads the custom configuration of your plugin.
 	// It is up to you to unmarshal the configuration into a struct.
 	Read() ([]byte, error)

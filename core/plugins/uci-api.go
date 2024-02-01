@@ -16,15 +16,15 @@ func NewUciApi() *UciApi {
 	return &UciApi{}
 }
 
-func (self *UciApi) Network() ucisdk.INetworkApi {
+func (self *UciApi) Network() ucisdk.NetworkApi {
 	return self.networkApi
 }
 
-func (self *UciApi) Dhcp() ucisdk.IDhcpApi {
+func (self *UciApi) Dhcp() ucisdk.DhcpApi {
 	return self.dhcpApi
 }
 
-func (self *UciApi) Wireless() ucisdk.IWirelessApi {
+func (self *UciApi) Wireless() ucisdk.WirelessApi {
 	return self.wirelessApi
 }
 

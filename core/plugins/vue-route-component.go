@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	sdkhttp "github.com/flarehotspot/core/sdk/api/http"
-	"github.com/flarehotspot/core/sdk/libs/slug"
 	sdkstr "github.com/flarehotspot/core/sdk/utils/strings"
 	"github.com/flarehotspot/core/utils/crypt"
 	"github.com/flarehotspot/core/web/middlewares"
@@ -62,7 +61,7 @@ func (self *VueRouteComponent) HttpWrapperRouteName() string {
 }
 
 func (self *VueRouteComponent) HttpWrapperRoutePath() string {
-	p := path.Join("/vue/components/wrapper", self.hash, "name", slug.Make(self.name), "file", self.file)
+	p := path.Join("/vue/components/wrapper", self.hash, "name", self.name, "file", self.file)
 	if !strings.HasSuffix(p, ".vue") {
 		p = p + ".vue"
 	}

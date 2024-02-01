@@ -2,9 +2,9 @@ package sdkuci
 
 import "github.com/flarehotspot/core/sdk/libs/go-uci"
 
-type IUciApi interface {
+type UciApi interface {
 	Uci() uci.Tree
-	Network() INetworkApi
-	Dhcp() IDhcpApi
-	Wireless() IWirelessApi
+	Network() NetworkApi
+	Dhcp() DhcpApi
+	Wireless() WirelessApi
 }

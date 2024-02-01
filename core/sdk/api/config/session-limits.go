@@ -33,8 +33,8 @@ type SessCfgData struct {
 	PauseLimitDenoms []ExpPauseDenom
 }
 
-// ISessionLimitsCfg is the configuration for session expiration and pause limit.
-type ISessionLimitsCfg interface {
+// SessionLimitsCfg is the configuration for session expiration and pause limit.
+type SessionLimitsCfg interface {
 	// Reads the session limits configuration.
 	Read() (SessCfgData, error)
 

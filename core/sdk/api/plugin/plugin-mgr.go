@@ -1,14 +1,14 @@
 package sdkplugin
 
-// IPluginMgr is used to get data of installed plugins in the system.
-type IPluginMgr interface {
+// PluginsMgrApi is used to get data of installed plugins in the system.
+type PluginsMgrApi interface {
 
 	// Find a plugin by name as defined in package.yml "name" field.
-	FindByName(name string) (IPluginApi, bool)
+	FindByName(name string) (PluginApi, bool)
 
 	// Find a plugin by path as defined in package.yml "package" field.
-	FindByPkg(pkg string) (IPluginApi, bool)
+	FindByPkg(pkg string) (PluginApi, bool)
 
 	// Returns all plugins installed in the system.
-	All() []IPluginApi
+	All() []PluginApi
 }

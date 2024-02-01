@@ -1,22 +1,22 @@
 package sdkcfg
 
-// IConfig is used to access the configuration API.
-type IConfig interface {
+// ConfigApi is used to access the configuration API.
+type ConfigApi interface {
 	// Get the plugin configuration guration api.
-	Plugin() IPluginCfg
+	Plugin() PluginCfg
 
 	// Get the application configuration api.
-	Application() IApplicationCfg
+	Application() ApplicationCfg
 
 	// Get the database configuration api.
-	Database() IDatabaseCfg
+	Database() DbCfg
 
 	// Get the http session rates configuration api.
-	SessionRates() ISessionRatesCfg
+	SessionRates() SessionRatesCfg
 
 	// Get the sessions configuration api.
-	Sessions() ISessionLimitsCfg
+	Sessions() SessionLimitsCfg
 
 	// Get the bandwidth configuration api.
-	Bandwidth() IBandwdCfg
+	Bandwidth() BandwidthCfg
 }

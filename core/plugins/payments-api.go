@@ -59,7 +59,7 @@ func (self *PaymentsApi) PaymentReceived(ctx context.Context, token string, optn
 	if err != nil {
 		return err
 	}
-    defer tx.Rollback()
+	defer tx.Rollback()
 
 	purchase, err := self.api.models.Purchase().FindByTokenTx(tx, ctx, token)
 	if err != nil {
@@ -71,7 +71,7 @@ func (self *PaymentsApi) PaymentReceived(ctx context.Context, token string, optn
 		return err
 	}
 
-    return tx.Commit()
+	return tx.Commit()
 }
 
 func (self *PaymentsApi) ExecCallback(w http.ResponseWriter, r *http.Request, purchase sdkmdls.IPurchase) {
@@ -89,7 +89,7 @@ func (self *PaymentsApi) ParsePaymentInfo(r *http.Request) (*sdkpayments.Payment
 	return ParsePaymentInfo(self.api.db, self.api.models, r)
 }
 
-func (self *PaymentsApi) NewPaymentProvider(provider sdkpayments.IPaymentProvider) {
+func (self *PaymentsApi) NewPaymentProvider(provider sdkpayments.PaymentProvider) {
 	log.Println("Registering payment method:", provider.Name())
 	self.paymentsMgr.NewPaymentProvider(self.api, provider)
 }

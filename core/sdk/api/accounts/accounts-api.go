@@ -1,23 +1,23 @@
 package sdkacct
 
-// IAccounts is used to manage accounts.
-type IAccounts interface {
+// AccountsApi is used to manage accounts.
+type AccountsApi interface {
 
 	// Create a new system account. The list of available permissions
 	// can be obtained from IAcctApi.Permissions().
-	Create(username string, pass string, perms []string) (IAccount, error)
+	Create(username string, pass string, perms []string) (Account, error)
 
 	// Get all accounts, admin and non-admin.
-	AllAccounts() ([]IAccount, error)
+	AllAccounts() ([]Account, error)
 
 	// Get all admin accounts.
-	AllAdmin() ([]IAccount, error)
+	AllAdmin() ([]Account, error)
 
 	// Find an account by username.
-	Find(username string) (IAccount, error)
+	Find(username string) (Account, error)
 
 	// Update an existing account.
-	Update(oldusername string, username string, pass string, perms []string) (IAccount, error)
+	Update(oldusername string, username string, pass string, perms []string) (Account, error)
 
 	// Delete an account by username.
 	Delete(username string) error
@@ -32,8 +32,8 @@ type IAccounts interface {
 	PermDesc(perm string) (desc string)
 
 	// Check if account has all of the specified permissions.
-	HasAllPerms(acct IAccount, perms ...string) bool
+	HasAllPerms(acct Account, perms ...string) bool
 
 	// Check if account has any of the specified permissions.
-	HasAnyPerm(acct IAccount, perms ...string) bool
+	HasAnyPerm(acct Account, perms ...string) bool
 }

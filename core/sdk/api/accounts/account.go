@@ -1,7 +1,7 @@
 package sdkacct
 
-// IAccount represents a system account.
-type IAccount interface {
+// Account represents a system account.
+type Account interface {
 
   // Username returns the username for this account.
 	Username() string

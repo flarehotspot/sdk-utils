@@ -23,11 +23,11 @@ type AuthApi struct {
 	api *PluginApi
 }
 
-func (self *AuthApi) CurrentAdmin(r *http.Request) (acct.IAccount, error) {
+func (self *AuthApi) CurrentAdmin(r *http.Request) (acct.Account, error) {
 	return helpers.CurrentAdmin(r)
 }
 
-func (self *AuthApi) AuthenticateAdmin(username string, password string) (acct.IAccount, error) {
+func (self *AuthApi) AuthenticateAdmin(username string, password string) (acct.Account, error) {
 	acct, err := accounts.Find(username)
 	if err != nil {
 		return nil, err
@@ -40,7 +40,7 @@ func (self *AuthApi) AuthenticateAdmin(username string, password string) (acct.I
 	return acct, nil
 }
 
-func (self *AuthApi) SignInAdmin(w http.ResponseWriter, acct acct.IAccount) error {
+func (self *AuthApi) SignInAdmin(w http.ResponseWriter, acct acct.Account) error {
 	appcfg, err := config.ReadApplicationConfig()
 	if err != nil {
 		return err

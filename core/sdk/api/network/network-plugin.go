@@ -1,5 +1,5 @@
 package sdknet
 
-type INetworkPlugin interface {
+type NetworkPlugin interface {
 	OnInit() error
 }

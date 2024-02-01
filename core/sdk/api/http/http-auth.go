@@ -9,12 +9,12 @@ import (
 type IAuth interface {
 
 	// Get the current admin user from the http request.
-	CurrentAdmin(r *http.Request) (sdkacct.IAccount, error)
+	CurrentAdmin(r *http.Request) (sdkacct.Account, error)
 
-	AuthenticateAdmin(username string, password string) (sdkacct.IAccount, error)
+	AuthenticateAdmin(username string, password string) (sdkacct.Account, error)
 
 	// Sets the auth-token cookie in response header
-	SignInAdmin(w http.ResponseWriter, acct sdkacct.IAccount) error
+	SignInAdmin(w http.ResponseWriter, acct sdkacct.Account) error
 
 	// Sets empty auth-token cooke response header
 	SignOutAdmin(w http.ResponseWriter) error

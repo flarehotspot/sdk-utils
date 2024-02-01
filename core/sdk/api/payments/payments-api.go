@@ -7,8 +7,8 @@ import (
 	models "github.com/flarehotspot/core/sdk/api/models"
 )
 
-// IPayments is used to handle customer payments.
-type IPayments interface {
+// PaymentsApi is used to handle customer payments.
+type PaymentsApi interface {
 
 	// Creates a purchase request and prompts the user for payment.
 	Checkout(w http.ResponseWriter, r *http.Request, purchreq PurchaseRequest)
@@ -33,5 +33,5 @@ type IPayments interface {
 
 	// Registers a new payment provider.
 	// The provider's payment options will become available for the customers.
-	NewPaymentProvider(IPaymentProvider)
+	NewPaymentProvider(PaymentProvider)
 }

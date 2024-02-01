@@ -22,8 +22,8 @@ type SessionRate struct {
 	DataMbytes uint
 }
 
-// ISessionRatesCfg is the configuration for internet connection rates.
-type ISessionRatesCfg interface {
+// SessionRatesCfg is the configuration for internet connection rates.
+type SessionRatesCfg interface {
 
 	// Returns all rates.
 	All() (rates []SessionRate, err error)

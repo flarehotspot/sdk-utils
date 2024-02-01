@@ -66,7 +66,7 @@ func PortalIndexPage(g *plugins.CoreGlobals) http.Handler {
 
 		portalAssets := themesApi.GetPortalThemeAssets()
 		for _, path := range portalAssets.Scripts {
-			file := themePlugin.Utils().Resource(filepath.Join("assets", path))
+			file := themePlugin.Resource(filepath.Join("assets", path))
 			jsFiles = append(jsFiles, assets.AssetWithData{File: file})
 		}
 
@@ -76,7 +76,7 @@ func PortalIndexPage(g *plugins.CoreGlobals) http.Handler {
 		}
 
 		for _, path := range portalAssets.Styles {
-			file := themePlugin.Utils().Resource(filepath.Join("assets", path))
+			file := themePlugin.Resource(filepath.Join("assets", path))
 			cssFiles = append(cssFiles, assets.AssetWithData{File: file})
 		}
 

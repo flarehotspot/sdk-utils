@@ -8,7 +8,6 @@ import (
 
 type PluginApi struct {
 	info             *plugincfg.PluginInfo
-	slug             string
 	dir              string
 	db               *db.Database
 	models           *PluginModels
@@ -21,7 +20,7 @@ type PluginApi struct {
 	NetworkAPI       *NetworkApi
 	AdsAPI           *AdsApi
 	InAppPurchaseAPI *InAppPurchaseApi
-	PluginsMgr       *PluginsMgr
+	PluginsMgrApi    *PluginsMgr
 	ClntReg          *connmgr.ClientRegister
 	ClntMgr          *connmgr.ClientMgr
 	UciAPI           *UciApi

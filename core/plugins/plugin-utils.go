@@ -1,15 +1,14 @@
 package plugins
 
 import (
-	"fmt"
+	"log"
 	"net/http"
-	"os"
 	"path/filepath"
-	"regexp"
 	"strings"
 
 	"github.com/flarehotspot/core/config"
 	"github.com/flarehotspot/core/utils/assets"
+	"github.com/flarehotspot/core/utils/flaretmpl"
 	"github.com/flarehotspot/core/web/response"
 )
 
@@ -21,30 +20,35 @@ type PluginUtils struct {
 	api *PluginApi
 }
 
-func (utl *PluginUtils) Translate(msgtype string, msgk string, pairs ...string) string {
+func (utl *PluginUtils) Translate(msgtype string, msgk string, pairs ...any) string {
+	if len(pairs)%2 != 0 {
+		return "Invalid number of translation params."
+	}
+
 	trnsdir := utl.Resource("translations")
 	appcfg, _ := config.ReadApplicationConfig()
 
 	f := filepath.Join(trnsdir, appcfg.Lang, msgtype, msgk+".txt")
-	bytes, err := os.ReadFile(f)
+	tmpl, err := flaretmpl.GetTextTemplate(f)
 	if err != nil {
-		return err.Error()
+		log.Println("Warning: Translation file not found: ", f)
+		return msgk
 	}
 
-	template := string(bytes)
-
-	if len(pairs)%2 != 0 {
-		return "Invalid number of pairs"
-	}
-
+	vdata := map[any]any{}
 	for i := 0; i < len(pairs); i += 2 {
 		key := pairs[i]
 		value := pairs[i+1]
-		placeholder := fmt.Sprintf("${%s}", key)
-		template = regexp.MustCompile(placeholder).ReplaceAllString(template, value)
+		vdata[key] = value
 	}
 
-	return strings.TrimSpace(template)
+	var output strings.Builder
+	err = tmpl.Execute(&output, vdata)
+	if err != nil {
+		log.Println("Error executing translation template "+f, err)
+		return msgk
+	}
+	return output.String()
 }
 
 func (utl *PluginUtils) Resource(path string) string {

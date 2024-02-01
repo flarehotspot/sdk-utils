@@ -6,7 +6,7 @@ import (
 	plugin "github.com/flarehotspot/core/sdk/api/plugin"
 )
 
-func NewPaymentOpt(api plugin.IPluginApi, opt payments.PaymentOpt) PaymentOption {
+func NewPaymentOpt(api plugin.PluginApi, opt payments.PaymentOpt) PaymentOption {
 	uuid := api.Pkg() + "::" + opt.OptName
 	vrouter := api.Http().VueRouter().(*VueRouterApi)
 	var path, name string
@@ -24,7 +24,7 @@ func NewPaymentOpt(api plugin.IPluginApi, opt payments.PaymentOpt) PaymentOption
 }
 
 type PaymentOption struct {
-	api          plugin.IPluginApi
+	api          plugin.PluginApi
 	Opt          payments.PaymentOpt
 	UUID         string
 	VueRouteName string

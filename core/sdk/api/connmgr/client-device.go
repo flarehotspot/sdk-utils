@@ -2,8 +2,8 @@ package sdkconnmgr
 
 import "context"
 
-// IClientDevice represents a client device connected to the network.
-type IClientDevice interface {
+// ClientDevice represents a client device connected to the network.
+type ClientDevice interface {
 	// Returns the database id of the device.
 	Id() int64
 
@@ -20,7 +20,7 @@ type IClientDevice interface {
 	Update(ctx context.Context, mac string, ip string, hostname string) error
 
 	// Returns valid session for the client device.
-	ValidSession(ctx context.Context) (IClientSession, error)
+	ValidSession(ctx context.Context) (ClientSession, error)
 
 	// Returns true if the client device has a valid session.
 	HasSession(ctx context.Context) (ok bool)

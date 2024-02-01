@@ -103,7 +103,7 @@ func (cmgr *ClientMgr) StopSessions(ctx context.Context, iface string, reason st
 	<-done
 }
 
-func (cmgr *ClientMgr) Connect(clnt connmgr.IClientDevice) error {
+func (cmgr *ClientMgr) Connect(clnt connmgr.ClientDevice) error {
 	errCh := make(chan error)
 
 	go func() {
@@ -129,7 +129,7 @@ func (cmgr *ClientMgr) Connect(clnt connmgr.IClientDevice) error {
 	return <-errCh
 }
 
-func (cmgr *ClientMgr) Disconnect(clnt connmgr.IClientDevice, notify error) error {
+func (cmgr *ClientMgr) Disconnect(clnt connmgr.ClientDevice, notify error) error {
 	log.Println("Calling endsession()...")
 	err := cmgr.endSession(clnt)
 	if err != nil {
@@ -144,11 +144,11 @@ func (cmgr *ClientMgr) Disconnect(clnt connmgr.IClientDevice, notify error) erro
 	return err
 }
 
-func (cmgr *ClientMgr) IsConnected(clnt connmgr.IClientDevice) (connected bool) {
+func (cmgr *ClientMgr) IsConnected(clnt connmgr.ClientDevice) (connected bool) {
 	return nftables.IsConnected(clnt.MacAddr())
 }
 
-func (cmgr *ClientMgr) CurrSession(clnt connmgr.IClientDevice) (cs connmgr.IClientSession, ok bool) {
+func (cmgr *ClientMgr) CurrSession(clnt connmgr.ClientDevice) (cs connmgr.ClientSession, ok bool) {
 	cmgr.mu.RLock()
 	defer cmgr.mu.RUnlock()
 
@@ -161,11 +161,11 @@ func (cmgr *ClientMgr) CurrSession(clnt connmgr.IClientDevice) (cs connmgr.IClie
 	return nil, false
 }
 
-func (cmgr *ClientMgr) SocketEmit(clnt connmgr.IClientDevice, t string, d map[string]any) {
+func (cmgr *ClientMgr) SocketEmit(clnt connmgr.ClientDevice, t string, d map[string]any) {
 	sse.Emit(clnt.MacAddr(), t, d)
 }
 
-func (cmgr *ClientMgr) loopSessions(clnt connmgr.IClientDevice) {
+func (cmgr *ClientMgr) loopSessions(clnt connmgr.ClientDevice) {
 	for nftables.IsConnected(clnt.MacAddr()) {
 		errCh := make(chan error)
 
@@ -222,7 +222,7 @@ func (cmgr *ClientMgr) loopSessions(clnt connmgr.IClientDevice) {
 	}
 }
 
-func (cmgr *ClientMgr) getRunningSession(clnt connmgr.IClientDevice) (rs *RunningSession, ok bool) {
+func (cmgr *ClientMgr) getRunningSession(clnt connmgr.ClientDevice) (rs *RunningSession, ok bool) {
 	for _, rs := range cmgr.sessions {
 		if rs.GetSession().DeviceId() == clnt.Id() {
 			return rs, true
@@ -231,7 +231,7 @@ func (cmgr *ClientMgr) getRunningSession(clnt connmgr.IClientDevice) (rs *Runnin
 	return nil, false
 }
 
-func (cmgr *ClientMgr) endSession(clnt connmgr.IClientDevice) error {
+func (cmgr *ClientMgr) endSession(clnt connmgr.ClientDevice) error {
 	errCh := make(chan error)
 
 	go func() {

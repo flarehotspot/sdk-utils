@@ -6,8 +6,8 @@ import (
 	sdkconnmgr "github.com/flarehotspot/core/sdk/api/connmgr"
 )
 
-// IHttp is used to process and respond to http requests.
-type IHttp interface {
+// HttpApi is used to process and respond to http requests.
+type HttpApi interface {
 	Auth() IAuth
 
 	// Returns the router API.
@@ -27,7 +27,7 @@ type IHttp interface {
 	VueResponse() IVueResponse
 
 	// Returns the current client device from http request.
-	GetDevice(r *http.Request) (sdkconnmgr.IClientDevice, error)
+	GetDevice(r *http.Request) (sdkconnmgr.ClientDevice, error)
 
 	// Returns the http variables in your routes. For example, if your route path is "/some/path/{varname}",
 	// then you can get the value of "varname" by calling GetMuxVars(r)["varname"].

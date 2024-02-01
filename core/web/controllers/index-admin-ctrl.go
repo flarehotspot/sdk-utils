@@ -71,7 +71,7 @@ func AdminIndexPage(g *plugins.CoreGlobals) http.Handler {
 
 		adminAssets := themesApi.GetAdminThemeAssets()
 		for _, path := range adminAssets.Scripts {
-			file := themePlugin.Utils().Resource(filepath.Join("assets", path))
+			file := themePlugin.Resource(filepath.Join("assets", path))
 			jsFiles = append(jsFiles, assets.AssetWithData{File: file})
 		}
 
@@ -81,7 +81,7 @@ func AdminIndexPage(g *plugins.CoreGlobals) http.Handler {
 		}
 
 		for _, path := range adminAssets.Styles {
-			file := themePlugin.Utils().Resource(filepath.Join("assets", path))
+			file := themePlugin.Resource(filepath.Join("assets", path))
 			cssFiles = append(cssFiles, assets.AssetWithData{File: file})
 		}
 

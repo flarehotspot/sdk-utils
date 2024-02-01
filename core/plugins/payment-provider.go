@@ -7,20 +7,20 @@ import (
 )
 
 
-func NewPaymentProvider(api plugin.IPluginApi, provider payments.IPaymentProvider) *PaymentProvider {
+func NewPaymentProvider(api plugin.PluginApi, provider payments.PaymentProvider) *PaymentProvider {
     prv := &PaymentProvider{api, provider}
     return prv
 }
 
 type PaymentProvider struct {
-	api      plugin.IPluginApi
-	provider payments.IPaymentProvider
+	api      plugin.PluginApi
+	provider payments.PaymentProvider
 }
 
-func (self *PaymentProvider) IProvider() payments.IPaymentProvider {
+func (self *PaymentProvider) IProvider() payments.PaymentProvider {
 	return self.provider
 }
 
-func (self *PaymentProvider) PaymentOpts(clnt connmgr.IClientDevice) []payments.PaymentOpt {
+func (self *PaymentProvider) PaymentOpts(clnt connmgr.ClientDevice) []payments.PaymentOpt {
 	return self.provider.PaymentOpts(clnt)
 }

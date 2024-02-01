@@ -97,8 +97,8 @@ func (self *HttpHelpers) EmbedCss(path string, data any) template.CSS {
 	return template.CSS(output.String())
 }
 
-func (h *HttpHelpers) PluginMgr() plugin.IPluginMgr {
-	return h.api.PluginsMgr
+func (h *HttpHelpers) PluginMgr() plugin.PluginsMgrApi {
+	return h.api.PluginsMgrApi
 }
 
 func (h *HttpHelpers) AdView() (html template.HTML) {

@@ -31,7 +31,7 @@ type ClientSession struct {
 	createdAt time.Time
 }
 
-func NewClientSession(dtb *db.Database, mdls *models.Models, s sdkmdls.ISession) connmgr.IClientSession {
+func NewClientSession(dtb *db.Database, mdls *models.Models, s sdkmdls.ISession) connmgr.ClientSession {
 	cs := &ClientSession{db: dtb, mdls: mdls}
 	cs.load(s)
 	return cs

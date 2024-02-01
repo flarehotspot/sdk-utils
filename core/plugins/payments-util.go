@@ -36,7 +36,7 @@ func ParsePaymentInfo(dtb *db.Database, mdls models.IModels, r *http.Request) (*
 	}
 
 	clntSym := r.Context().Value(contexts.ClientCtxKey)
-	clnt, ok := clntSym.(connmgr.IClientDevice)
+	clnt, ok := clntSym.(connmgr.ClientDevice)
 	if !ok {
 		return nil, errors.New("Unable to determine client device.")
 	}

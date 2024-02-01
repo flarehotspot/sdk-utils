@@ -19,7 +19,6 @@ import (
 	plugin "github.com/flarehotspot/core/sdk/api/plugin"
 	themes "github.com/flarehotspot/core/sdk/api/themes"
 	uci "github.com/flarehotspot/core/sdk/api/uci"
-	"github.com/flarehotspot/core/sdk/libs/slug"
 	"github.com/flarehotspot/core/utils/migrate"
 )
 
@@ -51,10 +50,6 @@ func (p *PluginApi) Version() string {
 	return p.info.Version
 }
 
-func (p *PluginApi) Slug() string {
-	return p.slug
-}
-
 func (p *PluginApi) Description() string {
 	info, err := plugincfg.GetPluginInfo(p.dir)
 	if err != nil {
@@ -67,7 +62,15 @@ func (p *PluginApi) Dir() string {
 	return p.dir
 }
 
-func (p *PluginApi) Db() *sql.DB {
+func (p *PluginApi) Translate(t string, msgk string, pairs ...any) string {
+	return p.Utl.Translate(t, msgk, pairs...)
+}
+
+func (p *PluginApi) Resource(f string) (path string) {
+	return p.Utl.Resource(f)
+}
+
+func (p *PluginApi) SqlDb() *sql.DB {
 	return p.db.SqlDB()
 }
 
@@ -75,65 +78,61 @@ func (p *PluginApi) Models() models.IModels {
 	return p.models
 }
 
-func (p *PluginApi) Acct() acct.IAccounts {
+func (p *PluginApi) Acct() acct.AccountsApi {
 	return p.AcctAPI
 }
 
-func (p *PluginApi) Http() http.IHttp {
+func (p *PluginApi) Http() http.HttpApi {
 	return p.HttpAPI
 }
 
-func (p *PluginApi) Config() config.IConfig {
+func (p *PluginApi) Config() config.ConfigApi {
 	return p.ConfigAPI
 }
 
-func (p *PluginApi) Payments() paymentsApi.IPayments {
+func (p *PluginApi) Payments() paymentsApi.PaymentsApi {
 	return p.PaymentsAPI
 }
 
-func (p *PluginApi) Ads() ads.IAdsApi {
+func (p *PluginApi) Ads() ads.AdsApi {
 	return p.AdsAPI
 }
 
-func (p *PluginApi) PluginMgr() plugin.IPluginMgr {
-	return p.PluginsMgr
-}
-
-func (p *PluginApi) InAppPurchases() inappur.InAppPurchases {
+func (p *PluginApi) InAppPurchases() inappur.InAppPurchasesApi {
 	return p.InAppPurchaseAPI
 }
 
-func (p *PluginApi) Network() sdknet.INetwork {
+func (p *PluginApi) PluginsMgr() plugin.PluginsMgrApi {
+	return p.PluginsMgrApi
+}
+
+func (p *PluginApi) Network() sdknet.Network {
 	return p.NetworkAPI
 }
 
-func (p *PluginApi) ClientReg() connmgr.IClientRegister {
+func (p *PluginApi) DeviceHooks() connmgr.DeviceHooksApi {
 	return p.ClntReg
 }
 
-func (p *PluginApi) ClientMgr() connmgr.IClientMgr {
+func (p *PluginApi) SessionsMgr() connmgr.SessionsMgrApi {
 	return p.ClntMgr
 }
 
-func (p *PluginApi) Uci() uci.IUciApi {
+func (p *PluginApi) Uci() uci.UciApi {
 	return p.UciAPI
 }
 
-func (p *PluginApi) Themes() themes.IThemesApi {
+func (p *PluginApi) Themes() themes.ThemesApi {
 	return p.ThemesAPI
-}
-
-func (p *PluginApi) Utils() plugin.IPluginUtils {
-	return p.Utl
 }
 
 func NewPluginApi(dir string, pmgr *PluginsMgr, trfkMgr *network.TrafficMgr) *PluginApi {
 	pluginApi := &PluginApi{
-		dir:        dir,
-		db:         pmgr.db,
-		PluginsMgr: pmgr,
-		ClntReg:    pmgr.clntReg,
-		ClntMgr:    pmgr.clntMgr,
+		dir:           dir,
+		db:            pmgr.db,
+		PluginsMgrApi: pmgr,
+		ClntReg:       pmgr.clntReg,
+		ClntMgr:       pmgr.clntMgr,
 	}
 
 	pluginApi.Utl = NewPluginUtils(pluginApi)
@@ -144,7 +143,6 @@ func NewPluginApi(dir string, pmgr *PluginsMgr, trfkMgr *network.TrafficMgr) *Pl
 	}
 
 	pluginApi.info = info
-	pluginApi.slug = slug.Make(pluginApi.Pkg())
 	pluginApi.models = NewPluginModels(pmgr.models)
 	pluginApi.AcctAPI = NewAcctApi(pluginApi)
 	pluginApi.HttpAPI = NewHttpApi(pluginApi, pmgr.db, pmgr.clntReg, pmgr.models, pmgr.clntReg, pmgr.paymgr)

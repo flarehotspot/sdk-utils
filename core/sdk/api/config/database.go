@@ -15,8 +15,8 @@ type Database struct {
 	Database string
 }
 
-// IDatabaseCfg is the interface for database configuration.
-type IDatabaseCfg interface {
+// DbCfg is the interface for database configuration.
+type DbCfg interface {
 	// Read reads the database configuration.
 	Read() (Database, error)
 

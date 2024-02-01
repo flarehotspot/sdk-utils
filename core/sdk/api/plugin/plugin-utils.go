@@ -2,7 +2,7 @@ package sdkplugin
 
 import ()
 
-type IPluginUtils interface {
+type PluginUtils interface {
 
 	// Translate a message to the user's language.
 	Translate(t string, msgk string, pairs ...string) string

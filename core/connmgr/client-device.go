@@ -71,7 +71,7 @@ func (self *ClientDevice) Update(ctx context.Context, mac string, ip string, hos
 	return nil
 }
 
-func (self *ClientDevice) ValidSession(ctx context.Context) (sdkconnmgr.IClientSession, error) {
+func (self *ClientDevice) ValidSession(ctx context.Context) (sdkconnmgr.ClientSession, error) {
 	self.mu.RLock()
 	defer self.mu.RUnlock()
 

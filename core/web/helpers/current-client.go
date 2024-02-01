@@ -8,9 +8,9 @@ import (
 	"github.com/flarehotspot/core/sdk/api/http"
 )
 
-func CurrentClient(r *http.Request) (connmgr.IClientDevice, error) {
+func CurrentClient(r *http.Request) (connmgr.ClientDevice, error) {
 	clntSym := r.Context().Value(sdkhttp.ClientCtxKey)
-	clnt, ok := clntSym.(connmgr.IClientDevice)
+	clnt, ok := clntSym.(connmgr.ClientDevice)
 	if !ok {
 		return nil, errors.New("Cannot convert nil to client device.")
 	}

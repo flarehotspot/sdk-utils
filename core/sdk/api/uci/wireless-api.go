@@ -33,7 +33,7 @@ type WifiIface struct {
 	Key        string
 }
 
-type IWirelessApi interface {
+type WirelessApi interface {
 	GetDeviceSecs() (sections []string)
 	GetIfaceSecs() (sections []string)
 	GetDevice(section string) (dev *WifiDev, err error)

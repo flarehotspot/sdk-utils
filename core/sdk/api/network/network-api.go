@@ -1,24 +1,24 @@
 package sdknet
 
-// INetwork is used to get network data from the system.
-type INetwork interface {
+// Network is used to get network data from the system.
+type Network interface {
 
 	// Returns a list of all network devices.
-	ListDevices() ([]INetworkDevice, error)
+	ListDevices() ([]NetworkDevice, error)
 
 	// Returns a list of all network interfaces.
-	ListInterfaces() ([]INetworkInterface, error)
+	ListInterfaces() ([]NetworkInterface, error)
 
 	// Returns data of a single network device.
-	GetDevice(name string) (INetworkDevice, error)
+	GetDevice(name string) (NetworkDevice, error)
 
 	// Returns data of a single network interface.
-	GetInterface(name string) (INetworkInterface, error)
+	GetInterface(name string) (NetworkInterface, error)
 
 	// Returns data of a single network interface by its IP address.
 	// The clientIp parameter is the IP address of the client that is connected to the system.
-	FindByIp(clientIp string) (INetworkInterface, error)
+	FindByIp(clientIp string) (NetworkInterface, error)
 
 	// Returns the network traffic API.
-	Traffic() ITrafficApi
+	Traffic() TrafficApi
 }

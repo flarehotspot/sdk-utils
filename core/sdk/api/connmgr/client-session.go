@@ -7,8 +7,8 @@ import (
 	models "github.com/flarehotspot/core/sdk/api/models"
 )
 
-// IClientSession represents a client's internet connection session.
-type IClientSession interface {
+// ClientSession represents a client's internet connection session.
+type ClientSession interface {
 	// Returns the session's id.
 	Id() int64
 
