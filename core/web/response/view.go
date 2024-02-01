@@ -13,14 +13,14 @@ import (
 type ViewData struct {
 	PageContent template.HTML
 	ViewData    any
-	ViewHelpers httpI.IHelpers
+	ViewHelpers httpI.HttpHelpers
 }
 
 func (vd *ViewData) ContentHtml() template.HTML {
 	return vd.PageContent
 }
 
-func (vd *ViewData) Helpers() httpI.IHelpers {
+func (vd *ViewData) Helpers() httpI.HttpHelpers {
 	return vd.ViewHelpers
 }
 
@@ -28,7 +28,7 @@ func (vd *ViewData) Data() any {
 	return vd.ViewData
 }
 
-func ViewWithLayout(w http.ResponseWriter, layout string, content string, helpers httpI.IHelpers, data any) {
+func ViewWithLayout(w http.ResponseWriter, layout string, content string, helpers httpI.HttpHelpers, data any) {
 	contentHtml, err := viewProc(content, nil, helpers, data)
 	if err != nil {
 		log.Printf("View error: %+v", err)
@@ -47,7 +47,7 @@ func ViewWithLayout(w http.ResponseWriter, layout string, content string, helper
 	w.Write([]byte(html))
 }
 
-func View(w http.ResponseWriter, viewpath string, helpers httpI.IHelpers, data any) {
+func View(w http.ResponseWriter, viewpath string, helpers httpI.HttpHelpers, data any) {
 	html, err := viewProc(viewpath, nil, helpers, data)
 	if err != nil {
 		log.Printf("View error: %+v", err)
@@ -59,7 +59,7 @@ func View(w http.ResponseWriter, viewpath string, helpers httpI.IHelpers, data a
 	w.Write([]byte(html))
 }
 
-func viewProc(layout string, contentHtml *template.HTML, helpers httpI.IHelpers, data any) (html template.HTML, err error) {
+func viewProc(layout string, contentHtml *template.HTML, helpers httpI.HttpHelpers, data any) (html template.HTML, err error) {
 	tmpl, err := tmplcache.GetHtmlTemplate(layout)
 	if err != nil {
 		return "", err

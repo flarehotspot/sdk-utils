@@ -13,9 +13,9 @@ const (
 
 // VueAdminNav represents an admin navigation menu item.
 type VueAdminNav struct {
-	Category       INavCategory
-	TranslateLabel string
-	RouteName      string
-	RouteParams    map[string]string
-	PermitFn       func(perms []string) bool
+	Category    INavCategory
+	Label       string
+	RouteName   string
+	RouteParams map[string]string
+	PermitFn    func(perms []string) bool
 }

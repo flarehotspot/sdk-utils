@@ -6,16 +6,16 @@ import (
 	sdkacct "github.com/flarehotspot/core/sdk/api/accounts"
 )
 
-type IAuth interface {
+type HttpAuth interface {
 
 	// Get the current admin user from the http request.
-	CurrentAdmin(r *http.Request) (sdkacct.Account, error)
+	IsSignedIn(r *http.Request) (sdkacct.Account, error)
 
-	AuthenticateAdmin(username string, password string) (sdkacct.Account, error)
+	Authenticate(username string, password string) (sdkacct.Account, error)
 
 	// Sets the auth-token cookie in response header
-	SignInAdmin(w http.ResponseWriter, acct sdkacct.Account) error
+	SignIn(w http.ResponseWriter, acct sdkacct.Account) error
 
 	// Sets empty auth-token cooke response header
-	SignOutAdmin(w http.ResponseWriter) error
+	SignOut(w http.ResponseWriter) error
 }

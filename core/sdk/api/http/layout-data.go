@@ -1,6 +1,6 @@
 package sdkhttp
 
 type ILayoutData interface {
-	Helpers() IHelpers
+	Helpers() HttpHelpers
 	ContentPath() string
 }

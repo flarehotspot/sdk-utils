@@ -23,11 +23,11 @@ type AuthApi struct {
 	api *PluginApi
 }
 
-func (self *AuthApi) CurrentAdmin(r *http.Request) (acct.Account, error) {
+func (self *AuthApi) IsSignedIn(r *http.Request) (acct.Account, error) {
 	return helpers.CurrentAdmin(r)
 }
 
-func (self *AuthApi) AuthenticateAdmin(username string, password string) (acct.Account, error) {
+func (self *AuthApi) Authenticate(username string, password string) (acct.Account, error) {
 	acct, err := accounts.Find(username)
 	if err != nil {
 		return nil, err
@@ -40,7 +40,7 @@ func (self *AuthApi) AuthenticateAdmin(username string, password string) (acct.A
 	return acct, nil
 }
 
-func (self *AuthApi) SignInAdmin(w http.ResponseWriter, acct acct.Account) error {
+func (self *AuthApi) SignIn(w http.ResponseWriter, acct acct.Account) error {
 	appcfg, err := config.ReadApplicationConfig()
 	if err != nil {
 		return err
@@ -56,7 +56,7 @@ func (self *AuthApi) SignInAdmin(w http.ResponseWriter, acct acct.Account) error
 	return nil
 }
 
-func (self *AuthApi) SignOutAdmin(w http.ResponseWriter) error {
+func (self *AuthApi) SignOut(w http.ResponseWriter) error {
 	sdkhttp.SetCookie(w, middlewares.AuthTokenCookie, "")
 	return nil
 }

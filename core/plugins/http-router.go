@@ -16,16 +16,16 @@ func (r *HttpRouter) Router() *mux.Router {
 	return r.mux
 }
 
-func (r *HttpRouter) Get(path string, h http.HandlerFunc) sdkhttp.IHttpRoute {
+func (r *HttpRouter) Get(path string, h http.HandlerFunc) sdkhttp.HttpRoute {
 	route := r.mux.HandleFunc(path, h).Methods("GET")
 	return &HttpRoute{r.api, route}
 }
-func (r *HttpRouter) Post(path string, h http.HandlerFunc) sdkhttp.IHttpRoute {
+func (r *HttpRouter) Post(path string, h http.HandlerFunc) sdkhttp.HttpRoute {
 	route := r.mux.HandleFunc(path, h).Methods("POST")
 	return &HttpRoute{r.api, route}
 }
 
-func (r *HttpRouter) Group(path string, fn func(sdkhttp.IRouter)) {
+func (r *HttpRouter) Group(path string, fn func(sdkhttp.RouterInstance)) {
 	router := r.mux.PathPrefix(path).Subrouter()
 	newrouter := &HttpRouter{api: r.api, mux: router}
 	fn(newrouter)

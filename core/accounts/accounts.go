@@ -16,18 +16,18 @@ import (
 const (
 	AdminUsername = "admin"
 	AdminPassword = "admin"
-	PermMngUsers  = "manage_users"
+	PermAdmin     = "admin"
 )
 
 var (
-	perms               sync.Map
-	DefaultPerms        = []string{PermMngUsers}
-	ErrNoAccount        = errors.New("Account does not exist")
+	perms        sync.Map
+	DefaultPerms = []string{PermAdmin}
+	ErrNoAccount = errors.New("Account does not exist")
 )
 
 func init() {
 	perms = sync.Map{}
-	perms.Store(PermMngUsers, "Manage Users")
+	perms.Store(PermAdmin, "Manage Users")
 }
 
 func DefaultAdminAcct() Account {
@@ -177,7 +177,7 @@ func Update(prevName string, newName string, pass string, perms []string) (*Acco
 		Perms:  perms,
 	}
 
-	if acct.Uname == AdminUsername && !HasAllPerms(acct, PermMngUsers) {
+	if acct.Uname == AdminUsername && !HasAllPerms(acct, PermAdmin) {
 		return nil, errors.New("Super admin account must have manage users permission.")
 	}
 

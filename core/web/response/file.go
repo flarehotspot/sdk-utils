@@ -11,7 +11,7 @@ import (
 	tmplcache "github.com/flarehotspot/core/utils/flaretmpl"
 )
 
-func File(w http.ResponseWriter, file string, helpers httpI.IHelpers, data any) {
+func File(w http.ResponseWriter, file string, helpers httpI.HttpHelpers, data any) {
 	tmpl, err := tmplcache.GetTextTemplate(file)
 	if err != nil {
 		ErrorHtml(w, err.Error())

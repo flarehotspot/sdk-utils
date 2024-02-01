@@ -1,6 +1,6 @@
 +++
 title = "Plugin API"
-description = "Plugin API is the root interface of the SDK%apos;s API. It provides access to other API methods and configuration."
+description = "Plugin API is the root interface of the SDK&apos;s API. It provides access to other API methods within the SDK."
 date = 2021-05-01T08:00:00+00:00
 updated = 2021-05-01T08:00:00+00:00
 draft = false
@@ -9,17 +9,19 @@ sort_by = "weight"
 template = "docs/page.html"
 
 [extra]
-lead = "The Plugin API is the root interface of the SDK&apos;s API. It provides access to other API methods and configuration."
+lead = "The <code>PluginApi</code> is the root interface of the SDK&apos;s API. It provides access to other API methods within the SDK."
 toc = true
 top = false
 +++
 
-# Plugin Initialization
+# PluginApi
+
+## Overview
 
 When the plugin is first loaded into the system, the system looks for the `Init` function of the plugin's `main` package. The `PluginApi` object is then passed to the init function. From here, you can start configuring the routes and components of your plugin. An example of a plugin's init function:
 
 ```go
-// file: com.mydomain.myplugin/main.go
+// file: plugins/com.mydomain.myplugin/main.go
 
 package main
 
@@ -34,12 +36,17 @@ func Init(api sdkplugin.PluginApi) {
 }
 ```
 
+---
+
+# Methods
 The following are the available methods in `PluginApi`.
 
 ## Name
 It returns the `name` field defined in `plugin.json`.
 
 ```go
+package main
+// imports...
 func Init(api sdkplugin.PluginApi) {
     name := api.Name()
     fmt.Println(name) // "My Plugin"
@@ -49,6 +56,8 @@ func Init(api sdkplugin.PluginApi) {
 ## Pkg
 It returns the `package` field defined in `plugin.json`.
 ```go
+package main
+// imports...
 func Init(api sdkplugin.PluginApi) {
     pkg := api.Pkg()
     fmt.Println(pkg) // "com.mydomain.myplugin"
@@ -58,6 +67,8 @@ func Init(api sdkplugin.PluginApi) {
 ## Version
 It returns the `version` field defined in `plugin.json`.
 ```go
+package main
+// imports...
 func Init(api sdkplugin.PluginApi) {
     version := api.Version()
     fmt.Println(version) // "1.0.0"
@@ -67,6 +78,8 @@ func Init(api sdkplugin.PluginApi) {
 ## Description
 It returns the `description` field defined in `plugin.json`.
 ```go
+package main
+// imports...
 func Init(api sdkplugin.PluginApi) {
     description := api.Description()
     fmt.Println(description) // "My plugin description"
@@ -76,6 +89,8 @@ func Init(api sdkplugin.PluginApi) {
 ## Dir
 It returns the absolute path of the plugin's installtion directory.
 ```go
+package main
+// imports...
 func Init(api sdkplugin.PluginApi) {
     dir := api.Dir()
     fmt.Println(dir) // "/path/to/com.mydomain.myplugin"
@@ -85,6 +100,8 @@ func Init(api sdkplugin.PluginApi) {
 ## Translate
 It is a utility function used to convert a key into a translated string. Example usage:
 ```go
+package main
+// imports...
 func Init(api sdkplugin.PluginApi) {
     msg := api.Translate("info", "payment_received", "amount", 1.00)
     fmt.Println(msg) // "Payment received USD 1.0.0"
@@ -101,8 +118,10 @@ Payment received: USD <% .amount %>
 Internally, the param pairs are converted into a `map[any]any`.
 
 ## Resource
-It returns the absolute path of the plugin's resource directory.
+It returns the absolute path of the file under the plugin's resource directory.
 ```go
+package main
+// imports...
 func Init(api sdkplugin.PluginApi) {
     resource := api.Resource("/my-resource.txt")
     fmt.Println(resource) // "/path/to/com.mydomain.myplugin/resources/my-resource.txt"
@@ -112,6 +131,8 @@ func Init(api sdkplugin.PluginApi) {
 ## SqlDb
 It returns [`*sql.DB`](http://go-database-sql.org/overview.html) instance which is used to query, insert, update and delete database entities.
 ```go
+package main
+// imports...
 func Init(api sdkplugin.PluginApi) {
     db := api.SqlDb()
     fmt.Println(db) // *sql.DB
@@ -119,8 +140,10 @@ func Init(api sdkplugin.PluginApi) {
 ```
 
 ## Acct
-It returns the [`AccountsApi`](../accounts-api/) object which is used to access and modify the system admin accounts.
+It returns the [AccountsApi](../accounts-api/) object which is used to access and modify the system admin accounts.
 ```go
+package main
+// imports...
 func Init(api sdkplugin.PluginApi) {
     acct := api.Acct()
     fmt.Println(acct) // AccountsApi
@@ -130,6 +153,8 @@ func Init(api sdkplugin.PluginApi) {
 ## Http
 It returns the [`HttpApi`](../http-api/) object which is used to configure routes and serve HTTP requests.
 ```go
+package main
+// imports...
 func Init(api sdkplugin.PluginApi) {
     http := api.Http()
     fmt.Println(http) // HttpApi
@@ -139,6 +164,8 @@ func Init(api sdkplugin.PluginApi) {
 ## Config
 It returns the [`ConfigApi`](../config-api/) object which is used to access and modify the system configuration.
 ```go
+package main
+// imports...
 func Init(api sdkplugin.PluginApi) {
     config := api.Config()
     fmt.Println(config) // ConfigApi
@@ -148,6 +175,8 @@ func Init(api sdkplugin.PluginApi) {
 ## Payments
 It return the [`PaymentsApi`](../payments-api/) object which is used to create payment options or create system transactions.
 ```go
+package main
+// imports...
 func Init(api sdkplugin.PluginApi) {
     payments := api.Payments()
     fmt.Println(payments) // PaymentsApi
@@ -157,6 +186,8 @@ func Init(api sdkplugin.PluginApi) {
 ## InAppPurchases
 It returns the [`InAppPurchasesApi`](../in-app-purchases-api/) object which is used to create and manage in-app purchases.
 ```go
+package main
+// imports...
 func Init(api sdkplugin.PluginApi) {
     inAppPurchases := api.InAppPurchases()
     fmt.Println(inAppPurchases) // InAppPurchasesApi
@@ -166,6 +197,8 @@ func Init(api sdkplugin.PluginApi) {
 ## Ads
 It returns the [`AdsApi`](../ads-api/) object which is used to create and manage ads.
 ```go
+package main
+// imports...
 func Init(api sdkplugin.PluginApi) {
     ads := api.Ads()
     fmt.Println(ads) // AdsApi
@@ -175,6 +208,8 @@ func Init(api sdkplugin.PluginApi) {
 ## PluginsMgr
 It returns the [`PluginsMgrApi`](../plugins-mgr-api/) object which is used to manage plugins.
 ```go
+package main
+// imports...
 func Init(api sdkplugin.PluginApi) {
     pluginsMgr := api.PluginsMgr()
     fmt.Println(pluginsMgr) // PluginsMgrApi
@@ -184,6 +219,8 @@ func Init(api sdkplugin.PluginApi) {
 ## Network
 It returns the [`NetworkApi`](../network-api/) object which is used to manage the network.
 ```go
+package main
+// imports...
 func Init(api sdkplugin.PluginApi) {
     network := api.Network()
     fmt.Println(network) // NetworkApi
@@ -193,6 +230,8 @@ func Init(api sdkplugin.PluginApi) {
 ## DeviceHooks
 It returns the [`DeviceHooksApi`](../device-hooks-api/) object which is used to manage device registration hooks.
 ```go
+package main
+// imports...
 func Init(api sdkplugin.PluginApi) {
     deviceHooks := api.DeviceHooks()
     fmt.Println(deviceHooks) // DeviceHooksApi
@@ -202,6 +241,8 @@ func Init(api sdkplugin.PluginApi) {
 ## SessionsMgr
 It returns the [`SessionsMgrApi`](../sessions-mgr-api/) object which is used to manage user sessions.
 ```go
+package main
+// imports...
 func Init(api sdkplugin.PluginApi) {
     sessionsMgr := api.SessionsMgr()
     fmt.Println(sessionsMgr) // SessionsMgrApi
@@ -211,6 +252,8 @@ func Init(api sdkplugin.PluginApi) {
 ## Uci
 It returns the [`UciApi`](../uci-api/) object which is a wrapper to [OpenWRT's UCI](https://openwrt.org/docs/guide-user/base-system/uci).
 ```go
+package main
+// imports...
 func Init(api sdkplugin.PluginApi) {
     uci := api.Uci()
     fmt.Println(uci) // UciApi
@@ -220,6 +263,8 @@ func Init(api sdkplugin.PluginApi) {
 ## Themes
 It returns the [`ThemesApi`](../themes-api/) object which is used to manage system UI themes.
 ```go
+package main
+// imports...
 func Init(api sdkplugin.PluginApi) {
     themes := api.Themes()
     fmt.Println(themes) // ThemesApi

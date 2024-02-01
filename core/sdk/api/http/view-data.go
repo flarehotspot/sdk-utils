@@ -8,6 +8,6 @@ package sdkhttp
 // Then your custom data can be accessed in your view with: {{ .Data() }}.
 // The helpers can be accessed with: {{ .Helpers() }}.
 type IViewData interface {
-	Helpers() IHelpers
+	Helpers() HttpHelpers
 	Data() any
 }

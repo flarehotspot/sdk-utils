@@ -7,33 +7,21 @@ type AccountsApi interface {
 	// can be obtained from IAcctApi.Permissions().
 	Create(username string, pass string, perms []string) (Account, error)
 
-	// Get all accounts, admin and non-admin.
-	AllAccounts() ([]Account, error)
-
-	// Get all admin accounts.
-	AllAdmin() ([]Account, error)
-
 	// Find an account by username.
 	Find(username string) (Account, error)
 
-	// Update an existing account.
-	Update(oldusername string, username string, pass string, perms []string) (Account, error)
+	// Get all accounts, admin and non-admin.
+	GetAll() ([]Account, error)
 
-	// Delete an account by username.
-	Delete(username string) error
+	// Get all admin accounts.
+	GetAdmins() ([]Account, error)
 
 	// Add a new type of permission.
 	NewPerm(name string, desc string) error
 
 	// Retrieve all permissions.
-	Permissions() map[string]string
+	GetPerms() map[string]string
 
 	// Retrieve a permission description.
 	PermDesc(perm string) (desc string)
-
-	// Check if account has all of the specified permissions.
-	HasAllPerms(acct Account, perms ...string) bool
-
-	// Check if account has any of the specified permissions.
-	HasAnyPerm(acct Account, perms ...string) bool
 }

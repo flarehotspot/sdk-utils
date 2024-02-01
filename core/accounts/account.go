@@ -42,11 +42,21 @@ func (acct *Account) Permissions() []string {
 // IsAdmin returns true if the account is admin
 func (acct *Account) IsAdmin() bool {
 	for _, p := range acct.Perms {
-		if p == PermMngUsers {
+		if p == PermAdmin {
 			return true
 		}
 	}
 	return false
+}
+
+// HasAllPerms
+func (acct *Account) HasAllPerms(perms ...string) bool {
+	return HasAllPerms(acct, perms...)
+}
+
+// HasAnyPerm
+func (acct *Account) HasAnyPerm(perms ...string) bool {
+	return HasAnyPerm(acct, perms...)
 }
 
 // AddSocket adds a sse socket to the account

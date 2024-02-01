@@ -38,7 +38,7 @@ type HttpApi struct {
 	middlewares *PluginMiddlewares
 }
 
-func (self *HttpApi) Auth() sdkhttp.IAuth {
+func (self *HttpApi) Auth() sdkhttp.HttpAuth {
 	return self.auth
 }
 
@@ -46,15 +46,15 @@ func (self *HttpApi) GetDevice(r *http.Request) (sdkconnmgr.ClientDevice, error)
 	return helpers.CurrentClient(r)
 }
 
-func (self *HttpApi) HttpRouter() sdkhttp.IHttpRouter {
+func (self *HttpApi) HttpRouter() sdkhttp.HttpRouter {
 	return self.httpRouter
 }
 
-func (self *HttpApi) VueRouter() sdkhttp.IVueRouter {
+func (self *HttpApi) VueRouter() sdkhttp.VueRouter {
 	return self.vueRouter
 }
 
-func (self *HttpApi) Helpers() sdkhttp.IHelpers {
+func (self *HttpApi) Helpers() sdkhttp.HttpHelpers {
 	return NewViewHelpers(self.api)
 }
 
@@ -62,11 +62,11 @@ func (self *HttpApi) Middlewares() sdkhttp.Middlewares {
 	return self.middlewares
 }
 
-func (self *HttpApi) HttpResponse() sdkhttp.IHttpResponse {
+func (self *HttpApi) HttpResponse() sdkhttp.HttpResponse {
 	return self.httpResp
 }
 
-func (self *HttpApi) VueResponse() sdkhttp.IVueResponse {
+func (self *HttpApi) VueResponse() sdkhttp.VueResponse {
 	return NewVueResponse(self.api.HttpAPI.vueRouter)
 }
 

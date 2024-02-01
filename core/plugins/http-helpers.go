@@ -21,7 +21,7 @@ type HttpHelpers struct {
 	api *PluginApi
 }
 
-func NewViewHelpers(api *PluginApi) sdkhttp.IHelpers {
+func NewViewHelpers(api *PluginApi) sdkhttp.HttpHelpers {
 	return &HttpHelpers{api: api}
 }
 

@@ -25,7 +25,7 @@ func (self *AccountsApi) Delete(uname string) error {
 	return accounts.Delete(uname)
 }
 
-func (self *AccountsApi) AllAccounts() ([]acct.Account, error) {
+func (self *AccountsApi) GetAll() ([]acct.Account, error) {
 	accts, err := accounts.All()
 	if err != nil {
 		return nil, err
@@ -39,7 +39,7 @@ func (self *AccountsApi) AllAccounts() ([]acct.Account, error) {
 	return accounts, nil
 }
 
-func (self *AccountsApi) AllAdmin() ([]acct.Account, error) {
+func (self *AccountsApi) GetAdmins() ([]acct.Account, error) {
 	accts, err := accounts.All()
 	if err != nil {
 		return nil, err
@@ -63,7 +63,7 @@ func (self *AccountsApi) NewPerm(name string, desc string) error {
 	return accounts.NewPerm(name, desc)
 }
 
-func (self *AccountsApi) Permissions() map[string]string {
+func (self *AccountsApi) GetPerms() map[string]string {
 	return accounts.Permissions()
 }
 

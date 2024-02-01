@@ -8,7 +8,7 @@ import (
 	tmplcache "github.com/flarehotspot/core/utils/flaretmpl"
 )
 
-func Text(w http.ResponseWriter, file string, helpers httpI.IHelpers, data any) {
+func Text(w http.ResponseWriter, file string, helpers httpI.HttpHelpers, data any) {
 	vdata := &ViewData{
 		ViewHelpers: helpers,
 		ViewData:    data,

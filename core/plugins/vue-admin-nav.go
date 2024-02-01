@@ -27,16 +27,16 @@ func NewVueAdminNav(api *PluginApi, r *http.Request, nav sdkhttp.VueAdminNav) (s
 	routepath = sdkhttp.VueNotFoundPath
 
 	if vueRoute, ok := api.HttpAPI.vueRouter.FindVueRoute(nav.RouteName); ok {
-        // nav.RouteParams is a map[string]string
-        pairs := []string{}
-        for k, v := range nav.RouteParams {
-            pairs = append(pairs, k, v)
-        }
+		// nav.RouteParams is a map[string]string
+		pairs := []string{}
+		for k, v := range nav.RouteParams {
+			pairs = append(pairs, k, v)
+		}
 		routename = vueRoute.VueRouteName
 		routepath = vueRoute.VueRoutePath.URL(pairs...)
 	}
 
-	label := api.Translate("label", nav.TranslateLabel)
+	label := api.Translate("label", nav.Label)
 
 	return sdkhttp.AdminNavItem{
 		Category:     nav.Category,

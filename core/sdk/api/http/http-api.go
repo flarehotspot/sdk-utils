@@ -8,23 +8,27 @@ import (
 
 // HttpApi is used to process and respond to http requests.
 type HttpApi interface {
-	Auth() IAuth
+
+	// Returns the auth API.
+	Auth() HttpAuth
+
+	// Returns helper methods for views and handlers.
+	Helpers() HttpHelpers
 
 	// Returns the router API.
-	HttpRouter() IHttpRouter
+	HttpRouter() HttpRouter
 
-	VueRouter() IVueRouter
-
-	Helpers() IHelpers
+	// Returns the router API for vue requests.
+	VueRouter() VueRouter
 
 	// Returns the middlewares API.
 	Middlewares() Middlewares
 
 	// Returns the http response writer API.
-	HttpResponse() IHttpResponse
+	HttpResponse() HttpResponse
 
 	// Returns the http response writer API for vue requests
-	VueResponse() IVueResponse
+	VueResponse() VueResponse
 
 	// Returns the current client device from http request.
 	GetDevice(r *http.Request) (sdkconnmgr.ClientDevice, error)

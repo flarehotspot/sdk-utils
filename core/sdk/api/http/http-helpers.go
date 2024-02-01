@@ -4,9 +4,9 @@ import (
 	"html/template"
 )
 
-// IHelpers are methods available in html templates as .Helpers.
+// HttpHelpers are methods available in html templates as .Helpers.
 // For example, to use the Translate() method in html templates, use <% .Helpers.Translate "label" "network_settings" %>.
-type IHelpers interface {
+type HttpHelpers interface {
 
 	// Translates a message into the current language settings from application config.
 	// msgtype is the message type, e.g. "error", "success", "info", "warning".

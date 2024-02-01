@@ -4,18 +4,18 @@ import (
 	"net/http"
 )
 
-// IHttpResponse is used to respond to http requests.
-type IHttpResponse interface {
+// HttpResponse is used to respond to http requests.
+type HttpResponse interface {
 	// Used to render views from /resources/views/admin directory from your plugin.
 	// For example if you have a view in /resources/views/admin/dashboard/index.html,
 	// then you can render it with AdminView(w, r, "dashboard/index.html", data).
-    // It uses the layout.html from your plugin directory /resources/views/admin/http-layout.html
+	// It uses the layout.html from your plugin directory /resources/views/admin/http-layout.html
 	AdminView(w http.ResponseWriter, r *http.Request, view string, data any)
 
 	// Used to render views from /resources/views/portal directory from your plugin.
 	// For example if you have a view in /resources/views/portal/payment/index.html,
 	// then you can render it with PortalView(w, r, "payment/index.html", data).
-    // It uses the layout.html from your plugin directory /resources/views/portal/http-layout.html
+	// It uses the layout.html from your plugin directory /resources/views/portal/http-layout.html
 	PortalView(w http.ResponseWriter, r *http.Request, view string, data any)
 
 	// Used to render views from /resources/views directory from your plugin.

@@ -30,11 +30,11 @@ func NewHttpRouterApi(api *PluginApi, db *db.Database, clnt *connmgr.ClientRegis
 	return &HttpRouterApi{api, adminRouter, pluginRouter}
 }
 
-func (self *HttpRouterApi) AdminRouter() sdkhttp.IRouter {
+func (self *HttpRouterApi) AdminRouter() sdkhttp.RouterInstance {
 	return self.adminRouter
 }
 
-func (self *HttpRouterApi) PluginRouter() sdkhttp.IRouter {
+func (self *HttpRouterApi) PluginRouter() sdkhttp.RouterInstance {
 	return self.pluginRouter
 }
 
