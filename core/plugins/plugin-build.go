@@ -77,7 +77,7 @@ go 1.19
 		return err
 	}
 
-	pluginPath := filepath.Join(paths.VendorDir, pluginInfo.Package)
+	pluginPath := filepath.Join(paths.PluginsDir, pluginInfo.Package)
 	os.RemoveAll(filepath.Join(pluginPath, ".git"))
 	log.Println("Moving plugin files to", pluginPath)
 

@@ -11,7 +11,6 @@ import (
 func InitDirs() {
 	dirs := []string{
 		paths.ConfigDir,
-		paths.VendorDir,
 		paths.CacheDir,
 		paths.PublicDir,
 		filepath.Join(paths.CacheDir, "assets"),

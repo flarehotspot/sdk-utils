@@ -6,11 +6,14 @@ ENV BUILD_TAGS=dev
 WORKDIR /build
 
 RUN apt-get update && apt-get install -y \
-        wget golang-go ca-certificates openssl
+        wget golang-go nodejs npm ca-certificates openssl
 
 COPY . .
 
-RUN ./install-go.sh && \
+RUN npm install -g n && n 20 && \
+        hash -r && \
+        npm install && \
+        node ./install-go.js && \
         rm -rf plugins && \
         node ./make-go.work.js
 

@@ -1,11 +1,11 @@
 package main
 
 import (
-	"github.com/flarehotspot/core/sdk/api/plugin"
+	sdkplugin "github.com/flarehotspot/core/sdk/api/plugin"
 )
 
 func main() {}
 
-func Init(api plugin.IPluginApi) {
+func Init(api sdkplugin.PluginApi) {
     // Start your plugin here
 }

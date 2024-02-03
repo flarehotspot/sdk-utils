@@ -16,7 +16,7 @@ if (fs.existsSync(path.join(WORKDIR, 'plugins'))) {
     fs.readdirSync(path.join(WORKDIR, 'plugins')).forEach((dir) => {
         const d = path.join(WORKDIR, 'plugins', dir);
         if (fs.statSync(d).isDirectory()) {
-            if (!fs.existsSync(path.join(d, 'package.yml'))) {
+            if (fs.existsSync(path.join(d, 'plugin.json'))) {
                 GOWORK += `
                 ${d}`;
             }

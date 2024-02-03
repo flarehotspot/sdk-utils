@@ -6,7 +6,8 @@
  * Copyright 2021-2024 Flarego Technologies Corp. <business@flarego.ph>
  */
 
-(function ($flare) {
+(function (window) {
+  var $flare = window.$flare;
   var VueRouter = window.VueRouter;
   var routes = JSON.parse('<% .Data.Routes %>');
   // console.log(routes);
@@ -80,5 +81,9 @@
     return hastoken;
   }
 
+  window.BasicHttp.onUnauthorized = function () {
+    router.push({ name: '<% .Data.LoginRouteName %>' });
+  };
+
   $flare.router = router;
-})(window.$flare);
+})(window);

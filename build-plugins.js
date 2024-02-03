@@ -1,38 +1,54 @@
 #!/usr/bin/env node
 
-const { execSync } = require('child_process');
+const { execSync, spawn } = require('child_process');
 const fs = require('fs');
 const path = require('path');
-const isDocker = fs.existsSync('/.dockerenv');
 
 const WORKDIR = process.cwd();
 
 console.log(`Using go from ${execSync('which go').toString().trim()}...`);
 
-const vendorDir = path.join(WORKDIR, 'vendor');
+const pluginsDir = path.join(WORKDIR, 'plugins');
 
-fs.readdirSync(vendorDir).forEach((plugin) => {
-  const pluginDir = path.join(WORKDIR, 'plugins', plugin);
-  const vendorPluginDir = path.join(WORKDIR, 'vendor', plugin);
+(async () => {
+  const dirs = await fs.promises.readdir(pluginsDir);
 
-  if (fs.existsSync(pluginDir) && fs.existsSync(vendorPluginDir) && isDocker) {
-    fs.rmSync(vendorPluginDir, { recursive: true });
-  }
-
-  if (fs.existsSync(pluginDir)) {
-    console.log(`Building plugin ${plugin}...`);
-
-    try {
-      execSync(
-        `cd ${pluginDir} && go build -buildmode=plugin -ldflags="-s -w" -trimpath -o plugin.so ./main.go`
-      );
-      fs.copyFileSync(
-        path.join(pluginDir, 'main.go'),
-        path.join(vendorPluginDir, 'main.go')
-      );
-      console.log(`Done building plugin: ${plugin}`);
-    } catch (error) {
-      console.error(`Error building plugin ${plugin}: `, error);
+  dirs.forEach(async (plugin) => {
+    const pluginDir = path.join(WORKDIR, 'plugins', plugin);
+    if (fs.existsSync(pluginDir)) {
+      console.log(`Building plugin ${plugin}...`);
+      try {
+        await new Promise((resolve, reject) => {
+          spawn(
+            'go',
+            [
+              'build',
+              '-buildmode',
+              'plugin',
+              '-ldflags',
+              '-s -w',
+              '-trimpath',
+              '-o',
+              'plugin.so',
+              './main.go'
+            ],
+            { stdio: 'inherit', cwd: pluginDir }
+          )
+            .on('close', (code) => {
+              if (code === 0) {
+                resolve();
+              } else {
+                reject(new Error(`Failed to build plugin ${plugin}`));
+              }
+            })
+            .on('error', (error) => {
+              reject(error);
+            });
+        });
+        console.log(`Done building plugin: ${plugin}`);
+      } catch (error) {
+        console.error(`Error building plugin ${plugin}: `, error);
+      }
     }
-  }
-});
+  });
+})();

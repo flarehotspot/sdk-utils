@@ -63,6 +63,6 @@ func FindPluginSrc(dir string) (string, error) {
 }
 
 func GetInstallInfo(pkg string) (*PluginInfo, error) {
-	installPath := filepath.Join(paths.VendorDir, pkg)
+	installPath := filepath.Join(paths.PluginsDir, pkg)
 	return GetPluginInfo(installPath)
 }
