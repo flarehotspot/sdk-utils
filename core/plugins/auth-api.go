@@ -23,8 +23,8 @@ type AuthApi struct {
 	api *PluginApi
 }
 
-func (self *AuthApi) IsSignedIn(r *http.Request) (acct.Account, error) {
-	return helpers.CurrentAdmin(r)
+func (self *AuthApi) CurrentAcct(r *http.Request) (acct.Account, error) {
+	return helpers.CurrentAcct(r)
 }
 
 func (self *AuthApi) Authenticate(username string, password string) (acct.Account, error) {

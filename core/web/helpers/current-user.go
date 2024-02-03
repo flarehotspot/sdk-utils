@@ -8,7 +8,7 @@ import (
 	"github.com/flarehotspot/core/sdk/api/http"
 )
 
-func CurrentAdmin(r *http.Request) (*accounts.Account, error) {
+func CurrentAcct(r *http.Request) (*accounts.Account, error) {
 	sym := r.Context().Value(sdkhttp.SysAcctCtxKey)
 	acct, ok := sym.(*accounts.Account)
 	if !ok {

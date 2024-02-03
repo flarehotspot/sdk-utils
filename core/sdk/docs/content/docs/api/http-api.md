@@ -19,7 +19,7 @@ top = false
 The `HttpApi` is used to access various HTTP server functionalities including authentication, routing, and http responses.
 
 # Methods
-First, get an instance of the `HttpApi` from the [PluginApi]('../plugin-api'):
+First, get an instance of the `HttpApi` from the [PluginApi](../plugin-api):
 ```go
 package main
 // imports...

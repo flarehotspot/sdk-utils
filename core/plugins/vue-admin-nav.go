@@ -12,7 +12,7 @@ func NewVueAdminNav(api *PluginApi, r *http.Request, nav sdkhttp.VueAdminNav) (s
 	var adminNav sdkhttp.AdminNavItem
 
 	if nav.PermitFn != nil {
-		acct, err := helpers.CurrentAdmin(r)
+		acct, err := helpers.CurrentAcct(r)
 		if err != nil {
 			log.Println("Warning: helpers.CurrentAdmin() failed: ", err)
 			return adminNav, false

@@ -14,7 +14,9 @@ toc = true
 top = false
 +++
 
-# Overview
+# HttpRouter
+
+## Overview
 
 The `HttpRouter` is used to define HTTP routes, middlewares and their handlers for generic http requests within your plugin.
 It is different from the [VueRouter](../vue-router). The later is used to define routes for the vue application, the frontend framework used in our system.
@@ -67,7 +69,7 @@ url := router.UrlForMuxRoute(muxRouteName, "param1", "value1", "param2", "value2
 ---
 
 # Router Instance {#router-instance}
-A `RouterInstance` is returned from [router.AdminRouter()](#adminrouter) or [router.PluginRouter()](#pluginrouter). This is where you define your routes, middlewares and handlers. Only `GET` and `POST` requests are supported.
+A `RouterInstance` is returned from [router.AdminRouter](#adminrouter) or [router.PluginRouter](#pluginrouter). This is where you define your routes, middlewares and handlers. Only `GET` and `POST` requests are supported.
 
 ## Get
 Define a `GET` route for your plugin. Below is an example of a `GET` route with a middleware and a route name. It returns an [HttpRoute](#http-route) instance.
@@ -105,7 +107,7 @@ rtr.Post("/my-route-path", myHandler).Name(routeName).Use(myMiddleware)
 ---
 
 # Http Route
-An `HttpRoute` is returned from [RouterInstance.Get](#get) or [RouterInstance.Post](#post). It is used to define a route name.
+An `HttpRoute` is returned from [RouterInstance.Get](#get) or [RouterInstance.Post](#post) methods. It is used to define a route name.
 
 ## Name
 Define a [PluginRouteName](#plugin-route-name) for the route.

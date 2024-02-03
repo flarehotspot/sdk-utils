@@ -14,7 +14,9 @@ toc = true
 top = false
 +++
 
-# Overview
+# AccountsApi
+
+## Overview
 The `AccountsApi` let's you create, modify, remove and manage system admin accounts and permissions.
 
 # Methods
@@ -30,7 +32,7 @@ func Init(api sdkplugin.PluginApi) {
 The following are the available methods in `AccountsApi`.
 
 ## Create
-It creates a new admin account with the given username, password and [permissions](#permissions). It returns an [Account Instance](#account-instance) and an `error` object.
+It creates a new admin account with the given username, password and [permissions](#permissions). It returns an [Account](#account-instance) instance and an `error` object.
 ```go
 username := "admin"
 password := "admin"
@@ -43,7 +45,7 @@ fmt.Println(acct) // Account
 ```
 
 ## Find
-It finds an admin account by the given username. It returns an [Account Instance](#account-instance) and an `error` object.
+It finds an admin account by the given username. It returns an [Account](#account-instance) instance and an `error` object.
 ```go
 acct, err := accountsApi.Find("admin")
 if err != nil {
@@ -53,7 +55,7 @@ fmt.Println(acct) // Account
 ```
 
 ## GetAll
-It returns all the admin accounts, admin and non-admin. It returns a slice of [Account Instances](#account-instance) and an `error` object.
+It returns all the admin accounts, admin and non-admin. It returns a slice of [Account](#account-instance) instance and an `error` object.
 ```go
 accts, err := accountsApi.GetAll()
 if err != nil {
@@ -63,7 +65,7 @@ fmt.Println(accts) // []Account
 ```
 
 ## GetAdmins
-It returns all the admin accounts. It returns a slice of [Account Instances](#account-instance) and an `error` object.
+It returns all the admin accounts. It returns a slice of [Account](#account-instance) instance and an `error` object.
 ```go
 accts, err := accountsApi.GetAdmins()
 if err != nil {
@@ -84,7 +86,7 @@ if err != nil {
 ```
 
 ## GetPerms
-It returns a all available permissions, including custom ones from plugins. It returns a map of permissions `map[string]string` (name and description pairs).
+It returns all the available permissions, including custom ones from plugins. The return type is `map[string]string` (name and description pairs of permissions).
 ```go
 perms := accountsApi.GetPerms()
 fmt.Println(perms) // map[string]string{"admin": "The admin permission"}
