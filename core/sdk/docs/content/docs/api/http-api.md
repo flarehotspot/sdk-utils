@@ -71,11 +71,12 @@ vueResponse := httpApi.VueResponse()
 ```
 
 ## GetDevice
-Get the device information from the http request. It returns and instance of [ClientDevice]('../client-device') and an `error`.
-This must be used in conjuction with the [Device middleware](../middlewares#device).
+Get the device information from the http request. It returns and instance of [ClientDevice](../client-device) and an `error`.
+This must be used in conjuction with the [Device middleware](../middlewares/#device).
 ```go
 // handler
 func (w http.ResponseWriter, r *http.Request) {
+    // other logic...
     device, err := httpApi.GetDevice(r)
     if err != nil {
         // handle error
@@ -89,6 +90,7 @@ Returns a map (`map[string]string`) of mux variables from the request path. For 
 ```go
 // handler
 func (w http.ResponseWriter, r *http.Request) {
+    // other logic...
     vars := httpApi.MuxVars(r) // map[string]string
     id := vars["id"]
     fmt.Println(id) // "1"
@@ -100,6 +102,7 @@ Returns a slice of [AdminNavList](#admin-nav-list)
 ```go
 // handler
 func (w http.ResponseWriter, r *http.Request) {
+    // other logic...
     navList := httpApi.GetAdminNavs(r)
     fmt.Println(navList) // []AdminNavList
 }
@@ -109,6 +112,7 @@ Returns a slice of [PortalItem](#portal-item)
 ```go
 // handler
 func (w http.ResponseWriter, r *http.Request) {
+    // other logic...
     portalItems := httpApi.GetPortalItems(r)
     fmt.Println(portalItems) // []PortalItem
 }

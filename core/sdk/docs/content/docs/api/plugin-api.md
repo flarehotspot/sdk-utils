@@ -17,6 +17,7 @@ top = false
 # PluginApi
 
 ## Overview
+The `PluginApi` provides access to methods used to manipulate system accounts, network devices, theme configuration, user sessions and payment system. Each plugin is provided with an instance of `PluginApi`, the root interface of our SDK.
 
 When the plugin is first loaded into the system, the system looks for the `Init` function of the plugin's `main` package. The `PluginApi` object is then passed to the init function. From here, you can start configuring the routes and components of your plugin. An example of a plugin's init function:
 
@@ -54,7 +55,7 @@ func Init(api sdkplugin.PluginApi) {
 ```
 
 ## Pkg
-It returns the `package` field defined in `plugin.json`.
+It returns the `package` field defined in [plugin.json](../plugin-json/).
 ```go
 package main
 // imports...
@@ -65,7 +66,7 @@ func Init(api sdkplugin.PluginApi) {
 ```
 
 ## Version
-It returns the `version` field defined in `plugin.json`.
+It returns the `version` field defined in [plugin.json](../plugin-json/).
 ```go
 package main
 // imports...
@@ -76,7 +77,7 @@ func Init(api sdkplugin.PluginApi) {
 ```
 
 ## Description
-It returns the `description` field defined in `plugin.json`.
+It returns the `description` field defined in [plugin.json](../plugin-json/).
 ```go
 package main
 // imports...

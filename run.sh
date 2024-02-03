@@ -8,7 +8,7 @@ rm -rf ./vendor && mkdir ./vendor
 find . -name "*.app" -type f -delete
 
 # Build .so files and run
-./go-work.sh
-./build-main.sh
-./build-plugins.sh
-./main/main.app
+node ./make-go.work.js
+node ./build-main.js
+node ./build-plugins.js
+node ./run.js

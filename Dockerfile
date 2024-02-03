@@ -12,7 +12,7 @@ COPY . .
 
 RUN ./install-go.sh && \
         rm -rf plugins && \
-        ./go-work.sh
+        node ./make-go.work.js
 
 ENV PATH=/build/go/bin:${PATH}
 ENV GOROOT=/build/go

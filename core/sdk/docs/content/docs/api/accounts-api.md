@@ -25,7 +25,7 @@ First, get an instance of the `AccountsApi` from the [PluginApi](../plugin-api):
 package main
 // imports...
 func Init(api sdkplugin.PluginApi) {
-    accountsApi := accountsApi
+    accountsApi := api.Acct()
 }
 ```
 

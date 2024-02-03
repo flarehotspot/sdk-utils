@@ -2,7 +2,7 @@ default: devmono
 
 devplugin:
 	cd core && make plugin
-	./run.sh
+	node ./run.js
 
 devmono:
 	npm run serve:mono

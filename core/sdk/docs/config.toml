@@ -106,11 +106,11 @@ site_links_search_box = false
 [[extra.menu.main]]
 name = "Docs"
 section = "docs"
-url = "/docs/api/introduction"
+url = "/docs/tutorials/introduction/"
 weight = 10
 
 [[extra.menu.main]]
-name = "Resources"
+name = "Blog"
 section = "blog"
 url = "/blog/"
 weight = 30

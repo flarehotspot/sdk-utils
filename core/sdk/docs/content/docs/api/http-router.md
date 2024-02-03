@@ -33,7 +33,7 @@ func Init(api sdkplugin.PluginApi) {
 ```
 
 ## AdminRouter
-Returns a [Router](#router-instance) instance. This router have an [AdminAuth](../middlewares#admin-auth) middleware by default to make sure HTTP requests are coming from an authenticated admin user. Route paths registered using the admin router have `/admin` prefix.
+Returns a [Router](#router-instance) instance. This router have an [AdminAuth](../middlewares/#admin-auth) middleware by default to make sure HTTP requests are coming from an authenticated admin user. Route paths registered using the admin router have `/admin` prefix.
 
 ```go
 adminRouter := router.AdminRouter()
@@ -130,7 +130,7 @@ A `PluginRouteName` is a route name defined in the routes within your plugin. Fo
 Then, "my-route-name" is the `PluginRouteName`.
 
 ## MuxRouteName {#mux-route-name}
-A `MuxRouteName` are route names which can be used to reference a page outside your plugin. Internally, a [PluginRouteName](#plugin-route-name) is converted into a `MuxRouteName` prefixed with [plugin package name](../plugin-api#pkg). Internal routes in the system are all using `MuxRouteName`. Below are the available `MuxRouteName` in the system:
+A `MuxRouteName` are route names which can be used to reference a page outside your plugin. Internally, a [PluginRouteName](#plugin-route-name) is converted into a `MuxRouteName` prefixed with [plugin package name](../plugin-api/#pkg). Internal routes in the system are all using `MuxRouteName`. Below are the available `MuxRouteName` in the system:
 
 TODO: Add available MuxRouteNames
 
