@@ -1,7 +1,7 @@
 {
   "name": "devkit",
   "version": "0.0.1",
-  "description": "Flarehotspot Development Tool",
+  "description": "Flare Hotspot SDK",
   "main": "index.js",
   "scripts": {
     "start": "node run.js",

@@ -128,7 +128,7 @@ Once you're inside MariaDB console, type the command below to create a new user 
 MariaDB [(none)]> GRANT ALL ON *.* TO 'admin'@'localhost' IDENTIFIED BY 'password' WITH GRANT OPTION;
 ```
 
-Then fluash the privilges so that it persists in the current session. Then exit afterwards;
+Then fluash the privilges so that it persists in the current session.
 ```sql
 MariaDB [(none)]> FLUSH PRIVILEGES;
 ```
@@ -140,7 +140,7 @@ MariaDB [(none)]> CREATE DATABASE flarehotspot_dev;
 
 Once you're done, exit the MariaDB console:
 ```
-exit
+MariaDB [(none)]> exit
 ```
 
 Our database should now be ready. To test the connection to your database, let's enter the MariaDB console using our newly created "admin" user and connect to our "flarehotspot_dev" database.
@@ -184,7 +184,14 @@ To connect to the database we [created](#installing-mariadb) previously, open th
 ```
 
 ## Start Application
-Start the application by running the `run.js` script.
+Before starting the application, make sure to install the needed node modules.
+```sh
+# replace ~/Downloads/devkit-x.x.x with the path to the extracted SDK source
+cd ~/Downloads/devkit-x.x.x
+npm install
+```
+
+Then start the application by running the `run.js` script.
 ```sh
 node run.js
 ```
