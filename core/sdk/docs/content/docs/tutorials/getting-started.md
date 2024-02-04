@@ -1,6 +1,6 @@
 +++
 title = "Getting Started"
-description = "Series of tutorials to get you started using the Flare Hotspot SDK."
+description = "Series of tutorials to get you started with using the Flare Hotspot SDK."
 date = 2021-05-01T08:00:00+00:00
 updated = 2021-05-01T08:00:00+00:00
 draft = false
@@ -172,7 +172,7 @@ After downloading, extract the zip file to your desired location. Below is the d
 
 Notice the `com.flarego.sample-plugin` directory. We are going to use this sample plugin as the base of our project.
 
-## Set Database Connection
+## Configure SDK
 To connect to the database we [created](#installing-mariadb) previously, open the file `config/database.json` and set the database connection settings.
 ```json
 {

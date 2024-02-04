@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "serve:mono": "node ./build-mono.js && node ./exec-main.js",
-    "serve:docs": "cd core/sdk/docs && zola serve"
+    "serve:docs": "cd core/sdk/docs && zola serve",
+    "build:docs": "cd core/sdk/docs && zola build"
   },
   "keywords": [
     "flarehotspot",
