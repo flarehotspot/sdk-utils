@@ -81,7 +81,7 @@ async function defaultConfigs() {
 }
 
 async function copyExtrasFiles() {
-  console.log('Copying devkit files...');
+  console.log('Copying devkit-extra files...');
   await fs.copy(path.join(__dirname, 'devkit-extras'), RELEASE_DIR);
 }
 
