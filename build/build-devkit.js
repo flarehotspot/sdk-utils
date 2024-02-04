@@ -8,7 +8,7 @@ const CORE_VERSION = require('../core/plugin.json').version;
 const ROOT_DIR = path.join(__dirname, '..');
 const DOCKER_IMAGE = 'devkit:latest';
 const TMP_CONTAINER = 'devkit-tmp';
-const CORE_SO = '/root/plugin.so';
+const CORE_SO = '/plugin.so';
 const RELEASE_DIR = path.join(
   ROOT_DIR,
   'devkit-release',
@@ -24,6 +24,7 @@ const DEVKIT_FILES = [
   '../core/plugin.json',
   '../core/plugin.so',
   '../core/go-version',
+  '../build/build-args.js',
   '../build/exec-async.js',
   '../build/main-path.js',
   '../build/install-go.js',
@@ -72,7 +73,7 @@ async function defaultConfigs() {
   );
 
   // Generate application.json with random secret
-  const secret = await execAsync('openssl rand -hex 16');
+  const secret = await execAsync('openssl rand -hex 16').then(stdout => stdout.trim());
   const appcfg = { lang: 'en', secret };
   const appcfgPath = path.join(RELEASE_DIR, 'config/application.json');
   await fs.writeFile(appcfgPath, JSON.stringify(appcfg, null, 2));

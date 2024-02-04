@@ -3,22 +3,18 @@
 const execAsync = require('./exec-async');
 const fs = require('fs-extra');
 const path = require('path');
+const buildArgs = require('./build-args');
 
-module.exports = async (pluginDir, tags) => {
+module.exports = async (pluginDir) => {
   const plugin = path.basename(pluginDir);
 
   if (await fs.exists(pluginDir)) {
     console.log(`Building plugin ${plugin}...`);
 
-    const buildtags = tags ? `-tags="${tags}"` : '';
+    await execAsync(
+      `cd ${pluginDir} && go build -buildmode=plugin ${buildArgs} -o plugin.so ./main.go`
+    );
 
-    try {
-      await execAsync(
-        `cd ${pluginDir} && go build -buildmode=plugin ${buildtags} -ldflags="-s -w" -trimpath -o plugin.so ./main.go`
-      );
-      console.log(`Done building plugin: ${plugin}`);
-    } catch (error) {
-      console.error(`Error building plugin ${plugin}: `, error);
-    }
+    console.log(`Done building plugin: ${plugin}`);
   }
 };

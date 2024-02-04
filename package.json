@@ -1,24 +1,26 @@
 {
-  "name": "devkit",
-  "version": "0.0.1",
-  "description": "Flare Hotspot SDK",
-  "main": "index.js",
-  "scripts": {
-    "start": "node run.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "serve:mono": "node ./build/build-mono.js && node ./exec-main.js",
-    "serve:docs": "cd core/sdk/docs && zola serve",
-    "build:docs": "cd core/sdk/docs && zola build"
-  },
-  "keywords": [
-    "flarehotspot",
-    "devkit"
-  ],
-  "author": "Flarego Technologies Corporation <support@flarego.ph>",
-  "license": "ISC",
-  "devDependencies": {
-    "eslint": "^8.49.0",
-    "fs-extra": "^11.2.0",
-    "typescript": "^5.3.3"
-  }
+    "name": "devkit",
+    "version": "0.0.1",
+    "description": "Flare Hotspot SDK",
+    "main": "index.js",
+    "scripts": {
+        "start": "node run.js",
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "serve:mono": "node ./build/build-mono.js && node ./exec-main.js",
+        "serve:docs": "cd core/sdk/docs && zola serve",
+        "build:docs": "cd core/sdk/docs && zola build"
+    },
+    "keywords": [
+        "flarehotspot",
+        "devkit"
+    ],
+    "author": "Flarego Technologies Corporation <support@flarego.ph>",
+    "license": "ISC",
+    "dependencies": {
+        "fs-extra": "^11.2.0"
+    },
+    "devDependencies": {
+        "eslint": "^8.49.0",
+        "typescript": "^5.3.3"
+    }
 }

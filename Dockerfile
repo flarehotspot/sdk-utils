@@ -4,30 +4,31 @@ FROM ubuntu:22.04
 RUN apt-get update && apt-get install -y \
         wget curl golang-go ca-certificates openssl
 
-RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash - &&\
+COPY ./build/setup_nodejs_16.x .
+
+RUN bash ./setup_nodejs_16.x && \
         apt-get install -y nodejs
 
-ENV BUILD_TAGS=dev
+ARG NODE_ENV=production
+ARG DEVKIT_BUILD=1
+
+ENV NODE_ENV=${NODE_ENV}
+ENV DEVKIT_BUILD=${DEVKIT_BUILD}
 ENV GO_CUSTOM_PATH=/build/go
 ENV PATH=${GO_CUSTOM_PATH}/bin:${PATH}
+
 WORKDIR /build
-
-
 
 COPY . .
 
-RUN npm install && \
+RUN rm -rf ./plugins && \
+        npm install && \
         node ./build/install-go.js && \
-        rm -rf plugins && \
-        node ./build/make-go.work.js
-
-
-RUN echo "Using go: $(which go)" && \
-        echo "Using go version: $(go version)" && \
-        go build --buildmode=plugin -ldflags="-s -w" --tags="${BUILD_TAGS}" -trimpath -o /root/plugin.so core/main.go
+        node ./build/make-go.work.js && \
+        node ./build/build-core.js
 
 FROM scratch
-COPY --from=0 /root/plugin.so /root/plugin.so
+COPY --from=0 /build/core/plugin.so /plugin.so
 
 CMD ["echo", "hello"]
 

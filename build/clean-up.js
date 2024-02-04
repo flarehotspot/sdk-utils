@@ -18,6 +18,7 @@ module.exports = (async () => {
   console.log('Removing .app and .so files...');
 
   const removeFilesWithExtension = (dir, extension) => {
+    if (!fs.existsSync(dir)) return;
     const entries = fs.readdirSync(dir);
     entries.forEach((entry) => {
       const fullpath = path.join(dir, entry);
