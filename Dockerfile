@@ -1,25 +1,26 @@
 
 FROM ubuntu:22.04
 
-ENV BUILD_TAGS=dev
+RUN apt-get update && apt-get install -y \
+        wget curl golang-go ca-certificates openssl
 
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - &&\
+        apt-get install -y nodejs
+
+ENV BUILD_TAGS=dev
+ENV GO_CUSTOM_PATH=/build/go
+ENV PATH=${GO_CUSTOM_PATH}/bin:${PATH}
 WORKDIR /build
 
-RUN apt-get update && apt-get install -y \
-        wget golang-go nodejs npm ca-certificates openssl
+
 
 COPY . .
 
-RUN npm install -g n && n 20 && \
-        hash -r && \
-        npm install && \
+RUN npm install && \
         node ./build/install-go.js && \
         rm -rf plugins && \
         node ./build/make-go.work.js
 
-ENV PATH=/build/go/bin:${PATH}
-ENV GOROOT=/build/go
-ENV GOPATH=/build
 
 RUN echo "Using go: $(which go)" && \
         echo "Using go version: $(go version)" && \
