@@ -26,7 +26,7 @@ The plugin SDK is a set of tools and libraries that allow you to build applicati
 
 Before we can proceed with installation, we must first install some development tools needed to compile and run the system. Below are the needed tools.
 
-- Node.js >= 18
+- Node.js >= 16 (16 recommended)
 - Go 1.19.12 (must be exact version)
 - MariaDB (or MySQL)
 

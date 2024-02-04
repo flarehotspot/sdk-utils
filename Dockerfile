@@ -4,7 +4,7 @@ FROM ubuntu:22.04
 RUN apt-get update && apt-get install -y \
         wget curl golang-go ca-certificates openssl
 
-RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - &&\
+RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash - &&\
         apt-get install -y nodejs
 
 ENV BUILD_TAGS=dev
