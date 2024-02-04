@@ -15,6 +15,7 @@ const RELEASE_DIR = path.join(
   '/devkit-' + CORE_VERSION
 );
 const OUTFILE = path.join(ROOT_DIR, 'core/plugin.so');
+const DOCKER_FILE = path.join(__dirname, 'Dockerfile');
 const DEVKIT_FILES = [
   '../main/go.mod',
   '../main/main.app',
@@ -87,7 +88,7 @@ async function copyExtrasFiles() {
 
 async function buildCore() {
   await execAsync(
-    `cd ${ROOT_DIR} && docker build --progress=plain -t ${DOCKER_IMAGE} .`
+    `cd ${ROOT_DIR} && docker build --progress=plain -t ${DOCKER_IMAGE} -f ${DOCKER_FILE} .`
   );
 }
 
