@@ -16,7 +16,8 @@ const RELEASE_DIR = path.join(
 );
 const OUTFILE = path.join(ROOT_DIR, 'core/plugin.so');
 const DEVKIT_FILES = [
-  '../main',
+  '../main/go.mod',
+  '../main/main.app',
   '../core/go.mod',
   '../core/go.sum',
   '../core/sdk',
