@@ -6,12 +6,11 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
-
-	"github.com/flarehotspot/core/sdk/libs/slug"
+    sdkstr "github.com/flarehotspot/core/sdk/utils/strings"
 )
 
 func ExecAsh(command string) error {
-	f := slug.Make(command) + ".sh"
+	f := sdkstr.Rand(16) + ".sh"
 	script := filepath.Join(os.TempDir(), f)
 
 	err := ioutil.WriteFile(script, []byte(command), 0644)

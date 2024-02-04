@@ -51,9 +51,11 @@ func (pmgr *PluginsMgr) RegisterPlugin(p *PluginApi) {
 	p.InitCoreApi(pmgr.CoreAPI)
 	pmgr.plugins = append(pmgr.plugins, p)
 
-	err := p.Init()
-	if err != nil {
-		log.Println("Error initializing plugin: "+p.Dir(), err)
+	if p.Pkg() != pmgr.CoreAPI.Pkg() {
+		err := p.Init()
+		if err != nil {
+			log.Println("Error initializing plugin: "+p.Dir(), err)
+		}
 	}
 }
 
