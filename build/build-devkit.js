@@ -75,7 +75,9 @@ async function defaultConfigs() {
   );
 
   // Generate application.json with random secret
-  const secret = await execAsync('openssl rand -hex 16').then(stdout => stdout.trim());
+  const secret = await execAsync('openssl rand -hex 16').then((stdout) =>
+    stdout.trim()
+  );
   const appcfg = { lang: 'en', secret };
   const appcfgPath = path.join(RELEASE_DIR, 'config/application.json');
   await fs.writeFile(appcfgPath, JSON.stringify(appcfg, null, 2));
@@ -104,6 +106,12 @@ async function buildMain() {
   await require('./build-main.js');
 }
 
+async function zipDevkit() {
+  const zipFile = RELEASE_DIR + '.zip';
+  console.log(`Zipping ${RELEASE_DIR} -> ${zipFile}...`);
+  await execAsync(`cd ${RELEASE_DIR} && zip -r ${zipFile} .`);
+}
+
 async function main() {
   await prepare();
   await buildCore();
@@ -112,6 +120,7 @@ async function main() {
   await buildMain();
   await copyDevkitFiles();
   await copyExtrasFiles();
+  await zipDevkit();
 }
 
 module.exports = main();

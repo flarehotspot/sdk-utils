@@ -26,12 +26,19 @@ The plugin SDK is a set of tools and libraries that allow you to build applicati
 
 Before we can proceed with installation, we must first install some development tools needed to compile and run the system. Below are the needed tools.
 
-- Node.js >= 16 (16 recommended)
+- Node.js >= 18 (18 recommended)
 - Go 1.19.12 (must be exact version)
 - MariaDB (or MySQL)
 
 Througout the tutorial, we assume you are using a Debian based operating system like [Ubuntu](https://ubuntu.com/) or some of its [derivatives](https://en.wikipedia.org/wiki/Category:Ubuntu_derivatives). Although this works on any other linux distro,
 we'll just stick to one that's more familiar for most users.
+
+## System Packages
+Before we proceed, let's make sure all the needed system tools are available in our system.
+```sh
+sudo apt update
+sudo apt install -y curl wget git build-essential
+```
 
 ## Installing Node.js
 
@@ -68,6 +75,12 @@ cd ~
 wget https://go.dev/dl/go1.19.12.linux-amd64.tar.gz
 sudo rm -rf /usr/local/go # remove any previously installed go
 sudo tar -C /usr/local -xzf go1.19.12.linux-amd64.tar.gz
+```
+
+We need to add the go path to our `$PATH` environment variable:
+```sh
+echo "export PATH=$PATH:/usr/local/go/bin" >> ~/.bashrc
+source ~/.bashrc
 ```
 
 Verify the installed Go version. The result should be `go version go1.19.12 linux/amd64`.
@@ -158,8 +171,15 @@ MariaDB [flarehotspot_dev]> exit
 # Installing the SDK
 
 ## Download SDK
-To install the plugin SDK, download the latest release from [sdk-releases](https://github.com/flarehotspot/sdk-releases/releases) repository.
-After downloading, extract the zip file to your desired location. Below is the directory structure of the zip file:
+To install the plugin SDK, download the latest **devkit-x.x.xzip** file from [sdk-releases](https://github.com/flarehotspot/sdk-releases/releases) repository.
+After downloading, extract the zip file to your desired location.
+```sh
+# replace ~/Downloads/devkit-x.x.x.zip with the path to the downloaded zip file
+unzip ~/Downloads/devkit-x.x.x.zip -d ~/Documents/flare-devkit
+cd ~/Documents/flare-devkit
+```
+
+Below is the directory structure of the zip file:
 ```
 |- config
 |- core
@@ -172,8 +192,8 @@ After downloading, extract the zip file to your desired location. Below is the d
 
 Notice the `com.flarego.sample-plugin` directory. We are going to use this sample plugin as the base of our project.
 
-## Configure SDK
-To connect to the database we [created](#installing-mariadb) previously, open the file `config/database.json` and set the database connection settings.
+## Configure Project
+Our application needs to connect to the database we [created](#installing-mariadb) earlier, open the file `config/database.json` and set the database connection settings.
 ```json
 {
     "host":     "localhost",
@@ -186,15 +206,19 @@ To connect to the database we [created](#installing-mariadb) previously, open th
 ## Start Application
 Before starting the application, make sure to install the needed node modules.
 ```sh
-# replace ~/Downloads/devkit-x.x.x with the path to the extracted SDK source
-cd ~/Downloads/devkit-x.x.x
 npm install
 ```
 
-Then start the application by running the `run.js` script.
+Then start the application by running the `npm start` command.
 ```sh
-node run.js
+npm start
 ```
 You can now browse the application in [http://localhost:3000](http://localhost:3000)
 
 The admin dashboard can be accessed in [http://localhost:3000/admin](http://localhost:3000/admin)
+
+The default login for the admin dashboard is:
+```
+username: admin
+password: admin
+```
