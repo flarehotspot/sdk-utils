@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	rootjson = "$$response"
+	rootjson = "$vue_response"
 )
 
 func NewVueResponse(vr *VueRouterApi) *VueResponse {

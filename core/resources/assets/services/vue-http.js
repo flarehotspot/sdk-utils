@@ -8,7 +8,7 @@
 (function ($flare) {
   var http = window.BasicHttp;
   var vueHttp = {};
-  var rootres = '$$response';
+  var rootres = '$vue_response';
   $flare.http = vueHttp;
 
   vueHttp.get = function (url, params) {
