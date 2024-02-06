@@ -13,7 +13,7 @@ type PaymentsApi interface {
 
 	// Creates a purchase request and prompts the user for payment.
 	// It sends HTTP response and must be put as last line in the handler function.
-	Checkout(w http.ResponseWriter, r *http.Request, purchreq PurchaseRequest)
+	Checkout(w http.ResponseWriter, r *http.Request, req PurchaseRequest)
 
     // Returns the pending purchase for the client device.
 	GetPendingPurchase(r *http.Request) (Purchase, error)

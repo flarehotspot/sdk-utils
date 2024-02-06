@@ -28,6 +28,7 @@ type Purchase struct {
 	description          string
 	price                float64
 	anyPrice             bool
+	callbackPluginPkg    string
 	callbackVueRouteName string
 	walletDebit          float64
 	walletTxId           *int64
@@ -93,6 +94,10 @@ func (self *Purchase) CreatedAt() time.Time {
 	return self.createdAt
 }
 
+func (self *Purchase) CallbackPluginPkg() string {
+	return self.callbackPluginPkg
+}
+
 func (self *Purchase) CallbackVueRouteName() string {
 	return self.callbackVueRouteName
 }
@@ -108,10 +113,6 @@ func (self *Purchase) IsCancelled() bool {
 func (self *Purchase) FixedPrice() (float64, bool) {
 	return self.price, !self.anyPrice
 }
-
-// func (self *Purchase) IsProcessed() bool {
-// 	return self.IsCancelled() || self.IsConfirmed()
-// }
 
 func (self *Purchase) DeviceTx(tx *sql.Tx, ctx context.Context) (*Device, error) {
 	dev, err := self.models.deviceModel.FindTx(tx, ctx, self.deviceId)
@@ -217,35 +218,6 @@ func (self *Purchase) TotalPaymentsTx(tx *sql.Tx, ctx context.Context) (float64,
 	return total, nil
 }
 
-// func (self *Purchase) StatTx(tx *sql.Tx, ctx context.Context) (*sdkpayments.PurchaseStat, error) {
-// 	device, err := self.DeviceTx(tx, ctx)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	wallet, err := device.WalletTx(tx, ctx)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	availBal, err := wallet.AvailableBalTx(tx, ctx)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	total, err := self.TotalPaymentsTx(tx, ctx)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	return &sdkpayments.PurchaseStat{
-// 		PaymentTotal:   total + self.WalletDebit(),
-// 		WalletDebit:    self.WalletDebit(),
-// 		WalletBal:      wallet.Balance(),
-// 		WalletAvailBal: availBal,
-// 	}, nil
-// }
-
 func (self *Purchase) UpdateTx(tx *sql.Tx, ctx context.Context, dbt float64, txid *int64, cancelledAt *time.Time, confirmedAt *time.Time, reason *string) error {
 	err := self.models.purchaseModel.UpdateTx(tx, ctx, self.id, dbt, txid, cancelledAt, confirmedAt, reason)
 	if err != nil {
@@ -290,37 +262,7 @@ func (self *Purchase) Confirm(ctx context.Context) error {
 	return tx.Commit()
 }
 
-// func (self *Purchase) AddPayment(ctx context.Context, amt float64, mtd string) (*Payment, error) {
-// 	tx, err := self.db.SqlDB().BeginTx(ctx, nil)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	defer tx.Rollback()
-
-// 	pmt, err := self.AddPaymentTx(tx, ctx, amt, mtd)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	return pmt, tx.Commit()
-// }
-
-// func (self *Purchase) Payments(ctx context.Context) ([]*Payment, error) {
-// 	tx, err := self.db.SqlDB().BeginTx(ctx, nil)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	defer tx.Rollback()
-
-// 	payments, err := self.PaymentsTx(tx, ctx)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	return payments, tx.Commit()
-// }
-
-func (self *Purchase) TotalPayments(ctx context.Context) (float64, error) {
+func (self *Purchase) TotalPayment(ctx context.Context) (float64, error) {
 	tx, err := self.db.SqlDB().BeginTx(ctx, nil)
 	if err != nil {
 		return 0, err
@@ -334,21 +276,6 @@ func (self *Purchase) TotalPayments(ctx context.Context) (float64, error) {
 
 	return total, tx.Commit()
 }
-
-// func (self *Purchase) Stat(ctx context.Context) (*PurchaseStat, error) {
-// 	tx, err := self.db.SqlDB().BeginTx(ctx, nil)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	defer tx.Rollback()
-
-// 	stat, err := self.StatTx(tx, ctx)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	return stat, tx.Commit()
-// }
 
 func (self *Purchase) Update(ctx context.Context, dbt float64, txid *int64, cancelledAt *time.Time, confirmedAt *time.Time, reason *string) error {
 	tx, err := self.db.SqlDB().BeginTx(ctx, nil)

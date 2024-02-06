@@ -60,7 +60,7 @@ func (self *Device) ReloadTx(tx *sql.Tx, ctx context.Context) error {
 }
 
 func (self *Device) WalletTx(tx *sql.Tx, ctx context.Context) (*Wallet, error) {
-	wallet, err := self.models.walletModel.FindByDeviceTx(tx, ctx, self.id)
+	wallet, err := self.models.walletModel.findByDeviceTx(tx, ctx, self.id)
 	if err != nil && errors.Is(err, sql.ErrNoRows) {
 		wallet, err = self.models.walletModel.CreateTx(tx, ctx, self.id, 0)
 	}

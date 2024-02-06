@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS purchases (
     description TEXT,
     price DECIMAL(8, 2) NOT NULL,
     any_price BOOLEAN NOT NULL DEFAULT FALSE,
+    callback_plugin VARCHAR(255) NOT NULL,
     callback_vue_route_name VARCHAR(2048),
 
     wallet_debit DECIMAL(8, 2) NOT NULL DEFAULT 0.0,

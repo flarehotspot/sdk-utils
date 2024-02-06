@@ -1,6 +1,7 @@
 package plugins
 
 import (
+	"errors"
 	"log"
 	"net/http"
 
@@ -28,6 +29,30 @@ func (self *PaymentsApi) NewPaymentProvider(provider sdkpayments.PaymentProvider
 
 func (self *PaymentsApi) Checkout(w http.ResponseWriter, r *http.Request, p sdkpayments.PurchaseRequest) {
 	handler := func(w http.ResponseWriter, r *http.Request) {
+		clnt, err := helpers.CurrentClient(r)
+		if err != nil {
+			log.Println("helpers.CurrentClient error:", err)
+			self.api.HttpAPI.VueResponse().Error(w, err.Error(), 500)
+			return
+		}
+
+		_, err = self.api.models.Purchase().Create(
+			r.Context(),
+			clnt.Id(),
+			p.Sku,
+			p.Name,
+			p.Description,
+			p.Price,
+			p.AnyPrice,
+			self.api.Pkg(),
+			p.CallbackVueRouteName,
+		)
+		if err != nil {
+			log.Println("self.api.models.Purchase().Create error:", err)
+			self.api.HttpAPI.VueResponse().Error(w, err.Error(), 500)
+			return
+		}
+
 		coreApi := self.api.CoreAPI
 		coreApi.HttpAPI.VueResponse().Redirect(w, routenames.RoutePaymentOptions)
 	}
@@ -40,13 +65,17 @@ func (self *PaymentsApi) GetPendingPurchase(r *http.Request) (sdkpayments.Purcha
 	mdls := self.api.models
 	clnt, err := helpers.CurrentClient(r)
 	if err != nil {
-        log.Println("helpers.CurrentClient error:", err)
+		log.Println("helpers.CurrentClient error:", err)
 		return nil, err
 	}
 	p, err := mdls.Purchase().FindByDeviceId(r.Context(), clnt.Id())
 	if err != nil {
-        log.Println("mdls.Purchase().FindByDeviceId error:", err)
+		log.Println("mdls.Purchase().FindByDeviceId error:", err)
 		return nil, err
+	}
+	if p.IsCancelled() || p.IsConfirmed() {
+		log.Println("Purchase is already processed")
+		return nil, errors.New("Purchase is already processed")
 	}
 	purchase := NewPurchase(self.api, r.Context(), clnt.Id(), p)
 	return purchase, nil
