@@ -85,7 +85,7 @@ mydMiddleware := func (next http.Handler) http.Handler {
 }
 routeName := sdkhttp.PluginRouteName("my-route")
 rtr := router.PluginRouter() // or can also be router.AdminRouter()
-rtr.Get("/my-route-path", myHandler).Name(routeName).Use(myMiddleware)
+rtr.Get("/my-route-path", myHandler, myMiddleware).Name(routeName)
 ```
 
 ## Post
@@ -102,7 +102,7 @@ myMiddleware := func (next http.Handler) http.Handler {
 }
 routeName := sdkhttp.PluginRouteName("my-route")
 rtr := router.PluginRouter() // or can also be router.AdminRouter()
-rtr.Post("/my-route-path", myHandler).Name(routeName).Use(myMiddleware)
+rtr.Post("/my-route-path", myHandler, myMiddleware).Name(routeName)
 ```
 ---
 
