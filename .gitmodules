@@ -4,9 +4,6 @@
 [submodule "hardware-db"]
 	path = hardware-db
 	url = git@github.com:flarehotspot/hardware-db.git
-[submodule "plugins/com.adopisoft.basic-flare-theme"]
-	path = plugins/com.adopisoft.basic-flare-theme
-	url = git@github.com:AdoPiSoft/com.adopisoft.basic-flare-theme.git
 [submodule "plugins/com.flarego.wired-coinslot"]
 	path = plugins/com.flarego.wired-coinslot
 	url = git@github.com:flarehotspot/com.flarego.wired-coinslot.git
