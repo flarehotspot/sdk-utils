@@ -25,13 +25,13 @@ type PortalTheme struct {
 	LayoutComponent ThemeComponent
 	IndexComponent  ThemeComponent
 	ThemeAssets     *ThemeAssets
-	CssLib             CssLib
+	CssLib          CssLib
 }
 
 type ThemeComponent struct {
-	RouteName     string
-	HandlerFunc   http.HandlerFunc
-	ComponentPath string
+	RouteName   string
+	HandlerFunc http.HandlerFunc
+	Component   string
 }
 
 type ThemeAssets struct {

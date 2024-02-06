@@ -36,11 +36,9 @@ func NewVueAdminNav(api *PluginApi, r *http.Request, nav sdkhttp.VueAdminNav) (s
 		routepath = vueRoute.VueRoutePath.URL(pairs...)
 	}
 
-	label := api.Translate("label", nav.Label)
-
 	return sdkhttp.AdminNavItem{
 		Category:     nav.Category,
-		Label:        label,
+		Label:        nav.Label,
 		VueRouteName: routename,
 		VueRoutePath: routepath,
 	}, true

@@ -26,13 +26,13 @@ func (t *ThemesApi) NewAdminTheme(theme themes.AdminTheme) {
 	adminRouter := t.api.HttpAPI.httpRouter.adminRouter.mux
 	compRouter := t.api.HttpAPI.httpRouter.pluginRouter.mux
 
-	layoutComp := NewVueRouteComponent(t.api, theme.LayoutComponent.RouteName, "/theme/layout", theme.LayoutComponent.HandlerFunc, theme.LayoutComponent.ComponentPath, nil, nil)
+	layoutComp := NewVueRouteComponent(t.api, theme.LayoutComponent.RouteName, "/theme/layout", theme.LayoutComponent.HandlerFunc, theme.LayoutComponent.Component, nil, nil)
 	layoutComp.MountRoute(compRouter)
 
-	loginComp := NewVueRouteComponent(t.api, theme.LoginComponent.RouteName, "/theme/login", theme.LoginComponent.HandlerFunc, theme.LoginComponent.ComponentPath, nil, nil)
+	loginComp := NewVueRouteComponent(t.api, theme.LoginComponent.RouteName, "/theme/login", theme.LoginComponent.HandlerFunc, theme.LoginComponent.Component, nil, nil)
 	loginComp.MountRoute(compRouter)
 
-	dashComp := NewVueRouteComponent(t.api, theme.DashboardComponent.RouteName, "/theme/dashboard", theme.DashboardComponent.HandlerFunc, theme.DashboardComponent.ComponentPath, nil, nil)
+	dashComp := NewVueRouteComponent(t.api, theme.DashboardComponent.RouteName, "/theme/dashboard", theme.DashboardComponent.HandlerFunc, theme.DashboardComponent.Component, nil, nil)
 	dashComp.MountRoute(adminRouter)
 
 	t.AdminLayoutRoute = layoutComp
@@ -46,11 +46,11 @@ func (t *ThemesApi) NewAdminTheme(theme themes.AdminTheme) {
 func (t *ThemesApi) NewPortalTheme(theme themes.PortalTheme) {
 	compRouter := t.api.HttpAPI.httpRouter.pluginRouter.mux.PathPrefix("/portal/vue/components").Subrouter()
 
-	layoutComp := NewVueRouteComponent(t.api, theme.LayoutComponent.RouteName, "/theme/layout", theme.LayoutComponent.HandlerFunc, theme.LayoutComponent.ComponentPath, nil, nil)
+	layoutComp := NewVueRouteComponent(t.api, theme.LayoutComponent.RouteName, "/theme/layout", theme.LayoutComponent.HandlerFunc, theme.LayoutComponent.Component, nil, nil)
 	layoutComp.MountRoute(compRouter)
 
     purMw := t.api.HttpAPI.middlewares.PendingPurchaseMw()
-	indexComp := NewVueRouteComponent(t.api, theme.IndexComponent.RouteName, "/theme/index", theme.IndexComponent.HandlerFunc, theme.IndexComponent.ComponentPath, nil, nil)
+	indexComp := NewVueRouteComponent(t.api, theme.IndexComponent.RouteName, "/theme/index", theme.IndexComponent.HandlerFunc, theme.IndexComponent.Component, nil, nil)
 	indexComp.MountRoute(compRouter, purMw)
 
 	t.PortalLayoutRoute = layoutComp
