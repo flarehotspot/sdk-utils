@@ -1,44 +1,67 @@
+
 # Flare Hotspot
 
 Flare Hotpost core repository.
 
 # System Requirements
+
 - Node.js >= 16
 - Go 1.19.12 (exact version)
 - MySQL/MariaDB
 
 # Installation
+
 Clone the repository and install the dependencies.
+
 ```sh
 git clone git@github.com:flarehotspot/flarehotspot.git
 cd flarehotspot
+git submodule update --init --recursive
+```
+
+Checkout and pull the latest changes for all the submodules
+
+```sh
+for p in $(ls ./plugins); do cd ./plugins/${p}; git checkout main; git pull; cd ../..; done
+```
+
+Install node modules.
+
+```sh
 npm install
 ```
 
-Unzip the `config.zip` file.
-```sh
-rm -rf ./config
-unzip config.zip -d config
-```
-
 Unzip the `openwrt-files.zip` file.
+
 ```sh
 rm -rf ./openwrt-files
 unzip openwrt-files.zip -d openwrt-files
 ```
 
 # Database Connection
-Open the `config/database.json` file and configure the database connection.
+
+Open (or create) the `config/database.json` file and configure the MySQL/MariaDB database connection. Make sure to change the parameters accordingly.
+
 ```json
 {
     "host": "localhost",
     "username": "root",
-    "password": "*****", // your password
+    "password": "*****",
     "database": "flarehotspot"
 }
 ```
 
 # Start the server
+
 ```sh
-node ./run.dev.js
+make
+```
+Now you can browse the portal at [http://localhost:3000](http://localhost:3000)
+
+The admin dashboard can be accessed at [http://localhost:3000/admin](http://localhost:3000/admin)
+
+The default admin access is:
+```
+username: admin
+password: admin
 ```

@@ -4,10 +4,7 @@
     "description": "Flare Hotspot SDK",
     "main": "index.js",
     "scripts": {
-        "start": "node run.js",
-        "serve:dev": "node ./run.dev.js",
-        "serve:docs": "cd core/sdk/docs && zola serve",
-        "build:docs": "cd core/sdk/docs && zola build"
+        "start": "node run.js"
     },
     "keywords": [
         "flarehotspot",
