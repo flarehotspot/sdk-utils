@@ -9,7 +9,6 @@ import (
 	sdkconnmgr "github.com/flarehotspot/core/sdk/api/connmgr"
 	sdkhttp "github.com/flarehotspot/core/sdk/api/http"
 	sdkinappur "github.com/flarehotspot/core/sdk/api/inappur"
-	sdkmdls "github.com/flarehotspot/core/sdk/api/models"
 	sdknet "github.com/flarehotspot/core/sdk/api/network"
 	sdkpayments "github.com/flarehotspot/core/sdk/api/payments"
 	sdktheme "github.com/flarehotspot/core/sdk/api/themes"
@@ -45,9 +44,6 @@ type PluginApi interface {
 
 	// Returns an instance of database/sql package from go standard library.
 	SqlDb() *sql.DB
-
-	// Returns an instance of models api.
-	Models() sdkmdls.IModels
 
 	// Returns an instance of accounts api.
 	Acct() sdkacct.AccountsApi

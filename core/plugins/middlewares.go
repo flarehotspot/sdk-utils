@@ -66,7 +66,7 @@ func (mw *PluginMiddlewares) PendingPurchaseMw() sdkhttp.HttpMiddleware {
 			}
 
 			if purchase != nil {
-				res.Redirect(w, routenames.RoutePaymentOptions, "token", purchase.Token())
+				res.Redirect(w, routenames.RoutePaymentOptions)
 				return
 			}
 

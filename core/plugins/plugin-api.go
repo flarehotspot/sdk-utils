@@ -13,7 +13,6 @@ import (
 	connmgr "github.com/flarehotspot/core/sdk/api/connmgr"
 	http "github.com/flarehotspot/core/sdk/api/http"
 	inappur "github.com/flarehotspot/core/sdk/api/inappur"
-	models "github.com/flarehotspot/core/sdk/api/models"
 	sdknet "github.com/flarehotspot/core/sdk/api/network"
 	paymentsApi "github.com/flarehotspot/core/sdk/api/payments"
 	plugin "github.com/flarehotspot/core/sdk/api/plugin"
@@ -72,10 +71,6 @@ func (p *PluginApi) Resource(f string) (path string) {
 
 func (p *PluginApi) SqlDb() *sql.DB {
 	return p.db.SqlDB()
-}
-
-func (p *PluginApi) Models() models.IModels {
-	return p.models
 }
 
 func (p *PluginApi) Acct() acct.AccountsApi {
@@ -143,7 +138,7 @@ func NewPluginApi(dir string, pmgr *PluginsMgr, trfkMgr *network.TrafficMgr) *Pl
 	}
 
 	pluginApi.info = info
-	pluginApi.models = NewPluginModels(pmgr.models)
+	pluginApi.models = pmgr.models
 	pluginApi.AcctAPI = NewAcctApi(pluginApi)
 	pluginApi.HttpAPI = NewHttpApi(pluginApi, pmgr.db, pmgr.clntReg, pmgr.models, pmgr.clntReg, pmgr.paymgr)
 	pluginApi.ConfigAPI = NewConfigApi(pluginApi)

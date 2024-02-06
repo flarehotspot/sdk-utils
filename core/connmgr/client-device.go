@@ -7,7 +7,6 @@ import (
 	"github.com/flarehotspot/core/db"
 	"github.com/flarehotspot/core/db/models"
 	"github.com/flarehotspot/core/sdk/api/connmgr"
-	"github.com/flarehotspot/core/sdk/api/models"
 )
 
 type ClientDevice struct {
@@ -20,7 +19,7 @@ type ClientDevice struct {
 	hostname string
 }
 
-func NewClientDevice(dtb *db.Database, mdls *models.Models, d sdkmdls.IDevice) *ClientDevice {
+func NewClientDevice(dtb *db.Database, mdls *models.Models, d *models.Device) *ClientDevice {
 	return &ClientDevice{
 		db:       dtb,
 		mdls:     mdls,

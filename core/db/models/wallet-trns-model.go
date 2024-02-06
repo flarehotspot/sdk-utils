@@ -6,7 +6,6 @@ import (
 	"log"
 
 	"github.com/flarehotspot/core/db"
-	models "github.com/flarehotspot/core/sdk/api/models"
 )
 
 type WalletTrnsModel struct {
@@ -18,7 +17,7 @@ func NewWalletTrnsModel(dtb *db.Database, mdls *Models) *WalletTrnsModel {
 	return &WalletTrnsModel{dtb, mdls}
 }
 
-func (self *WalletTrnsModel) CreateTx(tx *sql.Tx, ctx context.Context, wltId int64, amount float64, newBal float64, desc string) (models.IWalletTrns, error) {
+func (self *WalletTrnsModel) CreateTx(tx *sql.Tx, ctx context.Context, wltId int64, amount float64, newBal float64, desc string) (*WalletTrns, error) {
 	query := "INSERT INTO wallet_transactions (wallet_id, amount, new_balance, description) VALUES(?, ?, ?, ?)"
 	result, err := tx.ExecContext(ctx, query, wltId, amount, newBal, desc)
 	if err != nil {
@@ -35,7 +34,7 @@ func (self *WalletTrnsModel) CreateTx(tx *sql.Tx, ctx context.Context, wltId int
 	return self.FindTx(tx, ctx, lastId)
 }
 
-func (self *WalletTrnsModel) FindTx(tx *sql.Tx, ctx context.Context, id int64) (models.IWalletTrns, error) {
+func (self *WalletTrnsModel) FindTx(tx *sql.Tx, ctx context.Context, id int64) (*WalletTrns, error) {
 	trns := NewWalletTrns(self.db, self.models)
 	query := "SELECT id, wallet_id, amount, new_balance, description, created_at FROM wallet_transactions WHERE id = ? LIMIT 1"
 	err := tx.QueryRowContext(ctx, query, id).
@@ -44,7 +43,7 @@ func (self *WalletTrnsModel) FindTx(tx *sql.Tx, ctx context.Context, id int64) (
 	return trns, err
 }
 
-func (self *WalletTrnsModel) Create(ctx context.Context, wltId int64, amount float64, newBal float64, desc string) (models.IWalletTrns, error) {
+func (self *WalletTrnsModel) Create(ctx context.Context, wltId int64, amount float64, newBal float64, desc string) (*WalletTrns, error) {
 	tx, err := self.db.SqlDB().BeginTx(ctx, nil)
 	if err != nil {
 		return nil, err
@@ -59,7 +58,7 @@ func (self *WalletTrnsModel) Create(ctx context.Context, wltId int64, amount flo
 	return trns, tx.Commit()
 }
 
-func (self *WalletTrnsModel) Find(ctx context.Context, id int64) (models.IWalletTrns, error) {
+func (self *WalletTrnsModel) Find(ctx context.Context, id int64) (*WalletTrns, error) {
 	tx, err := self.db.SqlDB().BeginTx(ctx, nil)
 	if err != nil {
 		return nil, err

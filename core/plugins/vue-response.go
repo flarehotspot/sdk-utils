@@ -13,9 +13,10 @@ const (
 )
 
 func NewVueResponse(vr *VueRouterApi) *VueResponse {
-	return &VueResponse{vr, map[string]any{
+	data := map[string]any{
 		rootjson: map[string]any{},
-	}}
+	}
+	return &VueResponse{vr, data}
 }
 
 type VueResponse struct {
@@ -33,9 +34,6 @@ func (self *VueResponse) FlashMsg(msgType string, msg string) {
 }
 
 func (self *VueResponse) Json(w http.ResponseWriter, data any, status int) {
-	if data == nil {
-		data = map[string]any{}
-	}
 	newdata := self.data[rootjson].(map[string]any)
 	newdata["data"] = data
 	data = map[string]any{
@@ -96,8 +94,5 @@ func (res *VueResponse) Redirect(w http.ResponseWriter, routename string, pairs 
 
 func (res *VueResponse) Error(w http.ResponseWriter, err string, status int) {
 	res.FlashMsg("error", err)
-	data := res.data[rootjson].(map[string]any)
-	data["error"] = err
-	data = map[string]any{rootjson: data}
-	res.Json(w, data, status)
+	res.Json(w, nil, status)
 }

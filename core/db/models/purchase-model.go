@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/flarehotspot/core/db"
-	models "github.com/flarehotspot/core/sdk/api/models"
 	"github.com/flarehotspot/core/sdk/utils/strings"
 )
 
@@ -24,7 +23,7 @@ func NewPurchaseModel(dtb *db.Database, mdls *Models) *PurchaseModel {
 	return &PurchaseModel{dtb, mdls, attrs}
 }
 
-func (self *PurchaseModel) CreateTx(tx *sql.Tx, ctx context.Context, deviceId int64, sku string, name string, desc string, price float64, vprice bool, routename string) (models.IPurchase, error) {
+func (self *PurchaseModel) CreateTx(tx *sql.Tx, ctx context.Context, deviceId int64, sku string, name string, desc string, price float64, vprice bool, routename string) (*Purchase, error) {
 	token := sdkstr.Rand(16)
 	query := "INSERT INTO purchases (device_id, token, sku, name, description, price, any_price, callback_vue_route_name) VALUES(?, ?, ?, ?, ?, ?, ?, ?)"
 	result, err := tx.ExecContext(ctx, query, deviceId, token, sku, name, desc, price, vprice, routename)
@@ -42,7 +41,7 @@ func (self *PurchaseModel) CreateTx(tx *sql.Tx, ctx context.Context, deviceId in
 	return self.FindTx(tx, ctx, lastId)
 }
 
-func (self *PurchaseModel) FindTx(tx *sql.Tx, ctx context.Context, id int64) (models.IPurchase, error) {
+func (self *PurchaseModel) FindTx(tx *sql.Tx, ctx context.Context, id int64) (*Purchase, error) {
 	p := NewPurchase(self.db, self.models)
 	attrs := strings.Join(self.attrs, ", ")
 	query := "SELECT " + attrs + " FROM purchases WHERE id = ? LIMIT 1"
@@ -52,17 +51,17 @@ func (self *PurchaseModel) FindTx(tx *sql.Tx, ctx context.Context, id int64) (mo
 	return p, err
 }
 
-func (self *PurchaseModel) FindByTokenTx(tx *sql.Tx, ctx context.Context, token string) (models.IPurchase, error) {
+func (self *PurchaseModel) FindByDeviceIdTx(tx *sql.Tx, ctx context.Context, deviceId int64) (*Purchase, error) {
 	p := NewPurchase(self.db, self.models)
 	attrs := strings.Join(self.attrs, ", ")
 	query := fmt.Sprintf(`
   SELECT %s
   FROM purchases
-  WHERE token = ?
+  WHERE device_id = ?
   LIMIT 1
   `, attrs)
 
-	err := tx.QueryRowContext(ctx, query, token).
+	err := tx.QueryRowContext(ctx, query, deviceId).
 		Scan(&p.id, &p.deviceId, &p.token, &p.sku, &p.name, &p.description, &p.price, &p.anyPrice, &p.callbackVueRouteName, &p.walletDebit, &p.walletTxId, &p.confirmedAt, &p.cancelledAt, &p.cancelledReason, &p.createdAt)
 
 	return p, err
@@ -74,7 +73,7 @@ func (self *PurchaseModel) UpdateTx(tx *sql.Tx, ctx context.Context, id int64, d
 	return err
 }
 
-func (self *PurchaseModel) PendingPurchaseTx(tx *sql.Tx, ctx context.Context, deviceId int64) (models.IPurchase, error) {
+func (self *PurchaseModel) PendingPurchaseTx(tx *sql.Tx, ctx context.Context, deviceId int64) (*Purchase, error) {
 	p := NewPurchase(self.db, self.models)
 	attrs := strings.Join(self.attrs, ", ")
 	query := fmt.Sprintf(`
@@ -91,7 +90,7 @@ func (self *PurchaseModel) PendingPurchaseTx(tx *sql.Tx, ctx context.Context, de
 	return p, err
 }
 
-func (self *PurchaseModel) Create(ctx context.Context, deviceId int64, sku string, name string, desc string, price float64, vprice bool, routename string) (models.IPurchase, error) {
+func (self *PurchaseModel) Create(ctx context.Context, deviceId int64, sku string, name string, desc string, price float64, vprice bool, routename string) (*Purchase, error) {
 	tx, err := self.db.SqlDB().BeginTx(ctx, nil)
 	if err != nil {
 		return nil, err
@@ -106,7 +105,7 @@ func (self *PurchaseModel) Create(ctx context.Context, deviceId int64, sku strin
 	return d, err
 }
 
-func (self *PurchaseModel) Find(ctx context.Context, id int64) (models.IPurchase, error) {
+func (self *PurchaseModel) Find(ctx context.Context, id int64) (*Purchase, error) {
 	tx, err := self.db.SqlDB().BeginTx(ctx, nil)
 	if err != nil {
 		return nil, err
@@ -121,7 +120,7 @@ func (self *PurchaseModel) Find(ctx context.Context, id int64) (models.IPurchase
 	return p, err
 }
 
-func (self *PurchaseModel) PendingPurchase(ctx context.Context, deviceId int64) (models.IPurchase, error) {
+func (self *PurchaseModel) PendingPurchase(ctx context.Context, deviceId int64) (*Purchase, error) {
 	tx, err := self.db.SqlDB().BeginTx(ctx, nil)
 	if err != nil {
 		return nil, err
@@ -137,14 +136,14 @@ func (self *PurchaseModel) PendingPurchase(ctx context.Context, deviceId int64) 
 	return d, err
 }
 
-func (self *PurchaseModel) FindByToken(ctx context.Context, token string) (models.IPurchase, error) {
+func (self *PurchaseModel) FindByDeviceId(ctx context.Context, deviceId int64) (*Purchase, error) {
 	tx, err := self.db.SqlDB().BeginTx(ctx, nil)
 	if err != nil {
 		return nil, err
 	}
 	defer tx.Rollback()
 
-	purchase, err := self.FindByTokenTx(tx, ctx, token)
+	purchase, err := self.FindByDeviceIdTx(tx, ctx, deviceId)
 	if err != nil {
 		return nil, err
 	}

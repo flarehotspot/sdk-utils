@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/flarehotspot/core/db"
-	models "github.com/flarehotspot/core/sdk/api/models"
 )
 
 var (
@@ -37,7 +36,7 @@ func NewSessionModel(dtb *db.Database, mdls *Models) *SessionModel {
 	return &SessionModel{dtb, mdls}
 }
 
-func (self *SessionModel) CreateTx(tx *sql.Tx, ctx context.Context, devId int64, t uint8, timeSecs uint, dataMbytes float64, expDays *uint, downMbits int, upMbits int, useGlobal bool) (models.ISession, error) {
+func (self *SessionModel) CreateTx(tx *sql.Tx, ctx context.Context, devId int64, t uint8, timeSecs uint, dataMbytes float64, expDays *uint, downMbits int, upMbits int, useGlobal bool) (*Session, error) {
 	query := "INSERT INTO sessions (device_id, session_type, time_secs, data_mbytes, exp_days, down_mbits, up_mbits, use_global) VALUES(?, ?, ?, ?, ?, ?, ?, ?)"
 
 	result, err := tx.ExecContext(ctx, query, devId, t, timeSecs, dataMbytes, expDays, downMbits, upMbits, useGlobal)
@@ -55,7 +54,7 @@ func (self *SessionModel) CreateTx(tx *sql.Tx, ctx context.Context, devId int64,
 	return self.FindTx(tx, ctx, lastId)
 }
 
-func (self *SessionModel) FindTx(tx *sql.Tx, ctx context.Context, id int64) (models.ISession, error) {
+func (self *SessionModel) FindTx(tx *sql.Tx, ctx context.Context, id int64) (*Session, error) {
 	s := NewSession(self.db, self.models)
 	query := selectQuery + " WHERE id = ? LIMIT 1"
 	err := tx.QueryRowContext(ctx, query, id).
@@ -73,7 +72,7 @@ func (self *SessionModel) UpdateTx(tx *sql.Tx, ctx context.Context, id int64, de
 	return err
 }
 
-func (self *SessionModel) AvlForDevTx(tx *sql.Tx, ctx context.Context, deviceId int64) (models.ISession, error) {
+func (self *SessionModel) AvlForDevTx(tx *sql.Tx, ctx context.Context, deviceId int64) (*Session, error) {
 	s := NewSession(self.db, self.models)
 	query := selectQuery + " WHERE device_id = ? AND " + validWhereQuery + " LIMIT 1"
 
@@ -81,13 +80,13 @@ func (self *SessionModel) AvlForDevTx(tx *sql.Tx, ctx context.Context, deviceId 
 		Scan(&s.id, &s.deviceId, &s.sessionType, &s.timeSecs, &s.dataMb, &s.timeCons, &s.dataCons, &s.startedAt, &s.expDays, &s.downMbits, &s.upMbits, &s.useGlobal, &s.createdAt, &s.expiresAt)
 
 	if errors.Is(err, sql.ErrNoRows) {
-		return nil, models.ErrNoValidSession
+		return nil, err
 	}
 
 	return s, err
 }
 
-func (self *SessionModel) SessionsForDevTx(tx *sql.Tx, ctx context.Context, devId int64) ([]models.ISession, error) {
+func (self *SessionModel) SessionsForDevTx(tx *sql.Tx, ctx context.Context, devId int64) ([]*Session, error) {
 	query := selectQuery + " WHERE device_id = ? AND " + validWhereQuery
 	rows, err := tx.QueryContext(ctx, query, devId)
 	if err != nil {
@@ -95,7 +94,7 @@ func (self *SessionModel) SessionsForDevTx(tx *sql.Tx, ctx context.Context, devI
 	}
 	defer rows.Close()
 
-	sessions := []models.ISession{}
+	sessions := []*Session{}
 
 	for rows.Next() {
 		s := NewSession(self.db, self.models)
@@ -126,7 +125,7 @@ func (self *SessionModel) UpdateAllBandwidthTx(tx *sql.Tx, ctx context.Context, 
 	return err
 }
 
-func (self *SessionModel) Create(ctx context.Context, devId int64, t uint8, timeSecs uint, dataMbytes float64, exp *uint, downMbit int, upMbit int, g bool) (models.ISession, error) {
+func (self *SessionModel) Create(ctx context.Context, devId int64, t uint8, timeSecs uint, dataMbytes float64, exp *uint, downMbit int, upMbit int, g bool) (*Session, error) {
 	tx, err := self.db.SqlDB().BeginTx(ctx, nil)
 	if err != nil {
 		return nil, err
@@ -141,7 +140,7 @@ func (self *SessionModel) Create(ctx context.Context, devId int64, t uint8, time
 	return s, tx.Commit()
 }
 
-func (self *SessionModel) Find(ctx context.Context, id int64) (models.ISession, error) {
+func (self *SessionModel) Find(ctx context.Context, id int64) (*Session, error) {
 	tx, err := self.db.SqlDB().BeginTx(ctx, nil)
 	if err != nil {
 		return nil, err
@@ -171,7 +170,7 @@ func (self *SessionModel) Update(ctx context.Context, id int64, devId int64, t u
 	return tx.Commit()
 }
 
-func (self *SessionModel) AvlForDev(ctx context.Context, devId int64) (models.ISession, error) {
+func (self *SessionModel) AvlForDev(ctx context.Context, devId int64) (*Session, error) {
 	tx, err := self.db.SqlDB().BeginTx(ctx, nil)
 	if err != nil {
 		return nil, err
@@ -186,7 +185,7 @@ func (self *SessionModel) AvlForDev(ctx context.Context, devId int64) (models.IS
 	return s, tx.Commit()
 }
 
-func (self *SessionModel) SessionsForDev(ctx context.Context, devId int64) ([]models.ISession, error) {
+func (self *SessionModel) SessionsForDev(ctx context.Context, devId int64) ([]*Session, error) {
 	tx, err := self.db.SqlDB().BeginTx(ctx, nil)
 	if err != nil {
 		return nil, err

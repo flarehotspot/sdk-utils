@@ -4,13 +4,14 @@ import (
 	"github.com/flarehotspot/core/config/plugincfg"
 	"github.com/flarehotspot/core/connmgr"
 	"github.com/flarehotspot/core/db"
+	"github.com/flarehotspot/core/db/models"
 )
 
 type PluginApi struct {
 	info             *plugincfg.PluginInfo
 	dir              string
 	db               *db.Database
-	models           *PluginModels
+	models           *models.Models
 	CoreAPI          *PluginApi
 	AcctAPI          *AccountsApi
 	HttpAPI          *HttpApi

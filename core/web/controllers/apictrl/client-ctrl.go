@@ -1,41 +1,41 @@
 package apictrl
 
-import (
-	"net/http"
+// import (
+// 	"net/http"
 
-	"github.com/flarehotspot/core/plugins"
-	"github.com/flarehotspot/core/web/helpers"
-	"github.com/flarehotspot/core/web/response"
-	models "github.com/flarehotspot/core/sdk/api/models"
-)
+// 	"github.com/flarehotspot/core/plugins"
+// 	"github.com/flarehotspot/core/web/helpers"
+// 	"github.com/flarehotspot/core/web/response"
+// 	models "github.com/flarehotspot/core/sdk/api/models"
+// )
 
-type ClientApiCtrl struct {
-	g *plugins.CoreGlobals
-}
+// type ClientApiCtrl struct {
+// 	g *plugins.CoreGlobals
+// }
 
-func NewClientApiCtrl(g *plugins.CoreGlobals) *ClientApiCtrl {
-	return &ClientApiCtrl{g}
-}
+// func NewClientApiCtrl(g *plugins.CoreGlobals) *ClientApiCtrl {
+// 	return &ClientApiCtrl{g}
+// }
 
-func (self *ClientApiCtrl) ClientData(w http.ResponseWriter, r *http.Request) {
-	clnt, err := helpers.CurrentClient(r)
-	if err != nil {
-		ErrJson(w, r, err)
-		return
-	}
+// func (self *ClientApiCtrl) ClientData(w http.ResponseWriter, r *http.Request) {
+// 	clnt, err := helpers.CurrentClient(r)
+// 	if err != nil {
+// 		ErrJson(w, r, err)
+// 		return
+// 	}
 
-	dev, err := self.g.Models.Device().Find(r.Context(), clnt.Id())
-	if err != nil {
-		ErrJson(w, r, err)
-		return
-	}
+// 	dev, err := self.g.Models.Device().Find(r.Context(), clnt.Id())
+// 	if err != nil {
+// 		ErrJson(w, r, err)
+// 		return
+// 	}
 
-	connected := self.g.ClientMgr.IsConnected(clnt)
-	status := map[string]any{"connected": connected}
-	devmap := models.DeviceToMap(dev)
-	data := map[string]any{
-		"device": devmap,
-		"status": status,
-	}
-	response.Json(w, data, 200)
-}
+// 	connected := self.g.ClientMgr.IsConnected(clnt)
+// 	status := map[string]any{"connected": connected}
+// 	devmap := models.DeviceToMap(dev)
+// 	data := map[string]any{
+// 		"device": devmap,
+// 		"status": status,
+// 	}
+// 	response.Json(w, data, 200)
+// }

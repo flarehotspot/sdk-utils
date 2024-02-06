@@ -1,13 +1,8 @@
 package plugins
 
 import (
-	"errors"
 	"net/http"
 
-	"github.com/flarehotspot/core/db"
-	connmgr "github.com/flarehotspot/core/sdk/api/connmgr"
-	contexts "github.com/flarehotspot/core/sdk/api/http"
-	models "github.com/flarehotspot/core/sdk/api/models"
 	payments "github.com/flarehotspot/core/sdk/api/payments"
 	qs "github.com/flarehotspot/core/sdk/libs/urlquery"
 )
@@ -22,51 +17,51 @@ func ParsePurchaseReq(r *http.Request) (*payments.PurchaseRequest, error) {
 	return &params, nil
 }
 
-func ParsePaymentInfo(dtb *db.Database, mdls models.IModels, r *http.Request) (*payments.PaymentInfo, error) {
-	ctx := r.Context()
-	tx, err := dtb.SqlDB().BeginTx(ctx, nil)
-	if err != nil {
-		return nil, err
-	}
-	defer tx.Rollback()
+// func ParsePaymentInfo(dtb *db.Database, mdls *models.Models, r *http.Request) (*payments.PaymentInfo, error) {
+// 	ctx := r.Context()
+// 	tx, err := dtb.SqlDB().BeginTx(ctx, nil)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	defer tx.Rollback()
 
-	token := r.URL.Query().Get("token")
-	if token == "" {
-		return nil, errors.New("Invalid or missing purchase token string.")
-	}
+// 	token := r.URL.Query().Get("token")
+// 	if token == "" {
+// 		return nil, errors.New("Invalid or missing purchase token string.")
+// 	}
 
-	clntSym := r.Context().Value(contexts.ClientCtxKey)
-	clnt, ok := clntSym.(connmgr.ClientDevice)
-	if !ok {
-		return nil, errors.New("Unable to determine client device.")
-	}
+// 	clntSym := r.Context().Value(contexts.ClientCtxKey)
+// 	clnt, ok := clntSym.(connmgr.ClientDevice)
+// 	if !ok {
+// 		return nil, errors.New("Unable to determine client device.")
+// 	}
 
-	purchase, err := mdls.Purchase().FindByTokenTx(tx, ctx, token)
-	if err != nil {
-		return nil, err
-	}
+// 	purchase, err := mdls.Purchase().FindByTokenTx(tx, ctx, token)
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	if purchase.DeviceId() != clnt.Id() {
-		return nil, errors.New("Purchase request does not belong to current client device.")
-	}
+// 	if purchase.DeviceId() != clnt.Id() {
+// 		return nil, errors.New("Purchase request does not belong to current client device.")
+// 	}
 
-	if purchase.IsProcessed() {
-		return nil, errors.New("Purchase request has already been processed.")
-	}
+// 	if purchase.IsProcessed() {
+// 		return nil, errors.New("Purchase request has already been processed.")
+// 	}
 
-	pmts, err := purchase.PaymentsTx(tx, ctx)
-	if err != nil {
-		return nil, err
-	}
+// 	pmts, err := purchase.PaymentsTx(tx, ctx)
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	err = tx.Commit()
-	if err != nil {
-		return nil, err
-	}
+// 	err = tx.Commit()
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	return &payments.PaymentInfo{
-		Client:   clnt,
-		Purchase: purchase,
-		Payments: pmts,
-	}, nil
-}
+// 	return &payments.PaymentInfo{
+// 		Client:   clnt,
+// 		Purchase: purchase,
+// 		Payments: pmts,
+// 	}, nil
+// }

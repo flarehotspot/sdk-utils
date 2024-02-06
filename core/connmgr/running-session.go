@@ -6,9 +6,9 @@ import (
 	"sync"
 	"time"
 
+	"github.com/flarehotspot/core/db/models"
 	"github.com/flarehotspot/core/network"
 	connmgr "github.com/flarehotspot/core/sdk/api/connmgr"
-	"github.com/flarehotspot/core/sdk/api/models"
 	"github.com/flarehotspot/core/sdk/api/network"
 	jobque "github.com/flarehotspot/core/utils/job-que"
 	"github.com/flarehotspot/core/utils/tc"
@@ -309,12 +309,12 @@ func (rs *RunningSession) isConsumed() bool {
 	s := rs.session
 	t := s.Type()
 
-	if t == sdkmdls.SessionTypeTime || t == sdkmdls.SessionTypeTimeOrData {
+	if t == models.SessionTypeTime || t == models.SessionTypeTimeOrData {
 		isTimeConsumed := s.TimeConsumption() >= s.TimeSecs()
 		return isTimeConsumed || rs.expired()
 	}
 
-	if t == sdkmdls.SessionTypeData || t == sdkmdls.SessionTypeTimeOrData {
+	if t == models.SessionTypeData || t == models.SessionTypeTimeOrData {
 		isDataConsumed := s.DataConsumption() >= s.DataMb()
 		return isDataConsumed || rs.expired()
 	}

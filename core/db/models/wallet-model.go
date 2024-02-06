@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/flarehotspot/core/db"
-	models "github.com/flarehotspot/core/sdk/api/models"
 )
 
 type WalletModel struct {
@@ -25,7 +24,7 @@ func NewWalletModel(dtb *db.Database, mdls *Models) *WalletModel {
 	}
 }
 
-func (self *WalletModel) CreateTx(tx *sql.Tx, ctx context.Context, devId int64, bal float64) (models.IWallet, error) {
+func (self *WalletModel) CreateTx(tx *sql.Tx, ctx context.Context, devId int64, bal float64) (*Wallet, error) {
 	query := "INSERT INTO wallets (device_id, balance) VALUES (?, ?)"
 	result, err := tx.ExecContext(ctx, query, devId, bal)
 	if err != nil {
@@ -40,7 +39,7 @@ func (self *WalletModel) CreateTx(tx *sql.Tx, ctx context.Context, devId int64, 
 	return self.FindTx(tx, ctx, lastId)
 }
 
-func (self *WalletModel) FindTx(tx *sql.Tx, ctx context.Context, id int64) (models.IWallet, error) {
+func (self *WalletModel) FindTx(tx *sql.Tx, ctx context.Context, id int64) (*Wallet, error) {
 	wallet := NewWallet(self.db, self.models)
 	query := "SELECT id, device_id, balance, created_at FROM wallets WHERE id = ? LIMIT 1"
 	err := tx.QueryRowContext(ctx, query, id).
@@ -53,7 +52,7 @@ func (self *WalletModel) FindTx(tx *sql.Tx, ctx context.Context, id int64) (mode
 	return wallet, nil
 }
 
-func (self *WalletModel) FindByDeviceTx(tx *sql.Tx, ctx context.Context, devId int64) (models.IWallet, error) {
+func (self *WalletModel) FindByDeviceTx(tx *sql.Tx, ctx context.Context, devId int64) (*Wallet, error) {
 	wallet := NewWallet(self.db, self.models)
 	query := "SELECT id, device_id, balance, created_at FROM wallets WHERE device_id = ? LIMIT 1"
 	err := tx.QueryRowContext(ctx, query, devId).
@@ -73,7 +72,7 @@ func (self *WalletModel) UpdateTx(tx *sql.Tx, ctx context.Context, id int64, bal
 	return err
 }
 
-func (self *WalletModel) Find(ctx context.Context, id int64) (models.IWallet, error) {
+func (self *WalletModel) Find(ctx context.Context, id int64) (*Wallet, error) {
 	tx, err := self.db.SqlDB().BeginTx(ctx, nil)
 	if err != nil {
 		return nil, err
@@ -88,7 +87,7 @@ func (self *WalletModel) Find(ctx context.Context, id int64) (models.IWallet, er
 	return wallet, tx.Commit()
 }
 
-func (self *WalletModel) FindByDevice(ctx context.Context, devId int64) (models.IWallet, error) {
+func (self *WalletModel) FindByDevice(ctx context.Context, devId int64) (*Wallet, error) {
 	tx, err := self.db.SqlDB().BeginTx(ctx, nil)
 	if err != nil {
 		return nil, err

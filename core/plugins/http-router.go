@@ -16,12 +16,20 @@ func (r *HttpRouter) Router() *mux.Router {
 	return r.mux
 }
 
-func (r *HttpRouter) Get(path string, h http.HandlerFunc) sdkhttp.HttpRoute {
-	route := r.mux.HandleFunc(path, h).Methods("GET")
+func (r *HttpRouter) Get(path string, h http.HandlerFunc, mw ...func(next http.Handler) http.Handler) sdkhttp.HttpRoute {
+	finalHandler := http.Handler(h)
+	for i := len(mw) - 1; i >= 0; i-- {
+		finalHandler = mw[i](finalHandler)
+	}
+	route := r.mux.Handle(path, finalHandler).Methods("GET")
 	return &HttpRoute{r.api, route}
 }
-func (r *HttpRouter) Post(path string, h http.HandlerFunc) sdkhttp.HttpRoute {
-	route := r.mux.HandleFunc(path, h).Methods("POST")
+func (r *HttpRouter) Post(path string, h http.HandlerFunc, mw ...func(next http.Handler) http.Handler) sdkhttp.HttpRoute {
+	finalHandler := http.Handler(h)
+	for i := len(mw) - 1; i >= 0; i-- {
+		finalHandler = mw[i](finalHandler)
+	}
+	route := r.mux.Handle(path, finalHandler).Methods("POST")
 	return &HttpRoute{r.api, route}
 }
 

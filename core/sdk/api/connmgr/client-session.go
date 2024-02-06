@@ -3,8 +3,6 @@ package sdkconnmgr
 import (
 	"context"
 	"time"
-
-	models "github.com/flarehotspot/core/sdk/api/models"
 )
 
 // ClientSession represents a client's internet connection session.
@@ -16,7 +14,7 @@ type ClientSession interface {
 	DeviceId() int64
 
 	// Returns the session type.
-	Type() models.SessionType
+	Type() uint8
 
 	// Return the session's available time in seconds.
 	TimeSecs() (sec uint)
@@ -100,7 +98,4 @@ type ClientSession interface {
 
 	// Reloads the session's data from the database.
 	Reload(ctx context.Context) error
-
-	// Returns the session's instance of models.ISession.
-	SessionModel() models.ISession
 }

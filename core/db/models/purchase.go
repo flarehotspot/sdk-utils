@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/flarehotspot/core/db"
-	models "github.com/flarehotspot/core/sdk/api/models"
+	// sdkpayments "github.com/flarehotspot/core/sdk/api/payments"
 )
 
 func NewPurchase(dtb *db.Database, mdls *Models) *Purchase {
@@ -93,7 +93,7 @@ func (self *Purchase) CreatedAt() time.Time {
 	return self.createdAt
 }
 
-func (self *Purchase) CallbackUrl() string {
+func (self *Purchase) CallbackVueRouteName() string {
 	return self.callbackVueRouteName
 }
 
@@ -105,11 +105,15 @@ func (self *Purchase) IsCancelled() bool {
 	return self.confirmedAt != nil
 }
 
-func (self *Purchase) IsProcessed() bool {
-	return self.IsCancelled() || self.IsConfirmed()
+func (self *Purchase) FixedPrice() (float64, bool) {
+	return self.price, !self.anyPrice
 }
 
-func (self *Purchase) DeviceTx(tx *sql.Tx, ctx context.Context) (models.IDevice, error) {
+// func (self *Purchase) IsProcessed() bool {
+// 	return self.IsCancelled() || self.IsConfirmed()
+// }
+
+func (self *Purchase) DeviceTx(tx *sql.Tx, ctx context.Context) (*Device, error) {
 	dev, err := self.models.deviceModel.FindTx(tx, ctx, self.deviceId)
 	return dev, err
 }
@@ -157,7 +161,7 @@ func (self *Purchase) CancelTx(tx *sql.Tx, ctx context.Context) error {
 		return err
 	}
 
-	pmtTotal, err := self.PaymentsTotalTx(tx, ctx)
+	pmtTotal, err := self.TotalPaymentsTx(tx, ctx)
 	if err != nil {
 		return err
 	}
@@ -179,7 +183,7 @@ func (self *Purchase) CancelTx(tx *sql.Tx, ctx context.Context) error {
 			return err
 		}
 
-		trns, err := self.models.WalletTrns().CreateTx(tx, ctx, wallet.Id(), pmtTotal, wallet.Balance(), "Refund for "+desc)
+		trns, err := self.models.walletTrnsModel.CreateTx(tx, ctx, wallet.Id(), pmtTotal, wallet.Balance(), "Refund for "+desc)
 		if err != nil {
 			log.Println(err)
 			return err
@@ -192,16 +196,11 @@ func (self *Purchase) CancelTx(tx *sql.Tx, ctx context.Context) error {
 	return self.UpdateTx(tx, ctx, dbt, nil, &cancelledAt, nil, &desc)
 }
 
-func (self *Purchase) AddPaymentTx(tx *sql.Tx, ctx context.Context, amount float64, mtd string) (models.IPayment, error) {
-	pmnt, err := self.models.paymentModel.CreateTx(tx, ctx, self.id, amount, mtd)
-	return pmnt, err
-}
-
-func (self *Purchase) PaymentsTx(tx *sql.Tx, ctx context.Context) ([]models.IPayment, error) {
+func (self *Purchase) PaymentsTx(tx *sql.Tx, ctx context.Context) ([]*Payment, error) {
 	return self.models.paymentModel.FindAllByPurchaseTx(tx, ctx, self.id)
 }
 
-func (self *Purchase) PaymentsTotalTx(tx *sql.Tx, ctx context.Context) (float64, error) {
+func (self *Purchase) TotalPaymentsTx(tx *sql.Tx, ctx context.Context) (float64, error) {
 	pmts, err := self.PaymentsTx(tx, ctx)
 	if err != nil {
 		return 0, err
@@ -213,37 +212,39 @@ func (self *Purchase) PaymentsTotalTx(tx *sql.Tx, ctx context.Context) (float64,
 		total += p.Amount()
 	}
 
+	total += self.WalletDebit()
+
 	return total, nil
 }
 
-func (self *Purchase) StatTx(tx *sql.Tx, ctx context.Context) (*models.PurchaseStat, error) {
-	device, err := self.DeviceTx(tx, ctx)
-	if err != nil {
-		return nil, err
-	}
+// func (self *Purchase) StatTx(tx *sql.Tx, ctx context.Context) (*sdkpayments.PurchaseStat, error) {
+// 	device, err := self.DeviceTx(tx, ctx)
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	wallet, err := device.WalletTx(tx, ctx)
-	if err != nil {
-		return nil, err
-	}
+// 	wallet, err := device.WalletTx(tx, ctx)
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	availBal, err := wallet.AvailableBalTx(tx, ctx)
-	if err != nil {
-		return nil, err
-	}
+// 	availBal, err := wallet.AvailableBalTx(tx, ctx)
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	total, err := self.PaymentsTotalTx(tx, ctx)
-	if err != nil {
-		return nil, err
-	}
+// 	total, err := self.TotalPaymentsTx(tx, ctx)
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	return &models.PurchaseStat{
-		PaymentTotal:   total + self.WalletDebit(),
-		WalletDebit:    self.WalletDebit(),
-		WalletBal:      wallet.Balance(),
-		WalletAvailBal: availBal,
-	}, nil
-}
+// 	return &sdkpayments.PurchaseStat{
+// 		PaymentTotal:   total + self.WalletDebit(),
+// 		WalletDebit:    self.WalletDebit(),
+// 		WalletBal:      wallet.Balance(),
+// 		WalletAvailBal: availBal,
+// 	}, nil
+// }
 
 func (self *Purchase) UpdateTx(tx *sql.Tx, ctx context.Context, dbt float64, txid *int64, cancelledAt *time.Time, confirmedAt *time.Time, reason *string) error {
 	err := self.models.purchaseModel.UpdateTx(tx, ctx, self.id, dbt, txid, cancelledAt, confirmedAt, reason)
@@ -289,44 +290,44 @@ func (self *Purchase) Confirm(ctx context.Context) error {
 	return tx.Commit()
 }
 
-func (self *Purchase) AddPayment(ctx context.Context, amt float64, mtd string) (models.IPayment, error) {
-	tx, err := self.db.SqlDB().BeginTx(ctx, nil)
-	if err != nil {
-		return nil, err
-	}
-	defer tx.Rollback()
+// func (self *Purchase) AddPayment(ctx context.Context, amt float64, mtd string) (*Payment, error) {
+// 	tx, err := self.db.SqlDB().BeginTx(ctx, nil)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	defer tx.Rollback()
 
-	pmt, err := self.AddPaymentTx(tx, ctx, amt, mtd)
-	if err != nil {
-		return nil, err
-	}
+// 	pmt, err := self.AddPaymentTx(tx, ctx, amt, mtd)
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	return pmt, tx.Commit()
-}
+// 	return pmt, tx.Commit()
+// }
 
-func (self *Purchase) Payments(ctx context.Context) ([]models.IPayment, error) {
-	tx, err := self.db.SqlDB().BeginTx(ctx, nil)
-	if err != nil {
-		return nil, err
-	}
-	defer tx.Rollback()
+// func (self *Purchase) Payments(ctx context.Context) ([]*Payment, error) {
+// 	tx, err := self.db.SqlDB().BeginTx(ctx, nil)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	defer tx.Rollback()
 
-	payments, err := self.PaymentsTx(tx, ctx)
-	if err != nil {
-		return nil, err
-	}
+// 	payments, err := self.PaymentsTx(tx, ctx)
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	return payments, tx.Commit()
-}
+// 	return payments, tx.Commit()
+// }
 
-func (self *Purchase) PaymentsTotal(ctx context.Context) (float64, error) {
+func (self *Purchase) TotalPayments(ctx context.Context) (float64, error) {
 	tx, err := self.db.SqlDB().BeginTx(ctx, nil)
 	if err != nil {
 		return 0, err
 	}
 	defer tx.Rollback()
 
-	total, err := self.PaymentsTotalTx(tx, ctx)
+	total, err := self.TotalPaymentsTx(tx, ctx)
 	if err != nil {
 		return 0, err
 	}
@@ -334,20 +335,20 @@ func (self *Purchase) PaymentsTotal(ctx context.Context) (float64, error) {
 	return total, tx.Commit()
 }
 
-func (self *Purchase) Stat(ctx context.Context) (*models.PurchaseStat, error) {
-	tx, err := self.db.SqlDB().BeginTx(ctx, nil)
-	if err != nil {
-		return nil, err
-	}
-	defer tx.Rollback()
+// func (self *Purchase) Stat(ctx context.Context) (*PurchaseStat, error) {
+// 	tx, err := self.db.SqlDB().BeginTx(ctx, nil)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	defer tx.Rollback()
 
-	stat, err := self.StatTx(tx, ctx)
-	if err != nil {
-		return nil, err
-	}
+// 	stat, err := self.StatTx(tx, ctx)
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	return stat, tx.Commit()
-}
+// 	return stat, tx.Commit()
+// }
 
 func (self *Purchase) Update(ctx context.Context, dbt float64, txid *int64, cancelledAt *time.Time, confirmedAt *time.Time, reason *string) error {
 	tx, err := self.db.SqlDB().BeginTx(ctx, nil)

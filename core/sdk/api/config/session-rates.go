@@ -1,9 +1,5 @@
 package sdkcfg
 
-import (
-	models "github.com/flarehotspot/core/sdk/api/models"
-)
-
 // SessionRate is used to compute the session's time and data.
 type SessionRate struct {
 	// Uuid a custom identifier key for this rate config.
@@ -38,7 +34,7 @@ type SessionRatesCfg interface {
 	Write(rates []SessionRate) ([]SessionRate, error)
 
 	// Returns the session's time and data based on the amount and session type.
-	ComputeSession(clientIP string, amount float64, t models.SessionType) (result SessionResult, err error)
+	ComputeSession(clientIP string, amount float64, t uint8) (result SessionResult, err error)
 }
 
 // SessionResult is the result of the computation base on the amount and session type.

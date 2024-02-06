@@ -8,6 +8,12 @@ import (
 	"github.com/flarehotspot/core/db"
 )
 
+const (
+	SessionTypeTime uint8 = iota
+	SessionTypeData
+	SessionTypeTimeOrData
+)
+
 type Session struct {
 	db          *db.Database
 	models      *Models

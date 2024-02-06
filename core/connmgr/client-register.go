@@ -9,7 +9,6 @@ import (
 	"github.com/flarehotspot/core/db"
 	"github.com/flarehotspot/core/db/models"
 	connmgr "github.com/flarehotspot/core/sdk/api/connmgr"
-	sdkmdls "github.com/flarehotspot/core/sdk/api/models"
 	jobque "github.com/flarehotspot/core/utils/job-que"
 )
 
@@ -55,7 +54,7 @@ func (reg *ClientRegister) ClientModifierHook(fn connmgr.ClientModifierHookFn) {
 func (reg *ClientRegister) Register(ctx context.Context, mac string, ip string, hostname string) (connmgr.ClientDevice, error) {
 	var (
 		clnt *ClientDevice
-		dev  sdkmdls.IDevice
+		dev  *models.Device
 		err  error
 	)
 

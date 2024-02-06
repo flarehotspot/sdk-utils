@@ -16,14 +16,14 @@ type HttpRouter interface {
 type RouterInstance interface {
 
 	// Register a handler for a GET request to the given pattern.
-	Get(pattern string, h http.HandlerFunc) (route HttpRoute)
+	Get(pattern string, handler http.HandlerFunc, middlewares ...func(next http.Handler) http.Handler) (route HttpRoute)
 
 	// Register a handler for a POST request to the given pattern.
-	Post(pattern string, h http.HandlerFunc) (route HttpRoute)
+	Post(pattern string, handler http.HandlerFunc, middlewares ...func(next http.Handler) http.Handler) (route HttpRoute)
 
 	// Register a subrouter for a given path
 	Group(pattern string, fn func(subrouter RouterInstance))
 
 	// Register a middleware to be used on all routes in this router instance.
-	Use(...func(next http.Handler) http.Handler)
+	Use(middlewares ...func(next http.Handler) http.Handler)
 }

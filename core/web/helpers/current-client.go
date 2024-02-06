@@ -12,7 +12,7 @@ func CurrentClient(r *http.Request) (connmgr.ClientDevice, error) {
 	clntSym := r.Context().Value(sdkhttp.ClientCtxKey)
 	clnt, ok := clntSym.(connmgr.ClientDevice)
 	if !ok {
-		return nil, errors.New("Cannot convert nil to client device.")
+		return nil, errors.New("Cannot convert nil to client device. Did you forget to use the Device middlewaer?")
 	}
 	return clnt, nil
 }

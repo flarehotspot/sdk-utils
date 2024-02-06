@@ -6,7 +6,6 @@ import (
 	"log"
 
 	"github.com/flarehotspot/core/db"
-	"github.com/flarehotspot/core/sdk/api/models"
 )
 
 type DeviceModel struct {
@@ -18,7 +17,7 @@ func NewDeviceModel(database *db.Database, mdls *Models) *DeviceModel {
 	return &DeviceModel{database, mdls}
 }
 
-func (self *DeviceModel) CreateTx(tx *sql.Tx, ctx context.Context, mac string, ip string, hostname string) (sdkmdls.IDevice, error) {
+func (self *DeviceModel) CreateTx(tx *sql.Tx, ctx context.Context, mac string, ip string, hostname string) (*Device, error) {
 	query := "INSERT INTO devices (mac_address, ip_address, hostname) VALUES(?, ?, UPPER(?))"
 	result, err := tx.ExecContext(ctx, query, mac, ip, hostname)
 	if err != nil {
@@ -35,7 +34,7 @@ func (self *DeviceModel) CreateTx(tx *sql.Tx, ctx context.Context, mac string, i
 	return self.FindTx(tx, ctx, lastId)
 }
 
-func (self *DeviceModel) FindTx(tx *sql.Tx, ctx context.Context, id int64) (sdkmdls.IDevice, error) {
+func (self *DeviceModel) FindTx(tx *sql.Tx, ctx context.Context, id int64) (*Device, error) {
 	device := NewDevice(self.db, self.models)
 	err := tx.QueryRowContext(ctx, "SELECT id, mac_address, ip_address, hostname, created_at FROM devices WHERE id = ? LIMIT 1", id).
 		Scan(&device.id, &device.macAddr, &device.ipAddr, &device.hostname, &device.createdAt)
@@ -49,7 +48,7 @@ func (self *DeviceModel) FindTx(tx *sql.Tx, ctx context.Context, id int64) (sdkm
 	return device, nil
 }
 
-func (self *DeviceModel) FindByMacTx(tx *sql.Tx, ctx context.Context, mac string) (sdkmdls.IDevice, error) {
+func (self *DeviceModel) FindByMacTx(tx *sql.Tx, ctx context.Context, mac string) (*Device, error) {
 	device := NewDevice(self.db, self.models)
 	query := "SELECT id, hostname, ip_address, mac_address, created_at FROM devices WHERE UPPER(mac_address) = UPPER(?) LIMIT 1"
 	err := tx.QueryRowContext(ctx, query, mac).
@@ -74,7 +73,7 @@ func (self *DeviceModel) UpdateTx(tx *sql.Tx, ctx context.Context, id int64, mac
 	return nil
 }
 
-func (self *DeviceModel) Create(ctx context.Context, mac string, ip string, hostname string) (sdkmdls.IDevice, error) {
+func (self *DeviceModel) Create(ctx context.Context, mac string, ip string, hostname string) (*Device, error) {
 	tx, err := self.db.SqlDB().BeginTx(ctx, nil)
 	if err != nil {
 		return nil, err
@@ -89,7 +88,7 @@ func (self *DeviceModel) Create(ctx context.Context, mac string, ip string, host
 	return dev, tx.Commit()
 }
 
-func (self *DeviceModel) Find(ctx context.Context, id int64) (sdkmdls.IDevice, error) {
+func (self *DeviceModel) Find(ctx context.Context, id int64) (*Device, error) {
 	tx, err := self.db.SqlDB().BeginTx(ctx, nil)
 	if err != nil {
 		return nil, err
@@ -104,7 +103,7 @@ func (self *DeviceModel) Find(ctx context.Context, id int64) (sdkmdls.IDevice, e
 	return device, tx.Commit()
 }
 
-func (self *DeviceModel) FindByMac(ctx context.Context, mac string) (sdkmdls.IDevice, error) {
+func (self *DeviceModel) FindByMac(ctx context.Context, mac string) (*Device, error) {
 	tx, err := self.db.SqlDB().BeginTx(ctx, nil)
 	if err != nil {
 		return nil, err

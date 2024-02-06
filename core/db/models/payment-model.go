@@ -6,7 +6,6 @@ import (
 	"log"
 
 	"github.com/flarehotspot/core/db"
-	models "github.com/flarehotspot/core/sdk/api/models"
 )
 
 type PaymentModel struct {
@@ -18,7 +17,7 @@ func NewPaymentModel(dtb *db.Database, mdls *Models) *PaymentModel {
 	return &PaymentModel{dtb, mdls}
 }
 
-func (self *PaymentModel) CreateTx(tx *sql.Tx, ctx context.Context, purid int64, amt float64, mtd string) (models.IPayment, error) {
+func (self *PaymentModel) CreateTx(tx *sql.Tx, ctx context.Context, purid int64, amt float64, mtd string) (*Payment, error) {
 	query := "INSERT INTO payments (purchase_id, amount, optname) VALUES(?, ?, ?)"
 	result, err := tx.ExecContext(ctx, query, purid, amt, mtd)
 	if err != nil {
@@ -35,7 +34,7 @@ func (self *PaymentModel) CreateTx(tx *sql.Tx, ctx context.Context, purid int64,
 	return self.FindTx(tx, ctx, lastId)
 }
 
-func (self *PaymentModel) FindTx(tx *sql.Tx, ctx context.Context, id int64) (models.IPayment, error) {
+func (self *PaymentModel) FindTx(tx *sql.Tx, ctx context.Context, id int64) (*Payment, error) {
 	payment := NewPayment(self.db, self.models)
 	query := "SELECT id, purchase_id, amount, optname, created_at FROM payments WHERE id = ? LIMIT 1"
 	err := tx.QueryRowContext(ctx, query, id).
@@ -44,8 +43,8 @@ func (self *PaymentModel) FindTx(tx *sql.Tx, ctx context.Context, id int64) (mod
 	return payment, err
 }
 
-func (self *PaymentModel) FindAllByPurchaseTx(tx *sql.Tx, ctx context.Context, purId int64) ([]models.IPayment, error) {
-	payments := []models.IPayment{}
+func (self *PaymentModel) FindAllByPurchaseTx(tx *sql.Tx, ctx context.Context, purId int64) ([]*Payment, error) {
+	payments := []*Payment{}
 	query := "SELECT id, purchase_id, amount, optname, created_at FROM payments WHERE purchase_id = ?"
 	rows, err := tx.QueryContext(ctx, query, purId)
 
@@ -67,7 +66,7 @@ func (self *PaymentModel) UpdateTx(tx *sql.Tx, ctx context.Context, id int64, am
 	return err
 }
 
-func (self *PaymentModel) Create(ctx context.Context, purid int64, amt float64, mtd string) (models.IPayment, error) {
+func (self *PaymentModel) Create(ctx context.Context, purid int64, amt float64, mtd string) (*Payment, error) {
 	tx, err := self.db.SqlDB().BeginTx(ctx, nil)
 	if err != nil {
 		return nil, err
@@ -82,7 +81,7 @@ func (self *PaymentModel) Create(ctx context.Context, purid int64, amt float64, 
 	return payment, tx.Commit()
 }
 
-func (self *PaymentModel) Find(ctx context.Context, id int64) (models.IPayment, error) {
+func (self *PaymentModel) Find(ctx context.Context, id int64) (*Payment, error) {
 	tx, err := self.db.SqlDB().BeginTx(ctx, nil)
 	if err != nil {
 		return nil, err
@@ -98,7 +97,7 @@ func (self *PaymentModel) Find(ctx context.Context, id int64) (models.IPayment, 
 	return pmnt, err
 }
 
-func (self *PaymentModel) FindAllByPurchase(ctx context.Context, purId int64) ([]models.IPayment, error) {
+func (self *PaymentModel) FindAllByPurchase(ctx context.Context, purId int64) ([]*Payment, error) {
 	sqlDB := self.db.SqlDB()
 	tx, err := sqlDB.BeginTx(ctx, nil)
 	if err != nil {

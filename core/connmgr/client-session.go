@@ -9,7 +9,6 @@ import (
 	"github.com/flarehotspot/core/db"
 	"github.com/flarehotspot/core/db/models"
 	connmgr "github.com/flarehotspot/core/sdk/api/connmgr"
-	"github.com/flarehotspot/core/sdk/api/models"
 )
 
 type ClientSession struct {
@@ -18,7 +17,7 @@ type ClientSession struct {
 	mdls      *models.Models
 	id        int64
 	devId     int64
-	t         sdkmdls.SessionType
+	t         uint8
 	timeSecs  uint
 	dataMb    float64
 	timeCons  uint
@@ -31,7 +30,7 @@ type ClientSession struct {
 	createdAt time.Time
 }
 
-func NewClientSession(dtb *db.Database, mdls *models.Models, s sdkmdls.ISession) connmgr.ClientSession {
+func NewClientSession(dtb *db.Database, mdls *models.Models, s *models.Session) connmgr.ClientSession {
 	cs := &ClientSession{db: dtb, mdls: mdls}
 	cs.load(s)
 	return cs
@@ -49,7 +48,7 @@ func (cs *ClientSession) DeviceId() int64 {
 	return cs.devId
 }
 
-func (cs *ClientSession) Type() sdkmdls.SessionType {
+func (cs *ClientSession) Type() uint8 {
 	cs.mu.RLock()
 	defer cs.mu.RUnlock()
 	return cs.t
@@ -185,7 +184,7 @@ func (cs *ClientSession) Update(timeSecs uint, dataMb float64, timeCons uint, da
 	cs.mu.Lock()
 	defer cs.mu.Unlock()
 
-	err := cs.mdls.Session().Update(context.Background(), cs.id, cs.devId, cs.t.ToUint8(), timeSecs, dataMb, timeCons, dataCons, started, exp, downMbit, upMbit, g)
+	err := cs.mdls.Session().Update(context.Background(), cs.id, cs.devId, cs.t, timeSecs, dataMb, timeCons, dataCons, started, exp, downMbit, upMbit, g)
 	if err != nil {
 		return err
 	}
@@ -206,7 +205,7 @@ func (cs *ClientSession) Save(ctx context.Context) error {
 
 	id := cs.id
 	devId := cs.devId
-	t := cs.t.ToUint8()
+	t := cs.t
 	timeSecs := cs.timeSecs
 	dataMb := cs.dataMb
 	timeCons := cs.timeCons
@@ -225,13 +224,13 @@ func (cs *ClientSession) Save(ctx context.Context) error {
 	return err
 }
 
-func (cs *ClientSession) SessionModel() sdkmdls.ISession {
+func (cs *ClientSession) SessionModel() *models.Session {
 	cs.mu.RLock()
 	defer cs.mu.RUnlock()
 	return models.BuildSession(
 		cs.id,
 		cs.devId,
-		cs.t.ToUint8(),
+		cs.t,
 		cs.timeSecs,
 		cs.dataMb,
 		cs.timeCons,
@@ -270,10 +269,10 @@ func (cs *ClientSession) expiresAt() *time.Time {
 	return nil
 }
 
-func (cs *ClientSession) load(s sdkmdls.ISession) {
+func (cs *ClientSession) load(s *models.Session) {
 	cs.id = s.Id()
 	cs.devId = s.DeviceId()
-	cs.t = sdkmdls.SessionType(s.SessionType())
+	cs.t = s.SessionType()
 	cs.timeSecs = s.TimeSecs()
 	cs.dataMb = s.DataMbyte()
 	cs.timeCons = s.TimeConsumed()
