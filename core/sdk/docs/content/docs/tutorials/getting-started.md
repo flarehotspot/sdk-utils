@@ -186,7 +186,7 @@ Below is the directory structure of the zip file:
 |- main
 |- mock-files
 |- plugins
-    |-- com.adopisoft.basic-flare-theme
+    |-- com.flarego.default-theme
     |-- com.flarego.sample-plugin
 ```
 

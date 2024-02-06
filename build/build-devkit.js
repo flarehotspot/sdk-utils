@@ -37,7 +37,7 @@ const DEVKIT_FILES = [
   '../run.js',
   '../package.json',
   '../package-lock.json',
-  '../plugins/com.adopisoft.basic-flare-theme'
+  '../plugins/com.flarego.default-theme'
 ];
 
 async function prepare() {

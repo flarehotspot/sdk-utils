@@ -1,5 +1,5 @@
-github.com/AdoPiSoft/com.adopisoft.basic-flare-theme v0.0.0-20230804081032-521d80dbda83 h1:2PvcqwXhz0ulMF4SrxDN4ai7CmRpcd0ufzX805qJdAk=
-github.com/AdoPiSoft/com.adopisoft.basic-flare-theme v0.0.0-20230804081032-521d80dbda83/go.mod h1:faRWJfA2W15tALQ93y99zCMEVOTyTQ1O8vZjRnJGcXs=
+github.com/flarehotspot/com.flarego.default-theme v0.0.0-20230804081032-521d80dbda83 h1:2PvcqwXhz0ulMF4SrxDN4ai7CmRpcd0ufzX805qJdAk=
+github.com/flarehotspot/com.flarego.default-theme v0.0.0-20230804081032-521d80dbda83/go.mod h1:faRWJfA2W15tALQ93y99zCMEVOTyTQ1O8vZjRnJGcXs=
 github.com/cheekybits/is v0.0.0-20150225183255-68e9c0620927/go.mod h1:h/aW8ynjgkuj+NQRlZcDbAbM1ORAbXjXX77sX7T289U=
 github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ33E=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
