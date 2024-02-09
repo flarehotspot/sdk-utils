@@ -29,7 +29,7 @@ func (self *PaymentsApi) NewPaymentProvider(provider sdkpayments.PaymentProvider
 
 func (self *PaymentsApi) Checkout(w http.ResponseWriter, r *http.Request, p sdkpayments.PurchaseRequest) {
 	handler := func(w http.ResponseWriter, r *http.Request) {
-		clnt, err := helpers.CurrentClient(r)
+		clnt, err := helpers.CurrentClient(self.api.ClntReg, r)
 		if err != nil {
 			log.Println("helpers.CurrentClient error:", err)
 			self.api.HttpAPI.VueResponse().Error(w, err.Error(), 500)
@@ -63,7 +63,7 @@ func (self *PaymentsApi) Checkout(w http.ResponseWriter, r *http.Request, p sdkp
 
 func (self *PaymentsApi) GetPendingPurchase(r *http.Request) (sdkpayments.Purchase, error) {
 	mdls := self.api.models
-	clnt, err := helpers.CurrentClient(r)
+	clnt, err := helpers.CurrentClient(self.api.ClntReg, r)
 	if err != nil {
 		log.Println("helpers.CurrentClient error:", err)
 		return nil, err

@@ -2,11 +2,16 @@ package sdkhttp
 
 import (
 	"html/template"
+	"net/http"
+
+	sdkconnmgr "github.com/flarehotspot/core/sdk/api/connmgr"
 )
 
 // HttpHelpers are methods available in html templates as .Helpers.
 // For example, to use the Translate() method in html templates, use <% .Helpers.Translate "label" "network_settings" %>.
 type HttpHelpers interface {
+
+    GetClientDevice(r *http.Request) (clnt sdkconnmgr.ClientDevice, err error)
 
 	// Translates a message into the current language settings from application config.
 	// msgtype is the message type, e.g. "error", "success", "info", "warning".

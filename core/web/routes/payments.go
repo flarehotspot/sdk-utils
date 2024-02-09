@@ -16,7 +16,7 @@ func PaymentRoutes(g *plugins.CoreGlobals) {
 		Component: "payments/customer/PaymentOptions.vue",
 		HandlerFunc: func(w http.ResponseWriter, r *http.Request) {
 			res := g.CoreAPI.HttpAPI.VueResponse()
-			clnt, err := helpers.CurrentClient(r)
+			clnt, err := helpers.CurrentClient(g.ClientRegister, r)
 			if err != nil {
 				res.FlashMsg("error", err.Error())
 				res.Json(w, nil, http.StatusInternalServerError)
@@ -29,9 +29,6 @@ func PaymentRoutes(g *plugins.CoreGlobals) {
 			}
 
 			res.Json(w, methods, http.StatusOK)
-		},
-		Middlewares: []func(http.Handler) http.Handler{
-			g.CoreAPI.HttpAPI.Middlewares().Device(),
 		},
 	})
 }

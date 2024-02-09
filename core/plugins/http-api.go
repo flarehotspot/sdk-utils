@@ -43,7 +43,7 @@ func (self *HttpApi) Auth() sdkhttp.HttpAuth {
 }
 
 func (self *HttpApi) GetDevice(r *http.Request) (sdkconnmgr.ClientDevice, error) {
-	return helpers.CurrentClient(r)
+	return helpers.CurrentClient(self.api.ClntReg, r)
 }
 
 func (self *HttpApi) HttpRouter() sdkhttp.HttpRouter {

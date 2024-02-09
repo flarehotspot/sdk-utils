@@ -43,7 +43,7 @@ func (mw *PluginMiddlewares) PendingPurchaseMw() sdkhttp.HttpMiddleware {
 			errCode := http.StatusInternalServerError
 			res := mw.api.CoreAPI.HttpAPI.VueResponse()
 
-			client, err := helpers.CurrentClient(r)
+			client, err := helpers.CurrentClient(mw.api.ClntReg, r)
 			if err != nil {
 				res.FlashMsg("error", err.Error())
 				res.Json(w, nil, errCode)

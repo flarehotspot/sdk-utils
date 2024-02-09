@@ -9,9 +9,6 @@ type Middlewares interface {
 	// Returns the middleware for admin authentication.
 	AdminAuth() HttpMiddleware
 
-	// Returns the middleware for mobile device details.
-	Device() HttpMiddleware
-
     // Returns middleware for caching the response. It forces browsers to cache the response for n number of days.
 	CacheResponse(days int) HttpMiddleware
 }

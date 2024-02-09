@@ -4,15 +4,18 @@ import (
 	"net/http"
 
 	"github.com/flarehotspot/core/accounts"
-	"github.com/flarehotspot/core/web/helpers"
+	"github.com/flarehotspot/core/connmgr"
 	"github.com/flarehotspot/core/sdk/api/http"
 	sse "github.com/flarehotspot/core/sdk/utils/sse"
+	"github.com/flarehotspot/core/web/helpers"
 )
 
-type SseApiCtrl struct{}
+type SseApiCtrl struct {
+	reg *connmgr.ClientRegister
+}
 
-func NewSseApiCtrl() *SseApiCtrl {
-	return &SseApiCtrl{}
+func NewSseApiCtrl(reg *connmgr.ClientRegister) *SseApiCtrl {
+	return &SseApiCtrl{reg}
 }
 
 func (ctrl *SseApiCtrl) AdminEvents(w http.ResponseWriter, r *http.Request) {
@@ -31,7 +34,7 @@ func (ctrl *SseApiCtrl) AdminEvents(w http.ResponseWriter, r *http.Request) {
 }
 
 func (ctrl *SseApiCtrl) PortalEvents(w http.ResponseWriter, r *http.Request) {
-	clnt, err := helpers.CurrentClient(r)
+	clnt, err := helpers.CurrentClient(ctrl.reg, r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

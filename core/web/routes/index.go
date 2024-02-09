@@ -9,8 +9,7 @@ import (
 
 func IndexRoutes(g *plugins.CoreGlobals) {
 	rootR := router.RootRouter
-	deviceMw := g.CoreAPI.HttpAPI.Middlewares().Device()
-	portalIndexCtrl := deviceMw(controllers.PortalIndexPage(g))
+	portalIndexCtrl := controllers.PortalIndexPage(g)
 	adminIndexCtrl := controllers.AdminIndexPage(g)
 
 	rootR.Handle("/", portalIndexCtrl).Methods("GET").Name(routenames.RoutePortalIndex)
