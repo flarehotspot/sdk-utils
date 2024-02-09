@@ -3,7 +3,7 @@
 const fs = require('fs-extra');
 const path = require('path');
 const ROOT_DIR = path.join(__dirname, '..');
-const cleanupDirs = ['.tmp', '.cache/assets', 'public'];
+const cleanupDirs = ['.tmp', '.cache/assets', 'public', 'devkit-release'];
 
 module.exports = (async () => {
   for (let dir of cleanupDirs) {
