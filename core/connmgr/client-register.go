@@ -17,7 +17,7 @@ var regQue *jobque.JobQues = jobque.NewJobQues()
 type ClientRegister struct {
 	db            *db.Database
 	mdls          *models.Models
-	mgr           *ClientMgr
+	mgr           *SessionsMgr
 	findHooks     []connmgr.ClientFindHookFn
 	createdHooks  []connmgr.ClientCreatedHookFn
 	changedHooks  []connmgr.ClientChangedHookFn

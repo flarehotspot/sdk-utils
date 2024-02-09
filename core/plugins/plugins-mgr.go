@@ -19,13 +19,13 @@ type PluginsMgr struct {
 	models  *models.Models
 	paymgr  *PaymentsMgr
 	clntReg *connmgr.ClientRegister
-	clntMgr *connmgr.ClientMgr
+	clntMgr *connmgr.SessionsMgr
 	trfkMgr *network.TrafficMgr
 	plugins []*PluginApi
 	utils   *PluginsMgrUtils
 }
 
-func NewPluginMgr(d *db.Database, m *models.Models, paymgr *PaymentsMgr, clntReg *connmgr.ClientRegister, clntMgr *connmgr.ClientMgr, trfkMgr *network.TrafficMgr) *PluginsMgr {
+func NewPluginMgr(d *db.Database, m *models.Models, paymgr *PaymentsMgr, clntReg *connmgr.ClientRegister, clntMgr *connmgr.SessionsMgr, trfkMgr *network.TrafficMgr) *PluginsMgr {
 	pmgr := &PluginsMgr{
 		db:      d,
 		models:  m,

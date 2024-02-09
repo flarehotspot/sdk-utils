@@ -73,7 +73,7 @@ type PluginApi interface {
 	DeviceHooks() sdkconnmgr.DeviceHooksApi
 
 	// Returns an instance of the client manager.
-	SessionsMgr() sdkconnmgr.SessionsMgrApi
+	SessionsMgr() sdkconnmgr.SessionsMgr
 
 	// Returns an instance of the uci api.
 	Uci() sdkuci.UciApi

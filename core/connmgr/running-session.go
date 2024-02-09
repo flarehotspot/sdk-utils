@@ -47,33 +47,33 @@ func NewRunningSession(mac string, ip string, s connmgr.ClientSession, classid *
 	return &rs, nil
 }
 
-func (rs *RunningSession) GetSession() connmgr.ClientSession {
-	rs.mu.RLock()
-	defer rs.mu.RUnlock()
-	return rs.session
+func (self *RunningSession) GetSession() connmgr.ClientSession {
+	self.mu.RLock()
+	defer self.mu.RUnlock()
+	return self.session
 }
 
-func (rs *RunningSession) Lan() *network.NetworkLan {
-	rs.mu.RLock()
-	defer rs.mu.RUnlock()
-	return rs.lan
+func (self *RunningSession) Lan() *network.NetworkLan {
+	self.mu.RLock()
+	defer self.mu.RUnlock()
+	return self.lan
 }
 
-func (rs *RunningSession) Done() <-chan error {
-	rs.mu.Lock()
-	defer rs.mu.Unlock()
+func (self *RunningSession) Done() <-chan error {
+	self.mu.Lock()
+	defer self.mu.Unlock()
 
 	ch := make(chan error)
-	rs.callbacks = append(rs.callbacks, ch)
+	self.callbacks = append(self.callbacks, ch)
 	return ch
 }
 
-func (rs *RunningSession) Start(ctx context.Context, s connmgr.ClientSession) error {
-	_, err := sessionQ.Exec(func() (interface{}, error) {
-		rs.mu.Lock()
-		defer rs.mu.Unlock()
+func (self *RunningSession) Start(ctx context.Context, s connmgr.ClientSession) error {
+	_, err := sessionQ.Exec(func() (any, error) {
+		self.mu.Lock()
+		defer self.mu.Unlock()
 
-		rs.session = s
+		self.session = s
 
 		started := time.Now()
 		s.SetStartedAt(&started)
@@ -82,15 +82,15 @@ func (rs *RunningSession) Start(ctx context.Context, s connmgr.ClientSession) er
 			return nil, err
 		}
 
-		if rs.tcClassId == nil {
-			err := rs.prepTc()
+		if self.tcClassId == nil {
+			err := self.prepTc()
 			if err != nil {
 				return nil, err
 			}
 		}
 
-		rs.initTimeTicker()
-		log.Println("Session Tickers has started...")
+		self.initTimeTicker()
+		log.Println("Session Tickeself has started...")
 
 		return nil, nil
 	})
@@ -98,16 +98,16 @@ func (rs *RunningSession) Start(ctx context.Context, s connmgr.ClientSession) er
 	return err
 }
 
-func (rs *RunningSession) Change(cs connmgr.ClientSession) error {
-	_, err := sessionQ.Exec(func() (interface{}, error) {
-		rs.mu.Lock()
-		defer rs.mu.Unlock()
+func (self *RunningSession) Change(cs connmgr.ClientSession) error {
+	_, err := sessionQ.Exec(func() (any, error) {
+		self.mu.Lock()
+		defer self.mu.Unlock()
 
-		rs.session = cs
+		self.session = cs
 
 		downMbits, upMbits := cs.DownMbits(), cs.UpMbits()
 		if cs.UseGlobal() {
-			lan, err := network.FindByIp(rs.ip)
+			lan, err := network.FindByIp(self.ip)
 			if err != nil {
 				return nil, err
 			}
@@ -116,13 +116,13 @@ func (rs *RunningSession) Change(cs connmgr.ClientSession) error {
 			downMbits, upMbits = int(d), int(u)
 		}
 
-		err := rs.lan.ChangeClass(rs.tcClassId.Uint(), downMbits, upMbits)
+		err := self.lan.ChangeClass(self.tcClassId.Uint(), downMbits, upMbits)
 		if err != nil {
 			return nil, err
 		}
 
-		if rs.timeTicker != nil {
-			rs.initTimeTicker()
+		if self.timeTicker != nil {
+			self.initTimeTicker()
 		}
 
 		return nil, nil
@@ -131,14 +131,14 @@ func (rs *RunningSession) Change(cs connmgr.ClientSession) error {
 	return err
 }
 
-func (rs *RunningSession) Stop(ctx context.Context) error {
-	_, err := sessionQ.Exec(func() (interface{}, error) {
-		rs.mu.Lock()
-		defer rs.mu.Unlock()
+func (self *RunningSession) Stop(ctx context.Context) error {
+	_, err := sessionQ.Exec(func() (any, error) {
+		self.mu.Lock()
+		defer self.mu.Unlock()
 
-		err := rs.save(ctx)
-		rs.cleanUpTickers()
-		rs.runCallbacks(err)
+		err := self.save(ctx)
+		self.cleanUpTickeself()
+		self.runCallbacks(err)
 
 		return nil, nil
 	})
@@ -146,25 +146,25 @@ func (rs *RunningSession) Stop(ctx context.Context) error {
 	return err
 }
 
-func (rs *RunningSession) CleanupTc() error {
+func (self *RunningSession) CleanupTc() error {
 	errCh := make(chan error)
 
 	go func() {
-		rs.mu.Lock()
-		defer rs.mu.Unlock()
+		self.mu.Lock()
+		defer self.mu.Unlock()
 
-		if rs.tcClassId != nil {
+		if self.tcClassId != nil {
 			log.Println("Clean up TC...")
-			classid := rs.tcClassId.Uint()
+			classid := self.tcClassId.Uint()
 
-			err := rs.lan.DelFilter(rs.ip, classid)
+			err := self.lan.DelFilter(self.ip, classid)
 			if err != nil {
 				errCh <- err
 				return
 			}
 
-			err = rs.lan.DelClass(classid)
-			rs.tcClassId = nil
+			err = self.lan.DelClass(classid)
+			self.tcClassId = nil
 
 			errCh <- err
 			return
@@ -177,36 +177,36 @@ func (rs *RunningSession) CleanupTc() error {
 	return <-errCh
 }
 
-func (rs *RunningSession) UpdateData(stats *sdknet.TrafficData) {
-	rs.mu.Lock()
-	defer rs.mu.Unlock()
+func (self *RunningSession) UpdateData(stats *sdknet.TrafficData) {
+	self.mu.Lock()
+	defer self.mu.Unlock()
 
-	download, dlok := stats.Download[rs.ip]
-	upload, ulok := stats.Upload[rs.mac]
+	download, dlok := stats.Download[self.ip]
+	upload, ulok := stats.Upload[self.mac]
 
 	if dlok && ulok {
 		dataconMb := float64(download.Bytes+upload.Bytes) / (1 * 1000 * 1000)
 		log.Println("CONSUMTION MB: ", dataconMb)
-		rs.session.IncDataCons(dataconMb)
+		self.session.IncDataCons(dataconMb)
 
-		if rs.isConsumed() {
+		if self.isConsumed() {
 			log.Println("Session data is consumed!!!")
-			go rs.Stop(context.Background())
+			go self.Stop(context.Background())
 		}
 	}
 }
 
-func (rs *RunningSession) initTimeTicker() {
+func (self *RunningSession) initTimeTicker() {
 	tickerCh := make(chan bool)
 	ticker := time.NewTicker(time.Second)
 
-	rs.timeTicker = ticker
-	rs.tickerDone = tickerCh
+	self.timeTicker = ticker
+	self.tickerDone = tickerCh
 
 	go func() {
-		rs.mu.RLock()
-		s := rs.session
-		rs.mu.RUnlock()
+		self.mu.RLock()
+		s := self.session
+		self.mu.RUnlock()
 
 		for {
 			select {
@@ -214,8 +214,8 @@ func (rs *RunningSession) initTimeTicker() {
 				return
 			case <-ticker.C:
 				go func() {
-					rs.mu.RLock()
-					defer rs.mu.RUnlock()
+					self.mu.RLock()
+					defer self.mu.RUnlock()
 
 					s.IncTimeCons(1)
 
@@ -223,17 +223,17 @@ func (rs *RunningSession) initTimeTicker() {
 
 					// save every 15s
 					if s.TimeConsumption()%15 == 0 {
-						err := rs.save(context.Background())
+						err := self.save(context.Background())
 						if err != nil {
 							log.Println(err)
-							go rs.Stop(context.Background())
+							go self.Stop(context.Background())
 							return
 						}
 					}
 
-					if rs.isConsumed() {
+					if self.isConsumed() {
 						log.Println("Session time is consumed!!!")
-						go rs.Stop(context.Background())
+						go self.Stop(context.Background())
 					}
 				}()
 			}
@@ -241,82 +241,82 @@ func (rs *RunningSession) initTimeTicker() {
 	}()
 }
 
-func (rs *RunningSession) prepTc() error {
+func (self *RunningSession) prepTc() error {
 	classid := tc.GetAvailableId()
 	defer classid.Cancel()
 
-	lan := rs.lan
-	s := rs.session
+	lan := self.lan
+	s := self.session
 
 	err := lan.CreateClass(classid.Uint(), s.DownMbits(), s.UpMbits())
 	if err != nil {
 		return err
 	}
 
-	err = lan.CreateFilter(rs.ip, classid.Uint())
+	err = lan.CreateFilter(self.ip, classid.Uint())
 	if err != nil {
 		lan.DelClass(classid.Uint())
 		return err
 	}
 
 	classid.Commit()
-	rs.tcClassId = &classid
+	self.tcClassId = &classid
 
 	return nil
 }
 
-func (rs *RunningSession) cleanUpTickers() {
-	log.Println("Cleaning up tickers...")
-	if rs.timeTicker != nil {
-		rs.timeTicker.Stop()
-		rs.timeTicker = nil
-		rs.tickerDone <- true
-		rs.tickerDone = nil
+func (self *RunningSession) cleanUpTickeself() {
+	log.Println("Cleaning up tickeself...")
+	if self.timeTicker != nil {
+		self.timeTicker.Stop()
+		self.timeTicker = nil
+		self.tickerDone <- true
+		self.tickerDone = nil
 	}
-	log.Println("Done cleaning tickers.")
+	log.Println("Done cleaning tickeself.")
 }
 
-func (rs *RunningSession) save(ctx context.Context) error {
-	if rs.session != nil {
-		if err := rs.session.Save(ctx); err != nil {
+func (self *RunningSession) save(ctx context.Context) error {
+	if self.session != nil {
+		if err := self.session.Save(ctx); err != nil {
 			return err
 		}
 
-		if err := rs.session.Reload(ctx); err != nil {
+		if err := self.session.Reload(ctx); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func (rs *RunningSession) runCallbacks(err error) {
-	for _, cb := range rs.callbacks {
+func (self *RunningSession) runCallbacks(err error) {
+	for _, cb := range self.callbacks {
 		cb <- err
 	}
-	rs.callbacks = []chan error{}
+	self.callbacks = []chan error{}
 	log.Println("Done running callbacks.")
 }
 
-func (rs *RunningSession) expired() (ok bool) {
-	expiresAt := rs.session.ExpiresAt()
+func (self *RunningSession) expired() (ok bool) {
+	expiresAt := self.session.ExpiresAt()
 	if expiresAt != nil {
 		return !time.Now().Before(*expiresAt)
 	}
 	return false
 }
 
-func (rs *RunningSession) isConsumed() bool {
-	s := rs.session
+func (self *RunningSession) isConsumed() bool {
+	s := self.session
 	t := s.Type()
 
 	if t == models.SessionTypeTime || t == models.SessionTypeTimeOrData {
 		isTimeConsumed := s.TimeConsumption() >= s.TimeSecs()
-		return isTimeConsumed || rs.expired()
+		return isTimeConsumed || self.expired()
 	}
 
 	if t == models.SessionTypeData || t == models.SessionTypeTimeOrData {
 		isDataConsumed := s.DataConsumption() >= s.DataMb()
-		return isDataConsumed || rs.expired()
+		return isDataConsumed || self.expired()
 	}
 
 	return false

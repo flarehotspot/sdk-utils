@@ -23,7 +23,7 @@ type PluginApi struct {
 	InAppPurchaseAPI *InAppPurchaseApi
 	PluginsMgrApi    *PluginsMgr
 	ClntReg          *connmgr.ClientRegister
-	ClntMgr          *connmgr.ClientMgr
+	ClntMgr          *connmgr.SessionsMgr
 	UciAPI           *UciApi
 	Utl              *PluginUtils
 }

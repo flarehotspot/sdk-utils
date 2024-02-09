@@ -12,7 +12,7 @@ type CoreGlobals struct {
 	Db             *db.Database
 	CoreAPI        *PluginApi
 	ClientRegister *connmgr.ClientRegister
-	ClientMgr      *connmgr.ClientMgr
+	ClientMgr      *connmgr.SessionsMgr
 	TrafficMgr     *network.TrafficMgr
 	BootProgress   *BootProgress
 	Models         *models.Models
@@ -25,7 +25,7 @@ func New() *CoreGlobals {
 	bp := NewBootProgress()
 	mdls := models.New(db)
 	clntReg := connmgr.NewClientRegister(db, mdls)
-	clntMgr := connmgr.NewClientMgr(db, mdls)
+	clntMgr := connmgr.NewSessionsMgr(db, mdls)
 	trfcMgr := network.NewTrafficMgr()
 	pmtMgr := NewPaymentMgr()
 

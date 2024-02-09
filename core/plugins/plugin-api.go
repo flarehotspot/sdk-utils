@@ -109,7 +109,7 @@ func (p *PluginApi) DeviceHooks() connmgr.DeviceHooksApi {
 	return p.ClntReg
 }
 
-func (p *PluginApi) SessionsMgr() connmgr.SessionsMgrApi {
+func (p *PluginApi) SessionsMgr() connmgr.SessionsMgr {
 	return p.ClntMgr
 }
 

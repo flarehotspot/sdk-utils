@@ -68,7 +68,7 @@ func (self *PaymentsApi) GetPendingPurchase(r *http.Request) (sdkpayments.Purcha
 		log.Println("helpers.CurrentClient error:", err)
 		return nil, err
 	}
-	p, err := mdls.Purchase().FindByDeviceId(r.Context(), clnt.Id())
+	p, err := mdls.Purchase().PendingPurchase(r.Context(), clnt.Id())
 	if err != nil {
 		log.Println("mdls.Purchase().FindByDeviceId error:", err)
 		return nil, err

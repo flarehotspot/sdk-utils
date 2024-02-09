@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/flarehotspot/core/config"
 	"github.com/flarehotspot/core/web/response"
 )
 
@@ -89,6 +90,25 @@ func (res *VueResponse) Redirect(w http.ResponseWriter, routename string, pairs 
 	newdata["query"] = query
 	data := map[string]any{rootjson: newdata}
 
+	response.Json(w, data, http.StatusOK)
+}
+
+func (res *VueResponse) RedirectToPortal(w http.ResponseWriter) {
+    themecfg, err := config.ReadThemesConfig()
+    if err != nil {
+        res.Error(w, err.Error(), 500)
+        return
+    }
+    themePlugin, ok := res.router.api.PluginsMgr().FindByPkg(themecfg.Portal)
+    if !ok {
+        res.Error(w, "Theme plugin not found", 500)
+        return
+    }
+	portalIndexRoute := themePlugin.(*PluginApi).ThemesAPI.PortalIndexRoute
+	newdata := res.data[rootjson].(map[string]any)
+	newdata["redirect"] = true
+	newdata["routename"] = portalIndexRoute.VueRouteName
+	data := map[string]any{rootjson: newdata}
 	response.Json(w, data, http.StatusOK)
 }
 

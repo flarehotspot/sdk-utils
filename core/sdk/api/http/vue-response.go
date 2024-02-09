@@ -21,6 +21,10 @@ type VueResponse interface {
     // It sends an HTTP response and must be put as last line in the handler function.
 	Redirect(w http.ResponseWriter, routename string, pairs ...string)
 
+	// Redirect portal index page
+    // It sends an HTTP response and must be put as last line in the handler function.
+	RedirectToPortal(w http.ResponseWriter)
+
     // Respond with an error flash message.
     // It sends an HTTP response and must be put as last line in the handler function.
 	Error(w http.ResponseWriter, err string, status int)

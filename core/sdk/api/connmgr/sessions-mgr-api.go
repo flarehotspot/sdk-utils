@@ -1,7 +1,9 @@
 package sdkconnmgr
 
-// SessionsMgrApi is used to manage client devices.
-type SessionsMgrApi interface {
+import "context"
+
+// SessionsMgr is used to manage client devices.
+type SessionsMgr interface {
 
 	// Connects a client device to the internet.
 	Connect(clnt ClientDevice) error
@@ -16,7 +18,5 @@ type SessionsMgrApi interface {
 	// Get the current session of a client device.
 	CurrSession(clnt ClientDevice) (cs ClientSession, ok bool)
 
-	// Emits a socket event to a client device.
-	// The event will be propagated to the client's browser via server-sent events.
-	SocketEmit(clnt ClientDevice, t string, d map[string]any)
+	CreateSession(ctx context.Context, devId int64, t uint8, timeSecs uint, dataMbytes float64, expDays *uint, downMbits int, upMbits int, useGlobal bool) error
 }
