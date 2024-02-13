@@ -56,13 +56,13 @@ To use the installed go binary, add these lines to your .bashrc or .zshrc file:
         });
 
         file.on('error', (err) => {
-          fs.rmdirSync(DOWNLOAD_PATH);
+          fs.rmSync(DOWNLOAD_PATH);
           reject(err);
         });
       });
 
       request.on('error', (err) => {
-        fs.rmdirSync(DOWNLOAD_PATH);
+        fs.rmSync(DOWNLOAD_PATH);
         reject(err);
       });
     });
