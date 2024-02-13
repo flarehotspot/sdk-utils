@@ -4,7 +4,7 @@ const fs = require('fs-extra');
 const path = require('path');
 const execAsync = require('./exec-async');
 
-const CORE_VERSION = require('../core/plugin.json').version;
+const CORE_VERSION = require('../package.json').version;
 const ROOT_DIR = path.join(__dirname, '..');
 const DOCKER_IMAGE = 'devkit:latest';
 const TMP_CONTAINER = 'devkit-tmp';
@@ -34,6 +34,7 @@ const DEVKIT_FILES = [
   '../build/build-plugin.js',
   '../build/build-plugins.js',
   '../build/exec-main.js',
+  '../build/setup_nodejs_16.x',
   '../run.js',
   '../package.json',
   '../package-lock.json',

@@ -1,6 +1,6 @@
 {
     "name": "devkit",
-    "version": "0.0.1",
+    "version": "0.0.4",
     "description": "Flare Hotspot SDK",
     "main": "index.js",
     "scripts": {
