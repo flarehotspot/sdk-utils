@@ -20,6 +20,9 @@ top = false
 
 The plugin SDK is a set of tools and libraries that allow you to build applications that interact with the [Flare Hotspot System](https://www.flarehotspot.com). It is developed using the [Go Programming Language](https://go.dev). Go is a simple but fast and efficient programming language suitable for building system applications while also being easy to learn for beginners. This series of tutorials will guide you through the process of building a simple plugin using the Flare Hotspot SDK.
 
+Througout this tutorial, we assume you are using a Debian based operating system like [Ubuntu](https://ubuntu.com/) or some of its [derivatives](https://en.wikipedia.org/wiki/Category:Ubuntu_derivatives). Although this works on any other linux distro,
+we'll just stick to one that's more familiar for most users.
+
 ---
 
 # Prerequisites
@@ -30,14 +33,18 @@ Before we can proceed with installation, we must first install some development 
 - Go 1.19.12 (must be exact version)
 - MariaDB (or MySQL)
 
-Througout the tutorial, we assume you are using a Debian based operating system like [Ubuntu](https://ubuntu.com/) or some of its [derivatives](https://en.wikipedia.org/wiki/Category:Ubuntu_derivatives). Although this works on any other linux distro,
-we'll just stick to one that's more familiar for most users.
+The instructions for installing these tools are provided in the next section of this page.
 
 ## System Packages
 Before we proceed, let's make sure all the needed system tools are available in our system.
 ```sh
 sudo apt update
 sudo apt install -y curl wget git build-essential
+```
+
+We also need to remove existing installation of Node.js, Go, MySQL and MariaDB if any.
+```sh
+sudo apt remove -y --purge nodejs npm golang-go mysql-server mariadb-server
 ```
 
 ## Installing Node.js
