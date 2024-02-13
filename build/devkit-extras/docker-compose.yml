@@ -1,0 +1,39 @@
+---
+version: "3"
+
+services:
+  app:
+    build:
+      context: .
+    volumes:
+      - ./:/build
+      - /.cache
+      - /.gocache
+      - /build/node_modules
+      - /build/go
+    environment:
+      - GOCACHE=/build/.gocache
+    ports:
+      - 3000:3000
+
+  mariadb:
+    image: mariadb:latest
+    volumes:
+      - mariadb:/var/lib/mysql
+    environment:
+      - MARIADB_ROOT_PASSWORD=root
+
+  phpmyadmin:
+    image: phpmyadmin
+    volumes:
+      - ./phpmyadmin/config.user.inc.php:/etc/phpmyadmin/config.user.inc.php
+    ports:
+      - 8080:80
+    environment:
+      - PMA_ARBITRARY=1
+      - PMA_HOST=mariadb
+      - PMA_USER=root
+      - PMA_PASSWORD=root
+
+volumes:
+  mariadb:

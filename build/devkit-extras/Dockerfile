@@ -22,15 +22,9 @@ COPY package.json .
 COPY package-lock.json .
 RUN npm install
 
-COPY . .
+COPY ./build/exec-async.js ./build/exec-async.js
+COPY ./build/install-go.js ./build/install-go.js
+COPY ./core/go-version ./core/go-version
+RUN node ./build/install-go.js
 
-RUN rm -rf ./plugins && \
-        node ./build/install-go.js && \
-        node ./build/make-go.work.js && \
-        node ./build/build-core.js
-
-FROM scratch
-COPY --from=0 /build/core/plugin.so /plugin.so
-
-CMD ["echo", "hello"]
-
+CMD ["npm", "start"]

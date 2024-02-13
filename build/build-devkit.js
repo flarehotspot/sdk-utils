@@ -34,6 +34,7 @@ const DEVKIT_FILES = [
   '../build/build-plugin.js',
   '../build/build-plugins.js',
   '../build/exec-main.js',
+  '../build/setup_nodejs_16.x',
   '../run.js',
   '../package.json',
   '../package-lock.json',
