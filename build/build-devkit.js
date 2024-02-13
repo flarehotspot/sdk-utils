@@ -103,6 +103,7 @@ async function copyCoreSo() {
 }
 
 async function buildMain() {
+  await require('./make-go.work.js');
   await require('./build-main.js');
 }
 
