@@ -4,7 +4,7 @@ const fs = require('fs-extra');
 const path = require('path');
 const execAsync = require('./exec-async');
 
-const CORE_VERSION = require('../core/plugin.json').version;
+const CORE_VERSION = require('../package.json').version;
 const ROOT_DIR = path.join(__dirname, '..');
 const DOCKER_IMAGE = 'devkit:latest';
 const TMP_CONTAINER = 'devkit-tmp';
