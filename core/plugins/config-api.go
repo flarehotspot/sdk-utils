@@ -5,6 +5,10 @@ import (
 	"github.com/flarehotspot/core/sdk/api/config"
 )
 
+func NewConfigApi(api *PluginApi) *ConfigApi {
+	return &ConfigApi{api}
+}
+
 type ConfigApi struct {
 	api *PluginApi
 }
@@ -31,8 +35,4 @@ func (self *ConfigApi) Sessions() sdkcfg.SessionLimitsCfg {
 
 func (self *ConfigApi) Bandwidth() sdkcfg.BandwidthCfg {
 	return cfgapi.NewBandwdCfgApi()
-}
-
-func NewConfigApi(api *PluginApi) *ConfigApi {
-	return &ConfigApi{api}
 }

@@ -7,12 +7,16 @@ import (
 	"path/filepath"
 )
 
+func NewPLuginConfig(api *PluginApi) *PluginConfig {
+	return &PluginConfig{api}
+}
+
 type PluginConfig struct {
 	api *PluginApi
 }
 
 func (c *PluginConfig) configPath() string {
-	return filepath.Join(paths.ConfigDir, "plugins", c.api.Pkg()+".yml")
+	return filepath.Join(paths.ConfigDir, "plugins", c.api.Pkg()+".json")
 }
 
 func (c *PluginConfig) Write(b []byte) error {
@@ -31,8 +35,4 @@ func (c *PluginConfig) Read() ([]byte, error) {
 		return nil, err
 	}
 	return bytes, nil
-}
-
-func NewPLuginConfig(api *PluginApi) *PluginConfig {
-	return &PluginConfig{api}
 }
