@@ -90,7 +90,7 @@ Now that we've registered our first page to the router, we should rebuild and ru
 docker compose restart app
 ```
 
-The generated route paths are prefixed with the plugin `package` and `version` fiels from [plugin.json](../api/plugin-json) file.
+The generated route paths are prefixed with the plugin `package` and `version` fields from [plugin.json](../api/plugin-json) file.
 So to visit the page, you can navigate to the following URL in your browser:
 
 [http://localhost:3000/#/com.sample.plugin/0.0.1/welcome/John](http://localhost:3000/#com.sample.plugin/0.0.1/welcome/John)
