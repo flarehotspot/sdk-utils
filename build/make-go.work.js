@@ -22,8 +22,9 @@ use (
       const d = path.join(ROOT_DIR, 'plugins', dir);
       if (fs.statSync(d).isDirectory()) {
         if (fs.existsSync(path.join(d, 'plugin.json'))) {
+            const basename = path.basename(d);
           GOWORK += `
-                ${d}`;
+                ./plugins/${basename}`;
         }
       }
     });
