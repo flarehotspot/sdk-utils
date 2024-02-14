@@ -24,9 +24,9 @@ COPY package.json .
 COPY package-lock.json .
 RUN npm install
 
-COPY ./build/exec-async.js ./build/exec-async.js
-COPY ./build/install-go.js ./build/install-go.js
-COPY ./core/go-version ./core/go-version
+COPY ./build/exec-async.js  ./build/exec-async.js
+COPY ./build/install-go.js  ./build/install-go.js
+COPY ./core/go-version      ./core/go-version
 RUN node ./build/install-go.js
 
 CMD ["npm", "start"]
