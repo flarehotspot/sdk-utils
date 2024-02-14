@@ -1,6 +1,6 @@
 {
     "name": "devkit",
-    "version": "0.0.4",
+    "version": "0.0.6",
     "description": "Flare Hotspot SDK",
     "main": "index.js",
     "scripts": {
@@ -13,7 +13,6 @@
     "author": "Flarego Technologies Corporation <support@flarego.ph>",
     "license": "ISC",
     "devDependencies": {
-        "eslint": "^8.49.0",
         "typescript": "^5.3.3"
     },
     "dependencies": {

@@ -15,7 +15,7 @@
                 WrappedComponent: comp
             },
             data: function () {
-                return { view: { loading: true, data: {}, errors: {} } };
+                return { view: { loading: true, data: {}, error: null } };
             },
             mounted: function () {
                 var self = this;
@@ -27,11 +27,11 @@
                 $flare.http
                     .get(path)
                     .then(function (data) {
-                        self.view = { data: data, errors: {}, loading: false };
+                        self.view = { data: data, error: null, loading: false };
                     })
                     .catch(function (err) {
                         console.log(err);
-                        self.view = { data: {}, errors: err, loading: false };
+                        self.view = { data: {}, error: err, loading: false };
                     });
             }
         };

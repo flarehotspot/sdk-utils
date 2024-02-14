@@ -7,11 +7,6 @@ draft = false
 weight = 100
 sort_by = "weight"
 template = "docs/page.html"
-
-[extra]
-lead = ""
-toc = true
-top = false
 +++
 
 # Getting Started
@@ -73,9 +68,9 @@ sudo apt install -y ~/Downloads/docker-desktop.deb
 To install the plugin SDK, download the latest **devkit-x.x.xzip** file from [sdk-releases](https://github.com/flarehotspot/sdk-releases/releases) repository.
 After downloading, extract the zip file to your desired location.
 ```sh
-# replace ~/Downloads/devkit-x.x.x.zip with the path to the downloaded zip file
-unzip ~/Downloads/devkit-x.x.x.zip -d ~/Documents/flare-devkit
-cd ~/Documents/flare-devkit
+# replace ~/Downloads/devkit-0.0.5.zip with the path to the downloaded zip file
+unzip ~/Downloads/devkit-0.0.5.zip -d ~/Documents/devkit-0.0.5
+cd ~/Documents/devkit-0.0.5
 ```
 
 Below is the directory structure of the zip file:
@@ -95,7 +90,7 @@ Notice the `com.flarego.sample-plugin` directory. We are going to use this sampl
 
 To start the SDK runtime, you need to run:
 ```sh
-cd ~/Documents/flare-devkit
+cd ~/Documents/devkit-0.0.5
 docker compose up
 ```
 
@@ -113,6 +108,6 @@ password: admin
 
 To stop the SDK runtime, you need to run:
 ```sh
-cd ~/Documents/flare-devkit
+cd ~/Documents/devkit-0.0.5
 docker compose down
 ```
