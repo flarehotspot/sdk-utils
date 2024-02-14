@@ -99,9 +99,11 @@ cd ~/Documents/flare-devkit
 docker compose up
 ```
 
-You can now browse the application in [http://localhost:3000](http://localhost:3000)
+Now you can access the Flare Hotspot web interface:
 
-The admin dashboard can be accessed in [http://localhost:3000/admin](http://localhost:3000/admin)
+- Captive Portal: [http://localhost:3000](http://localhost:3000)
+- Admin Dashboard: [http://localhost:3000/admin](http://localhost:3000/admin)
+- Database Management: [http://localhost:8080](http://localhost:8080)
 
 The default login for the admin dashboard is:
 ```
