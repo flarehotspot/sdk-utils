@@ -1,10 +1,12 @@
 package plugins
 
 import (
-	fs "github.com/flarehotspot/core/sdk/utils/fs"
-	paths "github.com/flarehotspot/core/sdk/utils/paths"
+	"encoding/json"
 	"os"
 	"path/filepath"
+
+	fs "github.com/flarehotspot/core/sdk/utils/fs"
+	paths "github.com/flarehotspot/core/sdk/utils/paths"
 )
 
 func NewPLuginConfig(api *PluginApi) *PluginConfig {
@@ -19,20 +21,22 @@ func (c *PluginConfig) configPath() string {
 	return filepath.Join(paths.ConfigDir, "plugins", c.api.Pkg()+".json")
 }
 
-func (c *PluginConfig) Write(b []byte) error {
+func (c *PluginConfig) WriteJson(v any) error {
 	dir := filepath.Join(paths.ConfigDir, "plugins")
 	err := fs.EnsureDir(dir)
 	if err != nil {
 		return err
 	}
+	b, err := json.Marshal(v)
 	err = os.WriteFile(c.configPath(), b, 0644)
 	return err
 }
 
-func (c *PluginConfig) Read() ([]byte, error) {
+func (c *PluginConfig) ReadJson(v any) error {
 	bytes, err := os.ReadFile(c.configPath())
 	if err != nil {
-		return nil, err
+		return err
 	}
-	return bytes, nil
+
+	return json.Unmarshal(bytes, v)
 }

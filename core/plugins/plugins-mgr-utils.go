@@ -125,7 +125,10 @@ func (utils *PluginsMgrUtils) GetAdminNavs(r *http.Request) []sdkhttp.AdminNavLi
 	navs := []sdkhttp.AdminNavList{}
 	categories := []sdkhttp.INavCategory{
 		sdkhttp.NavCategorySystem,
-		// sdkhttp.NavCategoryNetwork,
+		sdkhttp.NavCategoryPayments,
+		sdkhttp.NavCategoryNetwork,
+		sdkhttp.NavCategoryThemes,
+		sdkhttp.NavCategoryTools,
 	}
 
 	for _, category := range categories {

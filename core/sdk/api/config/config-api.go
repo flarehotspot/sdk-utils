@@ -2,6 +2,7 @@ package sdkcfg
 
 // ConfigApi is used to access the configuration API.
 type ConfigApi interface {
+
 	// Get the plugin configuration guration api.
 	Plugin() PluginCfg
 
