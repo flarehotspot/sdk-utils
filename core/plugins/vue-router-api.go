@@ -129,7 +129,7 @@ func (self *VueRouterApi) VueRouteName(name string) string {
 }
 
 func (self *VueRouterApi) VueRoutePath(p string) VueRoutePath {
-	p = path.Join("/", self.api.Pkg(), p)
+	p = path.Join("/", self.api.Pkg(), self.api.Version(), p)
 	return VueRoutePath(strings.TrimSuffix(p, "/"))
 }
 

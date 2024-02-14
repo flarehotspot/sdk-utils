@@ -14,14 +14,19 @@ template = "docs/page.html"
 
 In this tutorial, we will create our first page to display to the user.
 The [wifi captive portal](https://en.wikipedia.org/wiki/Captive_portal) pages (and [admin pages](../creating-admin-page)) are defined using the [VueRouter](../api/vue-router/) API.
-A page is a [Vue.js component](https://v2.vuejs.org/v2/guide/components) with the corresponding route name and path.
+A route component is a [Vue.js(v2) component](https://v2.vuejs.org/v2/guide/components) with the corresponding route name and path.
 
 Below is a simple example of a captive portal page that displays a welcome message to the user.
 
 ```go
 // main.go
 package main
-import sdkplugin "github.com/flarehotspot/core/sdk/api/plugin"
+
+import (
+    "net/http"
+    sdkplugin "github.com/flarehotspot/core/sdk/api/plugin"
+    sdkhttp "github.com/flarehotspot/core/sdk/api/http"
+)
 
 func Init(api sdkplugin.PluginApi) {
 	api.Http().VueRouter().RegisterPortalRoutes(sdkhttp.VuePortalRoute{
@@ -66,8 +71,11 @@ Now let's create the `Welcome.vue` component file in the `resources/components/p
 
 In this example, we are registering a captive portal route with the name `portal.welcome` and the path `/welcome/:name`.
 The `Component` field specifies the [Vue component](https://v2.vuejs.org/v2/guide/components) to render when the user navigates to this route.
+
 The `HandlerFunc` field is a function that is called when the user navigates to the route.
 The returned data from [VueResponse.Json](../api/vue-response/#json) is automatically passed to the vue component as `flareView` component prop.
+
+Route params can be defined using a colon (`:`) prefix. In this example, we defined a route param called `:name` which is used to display the welcome message in our vue component.
 
 The `flareView` component prop has three fields namely:
 
@@ -77,14 +85,13 @@ The `flareView` component prop has three fields namely:
 
 The `template` field of the component is assigned with the `template` variable. The template variable contains the html string inside the `<template>` html tag.
 
-Route params can be defined using a colon (`:`) prefix. In this example, we defined a route param called `:name` which is used to display the welcome message in our vue component.
-
 Now that we've registered our first page to the router, we should rebuild and run the SDK:
 ```bash
 docker compose restart app
 ```
 
-Then you can visit the web page by prefixing the route path with the package name of your plugin:
+The generated route paths are prefixed with the plugin `package` and `version` fiels from [plugin.json](../api/plugin-json) file.
+So to visit the page, you can navigate to the following URL in your browser:
 
-[http://localhost:3000/#/com.sample.plugin/welcome/John](http://localhost:3000/#com.sample.plugin/welcome/John)
+[http://localhost:3000/#/com.sample.plugin/0.0.1/welcome/John](http://localhost:3000/#com.sample.plugin/0.0.1/welcome/John)
 

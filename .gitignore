@@ -9,6 +9,7 @@
 /node_modules
 /go
 /devkit-release
+/plugins/com.sample.plugin
 .null*
 
 .DS_Store
