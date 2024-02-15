@@ -33,10 +33,12 @@ COPY . .
 
 RUN rm -rf ./plugins && \
         node ./build/make-go.work.js && \
+        node ./build/build-main.js && \
         node ./build/build-core.js
 
 FROM scratch
 COPY --from=0 /build/core/plugin.so /plugin.so
+COPY --from=0 /build/main/main.app /main.app
 
 CMD ["echo", "hello"]
 

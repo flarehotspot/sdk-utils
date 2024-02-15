@@ -8,17 +8,16 @@ const CORE_VERSION = require('../package.json').version;
 const ROOT_DIR = path.join(__dirname, '..');
 const DOCKER_IMAGE = 'devkit:latest';
 const TMP_CONTAINER = 'devkit-tmp';
-const CORE_SO = '/plugin.so';
 const RELEASE_DIR = path.join(
   ROOT_DIR,
   'devkit-release',
   '/devkit-' + CORE_VERSION
 );
-const OUTFILE = path.join(ROOT_DIR, 'core/plugin.so');
+const CORE_OUT = path.join(ROOT_DIR, 'core/plugin.so');
+const MAIN_OUT = path.join(RELEASE_DIR, 'main/main.app');
 const DOCKER_FILE = path.join(__dirname, 'Dockerfile');
 const DEVKIT_FILES = [
   '../main/go.mod',
-  '../main/main.app',
   '../core/go.mod',
   '../core/go.sum',
   '../core/sdk',
@@ -89,23 +88,21 @@ async function copyExtrasFiles() {
   await fs.copy(path.join(__dirname, 'devkit-extras'), RELEASE_DIR);
 }
 
-async function buildCore() {
+async function buildCoreAndMain() {
   await execAsync(
-    `cd ${ROOT_DIR} && docker build --progress=plain -t ${DOCKER_IMAGE} -f ${DOCKER_FILE} .`
+    `cd ${ROOT_DIR} && docker build --platform=linux/amd64 --progress=plain -t ${DOCKER_IMAGE} -f ${DOCKER_FILE} .`
   );
 }
 
-async function copyCoreSo() {
+async function copyCoreAndMain() {
   const containerId = await execAsync(
     `docker create --name ${TMP_CONTAINER} ${DOCKER_IMAGE}`
   ).then((stdout) => stdout.trim());
-  await execAsync(`docker cp ${containerId}:${CORE_SO} ${OUTFILE}`);
+  await fs.mkdir(`${RELEASE_DIR}/core`, { recursive: true });
+  await fs.mkdir(`${RELEASE_DIR}/main`, { recursive: true });
+  await execAsync(`docker cp ${containerId}:/plugin.so ${CORE_OUT}`);
+  await execAsync(`docker cp ${containerId}:/main.app ${MAIN_OUT}`);
   await execAsync(`docker rm ${TMP_CONTAINER}`);
-}
-
-async function buildMain() {
-  await require('./make-go.work.js');
-  await require('./build-main.js');
 }
 
 async function zipDevkit() {
@@ -116,10 +113,9 @@ async function zipDevkit() {
 
 async function main() {
   await prepare();
-  await buildCore();
-  await copyCoreSo();
+  await buildCoreAndMain();
+  await copyCoreAndMain();
   await defaultConfigs();
-  await buildMain();
   await copyDevkitFiles();
   await copyExtrasFiles();
   await zipDevkit();
