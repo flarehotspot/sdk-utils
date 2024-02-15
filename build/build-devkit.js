@@ -90,7 +90,7 @@ async function copyExtrasFiles() {
 
 async function buildCoreAndMain() {
   await execAsync(
-    `cd ${ROOT_DIR} && docker build --platform=linux/amd64 --progress=plain -t ${DOCKER_IMAGE} -f ${DOCKER_FILE} .`
+    `cd ${ROOT_DIR} && docker build --progress=plain -t ${DOCKER_IMAGE} -f ${DOCKER_FILE} .`
   );
 }
 

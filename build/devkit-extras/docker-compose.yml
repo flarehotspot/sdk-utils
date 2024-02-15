@@ -6,7 +6,6 @@ services:
   app:
     build:
       context: .
-    platform: linux/amd64
     volumes:
       - ./:/build
       - /.cache
