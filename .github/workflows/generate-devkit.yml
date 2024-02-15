@@ -1,0 +1,37 @@
+---
+name: generate-devkit
+
+on:
+  push:
+    branches: [releases]
+
+env:
+  NODE_ENV: 'production'
+  DEVKIT_BUILD: 'true'
+
+jobs:
+  build-devkit:
+  runs-on: ${{ matrix.os }}
+  name: Build devkit on ${{ matrix.arch }}
+  strategy:
+    matrix:
+      include:
+        - arch: aarch64
+          os: ubuntu22.04
+        - arch: amd64
+          os: ubuntu22.04
+  steps:
+    - run: apt-get update && apt-get install -y wget curl golang-go ca-certificates openssl
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v3
+      with:
+        node-version: '16'
+    - uses: actions/setup-go@v4
+      with:
+        go-version: '1.19.12'
+    - run: npm install
+    - run: rm -rf ./plugins
+    - run: >
+        node ./build/make-go.work.js &&
+        node ./build/build-main.js &&
+        node ./build/build-core.js
