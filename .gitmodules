@@ -1,9 +1,6 @@
 [submodule "core"]
 	path = core
 	url = git@github.com:flarehotspot/core.git
-[submodule "hardware-db"]
-	path = hardware-db
-	url = git@github.com:flarehotspot/hardware-db.git
 [submodule "plugins/com.flarego.wired-coinslot"]
 	path = plugins/com.flarego.wired-coinslot
 	url = git@github.com:flarehotspot/com.flarego.wired-coinslot.git
