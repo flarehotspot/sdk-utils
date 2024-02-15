@@ -16,9 +16,6 @@
 [submodule "plugins/com.flarego.basic-system-account"]
 	path = plugins/com.flarego.basic-system-account
 	url = git@github.com:flarehotspot/com.flarego.basic-system-account.git
-[submodule "core/sdk/docs/themes/adidoks"]
-	path = core/sdk/docs/themes/adidoks
-	url = https://github.com/aaranxu/adidoks.git
 [submodule "plugins/com.flarego.default-theme"]
 	path = plugins/com.flarego.default-theme
 	url = git@github.com:flarehotspot/com.flarego.default-theme.git
