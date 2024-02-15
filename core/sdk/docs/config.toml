@@ -106,7 +106,7 @@ site_links_search_box = false
 [[extra.menu.main]]
 name = "Docs"
 section = "docs"
-url = "/docs/tutorials/getting-started/"
+url = "/docs/tutorials/getting-started-windows/"
 weight = 10
 
 [[extra.menu.main]]

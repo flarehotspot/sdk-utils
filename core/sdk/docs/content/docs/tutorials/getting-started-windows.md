@@ -1,5 +1,5 @@
 +++
-title = "Getting Started"
+title = "Getting Started - Windows"
 description = "Series of tutorials to get you started with using the Flare Hotspot SDK."
 date = 2021-05-01T08:00:00+00:00
 updated = 2021-05-01T08:00:00+00:00
@@ -13,10 +13,9 @@ template = "docs/page.html"
 
 ## Overview
 
-The plugin SDK is a set of tools and libraries that allow you to build applications that interact with the [Flare Hotspot System](https://www.flarehotspot.com). It is developed using the [Go Programming Language](https://go.dev). Go is a simple but fast and efficient programming language suitable for building system applications while also being easy to learn for beginners. This series of tutorials will guide you through the process of building a simple plugin using the Flare Hotspot SDK.
+This tutorial is for Windows users. If you are a linux user, you can follow the [linux tutorial](../getting-started-linux) instead.
 
-Througout this tutorial, we assume you are using a Debian based operating system like [Ubuntu](https://ubuntu.com/) or some of its [derivatives](https://en.wikipedia.org/wiki/Category:Ubuntu_derivatives). Although this works on any other linux distro,
-we'll just stick to one that's more familiar for most users.
+The plugin SDK is a set of tools and libraries that allow you to build applications that interact with the [Flare Hotspot System](https://www.flarehotspot.com). It is developed using the [Go Programming Language](https://go.dev). Go is a simple but fast and efficient programming language suitable for building system applications while also being easy to learn for beginners. This series of tutorials will guide you through the process of building a simple plugin using the Flare Hotspot SDK.
 
 ---
 
