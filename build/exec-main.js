@@ -1,10 +1,9 @@
 #!/usr/bin/env node
 
-const { exec } = require('child_process');
+const execAsync = require('./exec-async');
 const mainPath = require('./main-path');
 
 module.exports = (async () => {
-  const proc = exec(mainPath);
-  proc.stdout.pipe(process.stdout);
-  proc.stderr.pipe(process.stderr);
+  await execAsync(`chmod +x ${mainPath}`);
+  await execAsync(mainPath);
 })();
