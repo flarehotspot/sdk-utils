@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strings"
 
-	httpI "github.com/flarehotspot/flarehotspot/core/sdk/api/http"
+	httpI "github.com/flarehotspot/sdk/api/http"
 	tmplcache "github.com/flarehotspot/flarehotspot/core/utils/flaretmpl"
 )
 

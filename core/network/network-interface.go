@@ -7,7 +7,7 @@ import (
 	"net"
 
 	"github.com/flarehotspot/flarehotspot/core/utils/ubus"
-	"github.com/flarehotspot/flarehotspot/core/sdk/api/network"
+	"github.com/flarehotspot/sdk/api/network"
 )
 
 type NetworkInterface struct {

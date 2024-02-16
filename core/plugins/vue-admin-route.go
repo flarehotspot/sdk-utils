@@ -3,7 +3,7 @@ package plugins
 // import (
 // 	"net/http"
 
-// 	"github.com/flarehotspot/flarehotspot/core/sdk/api/http/router"
+// 	"github.com/flarehotspot/sdk/api/http/router"
 // )
 
 // func NewVueAdminRoute(api *PluginApi, route router.VueAdminRoute) VueAdminRoute {

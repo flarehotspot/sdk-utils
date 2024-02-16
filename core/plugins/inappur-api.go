@@ -1,7 +1,7 @@
 package plugins
 
 import (
-	inappur "github.com/flarehotspot/flarehotspot/core/sdk/api/inappur"
+	inappur "github.com/flarehotspot/sdk/api/inappur"
 	"net/http"
 )
 

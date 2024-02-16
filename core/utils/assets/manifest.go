@@ -2,8 +2,8 @@ package assets
 
 import (
 	"encoding/json"
-	fs "github.com/flarehotspot/flarehotspot/core/sdk/utils/fs"
-	paths "github.com/flarehotspot/flarehotspot/core/sdk/utils/paths"
+	fs "github.com/flarehotspot/sdk/utils/fs"
+	paths "github.com/flarehotspot/sdk/utils/paths"
 	"log"
 	"os"
 	"path/filepath"

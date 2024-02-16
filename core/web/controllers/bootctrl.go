@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/flarehotspot/flarehotspot/core/plugins"
-	sse "github.com/flarehotspot/flarehotspot/core/sdk/utils/sse"
+	sse "github.com/flarehotspot/sdk/utils/sse"
 	"github.com/flarehotspot/flarehotspot/core/web/helpers"
 	"github.com/flarehotspot/flarehotspot/core/web/routes/urls"
 )

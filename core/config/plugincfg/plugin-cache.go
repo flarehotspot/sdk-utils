@@ -7,9 +7,9 @@ import (
 	"path/filepath"
 
 	"github.com/flarehotspot/flarehotspot/core/config"
-	fs "github.com/flarehotspot/flarehotspot/core/sdk/utils/fs"
-	paths "github.com/flarehotspot/flarehotspot/core/sdk/utils/paths"
-	strings "github.com/flarehotspot/flarehotspot/core/sdk/utils/strings"
+	fs "github.com/flarehotspot/sdk/utils/fs"
+	paths "github.com/flarehotspot/sdk/utils/paths"
+	strings "github.com/flarehotspot/sdk/utils/strings"
 	jobque "github.com/flarehotspot/flarehotspot/core/utils/job-que"
 )
 

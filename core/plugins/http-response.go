@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"path/filepath"
 
-	paths "github.com/flarehotspot/flarehotspot/core/sdk/utils/paths"
+	paths "github.com/flarehotspot/sdk/utils/paths"
 	resp "github.com/flarehotspot/flarehotspot/core/web/response"
 )
 

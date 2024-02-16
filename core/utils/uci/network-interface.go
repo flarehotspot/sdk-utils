@@ -3,7 +3,7 @@ package uci
 import (
 	"errors"
 
-	uci "github.com/flarehotspot/flarehotspot/core/sdk/api/uci"
+	uci "github.com/flarehotspot/sdk/api/uci"
 )
 
 // interface

@@ -6,7 +6,7 @@ import (
 
 	"github.com/flarehotspot/flarehotspot/core/db"
 	"github.com/flarehotspot/flarehotspot/core/db/models"
-	"github.com/flarehotspot/flarehotspot/core/sdk/api/connmgr"
+	"github.com/flarehotspot/sdk/api/connmgr"
 )
 
 type ClientDevice struct {

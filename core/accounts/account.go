@@ -5,8 +5,8 @@ import (
 	"path/filepath"
 
 	"encoding/json"
-	paths "github.com/flarehotspot/flarehotspot/core/sdk/utils/paths"
-	sse "github.com/flarehotspot/flarehotspot/core/sdk/utils/sse"
+	paths "github.com/flarehotspot/sdk/utils/paths"
+	sse "github.com/flarehotspot/sdk/utils/sse"
 )
 
 var (

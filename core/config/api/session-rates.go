@@ -4,9 +4,9 @@ import (
 	"log"
 
 	"github.com/flarehotspot/flarehotspot/core/config"
-	sdkcfg "github.com/flarehotspot/flarehotspot/core/sdk/api/config"
-	sdkslices "github.com/flarehotspot/flarehotspot/core/sdk/utils/slices"
-	sdkstr "github.com/flarehotspot/flarehotspot/core/sdk/utils/strings"
+	sdkcfg "github.com/flarehotspot/sdk/api/config"
+	sdkslices "github.com/flarehotspot/sdk/utils/slices"
+	sdkstr "github.com/flarehotspot/sdk/utils/strings"
 	networkutil "github.com/flarehotspot/flarehotspot/core/utils/network"
 )
 

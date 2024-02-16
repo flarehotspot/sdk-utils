@@ -9,8 +9,8 @@ package assets
 // 	"strings"
 
 // 	"github.com/flarehotspot/flarehotspot/core/env"
-// 	sdkfs "github.com/flarehotspot/flarehotspot/core/sdk/utils/fs"
-// 	sdkpaths "github.com/flarehotspot/flarehotspot/core/sdk/utils/paths"
+// 	sdkfs "github.com/flarehotspot/sdk/utils/fs"
+// 	sdkpaths "github.com/flarehotspot/sdk/utils/paths"
 // 	"github.com/flarehotspot/flarehotspot/core/utils/crypt"
 // 	jobque "github.com/flarehotspot/flarehotspot/core/utils/job-que"
 // 	minifyv2 "github.com/tdewolff/minify/v2"

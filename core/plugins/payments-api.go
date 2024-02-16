@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 
-	sdkpayments "github.com/flarehotspot/flarehotspot/core/sdk/api/payments"
+	sdkpayments "github.com/flarehotspot/sdk/api/payments"
 	"github.com/flarehotspot/flarehotspot/core/web/helpers"
 	routenames "github.com/flarehotspot/flarehotspot/core/web/routes/names"
 )

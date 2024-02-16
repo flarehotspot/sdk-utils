@@ -8,7 +8,7 @@ import (
 
 	"github.com/flarehotspot/flarehotspot/core/db"
 	"github.com/flarehotspot/flarehotspot/core/db/models"
-	connmgr "github.com/flarehotspot/flarehotspot/core/sdk/api/connmgr"
+	connmgr "github.com/flarehotspot/sdk/api/connmgr"
 )
 
 type ClientSession struct {

@@ -6,8 +6,8 @@ import (
 	"github.com/flarehotspot/flarehotspot/core/connmgr"
 	"github.com/flarehotspot/flarehotspot/core/db"
 	"github.com/flarehotspot/flarehotspot/core/db/models"
-	sdkconnmgr "github.com/flarehotspot/flarehotspot/core/sdk/api/connmgr"
-	sdkhttp "github.com/flarehotspot/flarehotspot/core/sdk/api/http"
+	sdkconnmgr "github.com/flarehotspot/sdk/api/connmgr"
+	sdkhttp "github.com/flarehotspot/sdk/api/http"
 	"github.com/flarehotspot/flarehotspot/core/web/helpers"
 	"github.com/gorilla/mux"
 )

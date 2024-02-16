@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	sdkhttp "github.com/flarehotspot/flarehotspot/core/sdk/api/http"
-	sdkstr "github.com/flarehotspot/flarehotspot/core/sdk/utils/strings"
+	sdkhttp "github.com/flarehotspot/sdk/api/http"
+	sdkstr "github.com/flarehotspot/sdk/utils/strings"
 	"github.com/flarehotspot/flarehotspot/core/utils/crypt"
 	"github.com/flarehotspot/flarehotspot/core/web/middlewares"
 	"github.com/flarehotspot/flarehotspot/core/web/response"

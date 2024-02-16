@@ -2,7 +2,7 @@ package cfgapi
 
 import (
 	"github.com/flarehotspot/flarehotspot/core/config"
-	"github.com/flarehotspot/flarehotspot/core/sdk/api/config"
+	"github.com/flarehotspot/sdk/api/config"
 )
 
 func NewBandwdCfgApi() *BandwdCfgApi {

@@ -11,9 +11,9 @@ import (
 	"time"
 
 	"github.com/flarehotspot/flarehotspot/core/utils/cmd"
-	"github.com/flarehotspot/flarehotspot/core/sdk/libs/go-uci"
-fs	"github.com/flarehotspot/flarehotspot/core/sdk/utils/fs"
-paths	"github.com/flarehotspot/flarehotspot/core/sdk/utils/paths"
+	"github.com/flarehotspot/sdk/libs/go-uci"
+fs	"github.com/flarehotspot/sdk/utils/fs"
+paths	"github.com/flarehotspot/sdk/utils/paths"
 )
 
 var (

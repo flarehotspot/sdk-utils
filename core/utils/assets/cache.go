@@ -9,8 +9,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	sdkfs "github.com/flarehotspot/flarehotspot/core/sdk/utils/fs"
-	paths "github.com/flarehotspot/flarehotspot/core/sdk/utils/paths"
+	sdkfs "github.com/flarehotspot/sdk/utils/fs"
+	paths "github.com/flarehotspot/sdk/utils/paths"
 	"github.com/flarehotspot/flarehotspot/core/utils/crypt"
 )
 

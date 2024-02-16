@@ -2,7 +2,7 @@ package plugins
 
 import (
 	cnet "github.com/flarehotspot/flarehotspot/core/network"
-	sdknet "github.com/flarehotspot/flarehotspot/core/sdk/api/network"
+	sdknet "github.com/flarehotspot/sdk/api/network"
 	"github.com/flarehotspot/flarehotspot/core/utils/ubus"
 )
 

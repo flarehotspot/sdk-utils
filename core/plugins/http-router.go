@@ -3,7 +3,7 @@ package plugins
 import (
 	"net/http"
 
-	sdkhttp "github.com/flarehotspot/flarehotspot/core/sdk/api/http"
+	sdkhttp "github.com/flarehotspot/sdk/api/http"
 	"github.com/gorilla/mux"
 )
 

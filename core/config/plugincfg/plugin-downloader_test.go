@@ -5,8 +5,8 @@ package plugincfg
 	// "path/filepath"
 	// "testing"
 
-	// "github.com/flarehotspot/flarehotspot/core/sdk/utils/fs"
-	// "github.com/flarehotspot/flarehotspot/core/sdk/utils/paths"
+	// "github.com/flarehotspot/sdk/utils/fs"
+	// "github.com/flarehotspot/sdk/utils/paths"
 	// "github.com/stretchr/testify/assert"
 // )
 

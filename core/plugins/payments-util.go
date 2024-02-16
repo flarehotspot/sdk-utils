@@ -3,8 +3,8 @@ package plugins
 import (
 	"net/http"
 
-	payments "github.com/flarehotspot/flarehotspot/core/sdk/api/payments"
-	qs "github.com/flarehotspot/flarehotspot/core/sdk/libs/urlquery"
+	payments "github.com/flarehotspot/sdk/api/payments"
+	qs "github.com/flarehotspot/sdk/libs/urlquery"
 )
 
 func ParsePurchaseReq(r *http.Request) (*payments.PurchaseRequest, error) {

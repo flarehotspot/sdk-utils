@@ -10,9 +10,9 @@ import (
 	"strings"
 	texttemplate "text/template"
 
-	sdkconnmgr "github.com/flarehotspot/flarehotspot/core/sdk/api/connmgr"
-	sdkhttp "github.com/flarehotspot/flarehotspot/core/sdk/api/http"
-	plugin "github.com/flarehotspot/flarehotspot/core/sdk/api/plugin"
+	sdkconnmgr "github.com/flarehotspot/sdk/api/connmgr"
+	sdkhttp "github.com/flarehotspot/sdk/api/http"
+	plugin "github.com/flarehotspot/sdk/api/plugin"
 	"github.com/flarehotspot/flarehotspot/core/utils/flaretmpl"
 	"github.com/flarehotspot/flarehotspot/core/web/helpers"
 	"github.com/flarehotspot/flarehotspot/core/web/response"

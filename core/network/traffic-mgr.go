@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/flarehotspot/flarehotspot/core/utils/nftables"
-	"github.com/flarehotspot/flarehotspot/core/sdk/api/network"
+	"github.com/flarehotspot/sdk/api/network"
 )
 
 type TrafficMgr struct {

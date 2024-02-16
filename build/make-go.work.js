@@ -17,6 +17,7 @@ module.exports = (async () => {
   let GOWORK = `go ${GO_SHORT_VERSION}
 use (
     ./core
+    ./sdk
     ./main`;
 
   for (const dir of PLUGIN_PATHS) {

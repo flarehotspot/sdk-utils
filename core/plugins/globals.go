@@ -5,7 +5,7 @@ import (
 	"github.com/flarehotspot/flarehotspot/core/db"
 	"github.com/flarehotspot/flarehotspot/core/db/models"
 	"github.com/flarehotspot/flarehotspot/core/network"
-	paths "github.com/flarehotspot/flarehotspot/core/sdk/utils/paths"
+	paths "github.com/flarehotspot/sdk/utils/paths"
 )
 
 type CoreGlobals struct {

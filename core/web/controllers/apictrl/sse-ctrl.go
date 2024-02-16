@@ -5,8 +5,8 @@ import (
 
 	"github.com/flarehotspot/flarehotspot/core/accounts"
 	"github.com/flarehotspot/flarehotspot/core/connmgr"
-	"github.com/flarehotspot/flarehotspot/core/sdk/api/http"
-	sse "github.com/flarehotspot/flarehotspot/core/sdk/utils/sse"
+	"github.com/flarehotspot/sdk/api/http"
+	sse "github.com/flarehotspot/sdk/utils/sse"
 	"github.com/flarehotspot/flarehotspot/core/web/helpers"
 )
 

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	uci "github.com/flarehotspot/flarehotspot/core/sdk/api/uci"
+	uci "github.com/flarehotspot/sdk/api/uci"
 )
 
 // bridge

@@ -6,8 +6,8 @@ import (
 
 	"github.com/flarehotspot/flarehotspot/core/accounts"
 	"github.com/flarehotspot/flarehotspot/core/config"
-	acct "github.com/flarehotspot/flarehotspot/core/sdk/api/accounts"
-	sdkhttp "github.com/flarehotspot/flarehotspot/core/sdk/api/http"
+	acct "github.com/flarehotspot/sdk/api/accounts"
+	sdkhttp "github.com/flarehotspot/sdk/api/http"
 	"github.com/flarehotspot/flarehotspot/core/utils/jsonwebtoken"
 	"github.com/flarehotspot/flarehotspot/core/web/helpers"
 	"github.com/flarehotspot/flarehotspot/core/web/middlewares"

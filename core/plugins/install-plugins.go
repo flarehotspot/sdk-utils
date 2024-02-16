@@ -8,8 +8,8 @@ import (
 
 	"github.com/flarehotspot/flarehotspot/core/config"
 	"github.com/flarehotspot/flarehotspot/core/config/plugincfg"
-	paths "github.com/flarehotspot/flarehotspot/core/sdk/utils/paths"
-	strings "github.com/flarehotspot/flarehotspot/core/sdk/utils/strings"
+	paths "github.com/flarehotspot/sdk/utils/paths"
+	strings "github.com/flarehotspot/sdk/utils/strings"
 	"github.com/flarehotspot/flarehotspot/core/utils/git"
 )
 

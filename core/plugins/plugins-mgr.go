@@ -9,7 +9,7 @@ import (
 	"github.com/flarehotspot/flarehotspot/core/db"
 	"github.com/flarehotspot/flarehotspot/core/db/models"
 	"github.com/flarehotspot/flarehotspot/core/network"
-	plugin "github.com/flarehotspot/flarehotspot/core/sdk/api/plugin"
+	plugin "github.com/flarehotspot/sdk/api/plugin"
 	"github.com/flarehotspot/flarehotspot/core/utils/migrate"
 )
 
