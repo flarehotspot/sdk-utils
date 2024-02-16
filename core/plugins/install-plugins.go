@@ -6,11 +6,11 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/flarehotspot/core/config"
-	"github.com/flarehotspot/core/config/plugincfg"
-	paths "github.com/flarehotspot/core/sdk/utils/paths"
-	strings "github.com/flarehotspot/core/sdk/utils/strings"
-	"github.com/flarehotspot/core/utils/git"
+	"github.com/flarehotspot/flarehotspot/core/config"
+	"github.com/flarehotspot/flarehotspot/core/config/plugincfg"
+	paths "github.com/flarehotspot/flarehotspot/core/sdk/utils/paths"
+	strings "github.com/flarehotspot/flarehotspot/core/sdk/utils/strings"
+	"github.com/flarehotspot/flarehotspot/core/utils/git"
 )
 
 type InstallStatus struct {

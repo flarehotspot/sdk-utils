@@ -2,7 +2,7 @@
 
 package main
 
-import "github.com/flarehotspot/core"
+import "github.com/flarehotspot/flarehotspot/core"
 
 func main() {
 	core.Init()

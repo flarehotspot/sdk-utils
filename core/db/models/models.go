@@ -1,7 +1,7 @@
 package models
 
 import (
-	"github.com/flarehotspot/core/db"
+	"github.com/flarehotspot/flarehotspot/core/db"
 )
 
 type Models struct {

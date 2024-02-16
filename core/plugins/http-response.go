@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"path/filepath"
 
-	paths "github.com/flarehotspot/core/sdk/utils/paths"
-	resp "github.com/flarehotspot/core/web/response"
+	paths "github.com/flarehotspot/flarehotspot/core/sdk/utils/paths"
+	resp "github.com/flarehotspot/flarehotspot/core/web/response"
 )
 
 type HttpResponse struct {

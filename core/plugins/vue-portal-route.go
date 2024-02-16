@@ -4,7 +4,7 @@ package plugins
 // 	"fmt"
 // 	"path/filepath"
 
-// 	"github.com/flarehotspot/core/sdk/api/http/router"
+// 	"github.com/flarehotspot/flarehotspot/core/sdk/api/http/router"
 // )
 
 // func NewVuePortalRoute(api *PluginApi, route router.VuePortalRoute) VuePortalRoute {

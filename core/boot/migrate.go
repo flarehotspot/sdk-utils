@@ -4,9 +4,9 @@ import (
 	"log"
 	"path/filepath"
 
-	"github.com/flarehotspot/core/plugins"
-	paths "github.com/flarehotspot/core/sdk/utils/paths"
-	"github.com/flarehotspot/core/utils/migrate"
+	"github.com/flarehotspot/flarehotspot/core/plugins"
+	paths "github.com/flarehotspot/flarehotspot/core/sdk/utils/paths"
+	"github.com/flarehotspot/flarehotspot/core/utils/migrate"
 )
 
 func RunMigrations(g *plugins.CoreGlobals) {

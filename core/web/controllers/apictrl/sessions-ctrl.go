@@ -3,10 +3,10 @@ package apictrl
 // import (
 // 	"net/http"
 
-// 	"github.com/flarehotspot/core/plugins"
-// 	sdkmdls "github.com/flarehotspot/core/sdk/api/models"
-// 	"github.com/flarehotspot/core/web/helpers"
-// 	"github.com/flarehotspot/core/web/response"
+// 	"github.com/flarehotspot/flarehotspot/core/plugins"
+// 	sdkmdls "github.com/flarehotspot/flarehotspot/core/sdk/api/models"
+// 	"github.com/flarehotspot/flarehotspot/core/web/helpers"
+// 	"github.com/flarehotspot/flarehotspot/core/web/response"
 // )
 
 // type SessionsApiCtrl struct {

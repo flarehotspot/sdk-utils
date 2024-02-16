@@ -8,7 +8,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/flarehotspot/core/db"
+	"github.com/flarehotspot/flarehotspot/core/db"
 )
 
 var (

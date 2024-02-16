@@ -3,9 +3,9 @@ package adminctrl
 // import (
 // 	"net/http"
 
-// 	"github.com/flarehotspot/core/globals"
-// 	"github.com/flarehotspot/core/web/router"
-// 	"github.com/flarehotspot/core/web/routes/names"
+// 	"github.com/flarehotspot/flarehotspot/core/globals"
+// 	"github.com/flarehotspot/flarehotspot/core/web/router"
+// 	"github.com/flarehotspot/flarehotspot/core/web/routes/names"
 // )
 
 // type DashboardCtrl struct {

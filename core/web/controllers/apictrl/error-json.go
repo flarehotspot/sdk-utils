@@ -3,7 +3,7 @@ package apictrl
 import (
 	"net/http"
 
-	"github.com/flarehotspot/core/web/response"
+	"github.com/flarehotspot/flarehotspot/core/web/response"
 )
 
 func ErrJson(w http.ResponseWriter, r *http.Request, err error) {

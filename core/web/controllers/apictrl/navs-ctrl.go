@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/flarehotspot/core/plugins"
+	"github.com/flarehotspot/flarehotspot/core/plugins"
 )
 
 type AdminNavJson struct {

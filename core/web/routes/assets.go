@@ -4,12 +4,12 @@ import (
 	"net/http"
 	"path/filepath"
 
-	"github.com/flarehotspot/core/plugins"
-	paths "github.com/flarehotspot/core/sdk/utils/paths"
-	"github.com/flarehotspot/core/web/controllers"
-	"github.com/flarehotspot/core/web/middlewares"
-	"github.com/flarehotspot/core/web/router"
-	routenames "github.com/flarehotspot/core/web/routes/names"
+	"github.com/flarehotspot/flarehotspot/core/plugins"
+	paths "github.com/flarehotspot/flarehotspot/core/sdk/utils/paths"
+	"github.com/flarehotspot/flarehotspot/core/web/controllers"
+	"github.com/flarehotspot/flarehotspot/core/web/middlewares"
+	"github.com/flarehotspot/flarehotspot/core/web/router"
+	routenames "github.com/flarehotspot/flarehotspot/core/web/routes/names"
 )
 
 func AssetsRoutes(g *plugins.CoreGlobals) {

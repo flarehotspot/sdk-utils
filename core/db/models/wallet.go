@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"time"
 
-	"github.com/flarehotspot/core/db"
+	"github.com/flarehotspot/flarehotspot/core/db"
 )
 
 type Wallet struct {

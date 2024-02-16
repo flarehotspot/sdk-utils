@@ -4,9 +4,9 @@ import (
 	"context"
 	"sync"
 
-	"github.com/flarehotspot/core/db"
-	"github.com/flarehotspot/core/db/models"
-	"github.com/flarehotspot/core/sdk/api/connmgr"
+	"github.com/flarehotspot/flarehotspot/core/db"
+	"github.com/flarehotspot/flarehotspot/core/db/models"
+	"github.com/flarehotspot/flarehotspot/core/sdk/api/connmgr"
 )
 
 type ClientDevice struct {

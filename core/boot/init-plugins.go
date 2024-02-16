@@ -3,8 +3,8 @@ package boot
 import (
 	"log"
 
-	"github.com/flarehotspot/core/config"
-	"github.com/flarehotspot/core/plugins"
+	"github.com/flarehotspot/flarehotspot/core/config"
+	"github.com/flarehotspot/flarehotspot/core/plugins"
 )
 
 func InitPlugins(g *plugins.CoreGlobals) error {

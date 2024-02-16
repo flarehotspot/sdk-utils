@@ -7,11 +7,11 @@ import (
 	"path/filepath"
 	"strings"
 
-	sdkhttp "github.com/flarehotspot/core/sdk/api/http"
-	sdkstr "github.com/flarehotspot/core/sdk/utils/strings"
-	"github.com/flarehotspot/core/utils/crypt"
-	"github.com/flarehotspot/core/web/middlewares"
-	"github.com/flarehotspot/core/web/response"
+	sdkhttp "github.com/flarehotspot/flarehotspot/core/sdk/api/http"
+	sdkstr "github.com/flarehotspot/flarehotspot/core/sdk/utils/strings"
+	"github.com/flarehotspot/flarehotspot/core/utils/crypt"
+	"github.com/flarehotspot/flarehotspot/core/web/middlewares"
+	"github.com/flarehotspot/flarehotspot/core/web/response"
 	"github.com/gorilla/mux"
 )
 

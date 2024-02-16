@@ -10,14 +10,14 @@ package adminctrl
 // 	"path/filepath"
 // 	"sync"
 
-// 	"github.com/flarehotspot/core/accounts"
-// 	"github.com/flarehotspot/core/plugins"
-// 	"github.com/flarehotspot/core/sdk/utils/contexts"
-// 	"github.com/flarehotspot/core/sdk/utils/paths"
-// 	"github.com/flarehotspot/core/sdk/utils/strings"
-// 	"github.com/flarehotspot/core/web/response"
-// 	"github.com/flarehotspot/core/web/router"
-// 	"github.com/flarehotspot/core/web/routes/names"
+// 	"github.com/flarehotspot/flarehotspot/core/accounts"
+// 	"github.com/flarehotspot/flarehotspot/core/plugins"
+// 	"github.com/flarehotspot/flarehotspot/core/sdk/utils/contexts"
+// 	"github.com/flarehotspot/flarehotspot/core/sdk/utils/paths"
+// 	"github.com/flarehotspot/flarehotspot/core/sdk/utils/strings"
+// 	"github.com/flarehotspot/flarehotspot/core/web/response"
+// 	"github.com/flarehotspot/flarehotspot/core/web/router"
+// 	"github.com/flarehotspot/flarehotspot/core/web/routes/names"
 // )
 
 // type InstallOut struct{ acct *accounts.Account }

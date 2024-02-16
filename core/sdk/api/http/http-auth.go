@@ -3,7 +3,7 @@ package sdkhttp
 import (
 	"net/http"
 
-	sdkacct "github.com/flarehotspot/core/sdk/api/accounts"
+	sdkacct "github.com/flarehotspot/flarehotspot/core/sdk/api/accounts"
 )
 
 type HttpAuth interface {

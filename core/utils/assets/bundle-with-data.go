@@ -7,11 +7,11 @@ import (
 	"strings"
 	"sync"
 
-	fs "github.com/flarehotspot/core/sdk/utils/fs"
-	paths "github.com/flarehotspot/core/sdk/utils/paths"
-	"github.com/flarehotspot/core/utils/crypt"
-	jobque "github.com/flarehotspot/core/utils/job-que"
-	tmplcache "github.com/flarehotspot/core/utils/flaretmpl"
+	fs "github.com/flarehotspot/flarehotspot/core/sdk/utils/fs"
+	paths "github.com/flarehotspot/flarehotspot/core/sdk/utils/paths"
+	"github.com/flarehotspot/flarehotspot/core/utils/crypt"
+	jobque "github.com/flarehotspot/flarehotspot/core/utils/job-que"
+	tmplcache "github.com/flarehotspot/flarehotspot/core/utils/flaretmpl"
 )
 
 var cacheWithHelpers = sync.Map{}

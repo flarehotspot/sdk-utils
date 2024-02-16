@@ -39,7 +39,7 @@ Then, create a `plugin.json` file in the `com.sample.plugin` directory with the 
 Then, create a `main.go` file in the `com.sample.plugin` directory with the following content.
 ```go
 package main
-import sdkplugin "github.com/flarehotspot/core/sdk/api/plugin"
+import sdkplugin "github.com/flarehotspot/flarehotspot/core/sdk/api/plugin"
 
 func Init(api sdkplugin.PluginApi) {
     // Your plugin code goes here

@@ -6,14 +6,14 @@ import (
 	"log"
 	"sync"
 
-	"github.com/flarehotspot/core/db"
-	"github.com/flarehotspot/core/db/models"
-	"github.com/flarehotspot/core/network"
-	connmgr "github.com/flarehotspot/core/sdk/api/connmgr"
-	sdknet "github.com/flarehotspot/core/sdk/api/network"
-	slices "github.com/flarehotspot/core/sdk/utils/slices"
-	sse "github.com/flarehotspot/core/sdk/utils/sse"
-	"github.com/flarehotspot/core/utils/nftables"
+	"github.com/flarehotspot/flarehotspot/core/db"
+	"github.com/flarehotspot/flarehotspot/core/db/models"
+	"github.com/flarehotspot/flarehotspot/core/network"
+	connmgr "github.com/flarehotspot/flarehotspot/core/sdk/api/connmgr"
+	sdknet "github.com/flarehotspot/flarehotspot/core/sdk/api/network"
+	slices "github.com/flarehotspot/flarehotspot/core/sdk/utils/slices"
+	sse "github.com/flarehotspot/flarehotspot/core/sdk/utils/sse"
+	"github.com/flarehotspot/flarehotspot/core/utils/nftables"
 )
 
 const (

@@ -2,7 +2,7 @@ package request
 
 import (
 	"net/http"
-	"github.com/flarehotspot/core/sdk/libs/jwt"
+	"github.com/flarehotspot/flarehotspot/core/sdk/libs/jwt"
 )
 
 // ParseFromRequest extracts and parses a JWT token from an HTTP request.

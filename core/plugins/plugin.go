@@ -1,10 +1,10 @@
 package plugins
 
 import (
-	"github.com/flarehotspot/core/config/plugincfg"
-	"github.com/flarehotspot/core/connmgr"
-	"github.com/flarehotspot/core/db"
-	"github.com/flarehotspot/core/db/models"
+	"github.com/flarehotspot/flarehotspot/core/config/plugincfg"
+	"github.com/flarehotspot/flarehotspot/core/connmgr"
+	"github.com/flarehotspot/flarehotspot/core/db"
+	"github.com/flarehotspot/flarehotspot/core/db/models"
 )
 
 type PluginApi struct {

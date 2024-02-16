@@ -5,8 +5,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/flarehotspot/core/config"
-	"github.com/flarehotspot/core/web/response"
+	"github.com/flarehotspot/flarehotspot/core/config"
+	"github.com/flarehotspot/flarehotspot/core/web/response"
 )
 
 const (

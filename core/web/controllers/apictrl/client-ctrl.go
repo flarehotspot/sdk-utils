@@ -3,10 +3,10 @@ package apictrl
 // import (
 // 	"net/http"
 
-// 	"github.com/flarehotspot/core/plugins"
-// 	"github.com/flarehotspot/core/web/helpers"
-// 	"github.com/flarehotspot/core/web/response"
-// 	models "github.com/flarehotspot/core/sdk/api/models"
+// 	"github.com/flarehotspot/flarehotspot/core/plugins"
+// 	"github.com/flarehotspot/flarehotspot/core/web/helpers"
+// 	"github.com/flarehotspot/flarehotspot/core/web/response"
+// 	models "github.com/flarehotspot/flarehotspot/core/sdk/api/models"
 // )
 
 // type ClientApiCtrl struct {

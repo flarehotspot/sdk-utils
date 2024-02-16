@@ -6,10 +6,10 @@ import (
 	"errors"
 	"log"
 
-	"github.com/flarehotspot/core/db"
-	"github.com/flarehotspot/core/db/models"
-	connmgr "github.com/flarehotspot/core/sdk/api/connmgr"
-	jobque "github.com/flarehotspot/core/utils/job-que"
+	"github.com/flarehotspot/flarehotspot/core/db"
+	"github.com/flarehotspot/flarehotspot/core/db/models"
+	connmgr "github.com/flarehotspot/flarehotspot/core/sdk/api/connmgr"
+	jobque "github.com/flarehotspot/flarehotspot/core/utils/job-que"
 )
 
 var regQue *jobque.JobQues = jobque.NewJobQues()

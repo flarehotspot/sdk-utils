@@ -1,7 +1,7 @@
 package sdkpayments
 
 import (
-	connmgr "github.com/flarehotspot/core/sdk/api/connmgr"
+	connmgr "github.com/flarehotspot/flarehotspot/core/sdk/api/connmgr"
 )
 
 // PaymentProvider represents a payment provider.

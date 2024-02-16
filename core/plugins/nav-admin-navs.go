@@ -3,8 +3,8 @@ package plugins
 // import (
 // 	"net/http"
 
-// 	"github.com/flarehotspot/core/sdk/api/http/router"
-// 	"github.com/flarehotspot/core/sdk/utils/translate"
+// 	"github.com/flarehotspot/flarehotspot/core/sdk/api/http/router"
+// 	"github.com/flarehotspot/flarehotspot/core/sdk/utils/translate"
 // )
 
 // func GetAdminNavs(pmgr *PluginsMgr, r *http.Request) []*router.AdminNavList {

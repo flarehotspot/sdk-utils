@@ -6,10 +6,10 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/flarehotspot/core/config"
-	"github.com/flarehotspot/core/utils/assets"
-	"github.com/flarehotspot/core/utils/flaretmpl"
-	"github.com/flarehotspot/core/web/response"
+	"github.com/flarehotspot/flarehotspot/core/config"
+	"github.com/flarehotspot/flarehotspot/core/utils/assets"
+	"github.com/flarehotspot/flarehotspot/core/utils/flaretmpl"
+	"github.com/flarehotspot/flarehotspot/core/web/response"
 )
 
 func NewPluginUtils(api *PluginApi) *PluginUtils {

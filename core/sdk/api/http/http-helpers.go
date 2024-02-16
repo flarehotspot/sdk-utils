@@ -4,7 +4,7 @@ import (
 	"html/template"
 	"net/http"
 
-	sdkconnmgr "github.com/flarehotspot/core/sdk/api/connmgr"
+	sdkconnmgr "github.com/flarehotspot/flarehotspot/core/sdk/api/connmgr"
 )
 
 // HttpHelpers are methods available in html templates as .Helpers.

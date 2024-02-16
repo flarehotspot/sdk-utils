@@ -6,8 +6,8 @@ import (
 	"strconv"
 	"strings"
 
-	uci "github.com/flarehotspot/core/sdk/api/uci"
-	sdkstr "github.com/flarehotspot/core/sdk/utils/strings"
+	uci "github.com/flarehotspot/flarehotspot/core/sdk/api/uci"
+	sdkstr "github.com/flarehotspot/flarehotspot/core/sdk/utils/strings"
 )
 
 // bridge-vlan

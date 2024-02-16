@@ -3,11 +3,11 @@ package apictrl
 import (
 	"net/http"
 
-	"github.com/flarehotspot/core/accounts"
-	"github.com/flarehotspot/core/connmgr"
-	"github.com/flarehotspot/core/sdk/api/http"
-	sse "github.com/flarehotspot/core/sdk/utils/sse"
-	"github.com/flarehotspot/core/web/helpers"
+	"github.com/flarehotspot/flarehotspot/core/accounts"
+	"github.com/flarehotspot/flarehotspot/core/connmgr"
+	"github.com/flarehotspot/flarehotspot/core/sdk/api/http"
+	sse "github.com/flarehotspot/flarehotspot/core/sdk/utils/sse"
+	"github.com/flarehotspot/flarehotspot/core/web/helpers"
 )
 
 type SseApiCtrl struct {

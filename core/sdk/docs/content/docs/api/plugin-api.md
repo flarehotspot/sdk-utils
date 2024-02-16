@@ -27,7 +27,7 @@ When the plugin is first loaded into the system, the system looks for the `Init`
 package main
 
 import (
-	sdkplugin "github.com/flarehotspot/core/sdk/api/plugin"
+	sdkplugin "github.com/flarehotspot/flarehotspot/core/sdk/api/plugin"
 )
 
 func Init(api sdkplugin.PluginApi) {

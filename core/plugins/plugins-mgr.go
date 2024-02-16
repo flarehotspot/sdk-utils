@@ -4,13 +4,13 @@ import (
 	"log"
 	"path/filepath"
 
-	"github.com/flarehotspot/core/config"
-	"github.com/flarehotspot/core/connmgr"
-	"github.com/flarehotspot/core/db"
-	"github.com/flarehotspot/core/db/models"
-	"github.com/flarehotspot/core/network"
-	plugin "github.com/flarehotspot/core/sdk/api/plugin"
-	"github.com/flarehotspot/core/utils/migrate"
+	"github.com/flarehotspot/flarehotspot/core/config"
+	"github.com/flarehotspot/flarehotspot/core/connmgr"
+	"github.com/flarehotspot/flarehotspot/core/db"
+	"github.com/flarehotspot/flarehotspot/core/db/models"
+	"github.com/flarehotspot/flarehotspot/core/network"
+	plugin "github.com/flarehotspot/flarehotspot/core/sdk/api/plugin"
+	"github.com/flarehotspot/flarehotspot/core/utils/migrate"
 )
 
 type PluginsMgr struct {

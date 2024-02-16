@@ -6,9 +6,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/flarehotspot/core/db"
-	"github.com/flarehotspot/core/db/models"
-	connmgr "github.com/flarehotspot/core/sdk/api/connmgr"
+	"github.com/flarehotspot/flarehotspot/core/db"
+	"github.com/flarehotspot/flarehotspot/core/db/models"
+	connmgr "github.com/flarehotspot/flarehotspot/core/sdk/api/connmgr"
 )
 
 type ClientSession struct {

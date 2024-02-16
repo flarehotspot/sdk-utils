@@ -1,11 +1,11 @@
 package plugins
 
 import (
-	"github.com/flarehotspot/core/connmgr"
-	"github.com/flarehotspot/core/db"
-	"github.com/flarehotspot/core/db/models"
-	"github.com/flarehotspot/core/network"
-	paths "github.com/flarehotspot/core/sdk/utils/paths"
+	"github.com/flarehotspot/flarehotspot/core/connmgr"
+	"github.com/flarehotspot/flarehotspot/core/db"
+	"github.com/flarehotspot/flarehotspot/core/db/models"
+	"github.com/flarehotspot/flarehotspot/core/network"
+	paths "github.com/flarehotspot/flarehotspot/core/sdk/utils/paths"
 )
 
 type CoreGlobals struct {

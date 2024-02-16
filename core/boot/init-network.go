@@ -3,9 +3,9 @@ package boot
 import (
 	"log"
 
-	"github.com/flarehotspot/core/network"
-	"github.com/flarehotspot/core/utils/nftables"
-	"github.com/flarehotspot/core/utils/ubus"
+	"github.com/flarehotspot/flarehotspot/core/network"
+	"github.com/flarehotspot/flarehotspot/core/utils/nftables"
+	"github.com/flarehotspot/flarehotspot/core/utils/ubus"
 )
 
 func InitNetwork() (err error) {

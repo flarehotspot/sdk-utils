@@ -3,16 +3,16 @@ package sdkplugin
 import (
 	"database/sql"
 
-	sdkacct "github.com/flarehotspot/core/sdk/api/accounts"
-	sdkads "github.com/flarehotspot/core/sdk/api/ads"
-	sdkcfg "github.com/flarehotspot/core/sdk/api/config"
-	sdkconnmgr "github.com/flarehotspot/core/sdk/api/connmgr"
-	sdkhttp "github.com/flarehotspot/core/sdk/api/http"
-	sdkinappur "github.com/flarehotspot/core/sdk/api/inappur"
-	sdknet "github.com/flarehotspot/core/sdk/api/network"
-	sdkpayments "github.com/flarehotspot/core/sdk/api/payments"
-	sdktheme "github.com/flarehotspot/core/sdk/api/themes"
-	sdkuci "github.com/flarehotspot/core/sdk/api/uci"
+	sdkacct "github.com/flarehotspot/flarehotspot/core/sdk/api/accounts"
+	sdkads "github.com/flarehotspot/flarehotspot/core/sdk/api/ads"
+	sdkcfg "github.com/flarehotspot/flarehotspot/core/sdk/api/config"
+	sdkconnmgr "github.com/flarehotspot/flarehotspot/core/sdk/api/connmgr"
+	sdkhttp "github.com/flarehotspot/flarehotspot/core/sdk/api/http"
+	sdkinappur "github.com/flarehotspot/flarehotspot/core/sdk/api/inappur"
+	sdknet "github.com/flarehotspot/flarehotspot/core/sdk/api/network"
+	sdkpayments "github.com/flarehotspot/flarehotspot/core/sdk/api/payments"
+	sdktheme "github.com/flarehotspot/flarehotspot/core/sdk/api/themes"
+	sdkuci "github.com/flarehotspot/flarehotspot/core/sdk/api/uci"
 )
 
 // PluginApi is the root of all plugin APIs.

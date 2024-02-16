@@ -3,8 +3,8 @@
 package main
 
 import (
-	"github.com/flarehotspot/core/boot"
-	"github.com/flarehotspot/core/plugins"
+	"github.com/flarehotspot/flarehotspot/core/boot"
+	"github.com/flarehotspot/flarehotspot/core/plugins"
 )
 
 func main() {}

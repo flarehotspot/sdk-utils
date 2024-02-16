@@ -8,8 +8,8 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/flarehotspot/core/utils/cmd"
-	jobque "github.com/flarehotspot/core/utils/job-que"
+	"github.com/flarehotspot/flarehotspot/core/utils/cmd"
+	jobque "github.com/flarehotspot/flarehotspot/core/utils/job-que"
 )
 
 const (

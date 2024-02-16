@@ -6,9 +6,9 @@ import (
 	"log"
 	"time"
 
-	"github.com/flarehotspot/core/plugins"
-	"github.com/flarehotspot/core/web"
-	"github.com/flarehotspot/core/web/router"
+	"github.com/flarehotspot/flarehotspot/core/plugins"
+	"github.com/flarehotspot/flarehotspot/core/web"
+	"github.com/flarehotspot/flarehotspot/core/web/router"
 )
 
 func InitHttpServer(g *plugins.CoreGlobals) {

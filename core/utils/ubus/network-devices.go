@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/flarehotspot/core/utils/cmd"
+	"github.com/flarehotspot/flarehotspot/core/utils/cmd"
 )
 
 func GetNetworkDevices() ([]*NetworkDevice, error) {

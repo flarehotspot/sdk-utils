@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 
 	"encoding/json"
-	fs "github.com/flarehotspot/core/sdk/utils/fs"
-	paths "github.com/flarehotspot/core/sdk/utils/paths"
+	fs "github.com/flarehotspot/flarehotspot/core/sdk/utils/fs"
+	paths "github.com/flarehotspot/flarehotspot/core/sdk/utils/paths"
 )
 
 type PluginInfo struct {

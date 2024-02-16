@@ -8,7 +8,7 @@ import (
 	"log"
 	"strings"
 
-	"github.com/flarehotspot/core/utils/cmd"
+	"github.com/flarehotspot/flarehotspot/core/utils/cmd"
 )
 
 type IpV4Addr struct {

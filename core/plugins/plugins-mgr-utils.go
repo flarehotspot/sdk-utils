@@ -4,8 +4,8 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/flarehotspot/core/config"
-	sdkhttp "github.com/flarehotspot/core/sdk/api/http"
+	"github.com/flarehotspot/flarehotspot/core/config"
+	sdkhttp "github.com/flarehotspot/flarehotspot/core/sdk/api/http"
 )
 
 func NewPluginsMgrUtil(pmgr *PluginsMgr, coreApi *PluginApi) *PluginsMgrUtils {

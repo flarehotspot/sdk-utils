@@ -5,10 +5,10 @@ import (
 	"net/http"
 	"path/filepath"
 
-	"github.com/flarehotspot/core/config"
-	"github.com/flarehotspot/core/plugins"
-	"github.com/flarehotspot/core/utils/assets"
-	"github.com/flarehotspot/core/web/response"
+	"github.com/flarehotspot/flarehotspot/core/config"
+	"github.com/flarehotspot/flarehotspot/core/plugins"
+	"github.com/flarehotspot/flarehotspot/core/utils/assets"
+	"github.com/flarehotspot/flarehotspot/core/web/response"
 )
 
 func PortalIndexPage(g *plugins.CoreGlobals) http.Handler {

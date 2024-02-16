@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strconv"
 
-	uci "github.com/flarehotspot/core/sdk/api/uci"
+	uci "github.com/flarehotspot/flarehotspot/core/sdk/api/uci"
 )
 
 type UciWirelessApi struct{}

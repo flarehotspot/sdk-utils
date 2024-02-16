@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/flarehotspot/core/db"
+	"github.com/flarehotspot/flarehotspot/core/db"
 )
 
 type WalletModel struct {

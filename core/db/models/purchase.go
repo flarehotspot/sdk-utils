@@ -6,8 +6,8 @@ import (
 	"log"
 	"time"
 
-	"github.com/flarehotspot/core/db"
-	// sdkpayments "github.com/flarehotspot/core/sdk/api/payments"
+	"github.com/flarehotspot/flarehotspot/core/db"
+	// sdkpayments "github.com/flarehotspot/flarehotspot/core/sdk/api/payments"
 )
 
 func NewPurchase(dtb *db.Database, mdls *Models) *Purchase {

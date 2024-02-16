@@ -1,9 +1,9 @@
 package plugins
 
 import (
-	cnet "github.com/flarehotspot/core/network"
-	sdknet "github.com/flarehotspot/core/sdk/api/network"
-	"github.com/flarehotspot/core/utils/ubus"
+	cnet "github.com/flarehotspot/flarehotspot/core/network"
+	sdknet "github.com/flarehotspot/flarehotspot/core/sdk/api/network"
+	"github.com/flarehotspot/flarehotspot/core/utils/ubus"
 )
 
 type NetworkApi struct {

@@ -10,14 +10,14 @@ import (
 	"strings"
 	texttemplate "text/template"
 
-	sdkconnmgr "github.com/flarehotspot/core/sdk/api/connmgr"
-	sdkhttp "github.com/flarehotspot/core/sdk/api/http"
-	plugin "github.com/flarehotspot/core/sdk/api/plugin"
-	"github.com/flarehotspot/core/utils/flaretmpl"
-	"github.com/flarehotspot/core/web/helpers"
-	"github.com/flarehotspot/core/web/response"
-	"github.com/flarehotspot/core/web/router"
-	rnames "github.com/flarehotspot/core/web/routes/names"
+	sdkconnmgr "github.com/flarehotspot/flarehotspot/core/sdk/api/connmgr"
+	sdkhttp "github.com/flarehotspot/flarehotspot/core/sdk/api/http"
+	plugin "github.com/flarehotspot/flarehotspot/core/sdk/api/plugin"
+	"github.com/flarehotspot/flarehotspot/core/utils/flaretmpl"
+	"github.com/flarehotspot/flarehotspot/core/web/helpers"
+	"github.com/flarehotspot/flarehotspot/core/web/response"
+	"github.com/flarehotspot/flarehotspot/core/web/router"
+	rnames "github.com/flarehotspot/flarehotspot/core/web/routes/names"
 )
 
 type HttpHelpers struct {

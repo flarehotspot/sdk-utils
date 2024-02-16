@@ -3,10 +3,10 @@ package controllers
 import (
 	"net/http"
 
-	"github.com/flarehotspot/core/plugins"
-	sse "github.com/flarehotspot/core/sdk/utils/sse"
-	"github.com/flarehotspot/core/web/helpers"
-	"github.com/flarehotspot/core/web/routes/urls"
+	"github.com/flarehotspot/flarehotspot/core/plugins"
+	sse "github.com/flarehotspot/flarehotspot/core/sdk/utils/sse"
+	"github.com/flarehotspot/flarehotspot/core/web/helpers"
+	"github.com/flarehotspot/flarehotspot/core/web/routes/urls"
 )
 
 type BootCtrl struct {

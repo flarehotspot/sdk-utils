@@ -3,9 +3,9 @@ package plugins
 // import (
 // 	"net/http"
 
-// 	coreR "github.com/flarehotspot/core/web/router"
-// 	"github.com/flarehotspot/core/sdk/api/http/router"
-// 	"github.com/flarehotspot/core/sdk/utils/translate"
+// 	coreR "github.com/flarehotspot/flarehotspot/core/web/router"
+// 	"github.com/flarehotspot/flarehotspot/core/sdk/api/http/router"
+// 	"github.com/flarehotspot/flarehotspot/core/sdk/utils/translate"
 // 	"github.com/gorilla/mux"
 // )
 

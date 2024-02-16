@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/flarehotspot/core/env"
+	"github.com/flarehotspot/flarehotspot/core/env"
 	"github.com/gorilla/mux"
 )
 

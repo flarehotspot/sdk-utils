@@ -4,8 +4,8 @@ import (
 	"net"
 	"sort"
 
-	sdkslices "github.com/flarehotspot/core/sdk/utils/slices"
-	networkutil "github.com/flarehotspot/core/utils/network"
+	sdkslices "github.com/flarehotspot/flarehotspot/core/sdk/utils/slices"
+	networkutil "github.com/flarehotspot/flarehotspot/core/utils/network"
 )
 
 const sessionRatesJsonFile = "session-rates.json"

@@ -3,11 +3,11 @@ package cfgapi
 import (
 	"log"
 
-	"github.com/flarehotspot/core/config"
-	sdkcfg "github.com/flarehotspot/core/sdk/api/config"
-	sdkslices "github.com/flarehotspot/core/sdk/utils/slices"
-	sdkstr "github.com/flarehotspot/core/sdk/utils/strings"
-	networkutil "github.com/flarehotspot/core/utils/network"
+	"github.com/flarehotspot/flarehotspot/core/config"
+	sdkcfg "github.com/flarehotspot/flarehotspot/core/sdk/api/config"
+	sdkslices "github.com/flarehotspot/flarehotspot/core/sdk/utils/slices"
+	sdkstr "github.com/flarehotspot/flarehotspot/core/sdk/utils/strings"
+	networkutil "github.com/flarehotspot/flarehotspot/core/utils/network"
 )
 
 func NewSessionRatesCfgApi() *SessionRatesApi {

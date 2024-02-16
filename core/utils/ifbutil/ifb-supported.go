@@ -3,7 +3,7 @@ package ifbutil
 import (
 	"sync/atomic"
 
-	"github.com/flarehotspot/core/utils/cmd"
+	"github.com/flarehotspot/flarehotspot/core/utils/cmd"
 )
 
 var (

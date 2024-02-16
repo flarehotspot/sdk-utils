@@ -5,9 +5,9 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/flarehotspot/core/plugins"
-	fs "github.com/flarehotspot/core/sdk/utils/fs"
-	"github.com/flarehotspot/core/web/response"
+	"github.com/flarehotspot/flarehotspot/core/plugins"
+	fs "github.com/flarehotspot/flarehotspot/core/sdk/utils/fs"
+	"github.com/flarehotspot/flarehotspot/core/web/response"
 	"github.com/gorilla/mux"
 )
 

@@ -1,8 +1,8 @@
 package assets
 
 import (
-	"github.com/flarehotspot/core/env"
-	jobque "github.com/flarehotspot/core/utils/job-que"
+	"github.com/flarehotspot/flarehotspot/core/env"
+	jobque "github.com/flarehotspot/flarehotspot/core/utils/job-que"
 )
 
 var bundleQue = jobque.NewJobQues()

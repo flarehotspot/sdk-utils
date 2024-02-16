@@ -1,8 +1,8 @@
 package plugins
 
 import (
-	"github.com/flarehotspot/core/accounts"
-	acct "github.com/flarehotspot/core/sdk/api/accounts"
+	"github.com/flarehotspot/flarehotspot/core/accounts"
+	acct "github.com/flarehotspot/flarehotspot/core/sdk/api/accounts"
 )
 
 type AccountsApi struct {

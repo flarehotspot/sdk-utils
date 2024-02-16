@@ -1,7 +1,7 @@
 package boot
 
 import (
-	paths "github.com/flarehotspot/core/sdk/utils/paths"
+	paths "github.com/flarehotspot/flarehotspot/core/sdk/utils/paths"
 	"log"
 	"os"
 	"path/filepath"

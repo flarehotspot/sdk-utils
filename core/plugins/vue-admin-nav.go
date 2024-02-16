@@ -4,8 +4,8 @@ import (
 	"log"
 	"net/http"
 
-	sdkhttp "github.com/flarehotspot/core/sdk/api/http"
-	"github.com/flarehotspot/core/web/helpers"
+	sdkhttp "github.com/flarehotspot/flarehotspot/core/sdk/api/http"
+	"github.com/flarehotspot/flarehotspot/core/web/helpers"
 )
 
 func NewVueAdminNav(api *PluginApi, r *http.Request, nav sdkhttp.VueAdminNav) (sdkhttp.AdminNavItem, bool) {

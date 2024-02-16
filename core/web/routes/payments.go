@@ -3,10 +3,10 @@ package routes
 import (
 	"net/http"
 
-	"github.com/flarehotspot/core/plugins"
-	sdkhttp "github.com/flarehotspot/core/sdk/api/http"
-	"github.com/flarehotspot/core/web/helpers"
-	routenames "github.com/flarehotspot/core/web/routes/names"
+	"github.com/flarehotspot/flarehotspot/core/plugins"
+	sdkhttp "github.com/flarehotspot/flarehotspot/core/sdk/api/http"
+	"github.com/flarehotspot/flarehotspot/core/web/helpers"
+	routenames "github.com/flarehotspot/flarehotspot/core/web/routes/names"
 )
 
 func PaymentRoutes(g *plugins.CoreGlobals) {

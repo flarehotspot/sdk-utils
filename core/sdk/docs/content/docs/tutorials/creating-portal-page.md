@@ -24,8 +24,8 @@ package main
 
 import (
     "net/http"
-    sdkplugin "github.com/flarehotspot/core/sdk/api/plugin"
-    sdkhttp "github.com/flarehotspot/core/sdk/api/http"
+    sdkplugin "github.com/flarehotspot/flarehotspot/core/sdk/api/plugin"
+    sdkhttp "github.com/flarehotspot/flarehotspot/core/sdk/api/http"
 )
 
 func Init(api sdkplugin.PluginApi) {

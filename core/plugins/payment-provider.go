@@ -1,9 +1,9 @@
 package plugins
 
 import (
-	connmgr "github.com/flarehotspot/core/sdk/api/connmgr"
-	payments "github.com/flarehotspot/core/sdk/api/payments"
-	plugin "github.com/flarehotspot/core/sdk/api/plugin"
+	connmgr "github.com/flarehotspot/flarehotspot/core/sdk/api/connmgr"
+	payments "github.com/flarehotspot/flarehotspot/core/sdk/api/payments"
+	plugin "github.com/flarehotspot/flarehotspot/core/sdk/api/plugin"
 )
 
 

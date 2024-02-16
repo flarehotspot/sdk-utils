@@ -6,8 +6,8 @@ import (
 	"log"
 	"net"
 
-	"github.com/flarehotspot/core/utils/ubus"
-	"github.com/flarehotspot/core/sdk/api/network"
+	"github.com/flarehotspot/flarehotspot/core/utils/ubus"
+	"github.com/flarehotspot/flarehotspot/core/sdk/api/network"
 )
 
 type NetworkInterface struct {

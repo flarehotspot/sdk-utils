@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/flarehotspot/core/connmgr"
-	"github.com/flarehotspot/core/db"
-	sdkhttp "github.com/flarehotspot/core/sdk/api/http"
-	"github.com/flarehotspot/core/web/middlewares"
-	"github.com/flarehotspot/core/web/router"
+	"github.com/flarehotspot/flarehotspot/core/connmgr"
+	"github.com/flarehotspot/flarehotspot/core/db"
+	sdkhttp "github.com/flarehotspot/flarehotspot/core/sdk/api/http"
+	"github.com/flarehotspot/flarehotspot/core/web/middlewares"
+	"github.com/flarehotspot/flarehotspot/core/web/router"
 )
 
 type HttpRouterApi struct {

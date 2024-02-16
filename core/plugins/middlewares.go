@@ -5,12 +5,12 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/flarehotspot/core/connmgr"
-	"github.com/flarehotspot/core/db/models"
-	sdkhttp "github.com/flarehotspot/core/sdk/api/http"
-	"github.com/flarehotspot/core/web/helpers"
-	"github.com/flarehotspot/core/web/middlewares"
-	routenames "github.com/flarehotspot/core/web/routes/names"
+	"github.com/flarehotspot/flarehotspot/core/connmgr"
+	"github.com/flarehotspot/flarehotspot/core/db/models"
+	sdkhttp "github.com/flarehotspot/flarehotspot/core/sdk/api/http"
+	"github.com/flarehotspot/flarehotspot/core/web/helpers"
+	"github.com/flarehotspot/flarehotspot/core/web/middlewares"
+	routenames "github.com/flarehotspot/flarehotspot/core/web/routes/names"
 )
 
 func NewPluginMiddlewares(api *PluginApi, mdls *models.Models, dmgr *connmgr.ClientRegister, pmgr *PaymentsMgr) *PluginMiddlewares {

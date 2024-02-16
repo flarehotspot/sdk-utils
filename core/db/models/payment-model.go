@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"log"
 
-	"github.com/flarehotspot/core/db"
+	"github.com/flarehotspot/flarehotspot/core/db"
 )
 
 type PaymentModel struct {

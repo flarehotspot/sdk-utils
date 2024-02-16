@@ -8,9 +8,9 @@ package plugins
 // 	"os"
 // 	"path/filepath"
 
-// 	fs "github.com/flarehotspot/core/sdk/utils/fs"
-// 	paths "github.com/flarehotspot/core/sdk/utils/paths"
-// 	strings "github.com/flarehotspot/core/sdk/utils/strings"
+// 	fs "github.com/flarehotspot/flarehotspot/core/sdk/utils/fs"
+// 	paths "github.com/flarehotspot/flarehotspot/core/sdk/utils/paths"
+// 	strings "github.com/flarehotspot/flarehotspot/core/sdk/utils/strings"
 // )
 
 // func UserLocalVersion(w io.Writer, pkg string) (ok bool) {

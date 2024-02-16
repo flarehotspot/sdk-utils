@@ -8,9 +8,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/flarehotspot/core/config"
-	jobque "github.com/flarehotspot/core/utils/job-que"
-	"github.com/flarehotspot/core/utils/ubus"
+	"github.com/flarehotspot/flarehotspot/core/config"
+	jobque "github.com/flarehotspot/flarehotspot/core/utils/job-que"
+	"github.com/flarehotspot/flarehotspot/core/utils/ubus"
 )
 
 const defaultSpeed int = 100 //mbits download/upload per inteface

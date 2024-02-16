@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/flarehotspot/core/env"
+	"github.com/flarehotspot/flarehotspot/core/env"
 )
 
 func CacheResponse(days int) func(next http.Handler) http.Handler {
