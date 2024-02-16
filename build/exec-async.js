@@ -2,10 +2,12 @@
 
 const { exec } = require('child_process');
 
-module.exports = async (cmd) => {
-  console.log(`Executing: ${cmd}`)
+module.exports = async (cmd, opts) => {
+  console.log(`Executing: ${cmd}`);
+  if (opts) console.log(`Exec options:`, opts);
+
   return await new Promise((resolve, reject) => {
-    const proc = exec(cmd, (err, stdout, _) => {
+    const proc = exec(cmd, opts, (err, stdout, _) => {
       if (err) {
         reject(err);
         return;

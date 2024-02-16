@@ -5,9 +5,9 @@ package cmd
 import (
 	"fmt"
 	"io"
-	"log"
+	// "log"
 	"math/rand"
-	"strings"
+	// "strings"
 )
 
 var (
@@ -16,22 +16,22 @@ var (
 )
 
 func Exec(command string) error {
-	cmdarr := strings.Fields(command)
-	bin := cmdarr[0]
-	args := cmdarr[1:]
-	log.Println(bin, strings.Join(args, " "))
+	// cmdarr := strings.Fields(command)
+	// bin := cmdarr[0]
+	// args := cmdarr[1:]
+	// log.Println(bin, strings.Join(args, " "))
 	return nil
 }
 
 func ExecAll(commands []string) error {
-	for _, c := range commands {
-		log.Println(c)
-	}
+	// for _, c := range commands {
+	// 	log.Println(c)
+	// }
 	return nil
 }
 
 func ExecOutput(command string, out io.Writer) error {
-	log.Println(command)
+	// log.Println(command)
 
 	if command == "ubus list network.interface.*" {
 		out.Write([]byte(`

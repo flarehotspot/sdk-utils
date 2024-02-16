@@ -170,11 +170,15 @@ ${pluginSwitches}
 const main = async function () {
   const corePath = path.join(__dirname, '../core');
   const pluginsDir = path.join(__dirname, '../plugins');
+  const systemDir = path.join(__dirname, '../system');
+  const systemPlugins = await fs
+    .readdir(systemDir)
+    .then((paths) => paths.map((p) => path.join(systemDir, p)));
   const userPlugins = await fs
     .readdir(pluginsDir)
     .then((paths) => paths.map((p) => path.join(pluginsDir, p)));
 
-  const pluginsPaths = [corePath, ...userPlugins];
+  const pluginsPaths = [corePath, ...systemPlugins, ...userPlugins];
   const pluginMonoModules = [];
 
   for (const pluginDir of pluginsPaths) {

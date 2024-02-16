@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 
-const execAsync = require('./exec-async');
 const fs = require('fs-extra');
 const path = require('path');
 const https = require('https');
+const execAsync = require('./exec-async');
+const goEnv = require('./go-env');
 
 module.exports = (async () => {
   const ROOT_DIR = path.join(__dirname, '..');
@@ -11,8 +12,7 @@ module.exports = (async () => {
   const EXTRACT_PATH = path.join(CACHE_PATH, 'extracted/go');
   const GO_VERSION_PATH = path.join(ROOT_DIR, 'core/go-version');
 
-  const GOOS = await execAsync('go env GOOS').then((str) => str.trim());
-  const GOARCH = await execAsync('go env GOARCH').then((str) => str.trim());
+  const { GOOS, GOARCH } = await goEnv();
   const GO_VERSION = fs.readFileSync(GO_VERSION_PATH, 'utf-8').trim();
   const GO_TAR = `go${GO_VERSION}.${GOOS}-${GOARCH}.tar.gz`;
   const GO_SRC = `https://go.dev/dl/${GO_TAR}`;
@@ -20,8 +20,6 @@ module.exports = (async () => {
     process.env.GO_CUSTOM_PATH || path.join(ROOT_DIR, 'go');
   const DL_PATH = path.join(CACHE_PATH, 'downloads', GO_TAR);
 
-  console.log(`GOOS: ${GOOS}`);
-  console.log(`GOARCH: ${GOARCH}`);
   console.log(`GO_CUSTOM_PATH: ${GO_CUSTOM_PATH}`);
 
   const usage = () => {

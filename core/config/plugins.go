@@ -29,18 +29,18 @@ type PluginSrcDef struct {
 
 type PluginList []*PluginSrcDef
 
-func PluginsDefaultList() (PluginList, error) {
-	defaultsFile := filepath.Join(paths.DefaultsDir, pluginsConfigJsonFile)
-	bytes, err := os.ReadFile(defaultsFile)
-	if err != nil {
-		return PluginList{}, err
-	}
+// func PluginsDefaultList() (PluginList, error) {
+// 	var pluginList []string
+// 	if err := fs.LsDirs(paths.PluginsDir, &pluginList, false); err != nil {
+// 		panic(err)
+// 	}
+// 	log.Println("Plugin List: ")
+// 	for _, p := range pluginList {
+// 		log.Println("\t" + p)
+// 	}
 
-	var defaultsJson PluginList
-	err = json.Unmarshal(bytes, &defaultsJson)
-
-	return defaultsJson, err
-}
+// 	return pluginList, nil
+// }
 
 func PluginsUserList() PluginList {
 	configFile := filepath.Join(paths.ConfigDir, pluginsConfigJsonFile)
@@ -60,21 +60,28 @@ func PluginsUserList() PluginList {
 }
 
 func AllPluginSrc() PluginList {
-	defaultPlugins, err := PluginsDefaultList()
-	if err != nil {
-		log.Println("Failed to load default plugins:", err)
-	}
+	// defaultPlugins, err := PluginsDefaultList()
+	// if err != nil {
+	// 	log.Println("Failed to load default plugins:", err)
+	// }
 
 	userPlugins := PluginsUserList()
-	return append(defaultPlugins, userPlugins...)
+	return userPlugins
+	// return append(defaultPlugins, userPlugins...)
 }
 
 // PluginDirList returns the list of installed plugins in the plugins directory.
 func PluginDirList() []string {
 	var pluginList []string
+
+	if err := fs.LsDirs(paths.SystemDir, &pluginList, false); err != nil {
+		panic(err)
+	}
+
 	if err := fs.LsDirs(paths.PluginsDir, &pluginList, false); err != nil {
 		panic(err)
 	}
+
 	log.Println("Plugin List: ")
 	for _, p := range pluginList {
 		log.Println("\t" + p)
