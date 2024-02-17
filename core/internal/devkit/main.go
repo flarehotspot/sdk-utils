@@ -42,6 +42,7 @@ func CreateDevkit() {
 	tools.BuildCore()
 	tools.BuildMain()
 	CopyDevkitFiles()
+	CopyDevkitExtras()
 	CopyDefaultWorksapce()
 	CreateApplicationConfig()
 }
@@ -80,7 +81,7 @@ func CopyDevkitFiles() {
 
 		} else if sdkfs.IsDir(srcPath) {
 			copyOpts := sdkfs.CopyOpts{Recursive: true}
-			err := sdkfs.CopyDir(srcPath, destPath, copyOpts)
+			err := sdkfs.CopyDir(srcPath, destPath, &copyOpts)
 			if err != nil {
 				panic(err)
 			}
@@ -93,7 +94,11 @@ func CopyDevkitFiles() {
 func CopyDevkitExtras() {
 	extrasPath := filepath.Join(sdkpaths.AppDir, "build/devkit-extras")
 	opts := sdkfs.CopyOpts{Recursive: true}
-	sdkfs.CopyDir(extrasPath, RELEASE_DIR, opts)
+    fmt.Printf("Copying:  %s -> %s\n", sdkpaths.Strip(extrasPath), sdkpaths.Strip(RELEASE_DIR))
+	err := sdkfs.CopyDir(extrasPath, RELEASE_DIR, &opts)
+	if err != nil {
+		panic(err)
+	}
 }
 
 func CopyDefaultWorksapce() {
