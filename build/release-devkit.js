@@ -6,10 +6,10 @@ const { Octokit } = require('@octokit/core');
 const execAsync = require('./exec-async.js');
 const coreVersion = require('./core-version.js');
 const searchFiles = require('./search-files.js');
-const SECRET = process.env.SECRET;
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const OWNER = 'flarehotspot';
 const REPO = 'sdk';
-const octokit = new Octokit({ auth: SECRET });
+const octokit = new Octokit({ auth: GITHUB_TOKEN });
 
 const main = async () => {
   const CORE_VERSION = await coreVersion();
