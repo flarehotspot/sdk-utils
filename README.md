@@ -16,6 +16,7 @@ Clone the repository and install the dependencies.
 ```sh
 git clone git@github.com:flarehotspot/flarehotspot.git
 cd flarehotspot
+cp go.work.default go.work
 git submodule update --init --recursive
 ```
 
@@ -23,6 +24,7 @@ Checkout and pull the latest changes for all the submodules
 
 ```sh
 for p in $(ls ./plugins); do cd ./plugins/${p}; git checkout main; git pull; cd ../..; done
+for s in $(ls ./system); do cd ./system/${s}; git checkout main; git pull; cd ../..; done
 ```
 
 Install node modules.
