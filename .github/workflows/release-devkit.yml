@@ -80,9 +80,9 @@ jobs:
             DEVKIT_BUILD: true
             CGO_ENABLED: '1'
             GO_CUSTOM_PATH: /build/go
-          # install: |
-          #   apt-get update -q -y && \
-          #     apt-get install -q -y gcc curl wget
+          install: |
+            apt-get update -q -y && \
+              apt-get install -q -y gcc ca-certificates
           run: |
             cd /build && \
             ./flare install-go && \
