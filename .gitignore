@@ -18,6 +18,7 @@
 *.work
 main_mono.go
 plugin-init_mono.go
+go.work.sum
 
 __debug_bin*
 main.exe
