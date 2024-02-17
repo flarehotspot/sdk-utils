@@ -7,10 +7,11 @@ import (
 	"path/filepath"
 
 	"github.com/flarehotspot/flarehotspot/core/config"
+	jobque "github.com/flarehotspot/flarehotspot/core/utils/job-que"
+	sdkplugin "github.com/flarehotspot/sdk/api/plugin"
 	fs "github.com/flarehotspot/sdk/utils/fs"
 	paths "github.com/flarehotspot/sdk/utils/paths"
 	strings "github.com/flarehotspot/sdk/utils/strings"
-	jobque "github.com/flarehotspot/flarehotspot/core/utils/job-que"
 )
 
 var (
@@ -29,7 +30,7 @@ type CacheInfo struct {
 	Version string `json:"version"`
 }
 
-func WriteCache(def *config.PluginSrcDef, info *PluginInfo) error {
+func WriteCache(def *config.PluginSrcDef, info *sdkplugin.PluginInfo) error {
 	_, err := que.Exec(func() (interface{}, error) {
 		cache := &CacheInfo{
 			Name:    info.Name,

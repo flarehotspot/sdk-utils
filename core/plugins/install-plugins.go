@@ -8,9 +8,10 @@ import (
 
 	"github.com/flarehotspot/flarehotspot/core/config"
 	"github.com/flarehotspot/flarehotspot/core/config/plugincfg"
+	"github.com/flarehotspot/flarehotspot/core/utils/git"
 	paths "github.com/flarehotspot/sdk/utils/paths"
 	strings "github.com/flarehotspot/sdk/utils/strings"
-	"github.com/flarehotspot/flarehotspot/core/utils/git"
+    sdkplugin "github.com/flarehotspot/sdk/api/plugin"
 )
 
 type InstallStatus struct {
@@ -62,7 +63,7 @@ func InstallPlugins() *InstallStatus {
 	return out
 }
 
-func buildFromGit(w io.Writer, src *config.PluginSrcDef) (*plugincfg.PluginInfo, error) {
+func buildFromGit(w io.Writer, src *config.PluginSrcDef) (*sdkplugin.PluginInfo, error) {
 	repo := git.RepoSource{URL: src.GitURL, Ref: src.GitRef}
 	clonePath := filepath.Join(paths.TmpDir, "plugins", strings.Rand(16))
 

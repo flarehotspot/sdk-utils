@@ -7,25 +7,18 @@ import (
 	"path/filepath"
 
 	"encoding/json"
+	sdkplugin "github.com/flarehotspot/sdk/api/plugin"
 	fs "github.com/flarehotspot/sdk/utils/fs"
 	paths "github.com/flarehotspot/sdk/utils/paths"
 )
 
-type PluginInfo struct {
-	Name        string   `json:"name"`
-	Package     string   `json:"package"`
-	Version     string   `json:"version"`
-	Description string   `json:"description"`
-	Features    []string `json:"features"`
-}
-
-func GetPluginInfo(pluginPath string) (*PluginInfo, error) {
+func GetPluginInfo(pluginPath string) (*sdkplugin.PluginInfo, error) {
 	dir, err := FindPluginSrc(pluginPath)
 	if err != nil {
 		return nil, err
 	}
 
-	var info PluginInfo
+	var info sdkplugin.PluginInfo
 	jsonFile := filepath.Join(dir, "plugin.json")
 
 	b, err := os.ReadFile(jsonFile)
@@ -60,7 +53,7 @@ func FindPluginSrc(dir string) (string, error) {
 	return "", errors.New("Can't find plugin.json in " + paths.Strip(dir))
 }
 
-func GetInstallInfo(pkg string) (*PluginInfo, error) {
+func GetInstallInfo(pkg string) (*sdkplugin.PluginInfo, error) {
 	installPath := filepath.Join(paths.PluginsDir, pkg)
 	return GetPluginInfo(installPath)
 }

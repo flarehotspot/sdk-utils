@@ -1,14 +1,14 @@
 package plugins
 
 import (
-	"github.com/flarehotspot/flarehotspot/core/config/plugincfg"
 	"github.com/flarehotspot/flarehotspot/core/connmgr"
 	"github.com/flarehotspot/flarehotspot/core/db"
 	"github.com/flarehotspot/flarehotspot/core/db/models"
+	sdkplugin "github.com/flarehotspot/sdk/api/plugin"
 )
 
 type PluginApi struct {
-	info             *plugincfg.PluginInfo
+	info             *sdkplugin.PluginInfo
 	dir              string
 	db               *db.Database
 	models           *models.Models
