@@ -16,28 +16,21 @@ var (
 	}
 )
 
-func GitCloneSystemPlugins(rootDir string) {
+func GitCloneRequired(rootDir string) {
 	workDir := filepath.Join(rootDir, "system")
 	sdkfs.EnsureDir(workDir)
 	fmt.Println("Cloning system plugins in " + workDir)
 
+	GitCloneSdk()
+
 	for _, s := range SYSTEM_PLUGINS {
-		var gitUrl string
-		if GITHUB_TOKEN != "" {
-			gitUrl = fmt.Sprintf("https://oauth2:%s@github.com/%s.git", GITHUB_TOKEN, s)
-		} else {
-			gitUrl = fmt.Sprintf("git@github.com:%s.git", s)
-		}
-
-		fmt.Println("Cloning " + gitUrl)
-
-		cmd := exec.Command("git", "clone", gitUrl)
-		cmd.Dir = workDir
-		err := cmd.Run()
-		if err != nil {
-			panic(err)
-		}
+		GitCloneRepo(s, workDir)
 	}
+}
+
+func GitCloneSdk() {
+	workDir := "sdk"
+	GitCloneRepo("flarehotspot/sdk", workDir)
 }
 
 func GitCheckoutMain() {
@@ -61,5 +54,23 @@ func GitCheckoutMain() {
 		if err != nil {
 			panic(err)
 		}
+	}
+}
+
+func GitCloneRepo(repo string, workDir string) {
+	var gitUrl string
+	if GITHUB_TOKEN != "" {
+		gitUrl = fmt.Sprintf("https://oauth2:%s@github.com/%s.git", GITHUB_TOKEN, repo)
+	} else {
+		gitUrl = fmt.Sprintf("git@github.com:%s.git", repo)
+	}
+
+	fmt.Println("Cloning " + gitUrl + " in " + workDir)
+
+	cmd := exec.Command("git", "clone", gitUrl)
+	cmd.Dir = workDir
+	err := cmd.Run()
+	if err != nil {
+		panic(err)
 	}
 }

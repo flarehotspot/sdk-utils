@@ -41,7 +41,7 @@ func CreateDevkit() {
 	CleanUpDevkit()
 	tools.BuildCore()
 	tools.BuildMain()
-    tools.GitCloneSystemPlugins(RELEASE_DIR)
+	tools.GitCloneRequired(RELEASE_DIR)
 	CopyDevkitFiles()
 	CopyDevkitExtras()
 	CopyDefaultWorksapce()
@@ -95,7 +95,7 @@ func CopyDevkitFiles() {
 func CopyDevkitExtras() {
 	extrasPath := filepath.Join(sdkpaths.AppDir, "build/devkit-extras")
 	opts := sdkfs.CopyOpts{Recursive: true}
-    fmt.Printf("Copying:  %s -> %s\n", sdkpaths.Strip(extrasPath), sdkpaths.Strip(RELEASE_DIR))
+	fmt.Printf("Copying:  %s -> %s\n", sdkpaths.Strip(extrasPath), sdkpaths.Strip(RELEASE_DIR))
 	err := sdkfs.CopyDir(extrasPath, RELEASE_DIR, &opts)
 	if err != nil {
 		panic(err)
