@@ -20,7 +20,8 @@ jobs:
         include:
           - goos: linux
             goarch: amd64
-            distro: ubuntu-22.04
+            # distro: ubuntu-22.04
+            distro: self-hosted-x64
             cc: gcc
     env:
       GOARCH: ${{ matrix.goarch }}
@@ -53,7 +54,8 @@ jobs:
       matrix:
         include:
           - arch: aarch64
-            distro: ubuntu22.04
+            # distro: ubuntu22.04
+            distro: self-hosted-x64
     steps:
       - run: |
           sudo apt update && \
