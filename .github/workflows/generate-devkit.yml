@@ -9,7 +9,7 @@ env:
   NODE_ENV: production
   DEVKIT_BUILD: true
   CGO_ENABLED: '1'
-  SECRET: ${{ secrets.DEVKIT_RELEASE_SECRET }}
+  GITHUB_TOKEN: ${{ secrets.DEVKIT_RELEASE_SECRET }}
 
 jobs:
   build-amd64:
@@ -30,84 +30,83 @@ jobs:
       - run: |
           sudo apt update && \
           sudo apt-get install -y \
-          build-essential wget curl ca-certificates git gcc openssl golang-go
+          build-essential wget curl ca-certificates git gcc openssl
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-go@v5
         with:
-          node-version: '20'
-      - run: npm install
-      - run: rm -rf ./plugins ./system
+          go-version: '1.19.12'
       - run: |
+          go build ./core/internal/cli/flare-internal.go \
+            -o ${PWD}/flare-internal && \
           export GO_CUSTOM_PATH="${PWD}/go" && \
           export PATH=${GO_CUSTOM_PATH}/bin:${PATH} && \
-          node ./build/clone-system-plugins.js && \
-          node ./build/install-go.js && \
-          node ./build/build-devkit.js
+          ./flare-internal create-devkit && \
       - run: tree ./devkit-release
       - uses: actions/upload-artifact@v4
         with:
           name: devkit-${{ matrix.distro }}-${{ matrix.goarch }}
           path: devkit-release
 
-  build-arm:
-    runs-on: ubuntu-22.04
-    name: Build on ${{ matrix.arch }}
-    strategy:
-      matrix:
-        include:
-          - arch: aarch64
-            distro: ubuntu22.04
-    steps:
-      - run: |
-          sudo apt update && \
-          sudo apt-get install -y curl ca-certificates git openssl
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '20'
-      - run: npm install
-      - run: rm -rf ./plugins ./system
-      - run: node ./build/clone-system-plugins.js
-      - uses: uraimo/run-on-arch-action@v2.3.0
-        with:
-          arch: ${{ matrix.arch }}
-          distro: ${{ matrix.distro }}
-          dockerRunArgs: |
-            --volume "${PWD}:/build"
-          env: | # YAML, but pipe character is necessary
-            NODE_ENV: production
-            DEVKIT_BUILD: true
-            CGO_ENABLED: '1'
-            GO_CUSTOM_PATH: /build/go
-          install: |
-            apt-get update -q -y && \
-              apt-get install -q -y \
-              git gcc curl wget golang-go && \
-              curl -sL https://deb.nodesource.com/setup_18.x \
-              -o nodesource_setup.sh && \
-              bash ./nodesource_setup.sh && \
-              apt install -q -y nodejs
-          run: |
-            cd /build && \
-            node ./build/install-go.js && \
-            node ./build/build-devkit.js
-      - run: tree ./devkit-release
-      - uses: actions/upload-artifact@v4
-        with:
-          name: devkit-${{ matrix.distro }}-${{ matrix.goarch }}
-          path: devkit-release
+  # build-arm:
+  #   runs-on: ubuntu-22.04
+  #   name: Build on ${{ matrix.arch }}
+  #   strategy:
+  #     matrix:
+  #       include:
+  #         - arch: aarch64
+  #           distro: ubuntu22.04
+  #   steps:
+  #     - run: |
+  #         sudo apt update && \
+  #         sudo apt-get install -y curl ca-certificates git openssl
+  #     - uses: actions/checkout@v4
+  #     - uses: actions/setup-node@v3
+  #       with:
+  #         node-version: '20'
+  #     - run: npm install
+  #     - run: rm -rf ./plugins ./system
+  #     - run: node ./build/clone-system-plugins.js
+  #     - uses: uraimo/run-on-arch-action@v2.3.0
+  #       with:
+  #         arch: ${{ matrix.arch }}
+  #         distro: ${{ matrix.distro }}
+  #         dockerRunArgs: |
+  #           --volume "${PWD}:/build"
+  #         env: | # YAML, but pipe character is necessary
+  #           NODE_ENV: production
+  #           DEVKIT_BUILD: true
+  #           CGO_ENABLED: '1'
+  #           GO_CUSTOM_PATH: /build/go
+  #         install: |
+  #           apt-get update -q -y && \
+  #             apt-get install -q -y \
+  #             git gcc curl wget golang-go && \
+  #             curl -sL https://deb.nodesource.com/setup_18.x \
+  #             -o nodesource_setup.sh && \
+  #             bash ./nodesource_setup.sh && \
+  #             apt install -q -y nodejs
+  #         run: |
+  #           cd /build && \
+  #           node ./build/install-go.js && \
+  #           node ./build/build-devkit.js
+  #     - run: tree ./devkit-release
+  #     - uses: actions/upload-artifact@v4
+  #       with:
+  #         name: devkit-${{ matrix.distro }}-${{ matrix.goarch }}
+  #         path: devkit-release
 
-  publish-release:
-    runs-on: ubuntu-22.04
-    needs: [build-amd64, build-arm]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-        with:
-          path: devkit-release
-      - run: tree ./devkit-release
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '20'
-      - run: npm install
-      - run: node ./build/release-devkit.js
+  # publish-release:
+  #   runs-on: ubuntu-22.04
+  #   # needs: [build-amd64, build-arm]
+  #   needs: [build-amd64]
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: actions/download-artifact@v4
+  #       with:
+  #         path: devkit-release
+  #     - run: tree ./devkit-release
+  #     - uses: actions/setup-node@v3
+  #       with:
+  #         node-version: '20'
+  #     - run: npm install
+  #     - run: node ./build/release-devkit.js
