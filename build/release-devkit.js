@@ -95,7 +95,12 @@ Otherwise, select the version that's compatible with your device.
   async function zipAndUploadDevkit() {
     const releaseDirs = await searchFiles(
       path.join(__dirname, '../devkit-release'),
-      async (_, f) => f === 'package.json',
+      async (dir, f) => {
+        if (f === 'plugin.json') {
+          const goMod = path.join(dir, 'go.mod');
+          return await fs.exists(goMod);
+        }
+      },
       async (dir) => dir,
       { stopRecurse: true }
     );
