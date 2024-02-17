@@ -84,10 +84,10 @@ jobs:
           #   apt-get update -q -y && \
           #     apt-get install -q -y gcc curl wget
           run: |
-            cd /build
-            ./flare install-go
-            echo "${GO_CUSTOM_PATH}:\n"
-            ls $GO_CUSTOM_PATH
+            cd /build && \
+            ./flare install-go && \
+            echo "${GO_CUSTOM_PATH}:\n" && \
+            ls $GO_CUSTOM_PATH && \
             ./flare-internal create-devkit
       - run: tree ./devkit-release
       # - uses: actions/upload-artifact@v4
