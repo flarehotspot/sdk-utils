@@ -8,7 +8,7 @@ const coreVersion = require('./core-version.js');
 const searchFiles = require('./search-files.js');
 const SECRET = process.env.SECRET;
 const OWNER = 'flarehotspot';
-const REPO = 'sdk-releases';
+const REPO = 'sdk';
 const octokit = new Octokit({ auth: SECRET });
 
 const main = async () => {
