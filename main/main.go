@@ -3,19 +3,25 @@
 package main
 
 import (
-	paths "github.com/flarehotspot/flarehotspot/core/sdk/utils/paths"
 	"log"
 	"path/filepath"
 	"plugin"
+
+	"github.com/flarehotspot/flarehotspot/core/env"
+	paths "github.com/flarehotspot/sdk/utils/paths"
+	sdktools "github.com/flarehotspot/sdk/utils/tools"
 )
 
 func main() {
-	log.Println("App dir: ", paths.AppDir)
+	if env.GoEnv == env.ENV_DEV {
+		sdktools.CreateGoWorkspace()
+		sdktools.BuildAllPlugins()
+	}
+
 	corePath := filepath.Join(paths.AppDir, "core/plugin.so")
-	log.Println("Core path: ", corePath)
 	p, err := plugin.Open(corePath)
 	if err != nil {
-		log.Println("Error loading plugin.so:", err)
+		log.Println("Error loading core plugin:", err)
 		panic(err)
 	}
 	symInit, _ := p.Lookup("Init")

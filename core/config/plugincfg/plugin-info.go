@@ -20,8 +20,6 @@ type PluginInfo struct {
 }
 
 func GetPluginInfo(pluginPath string) (*PluginInfo, error) {
-	log.Println("Get plugin info from: ", pluginPath)
-
 	dir, err := FindPluginSrc(pluginPath)
 	if err != nil {
 		return nil, err

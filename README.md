@@ -65,3 +65,22 @@ The default admin access is:
 username: admin
 password: admin
 ```
+
+# Flare CLI
+
+There are two Flare CLI tools:
+
+- `flare` - CLI tool shipped together with the SDK for public use
+- `flare-internal` - CLI tool for internal (core) developers use
+
+Install the `flare` sdk CLI:
+```sh
+$ go install ./sdk/cli/flare
+$ flare --help
+```
+
+Install the `flare-internal` CLI:
+```sh
+$ go install ./core/internal/cli/flare-internal
+$ flare-internal --help
+```
