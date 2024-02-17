@@ -86,27 +86,24 @@ jobs:
           run: |
             cd /build && \
             ./flare install-go && \
-            echo "${GO_CUSTOM_PATH}:\n" && \
-            ls $GO_CUSTOM_PATH && \
             ./flare-internal create-devkit
       - run: tree ./devkit-release
-      # - uses: actions/upload-artifact@v4
-      #   with:
-      #     name: devkit-${{ matrix.distro }}-${{ matrix.goarch }}
-      #     path: devkit-release
+      - uses: actions/upload-artifact@v4
+        with:
+          name: devkit-${{ matrix.distro }}-${{ matrix.goarch }}
+          path: devkit-release
 
-  # publish-release:
-  #   runs-on: ubuntu-22.04
-  #   # needs: [build-amd64, build-arm]
-  #   needs: [build-arm]
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - uses: actions/download-artifact@v4
-  #       with:
-  #         path: devkit-release
-  #     - run: tree ./devkit-release
-  #     - uses: actions/setup-node@v3
-  #       with:
-  #         node-version: '20'
-  #     - run: npm install
-  #     - run: node ./build/release-devkit.js
+  publish-release:
+    runs-on: ubuntu-22.04
+    needs: [build-amd64, build-arm]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: devkit-release
+      - run: tree ./devkit-release
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+      - run: npm install
+      - run: node ./build/release-devkit.js
