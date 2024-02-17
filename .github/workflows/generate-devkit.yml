@@ -35,6 +35,9 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version: '1.19.12'
+      - run: rm -rf sdk && git clone https://oauth2:${{ secrets.DEVKIT_RELEASE_SECRET }}@github.com/flarehotspot/sdk.git sdk
+      - run: mkdir -p system
+      - run: cd system && git clone https://oauth2:${{ secrets.DEVKIT_RELEASE_SECRET }}@github.com/flarehotspot/com.flarego.default-theme.git
       - run: cp go.work.default go.work
       - run: go run ./core/internal/cli/flare-internal.go create-devkit
       - run: tree ./devkit-release
