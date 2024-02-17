@@ -41,6 +41,7 @@ func CreateDevkit() {
 	CleanUpDevkit()
 	tools.BuildCore()
 	tools.BuildMain()
+    tools.GitCloneSystemPlugins(RELEASE_DIR)
 	CopyDevkitFiles()
 	CopyDevkitExtras()
 	CopyDefaultWorksapce()
