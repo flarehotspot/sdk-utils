@@ -12,6 +12,7 @@ services:
       - /.gocache
       - /build/node_modules
       - /build/go
+      - /flare
     depends_on:
       - mariadb
       - phpmyadmin
