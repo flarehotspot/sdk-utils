@@ -84,9 +84,8 @@ jobs:
           #   apt-get update -q -y && \
           #     apt-get install -q -y gcc curl wget
           run: |
-            cd /build && \
-            ./flare install-go && \
-            export PATH=/build/go/bin:$PATH && \
+            cd /build
+            ./flare install-go
             ./flare-internal create-devkit
       - run: tree ./devkit-release
       # - uses: actions/upload-artifact@v4
