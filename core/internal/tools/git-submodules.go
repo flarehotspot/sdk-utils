@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	// "path/filepath"
 
 	sdkfs "github.com/flarehotspot/sdk/utils/fs"
 )
@@ -15,23 +14,6 @@ var (
 		"flarehotspot/com.flarego.default-theme",
 	}
 )
-
-// func GitCloneRequired(rootDir string) {
-// 	workDir := filepath.Join(rootDir, "system")
-// 	sdkfs.EnsureDir(workDir)
-// 	fmt.Println("Cloning system plugins in " + workDir)
-
-// 	GitCloneSdk()
-
-// 	for _, s := range SYSTEM_PLUGINS {
-// 		GitCloneRepo(s, workDir)
-// 	}
-// }
-
-// func GitCloneSdk() {
-// 	workDir := "sdk"
-// 	GitCloneRepo("flarehotspot/sdk", workDir)
-// }
 
 func GitCheckoutMain() {
 	dirPaths := []string{"core", "sdk"}

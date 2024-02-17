@@ -21,6 +21,7 @@ var (
 	coreInfo     = sdktools.CoreInfo()
 	RELEASE_DIR  = filepath.Join(sdkpaths.AppDir, "devkit-release", fmt.Sprintf("devkit-%s-%s", coreInfo.Version, GOARCH))
 	DEVKIT_FILES = []string{
+		"flare",
 		"main/go.mod",
 		"main/main.app",
 		"config/.defaults",
@@ -30,8 +31,6 @@ var (
 		"core/plugin.json",
 		"core/resources",
 		"core/go-version",
-		"package.json",
-		"package-lock.json",
 		"sdk",
 		"system",
 	}
@@ -41,7 +40,7 @@ func CreateDevkit() {
 	CleanUpDevkit()
 	tools.BuildCore()
 	tools.BuildMain()
-	// tools.GitCloneRequired(RELEASE_DIR)
+	sdktools.BuildFlareCLI()
 	CopyDevkitFiles()
 	CopyDevkitExtras()
 	CopyDefaultWorksapce()
