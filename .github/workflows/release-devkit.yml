@@ -68,31 +68,25 @@ jobs:
         with:
           go-version: '1.19.12'
       - run: GOOS=linux GOARCH=arm64 CC=aarch64-linux-gnu-gcc go build -o ./flare ./core/internal/cli/flare-internal.go
-      - run: ls -la .
-      # - uses: uraimo/run-on-arch-action@v2.3.0
-      #   with:
-      #     arch: ${{ matrix.arch }}
-      #     distro: ${{ matrix.distro }}
-      #     dockerRunArgs: |
-      #       --volume "${PWD}:/build"
-      #     env: | # YAML, but pipe character is necessary
-      #       NODE_ENV: production
-      #       DEVKIT_BUILD: true
-      #       CGO_ENABLED: '1'
-      #       GO_CUSTOM_PATH: /build/go
-      #     install: |
-      #       apt-get update -q -y && \
-      #         apt-get install -q -y \
-      #         git gcc curl wget golang-go && \
-      #         curl -sL https://deb.nodesource.com/setup_18.x \
-      #         -o nodesource_setup.sh && \
-      #         bash ./nodesource_setup.sh && \
-      #         apt install -q -y nodejs
-      #     run: |
-      #       cd /build && \
-      #       node ./build/install-go.js && \
-      #       node ./build/build-devkit.js
-      # - run: tree ./devkit-release
+      - uses: uraimo/run-on-arch-action@v2.3.0
+        with:
+          arch: ${{ matrix.arch }}
+          distro: ${{ matrix.distro }}
+          dockerRunArgs: |
+            --volume "${PWD}:/build"
+          env: | # YAML, but pipe character is necessary
+            NODE_ENV: production
+            DEVKIT_BUILD: true
+            CGO_ENABLED: '1'
+            GO_CUSTOM_PATH: /build/go
+          # install: |
+          #   apt-get update -q -y && \
+          #     apt-get install -q -y gcc curl wget
+          run: |
+            cd /build && \
+            ./flare install-go && \
+            ./flare create-devkit
+      - run: tree ./devkit-release
       # - uses: actions/upload-artifact@v4
       #   with:
       #     name: devkit-${{ matrix.distro }}-${{ matrix.goarch }}
