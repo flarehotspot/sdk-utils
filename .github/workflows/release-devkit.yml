@@ -62,7 +62,7 @@ jobs:
             gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu
       - uses: actions/checkout@v4
       - run: rm -rf sdk && git clone https://oauth2:${{ secrets.DEVKIT_RELEASE_SECRET }}@github.com/flarehotspot/sdk.git sdk
-      - run: mkdir -p system
+      - run: rm -rf system && mkdir -p system
       - run: cd system && git clone https://oauth2:${{ secrets.DEVKIT_RELEASE_SECRET }}@github.com/flarehotspot/com.flarego.default-theme.git
       - run: cp go.work.default go.work
       - uses: actions/setup-go@v5
