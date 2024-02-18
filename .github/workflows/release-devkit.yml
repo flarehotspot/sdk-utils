@@ -98,6 +98,7 @@ jobs:
     runs-on: ubuntu-22.04
     needs: [build-amd64, build-arm]
     steps:
+      - run: sudo rm -rf ./devkit-release
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with:
