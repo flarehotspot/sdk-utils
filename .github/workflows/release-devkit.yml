@@ -48,14 +48,13 @@ jobs:
           path: devkit-release
 
   build-arm:
-    runs-on: ubuntu-22.04
+    runs-on: self-hosted-x64
     name: Build on ${{ matrix.arch }}
     strategy:
       matrix:
         include:
           - arch: aarch64
-            # distro: ubuntu22.04
-            distro: self-hosted-x64
+            distro: ubuntu22.04
     steps:
       - run: |
           sudo apt update && \
