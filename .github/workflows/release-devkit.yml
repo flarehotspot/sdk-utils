@@ -36,7 +36,7 @@ jobs:
       - run: |
           sudo apt update && \
           sudo apt-get install -y \
-          build-essential wget curl ca-certificates git gcc openssl
+          ca-certificates git gcc zip
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:
@@ -93,7 +93,8 @@ jobs:
             GO_CUSTOM_PATH: /build/go
           install: |
             apt-get update -q -y && \
-              apt-get install -q -y gcc ca-certificates
+              apt-get install -q -y \
+              gcc ca-certificates zip
           run: |
             cd /build && \
             ./flare install-go && \
@@ -113,9 +114,6 @@ jobs:
           sudo rm -rf ./* || true
           sudo rm -rf ./.??* || true
           ls -la ./
-      - run: |
-          sudo apt-get update -y
-          sudo apt-get install -y zip
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with:

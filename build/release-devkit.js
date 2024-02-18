@@ -13,6 +13,7 @@ const octokit = new Octokit({ auth: GITHUB_TOKEN });
 
 const main = async () => {
   const CORE_VERSION = await coreVersion();
+  const DEVKIT_DIR = path.join(__dirname, '../devkit-release');
 
   async function isPreRelease() {
     const preKeywords = ['alpha', 'beta', 'rc', 'pre'];
@@ -93,24 +94,14 @@ Otherwise, select the version that's compatible with your device.
   }
 
   async function zipAndUploadDevkit() {
-    const releaseDirs = await searchFiles(
-      path.join(__dirname, '../devkit-release'),
-      async (dir, f) => {
-        if (f === 'go.work') {
-          const dockerFile = path.join(dir, 'Dockerfile');
-          return await fs.exists(dockerFile);
-        }
-      },
-      async (dir) => dir,
+    const zipFiles = await searchFiles(
+      DEVKIT_DIR,
+      (_, entry) => path.extname(entry) === '.zip',
+      (dir, entry) => path.join(dir, entry),
       { stopRecurse: true }
     );
 
-    for (const dir of releaseDirs) {
-      const zipPath = `${dir}.zip`;
-      console.log(`Zipping ${dir} -> ${zipPath}`);
-      await execAsync(`zip -r ${zipPath} .`, {
-        cwd: dir
-      });
+    for (const zipPath of zipFiles) {
       await uploadZipFile(zipPath);
       console.log(`Success uploading file: ${zipPath}`);
     }

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"runtime"
 
@@ -37,7 +38,7 @@ var (
 )
 
 func CreateDevkit() {
-	CleanUpDevkit()
+	PrepareDevkit()
 	tools.BuildCore()
 	tools.BuildMain()
 	sdktools.BuildFlareCLI()
@@ -45,6 +46,8 @@ func CreateDevkit() {
 	CopyDevkitExtras()
 	CopyDefaultWorksapce()
 	CreateApplicationConfig()
+	ZipDevkitRelease()
+	CleanUpRelease()
 }
 
 func CreateApplicationConfig() {
@@ -106,10 +109,28 @@ func CopyDefaultWorksapce() {
 	sdkfs.CopyFile(def, dst)
 }
 
-func CleanUpDevkit() {
+func ZipDevkitRelease() {
+	zipFile := RELEASE_DIR + ".zip"
+	cmd := exec.Command("zip", "-r", zipFile, ".")
+	cmd.Dir = RELEASE_DIR
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	err := cmd.Run()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("Devkit release created: %s\n", sdkpaths.Strip(zipFile))
+}
+
+func PrepareDevkit() {
 	dirsToRemove := []string{".cache/assets", ".tmp", "public", "devkit-release"}
 	for _, dir := range dirsToRemove {
 		fmt.Println("Removing: ", filepath.Join(sdkpaths.AppDir, dir))
 		os.RemoveAll(filepath.Join(sdkpaths.AppDir, dir))
 	}
+}
+
+func CleanUpRelease() {
+	fmt.Printf("Cleaning up release directory: %s\n", sdkpaths.Strip(RELEASE_DIR))
+	os.RemoveAll(RELEASE_DIR)
 }
