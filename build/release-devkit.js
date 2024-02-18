@@ -100,9 +100,9 @@ Otherwise, select the version that's compatible with your device.
     const releaseDirs = await searchFiles(
       path.join(__dirname, '../devkit-release'),
       async (dir, f) => {
-        if (f === 'plugin.json') {
-          const goMod = path.join(dir, 'go.mod');
-          return await fs.exists(goMod);
+        if (f === 'go.work') {
+          const dockerFile = path.join(dir, 'Dockerfile');
+          return await fs.exists(dockerFile);
         }
       },
       async (dir) => dir,
