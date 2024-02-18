@@ -60,7 +60,7 @@ jobs:
           sudo apt update && \
           sudo apt-get install -y curl ca-certificates git openssl \
             gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu
-      - run: rm -rf ./devkit-release ./system ./flare ./flare-internal ./go
+      - run: sudo rm -rf ./devkit-release ./system ./flare ./flare-internal ./go
       - uses: actions/checkout@v4
       - run: rm -rf sdk && git clone https://oauth2:${{ secrets.DEVKIT_RELEASE_SECRET }}@github.com/flarehotspot/sdk.git sdk
       - run: rm -rf system && mkdir -p system
@@ -99,7 +99,7 @@ jobs:
     runs-on: ubuntu-22.04
     needs: [build-amd64, build-arm]
     steps:
-      - run: rm -rf ./devkit-release ./system ./flare ./flare-internal ./go
+      - run: sudo rm -rf ./devkit-release ./system ./flare ./flare-internal ./go
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with:
