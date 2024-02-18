@@ -9,7 +9,6 @@ const searchFiles = require('./search-files.js');
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const OWNER = 'flarehotspot';
 const REPO = 'sdk';
-const OUT_DIR = path.join(__dirname, '../.cache/devkit/output');
 const octokit = new Octokit({ auth: GITHUB_TOKEN });
 
 const main = async () => {
@@ -77,23 +76,20 @@ Otherwise, select the version that's compatible with your device.
   }
 
   async function uploadZipFile(filePath) {
-    await fs.ensureDir(OUT_DIR);
-    const dest = path.join(OUT_DIR, path.basename(filePath));
-    await fs.move(filePath, dest);
-    // const fileData = await fs.readFile(filePath);
-    // console.log(`Uploading ${fileData}`);
-    // await octokit.request(`POST ${data.upload_url}`, {
-    //   owner: OWNER,
-    //   repo: REPO,
-    //   name: path.basename(filePath),
-    //   release_id: data.id,
-    //   data: fileData,
-    //   headers: {
-    //     'X-GitHub-Api-Version': '2022-11-28',
-    //     'Content-Type': 'application/zip'
-    //   }
-    // });
-    // console.log(`Success uploading file: ${filePath}`);
+    const fileData = await fs.readFile(filePath);
+    console.log(`Uploading ${fileData}`);
+    await octokit.request(`POST ${data.upload_url}`, {
+      owner: OWNER,
+      repo: REPO,
+      name: path.basename(filePath),
+      release_id: data.id,
+      data: fileData,
+      headers: {
+        'X-GitHub-Api-Version': '2022-11-28',
+        'Content-Type': 'application/zip'
+      }
+    });
+    console.log(`Success uploading file: ${filePath}`);
   }
 
   async function zipAndUploadDevkit() {
