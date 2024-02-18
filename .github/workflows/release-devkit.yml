@@ -28,6 +28,11 @@ jobs:
       GOOS: ${{ matrix.goos }}
       CC: ${{ matrix.cc }}
     steps:
+      - name: 'Cleanup build folder'
+        run: |
+          sudo rm -rf ./* || true
+          sudo rm -rf ./.??* || true
+          ls -la ./
       - run: |
           sudo apt update && \
           sudo apt-get install -y \
@@ -56,16 +61,15 @@ jobs:
           - arch: aarch64
             distro: ubuntu22.04
     steps:
+      - name: 'Cleanup build folder'
+        run: |
+          sudo rm -rf ./* || true
+          sudo rm -rf ./.??* || true
+          ls -la ./
       - run: |
           sudo apt update && \
           sudo apt-get install -y curl ca-certificates git openssl \
             gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu
-      - name: 'Cleanup build folder'
-        run: |
-          ls -la ./
-          rm -rf ./* || true
-          rm -rf ./.??* || true
-          ls -la ./
       - uses: actions/checkout@v4
       - run: rm -rf sdk && git clone https://oauth2:${{ secrets.DEVKIT_RELEASE_SECRET }}@github.com/flarehotspot/sdk.git sdk
       - run: rm -rf system && mkdir -p system
@@ -106,7 +110,6 @@ jobs:
     steps:
       - name: 'Cleanup build folder'
         run: |
-          ls -la ./
           sudo rm -rf ./* || true
           sudo rm -rf ./.??* || true
           ls -la ./
