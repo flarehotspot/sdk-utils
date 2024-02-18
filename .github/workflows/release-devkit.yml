@@ -113,6 +113,9 @@ jobs:
           sudo rm -rf ./* || true
           sudo rm -rf ./.??* || true
           ls -la ./
+      - run: |
+          sudo apt-get update -y
+          sudo apt-get install -y zip
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with:
@@ -123,3 +126,7 @@ jobs:
           node-version: '20'
       - run: npm install
       - run: node ./build/release-devkit.js
+      - uses: AButler/upload-release-assets@v3.0
+        with:
+          files: .cache/devkit/output/*.zip
+          repo-token: ${{ secrets.DEVKIT_RELEASE_SECRET }}
