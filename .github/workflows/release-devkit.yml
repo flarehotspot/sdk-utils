@@ -117,4 +117,4 @@ jobs:
         with:
           node-version: '20'
       - run: npm install
-      - run: node ./build/release-devkit.js
+      - run: node ./build/devkit/release-devkit.js

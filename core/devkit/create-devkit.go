@@ -91,7 +91,7 @@ func CopyDevkitFiles() {
 }
 
 func CopyDevkitExtras() {
-	extrasPath := filepath.Join(sdkpaths.AppDir, "build/devkit-extras")
+	extrasPath := filepath.Join(sdkpaths.AppDir, "build/devkit/extras")
 	fmt.Printf("Copying:  %s -> %s\n", sdkpaths.Strip(extrasPath), sdkpaths.Strip(RELEASE_DIR))
 	err := sdkfs.CopyDir(extrasPath, RELEASE_DIR, nil)
 	if err != nil {

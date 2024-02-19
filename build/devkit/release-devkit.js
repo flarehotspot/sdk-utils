@@ -3,9 +3,8 @@
 const path = require('path');
 const fs = require('fs-extra');
 const { Octokit } = require('@octokit/core');
-const execAsync = require('./exec-async.js');
-const coreVersion = require('./core-version.js');
-const searchFiles = require('./search-files.js');
+const coreVersion = require('../utils/core-version.js');
+const searchFiles = require('../utils/search-files.js');
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const OWNER = 'flarehotspot';
 const REPO = 'sdk';
