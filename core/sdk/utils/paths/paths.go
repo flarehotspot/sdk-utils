@@ -27,8 +27,8 @@ var (
 	PublicDir   = filepath.Join(AppDir, "public")
 	LogsDir     = filepath.Join(AppDir, "logs")
 	SdkDir      = filepath.Join(AppDir, "sdk")
-	CacheDir    = filepath.Join(AppDir, ".cache")
 	TmpDir      = filepath.Join(AppDir, ".tmp")
+	CacheDir    = filepath.Join(TmpDir, "cache")
 )
 
 // Strip removes the project root directory prefix from absolute paths
