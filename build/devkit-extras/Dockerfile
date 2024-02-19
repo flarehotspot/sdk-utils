@@ -10,7 +10,7 @@ ENV GO_CUSTOM_PATH=/build/go
 ENV PATH=${GO_CUSTOM_PATH}/bin:${PATH}
 
 WORKDIR /build
-COPY . .
+COPY ./bin ./bin
 RUN ./bin/flare install-go
 
 CMD ./bin/flare server

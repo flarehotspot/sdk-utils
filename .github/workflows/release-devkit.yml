@@ -6,8 +6,9 @@ on:
     branches: [releases]
 
 env:
-  NODE_ENV: production
   CGO_ENABLED: '1'
+  GO_ENV: development
+  GO_TAGS: dev
   GITHUB_TOKEN: ${{ secrets.DEVKIT_RELEASE_SECRET }}
 
 jobs:
@@ -79,8 +80,8 @@ jobs:
           dockerRunArgs: |
             --volume "${PWD}:/build"
           env: | # YAML, but pipe character is necessary
-            NODE_ENV: production
-            DEVKIT_BUILD: true
+            GO_ENV=development
+            GO_TAGS=dev
             CGO_ENABLED: '1'
             GO_CUSTOM_PATH: /build/go
             GITHUB_TOKEN: ${{ secrets.DEVKIT_RELEASE_SECRET }}
