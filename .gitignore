@@ -10,6 +10,7 @@
 /vendor
 /node_modules
 /go
+/plugins/com.sample.plugin
 /bin
 .null*
 

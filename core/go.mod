@@ -1,3 +1,5 @@
+// NOTE: Do not use "go mod tidy" to prevent coupling of dependencies.
+
 module github.com/flarehotspot/core
 
 go 1.19

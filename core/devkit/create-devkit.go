@@ -31,8 +31,6 @@ var (
 		"core/plugin.json",
 		"core/resources",
 		"core/go-version",
-		"package.json",
-		"package-lock.json",
 	}
 )
 
@@ -40,12 +38,13 @@ func CreateDevkit() {
 	PrepareCleanup()
 	tools.BuildFlareCLI()
 	tools.BuildCore()
-	tools.GitCloneSystemPlugins(RELEASE_DIR)
+	tools.CloneDefaultPlugins(RELEASE_DIR)
 	CopyDevkitFiles()
 	CopyDevkitExtras()
 	CopyDefaultWorksapce()
 	CreateApplicationConfig()
-	ZipDevkit()
+	ZipDevkitRelease()
+	CleanUpRelease()
 }
 
 func CreateApplicationConfig() {
@@ -107,7 +106,7 @@ func CopyDefaultWorksapce() {
 	sdkfs.CopyFile(def, dst)
 }
 
-func ZipDevkit() {
+func ZipDevkitRelease() {
 	zipFile := RELEASE_DIR + ".zip"
 	cmd := exec.Command("zip", "-r", zipFile, ".")
 	cmd.Dir = RELEASE_DIR
@@ -124,4 +123,9 @@ func PrepareCleanup() {
 		fmt.Println("Removing: ", filepath.Join(sdkpaths.AppDir, dir))
 		os.RemoveAll(filepath.Join(sdkpaths.AppDir, dir))
 	}
+}
+
+func CleanUpRelease() {
+	fmt.Printf("Cleaning up release directory: %s\n", sdkpaths.Strip(RELEASE_DIR))
+	os.RemoveAll(RELEASE_DIR)
 }

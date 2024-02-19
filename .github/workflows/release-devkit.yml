@@ -9,7 +9,7 @@ env:
   NODE_ENV: production
   DEVKIT_BUILD: true
   CGO_ENABLED: '1'
-  SECRET: ${{ secrets.DEVKIT_RELEASE_SECRET }}
+  GITHUB_TOKEN: ${{ secrets.DEVKIT_RELEASE_SECRET }}
 
 jobs:
   build-amd64:
@@ -20,37 +20,36 @@ jobs:
         include:
           - goos: linux
             goarch: amd64
-            distro: ubuntu-22.04
+            distro: self-hosted-x64
             cc: gcc
     env:
       GOARCH: ${{ matrix.goarch }}
       GOOS: ${{ matrix.goos }}
       CC: ${{ matrix.cc }}
     steps:
+      - name: 'Cleanup build folder'
+        run: |
+          sudo rm -rf ./* || true
+          sudo rm -rf ./.??* || true
+          ls -la ./
       - run: |
           sudo apt update && \
           sudo apt-get install -y \
-          build-essential wget curl ca-certificates git gcc openssl golang-go
+          ca-certificates git gcc zip
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-go@v5
         with:
-          node-version: '20'
-      - run: npm install
-      - run: rm -rf ./plugins ./system
-      - run: |
-          export GO_CUSTOM_PATH="${PWD}/go" && \
-          export PATH=${GO_CUSTOM_PATH}/bin:${PATH} && \
-          node ./build/clone-system-plugins.js && \
-          node ./build/install-go.js && \
-          node ./build/build-devkit.js
+          go-version: '1.19.12'
+      - run: cp go.work.default go.work
+      - run: go run ./core/internal/cli/flare-internal.go create-devkit
       - run: tree ./devkit-release
       - uses: actions/upload-artifact@v4
         with:
           name: devkit-${{ matrix.distro }}-${{ matrix.goarch }}
-          path: devkit-release
+          path: devkit-release/**/*.zip
 
   build-arm:
-    runs-on: ubuntu-22.04
+    runs-on: self-hosted-x64
     name: Build on ${{ matrix.arch }}
     strategy:
       matrix:
@@ -58,16 +57,25 @@ jobs:
           - arch: aarch64
             distro: ubuntu22.04
     steps:
+      - name: 'Cleanup build folder'
+        run: |
+          sudo rm -rf ./* || true
+          sudo rm -rf ./.??* || true
+          ls -la ./
       - run: |
           sudo apt update && \
-          sudo apt-get install -y curl ca-certificates git openssl
+          sudo apt-get install -y curl ca-certificates git openssl \
+            gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v3
+      - run: rm -rf sdk && git clone https://oauth2:${{ secrets.DEVKIT_RELEASE_SECRET }}@github.com/flarehotspot/sdk.git sdk
+      - run: rm -rf system && mkdir -p system
+      - run: cd system && git clone https://oauth2:${{ secrets.DEVKIT_RELEASE_SECRET }}@github.com/flarehotspot/com.flarego.default-theme.git
+      - run: cp go.work.default go.work
+      - uses: actions/setup-go@v5
         with:
-          node-version: '20'
-      - run: npm install
-      - run: rm -rf ./plugins ./system
-      - run: node ./build/clone-system-plugins.js
+          go-version: '1.19.12'
+      - run: GOOS=linux GOARCH=arm64 CC=aarch64-linux-gnu-gcc go build -o ./flare-internal ./core/internal/cli/flare-internal.go
+      - run: GOOS=linux GOARCH=arm64 CC=aarch64-linux-gnu-gcc go build -o ./flare ./core/devkit/cli/flare.go
       - uses: uraimo/run-on-arch-action@v2.3.0
         with:
           arch: ${{ matrix.arch }}
@@ -79,28 +87,30 @@ jobs:
             DEVKIT_BUILD: true
             CGO_ENABLED: '1'
             GO_CUSTOM_PATH: /build/go
+            GITHUB_TOKEN: ${{ secrets.DEVKIT_RELEASE_SECRET }}
           install: |
             apt-get update -q -y && \
               apt-get install -q -y \
-              git gcc curl wget golang-go && \
-              curl -sL https://deb.nodesource.com/setup_18.x \
-              -o nodesource_setup.sh && \
-              bash ./nodesource_setup.sh && \
-              apt install -q -y nodejs
+              gcc ca-certificates zip
           run: |
             cd /build && \
-            node ./build/install-go.js && \
-            node ./build/build-devkit.js
+            ./flare install-go && \
+            ./flare-internal create-devkit
       - run: tree ./devkit-release
       - uses: actions/upload-artifact@v4
         with:
           name: devkit-${{ matrix.distro }}-${{ matrix.goarch }}
-          path: devkit-release
+          path: devkit-release/**/*.zip
 
   publish-release:
     runs-on: ubuntu-22.04
     needs: [build-amd64, build-arm]
     steps:
+      - name: 'Cleanup build folder'
+        run: |
+          sudo rm -rf ./* || true
+          sudo rm -rf ./.??* || true
+          ls -la ./
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with:

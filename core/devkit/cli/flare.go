@@ -113,6 +113,7 @@ func Usage() string {
 Usage: flare <command> [options]
 
 list of commands:
+
     server                              Start the flare server
 
     create-plugin                       Create a new plugin

@@ -11,4 +11,8 @@ ENV PATH=${GO_CUSTOM_PATH}/bin:${PATH}
 WORKDIR /build
 RUN ./bin/flare install-go
 
-CMD ["npm", "start"]
+COPY . .
+
+RUN ./flare install-go
+
+CMD ["./main/main.app"]

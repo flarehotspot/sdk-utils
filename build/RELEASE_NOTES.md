@@ -1,4 +1,9 @@
 **Release Notes:**
 
-- added arm64 version of the devkit
+- added flare cli
+
+```sh
+./flare --help
+# or flare.exe on windows
+```
 
