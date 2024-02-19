@@ -81,7 +81,17 @@ func main() {
 		return
 
 	case "install-go":
-		tools.InstallExactGoVersion()
+		var installPath string
+		if len(os.Args) > 2 {
+			installPath = os.Args[2]
+		}
+		if installPath == "" {
+			installPath = os.Getenv("GO_CUSTOM_PATH")
+		}
+		if installPath == "" {
+			installPath = filepath.Join("go")
+		}
+		tools.InstallGo(installPath)
 		return
 
 	default:
@@ -122,7 +132,8 @@ list of commands:
 
     fix-workspace                       Re-generate the go.work file
 
-    install-go                          Install Go to the "$GO_CUSTOM_PATH" path. If custom path is not defined, then it will install in
-                                        the "go" directory under the current working directory.
+    install-go  <install path>          Install Go to the given path. If install path argument is not defined, then it will install in
+                                        the "$GO_CUSTOM_PATH" if defined, else it will install in "go" directory under the
+                                        current working directory.
 `
 }

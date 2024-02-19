@@ -8,14 +8,11 @@ services:
     volumes:
       - ./:/build
       - ./build/devkit/extras/config/database.json:/build/config/database.json
-      - ./.tmp
-      - ./bin
+      - /build/.tmp
+      - /build/bin
     depends_on:
       mariadb:
         condition: service_healthy
-    environment:
-      - GO_CUSTOM_PATH=/build/.tmp/go
-      - GOCACHE=/build/.tmp/gocache
     ports:
       - 3000:3000
 

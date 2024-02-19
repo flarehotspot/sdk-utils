@@ -13,42 +13,42 @@ import (
 	sdkpaths "github.com/flarehotspot/core/sdk/utils/paths"
 )
 
-func InstallExactGoVersion() {
-	GO_CUSTOM_PATH := os.Getenv("GO_CUSTOM_PATH")
-	if GO_CUSTOM_PATH == "" {
-		GO_CUSTOM_PATH = filepath.Join("go")
-	}
-
+func InstallGo(installPath string) {
 	GOOS := runtime.GOOS
 	GOARCH := runtime.GOARCH
 	GO_VERSION, err := GoVersion()
 	if err != nil {
 		panic(err)
 	}
+
 	EXTRACT_PATH := filepath.Join(sdkpaths.CacheDir, "downloads", fmt.Sprintf("go%s-%s-%s", GO_VERSION, GOOS, GOARCH))
 	err = downloadAndExtractGo(GOOS, GOARCH, GO_VERSION, EXTRACT_PATH)
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Println("Installing Go version to: ", GO_CUSTOM_PATH)
+	fmt.Println("Installing Go version to: ", installPath)
 
-	err = os.RemoveAll(GO_CUSTOM_PATH)
+	err = os.RemoveAll(installPath)
 	if err != nil {
 		panic(err)
 	}
 
-	err = os.Rename(filepath.Join(EXTRACT_PATH, "go"), GO_CUSTOM_PATH)
+	err = os.Rename(filepath.Join(EXTRACT_PATH, "go"), installPath)
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Printf("Go version %s installed to %s\n", GO_VERSION, GO_CUSTOM_PATH)
-	fmt.Printf("To use the newly installed Go version, run: \n\nexport PATH=%s/bin:$PATH\n", GO_CUSTOM_PATH)
+	fmt.Printf("Go version %s installed to %s\n", GO_VERSION, installPath)
+	fmt.Printf("To use the newly installed Go version, run: \n\nexport PATH=%s/bin:$PATH\n", installPath)
 }
 
 func downloadAndExtractGo(goos, goarch, version, extractPath string) error {
-	// Download the tar file
+	err := sdkfs.EnsureDir(filepath.Dir(extractPath))
+	if err != nil {
+		return err
+	}
+
 	fmt.Printf("Downloading Go version %s for %s-%s\n", version, goos, goarch)
 	url := fmt.Sprintf("https://golang.org/dl/go%s.%s-%s.tar.gz", version, goos, goarch)
 	resp, err := http.Get(url)

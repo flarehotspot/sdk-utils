@@ -1,3 +1,3 @@
 **Release Notes:**
 
-- Move docker $GO_CUSTOM_PATH to .tmp/go
+- Bundle Go with devkit to avoid redownloading go source.

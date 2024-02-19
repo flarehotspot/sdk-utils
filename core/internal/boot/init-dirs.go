@@ -1,11 +1,13 @@
 package boot
 
 import (
-	paths "github.com/flarehotspot/core/sdk/utils/paths"
 	"log"
 	"os"
 	"path/filepath"
 	"sync"
+
+	sdkfs "github.com/flarehotspot/core/sdk/utils/fs"
+	paths "github.com/flarehotspot/core/sdk/utils/paths"
 )
 
 func InitDirs() {
@@ -22,7 +24,7 @@ func InitDirs() {
 	for _, d := range dirs {
 		go func(d string) {
 			defer wg.Done()
-			if err := os.MkdirAll(d, os.ModePerm); err != nil {
+			if err := os.MkdirAll(d, sdkfs.PermDir); err != nil {
 				log.Fatal(err)
 			}
 		}(d)

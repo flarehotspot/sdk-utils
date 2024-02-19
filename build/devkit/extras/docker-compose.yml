@@ -12,9 +12,6 @@ services:
     depends_on:
       mariadb:
         condition: service_healthy
-    environment:
-      - GO_CUSTOM_PATH=/build/.tmp/go
-      - GOCACHE=/build/.tmp/gocache
     ports:
       - 3000:3000
 

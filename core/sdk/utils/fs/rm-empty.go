@@ -11,7 +11,7 @@ func EmptyDir(dirPath string) error {
 	if err := os.RemoveAll(dirPath); err != nil {
 		return err
 	}
-	return os.MkdirAll(dirPath, 0755)
+	return os.MkdirAll(dirPath, PermDir)
 }
 
 func RmEmpty(dirPath string) error {

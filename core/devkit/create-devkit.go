@@ -21,20 +21,22 @@ var (
 	coreInfo     = tools.CoreInfo()
 	RELEASE_DIR  = filepath.Join(sdkpaths.AppDir, "devkit-release", fmt.Sprintf("devkit-%s-%s", coreInfo.Version, GOARCH))
 	DEVKIT_FILES = []string{
+		"go",
 		"bin",
-        "main/go.mod",
+		"main/go.mod",
 		"config/.defaults",
 		"core/go.mod",
 		"core/plugin.so",
 		"core/plugin.json",
 		"core/resources",
 		"core/go-version",
-        "core/sdk",
+		"core/sdk",
 	}
 )
 
 func CreateDevkit() {
 	PrepareCleanup()
+	tools.InstallGo("./go")
 	tools.BuildFlareCLI()
 	tools.BuildCore()
 	tools.CloneDefaultPlugins(RELEASE_DIR)
@@ -120,11 +122,11 @@ func PrepareCleanup() {
 	dirsToRemove := []string{"devkit-release"}
 	for _, dir := range dirsToRemove {
 		fmt.Println("Removing: ", filepath.Join(sdkpaths.AppDir, dir))
-        err := os.RemoveAll(filepath.Join(sdkpaths.AppDir, dir))
-        if err != nil {
-            fmt.Println("Error removing: ", err)
-            panic(err)
-        }
+		err := os.RemoveAll(filepath.Join(sdkpaths.AppDir, dir))
+		if err != nil {
+			fmt.Println("Error removing: ", err)
+			panic(err)
+		}
 	}
 }
 
