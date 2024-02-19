@@ -10,7 +10,7 @@ func WriteJson(f string, v any) error {
 	if err != nil {
 		return err
 	}
-	return os.WriteFile(f, b, 0644)
+	return os.WriteFile(f, b, PermFile)
 }
 
 func ReadJson(f string, v any) error {

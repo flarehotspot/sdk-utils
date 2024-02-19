@@ -12,7 +12,7 @@ func BuildArgs() []string {
 		tags = os.Getenv("GOTAGS")
 	}
 
-	args := []string{"-ldflags", "-s -w", "-trimpath"}
+	args := []string{}
 
 	if !prod {
 		if tags == "" {
@@ -20,6 +20,8 @@ func BuildArgs() []string {
 		}
 		args = append(args, "-tags", tags)
 	}
+
+	args = append(args, "-ldflags", "-s -w", "-trimpath")
 
 	fmt.Println("Build args: ", args)
 

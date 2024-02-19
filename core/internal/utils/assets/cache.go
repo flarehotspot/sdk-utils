@@ -9,9 +9,9 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/flarehotspot/core/internal/utils/crypt"
 	sdkfs "github.com/flarehotspot/core/sdk/utils/fs"
 	paths "github.com/flarehotspot/core/sdk/utils/paths"
-	"github.com/flarehotspot/core/internal/utils/crypt"
 )
 
 var (
@@ -107,8 +107,8 @@ func writeCache(concat string, files []string) (data CacheData, err error) {
 
 	concat = filesComment(files...) + "\n" + concat
 	d := filepath.Dir(absPath)
-	os.MkdirAll(d, os.ModePerm)
-	err = os.WriteFile(absPath, []byte(concat), 0644)
+	os.MkdirAll(d, sdkfs.PermDir)
+	err = os.WriteFile(absPath, []byte(concat), sdkfs.PermFile)
 	if err != nil {
 		log.Println("Error writing to file: ", absPath, err)
 		return CacheData{}, err

@@ -8,8 +8,10 @@ import (
 	"sync"
 
 	"encoding/json"
+
 	accounts "github.com/flarehotspot/core/sdk/api/accounts"
 	fs "github.com/flarehotspot/core/sdk/utils/fs"
+	sdkfs "github.com/flarehotspot/core/sdk/utils/fs"
 	paths "github.com/flarehotspot/core/sdk/utils/paths"
 )
 
@@ -66,7 +68,7 @@ func EnsureAdminAcct() error {
 		if err != nil {
 			return err
 		}
-		err = os.WriteFile(f, content, 0644)
+		err = os.WriteFile(f, content, sdkfs.PermFile)
 		if err != nil {
 			return err
 		}
@@ -145,7 +147,7 @@ func Create(uname string, passwd string, perms []string) (*Account, error) {
 		return nil, fmt.Errorf("Account with username \"%s\" already exists", uname)
 	}
 
-	err = os.WriteFile(f, b, 0644)
+	err = os.WriteFile(f, b, sdkfs.PermFile)
 	if err != nil {
 		return nil, err
 	}
@@ -187,7 +189,7 @@ func Update(prevName string, newName string, pass string, perms []string) (*Acco
 	}
 
 	f := FilepathForUser(newName)
-	err = os.WriteFile(f, b, 0644)
+	err = os.WriteFile(f, b, sdkfs.PermFile)
 	if err != nil {
 		return nil, err
 	}

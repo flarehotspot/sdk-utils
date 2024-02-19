@@ -13,7 +13,7 @@ var manifestDir = filepath.Join(paths.CacheDir, "assets/manifest")
 
 func init() {
 	if !fs.Exists(manifestDir) {
-		os.MkdirAll(manifestDir, os.ModePerm)
+		os.MkdirAll(manifestDir, fs.PermDir)
 	}
 }
 
@@ -45,13 +45,13 @@ func writeManifest(k string, cd CacheData) (err error) {
 		return err
 	}
 
-	err = os.MkdirAll(filepath.Dir(file), os.ModePerm)
+	err = os.MkdirAll(filepath.Dir(file), fs.PermDir)
 	if err != nil {
 		log.Println("Error writing to file: ", file)
 		return err
 	}
 
-	err = os.WriteFile(file, data, 0644)
+	err = os.WriteFile(file, data, fs.PermFile)
 	if err != nil {
 		log.Println("Error writing to file: ", file)
 		return err

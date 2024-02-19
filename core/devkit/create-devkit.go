@@ -120,7 +120,11 @@ func PrepareCleanup() {
 	dirsToRemove := []string{"devkit-release"}
 	for _, dir := range dirsToRemove {
 		fmt.Println("Removing: ", filepath.Join(sdkpaths.AppDir, dir))
-		os.RemoveAll(filepath.Join(sdkpaths.AppDir, dir))
+        err := os.RemoveAll(filepath.Join(sdkpaths.AppDir, dir))
+        if err != nil {
+            fmt.Println("Error removing: ", err)
+            panic(err)
+        }
 	}
 }
 

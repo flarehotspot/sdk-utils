@@ -3,7 +3,7 @@
 FROM ubuntu:22.04
 
 RUN apt-get update && apt-get install -y \
-        wget curl ca-certificates
+        wget curl gcc ca-certificates
 
 ENV GO_ENV=development
 ENV GO_CUSTOM_PATH=/build/go

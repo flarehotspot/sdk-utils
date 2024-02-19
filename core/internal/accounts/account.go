@@ -5,6 +5,8 @@ import (
 	"path/filepath"
 
 	"encoding/json"
+
+	sdkfs "github.com/flarehotspot/core/sdk/utils/fs"
 	paths "github.com/flarehotspot/core/sdk/utils/paths"
 	sse "github.com/flarehotspot/core/sdk/utils/sse"
 )
@@ -75,7 +77,7 @@ func (acct *Account) Save() error {
 	if err != nil {
 		return err
 	}
-	return os.WriteFile(acct.YamlFile(), b, 0644)
+	return os.WriteFile(acct.YamlFile(), b, sdkfs.PermFile)
 }
 
 // Update updates the account with new username, password and permissions
