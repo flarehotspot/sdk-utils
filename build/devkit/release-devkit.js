@@ -102,7 +102,6 @@ Otherwise, select the version that's compatible with your device.
 
     for (const zipPath of zipFiles) {
       await uploadZipFile(zipPath);
-      console.log(`Success uploading file: ${zipPath}`);
     }
   }
 
