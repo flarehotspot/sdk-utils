@@ -5,14 +5,13 @@ FROM ubuntu:22.04
 RUN apt-get update && apt-get install -y \
         wget curl ca-certificates
 
+ENV GO_ENV=development
 ENV GO_CUSTOM_PATH=/build/go
 ENV PATH=${GO_CUSTOM_PATH}/bin:${PATH}
 
 WORKDIR /build
+COPY . .
 RUN ./bin/flare install-go
 
-COPY . .
+CMD ./bin/flare server
 
-RUN ./flare install-go
-
-CMD ["./main/main.app"]

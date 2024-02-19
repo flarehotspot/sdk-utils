@@ -7,15 +7,13 @@ import (
 
 var (
 	prod = os.Getenv("GO_ENV") != "development"
-	tags = os.Getenv("GOTAGS")
+	tags = os.Getenv("GO_TAGS")
 )
 
 func BuildArgs() []string {
-	var args []string
+	args := []string{"-ldflags", "-s -w", "-trimpath"}
 
-	if prod {
-		args = append(args, `-ldflags`, "-s -w", "-trimpath")
-	} else {
+	if !prod {
 		if tags == "" {
 			tags = "dev"
 		}

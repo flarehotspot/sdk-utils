@@ -5,7 +5,7 @@ RUN apt-get update && apt-get install -y \
 
 ENV GO_CUSTOM_PATH=/build/go
 ENV GO_ENV=development
-ENV GOTAGS="dev mono"
+ENV GO_TAGS="dev mono"
 ENV PATH=${GO_CUSTOM_PATH}/bin:${PATH}
 ENV FLARE="./core/devkit/cli/flare.go"
 ENV FLARE_INT="./core/internal/cli/flare-internal.go"

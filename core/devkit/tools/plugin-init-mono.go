@@ -21,6 +21,7 @@ func CreateMonoFiles() {
 	CreateGoWorkspace()
 
 	pluginDirs := PluginPathList()
+    pluginDirs = append(pluginDirs, "core")
 	for _, dir := range pluginDirs {
 		MakePluginMainMono(dir)
 	}
