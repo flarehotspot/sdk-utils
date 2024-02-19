@@ -1,3 +1,3 @@
 **Release Notes:**
 
-- Clean up some dirs in devkit
+- Move docker $GO_CUSTOM_PATH to .tmp/go
