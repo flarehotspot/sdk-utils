@@ -7,7 +7,6 @@ on:
 
 env:
   NODE_ENV: production
-  DEVKIT_BUILD: true
   CGO_ENABLED: '1'
   GITHUB_TOKEN: ${{ secrets.DEVKIT_RELEASE_SECRET }}
 

@@ -44,7 +44,7 @@ func Server() {
 	buildArgs := tools.BuildArgs()
 	runCmd := []string{"build"}
 	runCmd = append(runCmd, buildArgs...)
-	runCmd = append(runCmd, "-o", serverBin, "core/internal/main/main_mono.go")
+	runCmd = append(runCmd, "-o", serverBin, "core/main_mono.go")
     fmt.Printf("Executing: %s %s\n", goBin, strings.Join(runCmd, " "))
 
 	cmd := exec.Command(goBin, runCmd...)

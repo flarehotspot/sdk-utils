@@ -22,8 +22,6 @@ var (
 	RELEASE_DIR  = filepath.Join(sdkpaths.AppDir, "devkit-release", fmt.Sprintf("devkit-%s-%s", coreInfo.Version, GOARCH))
 	DEVKIT_FILES = []string{
 		"bin",
-		"main/go.mod",
-		"main/main.app",
 		"config/.defaults",
 		"core/go.mod",
 		"core/go.sum",
@@ -31,6 +29,7 @@ var (
 		"core/plugin.json",
 		"core/resources",
 		"core/go-version",
+        "core/sdk",
 	}
 )
 
@@ -118,7 +117,7 @@ func ZipDevkitRelease() {
 }
 
 func PrepareCleanup() {
-	dirsToRemove := []string{".cache/assets", ".tmp", "public", "devkit-release"}
+	dirsToRemove := []string{"devkit-release"}
 	for _, dir := range dirsToRemove {
 		fmt.Println("Removing: ", filepath.Join(sdkpaths.AppDir, dir))
 		os.RemoveAll(filepath.Join(sdkpaths.AppDir, dir))
