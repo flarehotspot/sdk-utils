@@ -8,9 +8,8 @@ services:
     volumes:
       - ./:/build
       - ./build/devkit/extras/config/database.json:/build/config/database.json
-      - /.cache
+      - /.tmp
       - /bin
-      - /build/node_modules
       - /build/go
     depends_on:
       - mariadb
