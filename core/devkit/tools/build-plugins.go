@@ -3,7 +3,6 @@ package tools
 import (
 	"errors"
 	"fmt"
-	"os"
 	"os/exec"
 	"path/filepath"
 
@@ -32,8 +31,6 @@ func BuildPlugin(dir string) error {
 
 	cmd := exec.Command(goBin, buildCmd...)
 	cmd.Dir = dir
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
 
 	fmt.Println("Building plugin: " + sdkpaths.Strip(dir))
 	err := cmd.Run()

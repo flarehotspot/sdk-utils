@@ -27,8 +27,6 @@ func BuildFlareCLI() {
 	buildCmd = append(buildCmd, "-o", cliPath, "core/devkit/cli/flare.go")
 
 	cmd := exec.Command(goBin, buildCmd...)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
 	err := cmd.Run()
 	if err != nil {
 		panic(err)

@@ -25,7 +25,6 @@ var (
         "main/go.mod",
 		"config/.defaults",
 		"core/go.mod",
-		"core/go.sum",
 		"core/plugin.so",
 		"core/plugin.json",
 		"core/resources",
