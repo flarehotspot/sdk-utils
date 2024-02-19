@@ -8,17 +8,16 @@ import (
 	"runtime"
 
 	"github.com/flarehotspot/flarehotspot/core/config"
-	"github.com/flarehotspot/flarehotspot/core/internal/tools"
+	"github.com/flarehotspot/flarehotspot/core/devkit/tools"
 	sdkfs "github.com/flarehotspot/sdk/utils/fs"
 	sdkpaths "github.com/flarehotspot/sdk/utils/paths"
 	sdkstr "github.com/flarehotspot/sdk/utils/strings"
-	sdktools "github.com/flarehotspot/sdk/utils/tools"
 )
 
 const GOARCH = runtime.GOARCH
 
 var (
-	coreInfo     = sdktools.CoreInfo()
+	coreInfo     = tools.CoreInfo()
 	RELEASE_DIR  = filepath.Join(sdkpaths.AppDir, "devkit-release", fmt.Sprintf("devkit-%s-%s", coreInfo.Version, GOARCH))
 	DEVKIT_FILES = []string{
 		"main/go.mod",
@@ -41,7 +40,7 @@ func CreateDevkit() {
 	CleanUpDevkit()
 	tools.BuildCore()
 	tools.BuildMain()
-    tools.GitCloneSystemPlugins(RELEASE_DIR)
+	tools.GitCloneSystemPlugins(RELEASE_DIR)
 	CopyDevkitFiles()
 	CopyDevkitExtras()
 	CopyDefaultWorksapce()
@@ -81,8 +80,7 @@ func CopyDevkitFiles() {
 			}
 
 		} else if sdkfs.IsDir(srcPath) {
-			copyOpts := sdkfs.CopyOpts{Recursive: true}
-			err := sdkfs.CopyDir(srcPath, destPath, &copyOpts)
+			err := sdkfs.CopyDir(srcPath, destPath, nil)
 			if err != nil {
 				panic(err)
 			}
@@ -94,9 +92,8 @@ func CopyDevkitFiles() {
 
 func CopyDevkitExtras() {
 	extrasPath := filepath.Join(sdkpaths.AppDir, "build/devkit-extras")
-	opts := sdkfs.CopyOpts{Recursive: true}
-    fmt.Printf("Copying:  %s -> %s\n", sdkpaths.Strip(extrasPath), sdkpaths.Strip(RELEASE_DIR))
-	err := sdkfs.CopyDir(extrasPath, RELEASE_DIR, &opts)
+	fmt.Printf("Copying:  %s -> %s\n", sdkpaths.Strip(extrasPath), sdkpaths.Strip(RELEASE_DIR))
+	err := sdkfs.CopyDir(extrasPath, RELEASE_DIR, nil)
 	if err != nil {
 		panic(err)
 	}

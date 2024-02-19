@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/flarehotspot/flarehotspot/core/internal/devkit"
-	"github.com/flarehotspot/flarehotspot/core/internal/tools"
+	"github.com/flarehotspot/flarehotspot/core/utils/tools"
 )
 
 func main() {

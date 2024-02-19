@@ -7,38 +7,37 @@ import (
 	"path/filepath"
 
 	sdkpaths "github.com/flarehotspot/sdk/utils/paths"
-	sdktools "github.com/flarehotspot/sdk/utils/tools"
 )
 
 func BuildCore() error {
-	return sdktools.BuildPlugin(sdkpaths.CoreDir)
+	return BuildPlugin(sdkpaths.CoreDir)
 }
 
 func BuildMain() error {
-	goBin := sdktools.GoBin()
-	buildArgs := sdktools.BuildArgs()
+	goBin := GoBin()
+	buildArgs := BuildArgs()
 	mainDir := filepath.Join(sdkpaths.AppDir, "main")
 
 	buildCmd := []string{"build"}
 	buildCmd = append(buildCmd, buildArgs...)
-	buildCmd = append(buildCmd, "-o", sdktools.MainPath(), "main.go")
+	buildCmd = append(buildCmd, "-o", MainPath(), "main.go")
 
 	cmd := exec.Command(goBin, buildCmd...)
 	cmd.Dir = mainDir
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
-	fmt.Println("Building main: " + sdktools.MainPath())
+	fmt.Println("Building main: " + MainPath())
 	err := cmd.Run()
 	if err != nil {
 		fmt.Println("Error building main: " + err.Error())
 		return err
 	}
 
-	fmt.Println("Main built successfully: " + sdktools.MainPath())
+	fmt.Println("Main built successfully: " + MainPath())
 	return nil
 }
 
 func BuildPlugins() error {
-	return sdktools.BuildAllPlugins()
+	return BuildAllPlugins()
 }

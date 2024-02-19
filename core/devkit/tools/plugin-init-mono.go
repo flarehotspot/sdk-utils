@@ -10,7 +10,6 @@ import (
 	"github.com/flarehotspot/flarehotspot/core/config/plugincfg"
 	sdkfs "github.com/flarehotspot/sdk/utils/fs"
 	sdkstr "github.com/flarehotspot/sdk/utils/strings"
-	sdktools "github.com/flarehotspot/sdk/utils/tools"
 )
 
 type PluginModule struct {
@@ -20,11 +19,11 @@ type PluginModule struct {
 }
 
 func CreateMonoFiles() {
-	sdktools.CreateGoWorkspace()
+	CreateGoWorkspace()
 
 	MakePluginMainMono("core")
 
-	pluginDirs := sdktools.PluginPathList()
+	pluginDirs := PluginPathList()
 	for _, dir := range pluginDirs {
 		MakePluginMainMono(dir)
 	}
@@ -34,9 +33,9 @@ func CreateMonoFiles() {
 
 func MakePluginInitMono() error {
 	pluginPaths := []string{"core"}
-	pluginDirs := sdktools.PluginPathList()
+	pluginDirs := PluginPathList()
 	pluginPaths = append(pluginPaths, pluginDirs...)
-	coreInfo := sdktools.CoreInfo()
+	coreInfo := CoreInfo()
 
 	pluginMods := []PluginModule{}
 	for _, dir := range pluginDirs {

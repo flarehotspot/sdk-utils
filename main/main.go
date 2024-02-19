@@ -8,14 +8,14 @@ import (
 	"plugin"
 
 	"github.com/flarehotspot/flarehotspot/core/env"
+	"github.com/flarehotspot/flarehotspot/core/utils/tools"
 	paths "github.com/flarehotspot/sdk/utils/paths"
-	sdktools "github.com/flarehotspot/sdk/utils/tools"
 )
 
 func main() {
 	if env.GoEnv == env.ENV_DEV {
-		sdktools.CreateGoWorkspace()
-		sdktools.BuildAllPlugins()
+		tools.CreateGoWorkspace()
+		tools.BuildAllPlugins()
 	}
 
 	corePath := filepath.Join(paths.AppDir, "core/plugin.so")
