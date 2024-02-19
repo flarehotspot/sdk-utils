@@ -17,7 +17,8 @@ func CreateGoWorkspace() {
 	goWork := fmt.Sprintf(`go %s
 
 use (
-    ./core`, goVersion)
+    ./core
+    ./main`, goVersion)
 
 	pluginSearchPaths := []string{"plugins"}
 

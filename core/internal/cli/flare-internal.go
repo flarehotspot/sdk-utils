@@ -44,7 +44,7 @@ func Server() {
 	buildArgs := tools.BuildArgs()
 	runCmd := []string{"build"}
 	runCmd = append(runCmd, buildArgs...)
-	runCmd = append(runCmd, "-o", serverBin, "core/main_mono.go")
+	runCmd = append(runCmd, "-o", serverBin, "main/main.go")
     fmt.Printf("Executing: %s %s\n", goBin, strings.Join(runCmd, " "))
 
 	cmd := exec.Command(goBin, runCmd...)
@@ -54,6 +54,8 @@ func Server() {
 	if err != nil {
 		panic(err)
 	}
+
+    exec.Command("chmod", "+x", serverBin).Run()
 
 	cmd = exec.Command(serverBin)
 	cmd.Stdout = os.Stdout

@@ -12,11 +12,12 @@ ENV FLARE_INT="./core/internal/cli/flare-internal.go"
 
 WORKDIR /build
 
-COPY ./core/go-version ./core/go-version
-COPY ./core/go.mod ./core/go.mod
-COPY ./core/devkit/ ./core/devkit/
-COPY ./core/sdk/ ./core/sdk/
-COPY go.work.default go.work
+COPY ./core/go-version  ./core/go-version
+COPY ./core/go.mod      ./core/go.mod
+COPY ./core/devkit/     ./core/devkit/
+COPY ./core/sdk/        ./core/sdk/
+COPY ./main/go.mod      ./main/go.mod
+COPY ./go.work.default  ./go.work
 
 RUN go run $FLARE install-go
 

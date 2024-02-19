@@ -22,6 +22,7 @@ var (
 	RELEASE_DIR  = filepath.Join(sdkpaths.AppDir, "devkit-release", fmt.Sprintf("devkit-%s-%s", coreInfo.Version, GOARCH))
 	DEVKIT_FILES = []string{
 		"bin",
+        "main/go.mod",
 		"config/.defaults",
 		"core/go.mod",
 		"core/go.sum",

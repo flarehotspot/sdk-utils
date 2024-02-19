@@ -5,12 +5,13 @@ import (
 	"os"
 )
 
-var (
-	prod = os.Getenv("GO_ENV") != "development"
-	tags = os.Getenv("GO_TAGS")
-)
-
 func BuildArgs() []string {
+	prod := os.Getenv("GO_ENV") != "development"
+	tags := os.Getenv("GO_TAGS")
+	if tags == "" {
+		tags = os.Getenv("GOTAGS")
+	}
+
 	args := []string{"-ldflags", "-s -w", "-trimpath"}
 
 	if !prod {
