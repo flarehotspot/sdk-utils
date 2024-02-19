@@ -57,50 +57,50 @@ jobs:
           - arch: aarch64
             distro: ubuntu22.04
     steps:
-      - name: 'Cleanup build folder'
-        run: |
-          sudo rm -rf ./* || true
-          sudo rm -rf ./.??* || true
-          ls -la ./
-      - run: |
-          sudo apt update && \
-          sudo apt-get install -y curl ca-certificates git openssl \
-            gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu
-      - uses: actions/checkout@v4
-      - run: rm -rf sdk && git clone https://oauth2:${{ secrets.DEVKIT_RELEASE_SECRET }}@github.com/flarehotspot/sdk.git sdk
-      - run: rm -rf system && mkdir -p system
-      - run: cd system && git clone https://oauth2:${{ secrets.DEVKIT_RELEASE_SECRET }}@github.com/flarehotspot/com.flarego.default-theme.git
-      - run: cp go.work.default go.work
-      - uses: actions/setup-go@v5
-        with:
-          go-version: '1.19.12'
-      - run: GOOS=linux GOARCH=arm64 CC=aarch64-linux-gnu-gcc go build -o ./flare-internal ./core/internal/cli/flare-internal.go
-      - run: GOOS=linux GOARCH=arm64 CC=aarch64-linux-gnu-gcc go build -o ./flare ./core/devkit/cli/flare.go
-      - uses: uraimo/run-on-arch-action@v2.3.0
-        with:
-          arch: ${{ matrix.arch }}
-          distro: ${{ matrix.distro }}
-          dockerRunArgs: |
-            --volume "${PWD}:/build"
-          env: | # YAML, but pipe character is necessary
-            NODE_ENV: production
-            DEVKIT_BUILD: true
-            CGO_ENABLED: '1'
-            GO_CUSTOM_PATH: /build/go
-            GITHUB_TOKEN: ${{ secrets.DEVKIT_RELEASE_SECRET }}
-          install: |
-            apt-get update -q -y && \
-              apt-get install -q -y \
-              gcc ca-certificates zip
-          run: |
-            cd /build && \
-            ./flare install-go && \
-            ./flare-internal create-devkit
-      - run: tree ./devkit-release
-      - uses: actions/upload-artifact@v4
-        with:
-          name: devkit-${{ matrix.distro }}-${{ matrix.goarch }}
-          path: devkit-release/**/*.zip
+      # - name: 'Cleanup build folder'
+      #   run: |
+      #     sudo rm -rf ./* || true
+      #     sudo rm -rf ./.??* || true
+      #     ls -la ./
+      # - run: |
+      #     sudo apt update && \
+      #     sudo apt-get install -y curl ca-certificates git openssl \
+      #       gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu
+      # - uses: actions/checkout@v4
+      # - run: rm -rf sdk && git clone https://oauth2:${{ secrets.DEVKIT_RELEASE_SECRET }}@github.com/flarehotspot/sdk.git sdk
+      # - run: rm -rf system && mkdir -p system
+      # - run: cd system && git clone https://oauth2:${{ secrets.DEVKIT_RELEASE_SECRET }}@github.com/flarehotspot/com.flarego.default-theme.git
+      # - run: cp go.work.default go.work
+      # - uses: actions/setup-go@v5
+      #   with:
+      #     go-version: '1.19.12'
+      # - run: GOOS=linux GOARCH=arm64 CC=aarch64-linux-gnu-gcc go build -o ./flare-internal ./core/internal/cli/flare-internal.go
+      # - run: GOOS=linux GOARCH=arm64 CC=aarch64-linux-gnu-gcc go build -o ./flare ./core/devkit/cli/flare.go
+      # - uses: uraimo/run-on-arch-action@v2.3.0
+      #   with:
+      #     arch: ${{ matrix.arch }}
+      #     distro: ${{ matrix.distro }}
+      #     dockerRunArgs: |
+      #       --volume "${PWD}:/build"
+      #     env: | # YAML, but pipe character is necessary
+      #       NODE_ENV: production
+      #       DEVKIT_BUILD: true
+      #       CGO_ENABLED: '1'
+      #       GO_CUSTOM_PATH: /build/go
+      #       GITHUB_TOKEN: ${{ secrets.DEVKIT_RELEASE_SECRET }}
+      #     install: |
+      #       apt-get update -q -y && \
+      #         apt-get install -q -y \
+      #         gcc ca-certificates zip
+      #     run: |
+      #       cd /build && \
+      #       ./flare install-go && \
+      #       ./flare-internal create-devkit
+      # - run: tree ./devkit-release
+      # - uses: actions/upload-artifact@v4
+      #   with:
+      #     name: devkit-${{ matrix.distro }}-${{ matrix.goarch }}
+      #     path: devkit-release/**/*.zip
 
   publish-release:
     runs-on: ubuntu-22.04
