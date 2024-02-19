@@ -12,7 +12,7 @@ const octokit = new Octokit({ auth: GITHUB_TOKEN });
 
 const main = async () => {
   const CORE_VERSION = await coreVersion();
-  const DEVKIT_DIR = path.join(__dirname, '../devkit-release');
+  const DEVKIT_DIR = path.join(__dirname, '../../devkit-release');
 
   async function isPreRelease() {
     const preKeywords = ['alpha', 'beta', 'rc', 'pre'];
