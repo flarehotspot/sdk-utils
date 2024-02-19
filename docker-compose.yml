@@ -7,7 +7,7 @@ services:
       context: .
     volumes:
       - ./:/build
-      - ./build/devkit-extras/config/database.json:/build/config/database.json
+      - ./build/devkit/extras/config/database.json:/build/config/database.json
       - /.cache
       - /bin
       - /build/node_modules
