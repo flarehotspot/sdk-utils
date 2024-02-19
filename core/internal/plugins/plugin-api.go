@@ -61,7 +61,7 @@ func (p *PluginApi) Dir() string {
 	return p.dir
 }
 
-func (p *PluginApi) Translate(t string, msgk string, pairs ...any) string {
+func (p *PluginApi) Translate(t string, msgk string, pairs ...interface{}) string {
 	return p.Utl.Translate(t, msgk, pairs...)
 }
 

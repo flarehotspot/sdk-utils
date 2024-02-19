@@ -18,9 +18,9 @@ func NewHttpResponse(api *PluginApi) *HttpResponse {
 	return &HttpResponse{api, viewroot}
 }
 
-func (self *HttpResponse) AdminView(w http.ResponseWriter, r *http.Request, view string, data any) {
+func (self *HttpResponse) AdminView(w http.ResponseWriter, r *http.Request, view string, data interface{}) {
 	if data == nil {
-		data = map[string]any{}
+		data = map[string]interface{}{}
 	}
 
 	helpers := NewViewHelpers(self.api)
@@ -30,9 +30,9 @@ func (self *HttpResponse) AdminView(w http.ResponseWriter, r *http.Request, view
 	resp.ViewWithLayout(w, layoutFile, viewFile, helpers, data)
 }
 
-func (self *HttpResponse) PortalView(w http.ResponseWriter, r *http.Request, view string, data any) {
+func (self *HttpResponse) PortalView(w http.ResponseWriter, r *http.Request, view string, data interface{}) {
 	if data == nil {
-		data = map[string]any{}
+		data = map[string]interface{}{}
 	}
 
 	helpers := NewViewHelpers(self.api)
@@ -42,9 +42,9 @@ func (self *HttpResponse) PortalView(w http.ResponseWriter, r *http.Request, vie
 	resp.ViewWithLayout(w, layoutFile, viewFile, helpers, data)
 }
 
-func (self *HttpResponse) View(w http.ResponseWriter, r *http.Request, view string, data any) {
+func (self *HttpResponse) View(w http.ResponseWriter, r *http.Request, view string, data interface{}) {
 	if data == nil {
-		data = map[string]any{}
+		data = map[string]interface{}{}
 	}
 
 	helpers := NewViewHelpers(self.api)
@@ -54,9 +54,9 @@ func (self *HttpResponse) View(w http.ResponseWriter, r *http.Request, view stri
 	resp.View(w, viewfile, helpers, data)
 }
 
-func (self *HttpResponse) Script(w http.ResponseWriter, r *http.Request, file string, data any) {
+func (self *HttpResponse) Script(w http.ResponseWriter, r *http.Request, file string, data interface{}) {
 	if data == nil {
-		data = map[string]any{}
+		data = map[string]interface{}{}
 	}
 
 	helpers := NewViewHelpers(self.api)
@@ -66,6 +66,6 @@ func (self *HttpResponse) Script(w http.ResponseWriter, r *http.Request, file st
 	resp.Text(w, file, helpers, data)
 }
 
-func (res *HttpResponse) Json(w http.ResponseWriter, data any, status int) {
+func (res *HttpResponse) Json(w http.ResponseWriter, data interface{}, status int) {
 	resp.Json(w, data, status)
 }

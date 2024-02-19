@@ -20,7 +20,7 @@ type PluginUtils struct {
 	api *PluginApi
 }
 
-func (utl *PluginUtils) Translate(msgtype string, msgk string, pairs ...any) string {
+func (utl *PluginUtils) Translate(msgtype string, msgk string, pairs ...interface{}) string {
 	if len(pairs)%2 != 0 {
 		return "Invalid number of translation params."
 	}
@@ -35,7 +35,7 @@ func (utl *PluginUtils) Translate(msgtype string, msgk string, pairs ...any) str
 		return msgk
 	}
 
-	vdata := map[any]any{}
+	vdata := map[interface{}]interface{}{}
 	for i := 0; i < len(pairs); i += 2 {
 		key := pairs[i]
 		value := pairs[i+1]

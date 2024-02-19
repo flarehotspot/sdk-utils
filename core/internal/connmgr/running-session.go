@@ -69,7 +69,7 @@ func (self *RunningSession) Done() <-chan error {
 }
 
 func (self *RunningSession) Start(ctx context.Context, s connmgr.ClientSession) error {
-	_, err := sessionQ.Exec(func() (any, error) {
+	_, err := sessionQ.Exec(func() (interface{}, error) {
 		self.mu.Lock()
 		defer self.mu.Unlock()
 
@@ -99,7 +99,7 @@ func (self *RunningSession) Start(ctx context.Context, s connmgr.ClientSession) 
 }
 
 func (self *RunningSession) Change(cs connmgr.ClientSession) error {
-	_, err := sessionQ.Exec(func() (any, error) {
+	_, err := sessionQ.Exec(func() (interface{}, error) {
 		self.mu.Lock()
 		defer self.mu.Unlock()
 
@@ -132,7 +132,7 @@ func (self *RunningSession) Change(cs connmgr.ClientSession) error {
 }
 
 func (self *RunningSession) Stop(ctx context.Context) error {
-	_, err := sessionQ.Exec(func() (any, error) {
+	_, err := sessionQ.Exec(func() (interface{}, error) {
 		self.mu.Lock()
 		defer self.mu.Unlock()
 

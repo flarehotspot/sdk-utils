@@ -131,7 +131,7 @@ func (self *SessionsMgr) Connect(clnt connmgr.ClientDevice) error {
 
 		go self.loopSessions(clnt)
 
-		data := map[string]any{"message": "You are now connected to internet."}
+		data := map[string]interface{}{"message": "You are now connected to internet."}
 		self.SocketEmit(clnt, "client:connected", data)
 		errCh <- nil
 	}()
@@ -147,7 +147,7 @@ func (self *SessionsMgr) Disconnect(clnt connmgr.ClientDevice, notify error) err
 	}
 
 	if notify != nil {
-		data := map[string]any{"message": notify.Error()}
+		data := map[string]interface{}{"message": notify.Error()}
 		self.SocketEmit(clnt, EventDisconnected, data)
 	}
 
@@ -171,7 +171,7 @@ func (self *SessionsMgr) CurrSession(clnt connmgr.ClientDevice) (cs connmgr.Clie
 	return nil, false
 }
 
-func (self *SessionsMgr) SocketEmit(clnt connmgr.ClientDevice, t string, d map[string]any) {
+func (self *SessionsMgr) SocketEmit(clnt connmgr.ClientDevice, t string, d map[string]interface{}) {
 	sse.Emit(clnt.MacAddr(), t, d)
 }
 

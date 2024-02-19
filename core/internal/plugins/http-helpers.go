@@ -64,7 +64,7 @@ func (self *HttpHelpers) VueComponentPath(path string) string {
 	return url.String()
 }
 
-func (self *HttpHelpers) EmbedJs(path string, data any) template.JS {
+func (self *HttpHelpers) EmbedJs(path string, data interface{}) template.JS {
 	jspath := self.api.Utl.Resource(filepath.Join("assets", path))
 
 	var output strings.Builder
@@ -84,7 +84,7 @@ func (self *HttpHelpers) EmbedJs(path string, data any) template.JS {
 	return template.JS(output.String())
 }
 
-func (self *HttpHelpers) EmbedCss(path string, data any) template.CSS {
+func (self *HttpHelpers) EmbedCss(path string, data interface{}) template.CSS {
 	csspath := self.api.Utl.Resource(filepath.Join("assets", path))
 
 	var output strings.Builder

@@ -7,7 +7,6 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/flarehotspot/core/internal/config/plugincfg"
 	sdkfs "github.com/flarehotspot/core/sdk/utils/fs"
 	sdkstr "github.com/flarehotspot/core/sdk/utils/strings"
 )
@@ -20,8 +19,6 @@ type PluginModule struct {
 
 func CreateMonoFiles() {
 	CreateGoWorkspace()
-
-	MakePluginMainMono("core")
 
 	pluginDirs := PluginPathList()
 	for _, dir := range pluginDirs {
@@ -98,7 +95,7 @@ func getGoModule(pluginDir string) string {
 }
 
 func getPackage(pluginDir string) string {
-	info, err := plugincfg.GetPluginInfo(pluginDir)
+	info, err := PluginInfo(pluginDir)
 	if err != nil {
 		panic(err)
 	}

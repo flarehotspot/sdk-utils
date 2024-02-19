@@ -21,7 +21,7 @@ func (c *PluginConfig) configPath() string {
 	return filepath.Join(paths.ConfigDir, "plugins", c.api.Pkg()+".json")
 }
 
-func (c *PluginConfig) WriteJson(v any) error {
+func (c *PluginConfig) WriteJson(v interface{}) error {
 	dir := filepath.Join(paths.ConfigDir, "plugins")
 	err := fs.EnsureDir(dir)
 	if err != nil {
@@ -32,7 +32,7 @@ func (c *PluginConfig) WriteJson(v any) error {
 	return err
 }
 
-func (c *PluginConfig) ReadJson(v any) error {
+func (c *PluginConfig) ReadJson(v interface{}) error {
 	bytes, err := os.ReadFile(c.configPath())
 	if err != nil {
 		return err

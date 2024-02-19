@@ -6,7 +6,7 @@ import (
 	"sync"
 	texttemplate "text/template"
 
-	"github.com/flarehotspot/core/internal/env"
+	"github.com/flarehotspot/core/devkit/env"
 )
 
 var (

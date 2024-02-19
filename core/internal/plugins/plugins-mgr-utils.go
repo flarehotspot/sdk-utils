@@ -20,7 +20,7 @@ type PluginsMgrUtils struct {
 	coreApi *PluginApi
 }
 
-func (util *PluginsMgrUtils) GetAdminRoutes() []map[string]any {
+func (util *PluginsMgrUtils) GetAdminRoutes() []map[string]interface{} {
 	routes := []*VueRouteComponent{}
 	for _, p := range util.pmgr.All() {
 		vueR := p.Http().VueRouter().(*VueRouterApi)
@@ -28,9 +28,9 @@ func (util *PluginsMgrUtils) GetAdminRoutes() []map[string]any {
 		routes = append(routes, adminRoutes...)
 	}
 
-	children := []map[string]any{}
+	children := []map[string]interface{}{}
 	for _, r := range routes {
-		children = append(children, map[string]any{
+		children = append(children, map[string]interface{}{
 			"path":      r.VueRoutePath,
 			"name":      r.VueRouteName,
 			"component": r.HttpWrapperFullPath,
@@ -48,12 +48,12 @@ func (util *PluginsMgrUtils) GetAdminRoutes() []map[string]any {
 	}
 
 	themesApi := themesPlugin.Themes().(*ThemesApi)
-	children = append(children, map[string]any{
+	children = append(children, map[string]interface{}{
 		"path":     "*",
 		"redirect": themesApi.AdminDashboardRoute.VueRoutePath,
 	})
 
-	routesMap := []map[string]any{
+	routesMap := []map[string]interface{}{
 		{
 			"path":      "/",
 			"name":      themesApi.AdminLayoutRoute.VueRouteName,

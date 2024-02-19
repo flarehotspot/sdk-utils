@@ -1,12 +1,13 @@
 package tools
 
 import (
+	"fmt"
 	"os"
 )
 
 var (
 	prod = os.Getenv("GO_ENV") != "development"
-	tags = os.Getenv("GO_TAGS")
+	tags = os.Getenv("GOTAGS")
 )
 
 func BuildArgs() []string {
@@ -18,8 +19,10 @@ func BuildArgs() []string {
 		if tags == "" {
 			tags = "dev"
 		}
-		args = append(args, "-tags=\""+tags+"\"")
+		args = append(args, "-tags", tags)
 	}
+
+	fmt.Println("Build args: ", args)
 
 	return args
 }

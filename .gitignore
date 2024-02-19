@@ -6,6 +6,7 @@
 /public
 /openwrt-files
 /.cache
+/.gocache
 /.tmp
 /vendor
 /node_modules

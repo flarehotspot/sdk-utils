@@ -8,7 +8,7 @@ import (
 	sdkpaths "github.com/flarehotspot/core/sdk/utils/paths"
 )
 
-func readConfigFile(out any, f string) error {
+func readConfigFile(out interface{}, f string) error {
 	location := filepath.Join(sdkpaths.ConfigDir, f)
 	bytes, err := os.ReadFile(location)
 	if err != nil {
@@ -23,7 +23,7 @@ func readConfigFile(out any, f string) error {
 	return json.Unmarshal(bytes, out)
 }
 
-func writeConfigFile(f string, config any) error {
+func writeConfigFile(f string, config interface{}) error {
 	bytes, err := json.Marshal(config)
 	if err != nil {
 		return err

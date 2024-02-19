@@ -2,14 +2,14 @@ package sdkcfg
 
 // AppCfg is the application configuration.
 type AppCfg struct {
-  // Examples: en, zh
-	Lang     string
+	// Examples: en, zh
+	Lang string `json:"lang"`
 
-  // Examples: USD, PH, CNY
-	Currency string
+	// Examples: USD, PH, CNY
+	Currency string `json:"currency"`
 
-  // Application secret key
-	Secret   string
+	// Application secret key
+	Secret string `json:"secret"`
 }
 
 // ApplicationCfg is used to read and write application configuration.

@@ -39,16 +39,26 @@ func main() {
 }
 
 func Server() {
+    goBin := tools.GoBin()
+	serverBin := "./bin/debug-server"
 	buildArgs := tools.BuildArgs()
-	runCmd := []string{"run"}
+	runCmd := []string{"build"}
 	runCmd = append(runCmd, buildArgs...)
-	runCmd = append(runCmd, "core/internal/main/main.go")
-	fmt.Println("Executing: go " + strings.Join(runCmd, " "))
+	runCmd = append(runCmd, "-o", serverBin, "core/internal/main/main_mono.go")
+    fmt.Printf("Executing: %s %s\n", goBin, strings.Join(runCmd, " "))
 
-	cmd := exec.Command("go", runCmd...)
+	cmd := exec.Command(goBin, runCmd...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	err := cmd.Run()
+	if err != nil {
+		panic(err)
+	}
+
+	cmd = exec.Command(serverBin)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	err = cmd.Run()
 	if err != nil {
 		panic(err)
 	}

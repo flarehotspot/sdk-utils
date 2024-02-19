@@ -9,7 +9,6 @@ services:
     volumes:
       - ./:/build
       - /.cache
-      - /.gocache
       - /build/node_modules
       - /build/go
       - /flare
@@ -17,7 +16,7 @@ services:
       - mariadb
       - phpmyadmin
     environment:
-      - GOCACHE=/build/.gocache
+      - GOCACHE=/build/.cache/gocache
     ports:
       - 3000:3000
 

@@ -6,7 +6,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"strings"
 
 	sdkfs "github.com/flarehotspot/core/sdk/utils/fs"
 	sdkpaths "github.com/flarehotspot/core/sdk/utils/paths"
@@ -26,7 +25,6 @@ func BuildPlugin(dir string) error {
 
 	goBin := GoBin()
 	buildArgs := BuildArgs()
-	fmt.Println("Build args: " + strings.Join(buildArgs, ","))
 
 	buildCmd := []string{"build", "-buildmode=plugin"}
 	buildCmd = append(buildCmd, buildArgs...)

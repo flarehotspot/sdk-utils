@@ -74,10 +74,6 @@ func AllPluginSrc() PluginList {
 func PluginDirList() []string {
 	var pluginList []string
 
-	if err := fs.LsDirs(paths.SystemDir, &pluginList, false); err != nil {
-		panic(err)
-	}
-
 	if err := fs.LsDirs(paths.PluginsDir, &pluginList, false); err != nil {
 		panic(err)
 	}

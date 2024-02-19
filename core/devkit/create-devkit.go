@@ -9,7 +9,7 @@ import (
 	"runtime"
 
 	"github.com/flarehotspot/core/devkit/tools"
-	"github.com/flarehotspot/core/internal/config"
+	sdkcfg "github.com/flarehotspot/core/sdk/api/config"
 	sdkfs "github.com/flarehotspot/core/sdk/utils/fs"
 	sdkpaths "github.com/flarehotspot/core/sdk/utils/paths"
 	sdkstr "github.com/flarehotspot/core/sdk/utils/strings"
@@ -49,7 +49,7 @@ func CreateDevkit() {
 
 func CreateApplicationConfig() {
 	cfgPath := filepath.Join(RELEASE_DIR, "config/application.json")
-	appcfg := config.AppConfig{
+	appcfg := sdkcfg.AppCfg{
 		Lang:     "en",
 		Currency: "php",
 		Secret:   sdkstr.Rand(16),
