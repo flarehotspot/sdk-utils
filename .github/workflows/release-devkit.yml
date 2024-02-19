@@ -57,11 +57,11 @@ jobs:
           - arch: aarch64
             distro: ubuntu22.04
     steps:
-      # - name: 'Cleanup build folder'
-      #   run: |
-      #     sudo rm -rf ./* || true
-      #     sudo rm -rf ./.??* || true
-      #     ls -la ./
+      - name: 'Cleanup build folder'
+        run: |
+          sudo rm -rf ./* || true
+          sudo rm -rf ./.??* || true
+          ls -la ./
       # - run: |
       #     sudo apt update && \
       #     sudo apt-get install -y curl ca-certificates git openssl \
