@@ -3,9 +3,9 @@ package tools
 import (
 	"path/filepath"
 
-	sdkplugin "github.com/flarehotspot/sdk/api/plugin"
-	sdkfs "github.com/flarehotspot/sdk/utils/fs"
-	sdkpaths "github.com/flarehotspot/sdk/utils/paths"
+	sdkplugin "github.com/flarehotspot/core/sdk/api/plugin"
+	sdkfs "github.com/flarehotspot/core/sdk/utils/fs"
+	sdkpaths "github.com/flarehotspot/core/sdk/utils/paths"
 )
 
 func CoreInfo() sdkplugin.PluginInfo {

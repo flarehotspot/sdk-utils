@@ -1,4 +1,4 @@
-module github.com/flarehotspot/flarehotspot/core
+module github.com/flarehotspot/core
 
 go 1.19
 

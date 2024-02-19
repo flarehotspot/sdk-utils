@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/flarehotspot/flarehotspot/core/internal/devkit"
-	"github.com/flarehotspot/flarehotspot/core/utils/tools"
+	"github.com/flarehotspot/core/devkit"
+	"github.com/flarehotspot/core/devkit/tools"
 )
 
 func main() {

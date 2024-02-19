@@ -7,9 +7,9 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/flarehotspot/flarehotspot/core/config/plugincfg"
-	sdkfs "github.com/flarehotspot/sdk/utils/fs"
-	sdkstr "github.com/flarehotspot/sdk/utils/strings"
+	"github.com/flarehotspot/core/internal/config/plugincfg"
+	sdkfs "github.com/flarehotspot/core/sdk/utils/fs"
+	sdkstr "github.com/flarehotspot/core/sdk/utils/strings"
 )
 
 type PluginModule struct {

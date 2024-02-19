@@ -6,7 +6,7 @@ import (
 	"os/exec"
 	"path/filepath"
 
-	sdkpaths "github.com/flarehotspot/sdk/utils/paths"
+	sdkpaths "github.com/flarehotspot/core/sdk/utils/paths"
 )
 
 func BuildCore() error {

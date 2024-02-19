@@ -6,7 +6,7 @@ import (
 	"os/exec"
 	"runtime"
 
-	sdkfs "github.com/flarehotspot/sdk/utils/fs"
+	sdkfs "github.com/flarehotspot/core/sdk/utils/fs"
 )
 
 func BuildFlareCLI() {

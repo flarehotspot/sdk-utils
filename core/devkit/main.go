@@ -7,11 +7,11 @@ import (
 	"path/filepath"
 	"runtime"
 
-	"github.com/flarehotspot/flarehotspot/core/config"
-	"github.com/flarehotspot/flarehotspot/core/devkit/tools"
-	sdkfs "github.com/flarehotspot/sdk/utils/fs"
-	sdkpaths "github.com/flarehotspot/sdk/utils/paths"
-	sdkstr "github.com/flarehotspot/sdk/utils/strings"
+	"github.com/flarehotspot/core/internal/config"
+	"github.com/flarehotspot/core/devkit/tools"
+	sdkfs "github.com/flarehotspot/core/sdk/utils/fs"
+	sdkpaths "github.com/flarehotspot/core/sdk/utils/paths"
+	sdkstr "github.com/flarehotspot/core/sdk/utils/strings"
 )
 
 const GOARCH = runtime.GOARCH
