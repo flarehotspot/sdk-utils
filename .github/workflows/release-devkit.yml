@@ -80,8 +80,8 @@ jobs:
           dockerRunArgs: |
             --volume "${PWD}:/build"
           env: | # YAML, but pipe character is necessary
-            GO_ENV=development
-            GO_TAGS=dev
+            GO_ENV:development
+            GO_TAGS:dev
             CGO_ENABLED: '1'
             GO_CUSTOM_PATH: /build/go
             GITHUB_TOKEN: ${{ secrets.DEVKIT_RELEASE_SECRET }}

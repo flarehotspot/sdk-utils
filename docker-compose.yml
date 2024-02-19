@@ -9,7 +9,6 @@ services:
       - ./:/build
       - ./build/devkit-extras/config/database.json:/build/config/database.json
       - /.cache
-      - /.gocache
       - /bin
       - /build/node_modules
       - /build/go
@@ -17,7 +16,7 @@ services:
       - mariadb
       - phpmyadmin
     environment:
-      - GOCACHE=/build/.gocache
+      - GOCACHE=/build/.cache/gocache
     ports:
       - 3000:3000
 
