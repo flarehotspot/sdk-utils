@@ -6,7 +6,7 @@ RUN apt-get update && apt-get install -y \
         wget curl gcc ca-certificates
 
 ENV GO_ENV=development
-ENV GO_CUSTOM_PATH=/build/go
+ENV GO_CUSTOM_PATH=/build/.tmp/go
 ENV PATH=${GO_CUSTOM_PATH}/bin:${PATH}
 
 WORKDIR /build
