@@ -3,7 +3,7 @@
 - added flare cli
 
 ```sh
-./flare --help
-# or flare.exe on windows
+./bin/flare --help
+# or bin/flare.exe --help on windows
 ```
 
