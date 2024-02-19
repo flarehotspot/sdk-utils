@@ -9,8 +9,8 @@ import (
 	"github.com/flarehotspot/core/internal/db"
 	"github.com/flarehotspot/core/internal/db/models"
 	"github.com/flarehotspot/core/internal/network"
-	plugin "github.com/flarehotspot/core/sdk/api/plugin"
 	"github.com/flarehotspot/core/internal/utils/migrate"
+	plugin "github.com/flarehotspot/core/sdk/api/plugin"
 )
 
 type PluginsMgr struct {

@@ -21,7 +21,7 @@ func CreateMonoFiles() {
 	CreateGoWorkspace()
 
 	pluginDirs := PluginPathList()
-    pluginDirs = append(pluginDirs, "core")
+	pluginDirs = append(pluginDirs, "core")
 	for _, dir := range pluginDirs {
 		MakePluginMainMono(dir)
 	}
@@ -29,7 +29,7 @@ func CreateMonoFiles() {
 	MakePluginInitMono()
 }
 
-func MakePluginInitMono() error {
+func MakePluginInitMono() {
 	pluginPaths := []string{"core"}
 	pluginDirs := PluginPathList()
 	pluginPaths = append(pluginPaths, pluginDirs...)
@@ -75,8 +75,11 @@ func (p *PluginApi) Init() error {
     return nil
 }`, AUTO_GENERATED_HEADER, importModules, coreInfo.Package, pluginSwitchCases)
 
-	pluginInitMonoPath := filepath.Join("core/plugins/plugin-init_mono.go")
-	return os.WriteFile(pluginInitMonoPath, []byte(pluginMonoInit), 0644)
+	pluginInitMonoPath := filepath.Join("core/internal/plugins/plugin-init_mono.go")
+	err := os.WriteFile(pluginInitMonoPath, []byte(pluginMonoInit), 0644)
+	if err != nil {
+		panic(err)
+	}
 }
 
 func getGoModule(pluginDir string) string {
