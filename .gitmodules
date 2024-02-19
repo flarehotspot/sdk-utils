@@ -1,3 +1,6 @@
+[submodule "plugins/com.flarego.default-theme"]
+	path = plugins/com.flarego.default-theme
+	url = git@github.com:flarehotspot/com.flarego.default-theme
 [submodule "plugins/com.flarego.wired-coinslot"]
 	path = plugins/com.flarego.wired-coinslot
 	url = git@github.com:flarehotspot/com.flarego.wired-coinslot.git
@@ -10,6 +13,3 @@
 [submodule "plugins/com.flarego.basic-system-account"]
 	path = plugins/com.flarego.basic-system-account
 	url = git@github.com:flarehotspot/com.flarego.basic-system-account.git
-[submodule "plugins/com.flarego.default-theme"]
-	path = plugins/com.flarego.default-theme
-	url = git@github.com:flarehotspot/com.flarego.default-theme
