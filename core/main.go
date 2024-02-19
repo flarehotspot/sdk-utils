@@ -8,7 +8,7 @@ import (
 	"plugin"
 
 	"github.com/flarehotspot/core/devkit/tools"
-	"github.com/flarehotspot/core/internal/env"
+	"github.com/flarehotspot/core/devkit/env"
 	paths "github.com/flarehotspot/core/sdk/utils/paths"
 )
 
