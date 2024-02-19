@@ -78,12 +78,13 @@ jobs:
           arch: ${{ matrix.arch }}
           distro: ${{ matrix.distro }}
           dockerRunArgs: |
-            --volume "${PWD}:/build" -e GITHUB_TOKEN=$GITHUB_TOKEN
+            --volume "${PWD}:/build"
           env: | # YAML, but pipe character is necessary
-            GO_ENV:development
-            GO_TAGS:dev
+            GO_ENV: development
+            GO_TAGS: dev
             CGO_ENABLED: '1'
             GO_CUSTOM_PATH: /build/go
+            GITHUB_TOKEN: ${{ secrets.DEVKIT_RELEASE_SECRET }}
           install: |
             apt-get update -q -y && \
               apt-get install -q -y \
