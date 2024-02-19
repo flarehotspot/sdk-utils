@@ -7,9 +7,9 @@ import (
 	"path/filepath"
 	"plugin"
 
-	"github.com/flarehotspot/flarehotspot/core/env"
-	"github.com/flarehotspot/flarehotspot/core/utils/tools"
-	paths "github.com/flarehotspot/sdk/utils/paths"
+	"github.com/flarehotspot/core/devkit/tools"
+	"github.com/flarehotspot/core/internal/env"
+	paths "github.com/flarehotspot/core/sdk/utils/paths"
 )
 
 func main() {

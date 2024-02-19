@@ -17,11 +17,9 @@ func CreateGoWorkspace() {
 	goWork := fmt.Sprintf(`go %s
 
 use (
-    ./core
-    ./sdk
-    ./main`, goVersion)
+    ./core`, goVersion)
 
-	pluginSearchPaths := []string{"system", "plugins"}
+	pluginSearchPaths := []string{"plugins"}
 
 	for _, searchPath := range pluginSearchPaths {
 		if sdkfs.Exists(searchPath) {

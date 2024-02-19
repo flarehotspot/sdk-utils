@@ -2,10 +2,15 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
+	"path/filepath"
+	"plugin"
 	"strings"
 
 	tools "github.com/flarehotspot/core/devkit/tools"
+	"github.com/flarehotspot/core/internal/env"
+	sdkpaths "github.com/flarehotspot/core/sdk/utils/paths"
 )
 
 var (
@@ -21,6 +26,10 @@ func main() {
 	command := os.Args[1]
 
 	switch command {
+	case "server":
+		Server()
+		return
+
 	case "create-plugin":
 		var (
 			err        error
@@ -52,6 +61,7 @@ func main() {
 
 		tools.CreatePlugin(pluginPkg, pluginName, pluginDesc)
 		return
+
 	case "build-plugin":
 		var err error
 		if len(os.Args) < 3 {
@@ -65,15 +75,15 @@ func main() {
 			os.Exit(1)
 		}
 		return
+
 	case "fix-workspace":
 		tools.CreateGoWorkspace()
 		return
+
 	case "install-go":
 		tools.InstallExactGoVersion()
 		return
-	case "build-cli":
-		tools.BuildFlareCLI()
-		return
+
 	default:
 		fmt.Println("Unrecognized command: " + command)
 	}
@@ -81,11 +91,29 @@ func main() {
 	fmt.Println(Usage())
 }
 
+func Server() {
+	if env.GoEnv == env.ENV_DEV {
+		tools.CreateGoWorkspace()
+		tools.BuildAllPlugins()
+	}
+
+	corePath := filepath.Join(sdkpaths.AppDir, "core/plugin.so")
+	p, err := plugin.Open(corePath)
+	if err != nil {
+		log.Println("Error loading core plugin:", err)
+		panic(err)
+	}
+	symInit, _ := p.Lookup("Init")
+	initFn := symInit.(func())
+	initFn()
+}
+
 func Usage() string {
 	return `
 Usage: flare <command> [options]
 
 list of commands:
+    server                              Start the flare server
 
     create-plugin                       Create a new plugin
 
@@ -95,8 +123,5 @@ list of commands:
 
     install-go                          Install Go to the "$GO_CUSTOM_PATH" path. If custom path is not defined, then it will install in
                                         the "go" directory under the current working directory.
-
-    build-cli                           Build the flare executable CLI
 `
 }
-

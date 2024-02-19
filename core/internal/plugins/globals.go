@@ -20,7 +20,7 @@ type CoreGlobals struct {
 	PaymentsMgr    *PaymentsMgr
 }
 
-func New() *CoreGlobals {
+func NewGlobals() *CoreGlobals {
 	db, _ := db.NewDatabase()
 	bp := NewBootProgress()
 	mdls := models.New(db)

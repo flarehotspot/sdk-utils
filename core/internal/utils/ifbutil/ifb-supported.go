@@ -16,6 +16,6 @@ func init() {
 }
 
 // check if ifb interface is supported
-func Supported() bool {
+func IsIfbSupported() bool {
 	return supported.Load()
 }

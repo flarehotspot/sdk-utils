@@ -38,7 +38,7 @@ func NewTcFilter(dev string, ip string, netmask int) (*TcFilter, error) {
 }
 
 func (self *TcFilter) devs() []string {
-	if ifbutil.Supported() {
+	if ifbutil.IsIfbSupported() {
 		return []string{self.dev, ifbName(self.dev)}
 	}
 	return []string{self.dev}
@@ -227,7 +227,7 @@ func (self *TcFilter) CleanUp() error {
 			return nil, err
 		}
 
-		if ifbutil.Supported() {
+		if ifbutil.IsIfbSupported() {
 			ifb := ifbName(self.dev)
 			err = cmd.Exec(fmt.Sprintf("tc filter add dev %s parent 1:0 prio 10 protocol ip u32", ifb))
 			if err != nil {

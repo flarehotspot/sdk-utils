@@ -4,11 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"runtime"
 
-	"github.com/flarehotspot/core/internal/config"
 	"github.com/flarehotspot/core/devkit/tools"
+	"github.com/flarehotspot/core/internal/config"
 	sdkfs "github.com/flarehotspot/core/sdk/utils/fs"
 	sdkpaths "github.com/flarehotspot/core/sdk/utils/paths"
 	sdkstr "github.com/flarehotspot/core/sdk/utils/strings"
@@ -20,31 +21,31 @@ var (
 	coreInfo     = tools.CoreInfo()
 	RELEASE_DIR  = filepath.Join(sdkpaths.AppDir, "devkit-release", fmt.Sprintf("devkit-%s-%s", coreInfo.Version, GOARCH))
 	DEVKIT_FILES = []string{
+		"bin",
 		"main/go.mod",
 		"main/main.app",
 		"config/.defaults",
-		"core/plugin.so",
 		"core/go.mod",
 		"core/go.sum",
+		"core/plugin.so",
 		"core/plugin.json",
 		"core/resources",
 		"core/go-version",
 		"package.json",
 		"package-lock.json",
-		"sdk",
-		"system",
 	}
 )
 
 func CreateDevkit() {
-	CleanUpDevkit()
+	PrepareCleanup()
+	tools.BuildFlareCLI()
 	tools.BuildCore()
-	tools.BuildMain()
 	tools.GitCloneSystemPlugins(RELEASE_DIR)
 	CopyDevkitFiles()
 	CopyDevkitExtras()
 	CopyDefaultWorksapce()
 	CreateApplicationConfig()
+	ZipDevkit()
 }
 
 func CreateApplicationConfig() {
@@ -106,7 +107,18 @@ func CopyDefaultWorksapce() {
 	sdkfs.CopyFile(def, dst)
 }
 
-func CleanUpDevkit() {
+func ZipDevkit() {
+	zipFile := RELEASE_DIR + ".zip"
+	cmd := exec.Command("zip", "-r", zipFile, ".")
+	cmd.Dir = RELEASE_DIR
+	err := cmd.Run()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("Devkit created: ", sdkpaths.Strip(zipFile))
+}
+
+func PrepareCleanup() {
 	dirsToRemove := []string{".cache/assets", ".tmp", "public", "devkit-release"}
 	for _, dir := range dirsToRemove {
 		fmt.Println("Removing: ", filepath.Join(sdkpaths.AppDir, dir))

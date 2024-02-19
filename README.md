@@ -24,7 +24,6 @@ Checkout and pull the latest changes for all the submodules
 
 ```sh
 for p in $(ls ./plugins); do cd ./plugins/${p}; git checkout main; git pull; cd ../..; done
-for s in $(ls ./system); do cd ./system/${s}; git checkout main; git pull; cd ../..; done
 ```
 
 Install node modules.
@@ -77,7 +76,7 @@ There are two Flare CLI tools:
 
 Install the `flare` sdk CLI:
 ```sh
-$ go install ./sdk/cli/flare.go
+$ go install ./core/cli/flare.go
 $ flare --help
 ```
 

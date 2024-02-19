@@ -17,7 +17,7 @@ var (
 )
 
 func GitCloneSystemPlugins(rootDir string) {
-	workDir := filepath.Join(rootDir, "system")
+	workDir := filepath.Join(rootDir, "plugins")
 	sdkfs.EnsureDir(workDir)
 	fmt.Println("Cloning system plugins in " + workDir)
 

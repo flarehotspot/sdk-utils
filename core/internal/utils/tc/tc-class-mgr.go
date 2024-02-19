@@ -43,7 +43,7 @@ func (self *TcClassMgr) Setup() error {
 		}
 
 		calls := []string{}
-		if ifbutil.Supported() {
+		if ifbutil.IsIfbSupported() {
 			calls = []string{
 				fmt.Sprintf("ip link add name %s type ifb", ifb),
 				fmt.Sprintf("ip link set dev %s up", ifb),
@@ -182,7 +182,7 @@ func (self *TcClassMgr) tcAddOrChange(action tcAction, parent TcClassId, klass *
 		return err
 	}
 
-	if ifbutil.Supported() {
+	if ifbutil.IsIfbSupported() {
 		if err = cmd.Exec(fmt.Sprintf(`tc class %s dev %s parent %s classid %s hfsc ls rate %dkbit ul rate %dkbit`, action, ifb, parentid, classid, klass.MinUp, klass.CeilUp)); err != nil {
 			return err
 		}
@@ -199,7 +199,7 @@ func (self *TcClassMgr) tcDel(klass *TcClass) error {
 		return err
 	}
 
-	if ifbutil.Supported() {
+	if ifbutil.IsIfbSupported() {
 		if err := cmd.Exec(fmt.Sprintf("tc class del dev %s classid %s", ifb, classid)); err != nil {
 			return err
 		}

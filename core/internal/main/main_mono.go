@@ -1,5 +1,4 @@
-//go:build !mono
-
+//go:build mono
 package main
 
 import (
@@ -7,9 +6,7 @@ import (
 	"github.com/flarehotspot/core/internal/plugins"
 )
 
-func main() {}
-
-func Init() {
-	g := plugins.New()
+func main() {
+	g := plugins.NewGlobals()
 	boot.Init(g)
 }
