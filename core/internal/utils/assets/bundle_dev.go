@@ -1,7 +1,7 @@
 package assets
 
 import (
-	"github.com/flarehotspot/core/devkit/env"
+	"github.com/flarehotspot/core/env"
 	jobque "github.com/flarehotspot/core/internal/utils/job-que"
 )
 

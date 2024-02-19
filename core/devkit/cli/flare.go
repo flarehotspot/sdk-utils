@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	tools "github.com/flarehotspot/core/devkit/tools"
-	"github.com/flarehotspot/core/devkit/env"
+	"github.com/flarehotspot/core/env"
 	sdkpaths "github.com/flarehotspot/core/sdk/utils/paths"
 )
 

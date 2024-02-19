@@ -14,8 +14,9 @@ WORKDIR /build
 
 COPY ./core/go-version  ./core/go-version
 COPY ./core/go.mod      ./core/go.mod
-COPY ./core/devkit/     ./core/devkit/
+COPY ./core/env/        ./core/env/
 COPY ./core/sdk/        ./core/sdk/
+COPY ./core/devkit/     ./core/devkit/
 COPY ./main/go.mod      ./main/go.mod
 COPY ./go.work.default  ./go.work
 
