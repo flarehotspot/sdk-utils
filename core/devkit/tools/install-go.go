@@ -8,6 +8,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"strings"
 
 	sdkfs "github.com/flarehotspot/core/sdk/utils/fs"
 	sdkpaths "github.com/flarehotspot/core/sdk/utils/paths"
@@ -19,6 +20,11 @@ func InstallGo(installPath string) {
 	GO_VERSION, err := GoVersion()
 	if err != nil {
 		panic(err)
+	}
+
+	if GoInstallExists(installPath) {
+		fmt.Printf("Go version %s already installed to %s\n", GO_VERSION, installPath)
+		return
 	}
 
 	EXTRACT_PATH := filepath.Join(sdkpaths.CacheDir, "downloads", fmt.Sprintf("go%s-%s-%s", GO_VERSION, GOOS, GOARCH))
@@ -41,6 +47,37 @@ func InstallGo(installPath string) {
 
 	fmt.Printf("Go version %s installed to %s\n", GO_VERSION, installPath)
 	fmt.Printf("To use the newly installed Go version, run: \n\nexport PATH=%s/bin:$PATH\n", installPath)
+}
+
+func GoInstallExists(installPath string) bool {
+	fmt.Println("Checking if Go is already installed...")
+
+	GOOS := runtime.GOOS
+	GOARCH := runtime.GOARCH
+	GO_VERSION, err := GoVersion()
+
+	goBin := filepath.Join(installPath, "bin", "go")
+	cmd := exec.Command(goBin, "env")
+	output, err := cmd.Output()
+	if err != nil {
+		fmt.Println("Error checking existing go install: ", err)
+		return false
+	}
+
+	envValues := map[string]string{}
+	lines := strings.Split(string(output), "\n")
+	for _, line := range lines {
+		parts := strings.SplitN(line, "=", 2)
+		if len(parts) == 2 {
+			envValues[strings.TrimSpace(parts[0])] = strings.TrimSpace(parts[1])
+		}
+	}
+
+	goos := strings.Trim(envValues["GOOS"], "\"")
+	goarch := strings.Trim(envValues["GOARCH"], "\"")
+	goversion := strings.TrimPrefix(strings.Trim(envValues["GOVERSION"], "\""), "go")
+
+	return goos == GOOS && goarch == GOARCH && goversion == GO_VERSION
 }
 
 func downloadAndExtractGo(goos, goarch, version, extractPath string) error {

@@ -108,6 +108,7 @@ func CopyDefaultWorksapce() {
 }
 
 func ZipDevkitRelease() {
+	fmt.Println("Zipping devkit release...")
 	zipFile := RELEASE_DIR + ".zip"
 	cmd := exec.Command("zip", "-r", zipFile, ".")
 	cmd.Dir = RELEASE_DIR

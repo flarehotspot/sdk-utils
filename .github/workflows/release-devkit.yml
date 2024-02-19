@@ -91,7 +91,7 @@ jobs:
               gcc ca-certificates zip git
           run: |
             cd /build && \
-              ./flare install-go && \
+              ./flare install-go ./go && \
               ./flare-internal create-devkit
       - run: tree ./devkit-release
       - uses: actions/upload-artifact@v4
