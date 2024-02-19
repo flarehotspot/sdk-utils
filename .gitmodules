@@ -13,6 +13,3 @@
 [submodule "system/com.flarego.default-theme"]
     path = system/com.flarego.default-theme
     url = git@github.com:flarehotspot/com.flarego.default-theme.git
-[submodule "sdk"]
-    path = sdk
-    url = git@github.com:flarehotspot/sdk.git
