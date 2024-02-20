@@ -11,19 +11,19 @@ Flare Hotpost core repository.
 
 # Installation
 
-Clone the repository and install the dependencies.
-
+Clone the project and prepare the development environment.
 ```sh
 git clone git@github.com:flarehotspot/flarehotspot.git
 cd flarehotspot
+git checkout development
 cp go.work.default go.work
 git submodule update --init --recursive
+go run ./core/devkit/cli/flare.go install-go ./go
 ```
 
-Checkout and pull the latest changes for all the submodules
-
+Pull the latest changes for all the submodules.
 ```sh
-for p in $(ls ./plugins); do cd ./plugins/${p}; git checkout main; git pull; cd ../..; done
+for p in $(ls ./plugins); do cd ./plugins/${p}; git checkout development; git pull; cd ../..; done
 ```
 
 Install node modules.
@@ -39,23 +39,10 @@ rm -rf ./openwrt-files
 unzip openwrt-files.zip -d openwrt-files
 ```
 
-# Database Connection
-
-Open (or create) the `config/database.json` file and configure the MySQL/MariaDB database connection. Make sure to change the parameters accordingly.
-
-```json
-{
-    "host": "localhost",
-    "username": "root",
-    "password": "*****",
-    "database": "flarehotspot"
-}
-```
-
 # Start the server
 
 ```sh
-make
+docker compose up --build
 ```
 Now you can browse the portal at [http://localhost:3000](http://localhost:3000)
 
@@ -67,12 +54,15 @@ username: admin
 password: admin
 ```
 
+# Environment variables
+```sh
+export GOPATH="$HOME/go"
+export PATH="$GOPATH/bin:$PATH"
+```
+
 # Flare CLI
 
 There are two Flare CLI tools:
-
-- `flare` - CLI tool shipped together with the SDK for public use
-- `flare-internal` - CLI tool for internal (core) developers use
 
 Install the `flare` sdk CLI:
 ```sh
