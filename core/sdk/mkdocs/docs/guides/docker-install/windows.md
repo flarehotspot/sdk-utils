@@ -2,49 +2,56 @@
 
 This is a step-by-step guide on installing Docker Desktop for windows. If you are using linux, please refer to the [linux guide](https://docs.docker.com/desktop/install/ubuntu/).
 
-## 1. Download docker installer
+## 1. Enable WSL 2 (Windows Subsystem for Linux)
+
+To enabel WSL 2, open PowerShell as an administrator and run the following command:
+```powershell
+wsl --install
+```
+
+## 2. Download docker installer
 
 Open your browser and head to [docker download page](https://docs.docker.com/desktop/install/windows-install/). Then click the button to download the Docker Desktop installer.
 
 ![Download docker desktop](./img/docker-install/01-download-docker-desktop.png)
 
-## 2. Install Docker Desktop
+## 3. Install Docker Desktop
 
 Next, find the downloaded installer and double click to start the installation process.
 
 ![Locate the docker desktop installer](./img/docker-install/02-locate-docker-desktop.png)
 
-## 3. Configuration
+## 4. Configuration
 
 Once the installer opens up, make sure to check:
 `Use WSL 2 instead of Hyper-V (recommended)`
 
 ![Docker installer configuration](./img/docker-install/03-docker-install-configuration.png)
 
-## 4. Wait for the installation to complete
+## 5. Wait for the installation to complete
 
 ![Installing please wait](./img/docker-install/04-unpacking-files.png)
 
-## 5. Finish the installation
+## 6. Finish the installation
 
 ![Installation succeeded](./img/docker-install/05-installation-succeeded.png)
 
-## 6. Start Docker Desktop
+## 7. Start Docker Desktop
 
 ![Start docker desktop](./img/docker-install/06-start-docker-desktop.png)
 
-## 7. Update to new version
+## 8. Update to new version
 
 **Important**: It's important to update the Docker Desktop since we encountered a bug in the current version
 as of writing this article.
 
 ![Update docker desktop](./img/docker-install/07-update-docker-desktop.png)
 
-## 8. Restart Docker Desktop
+## 9. Restart Docker Desktop
 
 After updating, restart Docker Desktop.
 ![Restart docker desktop](./img/docker-install/08-update-and-restart-docker.png)
 
-## 9. Downloading the SDK
+## 10. Installing the Flare Hotspot SDK
 
-After installing Docker Desktop, you can now proceed to [installing the SDK](../../getting-started.md/#installing-flare-hotspot-sdk).
+After installing Docker Desktop, you can now proceed to [installing the Flare Hotspot SDK](../../getting-started.md/#download-flare-hotspot-sdk).

@@ -1,25 +1,25 @@
 ---
-
 site_name: Flare Hotspot
 site_url: https://developer.flarehotspot.com
-site_description: "Flare Hotspot platform for developers:
-  Build. Innovate. Get Paid."
+site_description: 'Flare Hotspot platform for developers:
+  Build. Innovate. Get Paid.'
 
 nav:
   - Guides:
-    - 'Getting Started': getting-started.md
-    - 'Creating a plugin': guides/creating-a-plugin.md
-    - 'Portal Routes': guides/portal-routes.md
-    - 'Portal Items': guides/portal-items.md
-    - 'Admin Routes': guides/admin-routes.md
-    - 'Admin Navs': guides/admin-navs.md
-    - 'Vue Components': guides/vue-components.md
-    - 'Vue Response': guides/vue-response.md
-    - 'View Helpers': guides/view-helpers.md
-    - 'Route Middlewares': guides/route-middlewares.md
+      - 'Getting Started': getting-started.md
+      - 'Creating a plugin': guides/creating-a-plugin.md
+      - 'Portal Routes': guides/portal-routes.md
+      - 'Portal Items': guides/portal-items.md
+      - 'Admin Routes': guides/admin-routes.md
+      - 'Admin Navs': guides/admin-navs.md
+      - 'Vue Components': guides/vue-components.md
+      - 'Vue Response': guides/vue-response.md
+      - 'View Helpers': guides/view-helpers.md
+      - 'Route Middlewares': guides/route-middlewares.md
   - Tutorials:
-    - 'Manage Sessions': tutorials/manage-sessions.md
-    - 'Accept Payments': tutorials/accepting-payments.md
-    - 'Create Theme': tutorials/creating-a-theme
+      - 'Manage Sessions': tutorials/manage-sessions.md
+      - 'Accept Payments': tutorials/accepting-payments.md
+      - 'Create Theme': tutorials/creating-a-theme
   - API Reference:
-    - 'PluginApi': api/plugin-api.md
+      - 'PluginApi': api/plugin-api.md
+  - Examples: examples/index.md

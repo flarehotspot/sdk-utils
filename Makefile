@@ -5,7 +5,7 @@ default:
 
 
 build-docs:
-	cd core/sdk/docs && zola build
+	cd core/sdk/mkdocs && mkdocs build
 
 serve-docs:
-	cd core/sdk/docs && zola serve
+	cd core/sdk/mkdocs && mkdocs serve

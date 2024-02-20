@@ -1,12 +1,12 @@
 # Getting Started
 
+---
+
 ## Install Docker Desktop
 
 All we need to run Flare Hotspot development runtime is [Docker](https://www.docker.com/). You can download it from [here](https://www.docker.com/products/docker-desktop).
 
 For a detailed instruction to install Docker Desktop, please refer to the [official documentation](https://docs.docker.com/desktop/) or follow our beginner-friendly tutorial for [windows](./guides/docker-install/windows.md).
-
-# Installing Flare Hotspot SDK
 
 ## Download Flare Hotspot SDK
 
