@@ -12,7 +12,7 @@ For a detailed instruction to install Docker Desktop, please refer to the [offic
 
 To install the plugin SDK, download the latest **devkit-x.x.xzip** file from [https://github.com/flarehotspot/sdk/releases](https://github.com/flarehotspot/sdk/releases) repository. Select the appropriate zip file that's compatible with your CPU architecture.
 
-![Extract Flare Hotspot SDK](./img/02-select-latest-release.png)
+![Extract Flare Hotspot SDK](./img/01-select-latest-release.png)
 
 After downloading, extract the zip file to your desired location.
 
