@@ -66,7 +66,7 @@ There are two Flare CLI tools:
 
 Install the `flare` sdk CLI:
 ```sh
-$ go install ./core/cli/flare.go
+$ go install ./core/devkit/cli/flare.go
 $ flare --help
 ```
 
