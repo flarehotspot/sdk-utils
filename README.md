@@ -66,12 +66,12 @@ There are two Flare CLI tools:
 
 Install the `flare` sdk CLI:
 ```sh
-$ go install ./core/devkit/cli/flare.go
-$ flare --help
+go install ./core/devkit/cli/flare.go
+flare --help
 ```
 
 Install the `flare-internal` CLI:
 ```sh
-$ go install ./core/internal/cli/flare-internal.go
-$ flare-internal --help
+go install ./core/internal/cli/flare-internal.go
+flare-internal --help
 ```
