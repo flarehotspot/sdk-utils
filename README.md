@@ -5,9 +5,9 @@ Flare Hotpost core repository.
 
 # System Requirements
 
-- Node.js >= 16
 - Go 1.19.12 (exact version)
-- [MySQL/MariaDB](https://github.com/adonespitogo/docker-services?tab=readme-ov-file#mariadb-service)
+- Docker
+- Node.js >= 16
 
 # Installation
 
