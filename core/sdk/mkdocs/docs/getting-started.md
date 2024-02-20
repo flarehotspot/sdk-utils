@@ -4,18 +4,17 @@
 
 All we need to run Flare Hotspot development runtime is [Docker](https://www.docker.com/). You can download it from [here](https://www.docker.com/products/docker-desktop).
 
-For a detailed instruction to install Docker Desktop, please refer to the [official documentation](https://docs.docker.com/desktop/) or follow our beginner-friendly tutorial for [windows](./guides/docker-install/windows.md) and for [linux](./guides/docker-install/linux.md).
+For a detailed instruction to install Docker Desktop, please refer to the [official documentation](https://docs.docker.com/desktop/) or follow our beginner-friendly tutorial for [windows](./guides/docker-install/windows.md).
 
 # Installing Flare Hotspot SDK
 
 ## Download Flare Hotspot SDK
-To install the plugin SDK, download the latest **devkit-x.x.xzip** file from [sdk-releases](https://github.com/flarehotspot/core/sdk-releases/releases) repository.
+
+To install the plugin SDK, download the latest **devkit-x.x.xzip** file from [https://github.com/flarehotspot/sdk/releases](https://github.com/flarehotspot/sdk/releases) repository. Select the appropriate zip file that's compatible with your CPU architecture.
+
+![Extract Flare Hotspot SDK](./img/02-select-latest-release.png)
+
 After downloading, extract the zip file to your desired location.
-```sh
-# replace ~/Downloads/devkit-0.0.5.zip with the path to the downloaded zip file
-unzip ~/Downloads/devkit-0.0.5.zip -d ~/Documents/devkit-0.0.5
-cd ~/Documents/devkit-0.0.5
-```
 
 Below is the directory structure of the zip file:
 ```
