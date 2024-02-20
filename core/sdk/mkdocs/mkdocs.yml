@@ -22,4 +22,4 @@ nav:
     - 'Accept Payments': tutorials/accepting-payments.md
     - 'Create Theme': tutorials/creating-a-theme
   - API Reference:
-    - 'PluginApi': api-reference/plugin-api.md
+    - 'PluginApi': api/plugin-api.md
