@@ -120,7 +120,7 @@ jobs:
             git config --global user.name "Flarego Self-Hosted" && \
             git config --global user.email "business@flarego.ph" && \
             git add . && \
-            git commit -m "Automated release script" && \
+            git commit -am "Automated release script" --allow-empty && \
             git push -u origin main
 
   publish-release:
