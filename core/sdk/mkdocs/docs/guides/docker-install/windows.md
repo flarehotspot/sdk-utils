@@ -12,7 +12,7 @@ wsl --install
 ![Open PowerShell](./img/docker-install/00-open-cmd.png)
 ![wsl --install](./img/docker-install/00-wsl-install.png)
 
-**IMPORTANT**: It is recommended to **restart your compouter** after intalling WSL.
+**IMPORTANT**: It is recommended to **restart your computer** after intalling WSL.
 
 ## 2. Download docker installer
 
