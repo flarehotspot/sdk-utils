@@ -33,30 +33,32 @@ Once the installer opens up, make sure to check:
 
 ![Docker installer configuration](./img/docker-install/03-docker-install-configuration.png)
 
+Then click `OK` button to start the installation process.
+
 ## 5. Wait for the installation to complete
 
 ![Installing please wait](./img/docker-install/04-unpacking-files.png)
 
-## 6. Finish the installation
-
 ![Installation succeeded](./img/docker-install/05-installation-succeeded.png)
 
-## 7. Start Docker Desktop
+## 6. Start Docker Desktop
 
 ![Start docker desktop](./img/docker-install/06-start-docker-desktop.png)
 
-## 8. Update to new version
+## 7. Update to new version
 
 **Important**: It's important to update the Docker Desktop since we encountered a bug in the current version
 as of writing this article.
 
 ![Update docker desktop](./img/docker-install/07-update-docker-desktop.png)
 
-## 9. Restart Docker Desktop
+## 8. Restart Docker Desktop
 
-After updating, restart Docker Desktop.
+After updating, restart Docker Desktop. 
+
+NOTE: This will only restart the Docker Desktop application, not your PC.
 ![Restart docker desktop](./img/docker-install/08-update-and-restart-docker.png)
 
-## 10. Installing the Flare Hotspot SDK
+## 9. Download the Flare Hotspot SDK
 
-After installing Docker Desktop, you can now proceed to [installing the Flare Hotspot SDK](../../getting-started.md/#2-download-flare-hotspot-sdk).
+After installing Docker Desktop, you can now proceed to [download the Flare Hotspot SDK](../getting-started.md/#2-download-flare-hotspot-sdk).
