@@ -14,3 +14,15 @@ If you are using Linux or Mac, type:
 
 Follow the instructions in the command prompt and enter the necessary details for your plugin.
 After that, your plugin will be created inside the `plugins` directory.
+
+---
+
+<div class="float-left">
+Previous:
+<a href="../getting-started/">Getting Started</a>
+</div>
+
+<div class="float-right">
+Next:
+<a href="../portal-routes/">Portal Routes</a>
+</div>

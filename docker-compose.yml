@@ -8,7 +8,6 @@ services:
     volumes:
       - ./:/build
       - ./build/devkit/extras/config/database.json:/build/config/database.json
-      - /build/.tmp
     depends_on:
       mariadb:
         condition: service_healthy

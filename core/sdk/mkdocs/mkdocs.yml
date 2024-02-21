@@ -14,7 +14,7 @@ nav:
       - 'Admin Navs': guides/admin-navs.md
       - 'Vue Components': guides/vue-components.md
       - 'Vue Response': guides/vue-response.md
-      - 'View Helpers': guides/view-helpers.md
+      - 'Http Helpers': guides/http-helpers.md
       - 'Route Middlewares': guides/route-middlewares.md
       - 'Database Access': guides/database-access.md
       - 'Database Migrations': guides/database-migrations.md

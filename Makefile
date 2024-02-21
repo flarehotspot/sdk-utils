@@ -4,8 +4,8 @@ default:
 	go run ./core/internal/main/main_mono.go
 
 
-build-docs:
+docs-build:
 	cd core/sdk/mkdocs && mkdocs build
 
-serve-docs:
+docs-serve:
 	cd core/sdk/mkdocs && mkdocs serve

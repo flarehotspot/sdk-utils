@@ -18,7 +18,6 @@ cd flarehotspot
 git checkout development
 cp go.work.default go.work
 git submodule update --init --recursive
-go run ./core/devkit/cli/flare.go install-go ./go
 ```
 
 Pull the latest changes for all the submodules.
