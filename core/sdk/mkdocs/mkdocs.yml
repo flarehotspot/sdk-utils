@@ -16,6 +16,8 @@ nav:
       - 'Vue Response': guides/vue-response.md
       - 'View Helpers': guides/view-helpers.md
       - 'Route Middlewares': guides/route-middlewares.md
+      - 'Database Access': guides/database-access.md
+      - 'Database Migrations': guides/database-migrations.md
   - Tutorials:
       - 'Manage Sessions': tutorials/manage-sessions.md
       - 'Accept Payments': tutorials/accepting-payments.md

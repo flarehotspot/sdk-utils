@@ -11,7 +11,7 @@
 /vendor
 /node_modules
 /go
-/plugins/com.sample.plugin
+/plugins/*
 /bin
 .null*
 

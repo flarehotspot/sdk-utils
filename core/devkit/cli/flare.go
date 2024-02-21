@@ -39,22 +39,21 @@ func main() {
 		)
 
 		for len(strings.Split(pluginPkg, ".")) < 3 {
-			pluginPkg, err = tools.AskCmdInput("Enter the plugin package name, e.g. com.mydomain.plugin: ")
+			pluginPkg, err = tools.AskCmdInput("Enter the plugin package name, e.g. com.mydomain.plugin")
 			if err != nil {
 				panic(err)
 			}
 			if len(strings.Split(pluginPkg, ".")) < 3 {
-				fmt.Println("Invalid package name: must be at least 3 segments. For example: com.my-domain.my-plugin")
-				os.Exit(1)
+				fmt.Println("Error: Package name must be at least 3 segments. For example: com.my-domain.my-plugin")
 			}
 		}
 
-		pluginName, err = tools.AskCmdInput("Enter the plugin name, e.g. MyPlugin: ")
+		pluginName, err = tools.AskCmdInput("Enter the plugin name, e.g. MyPlugin")
 		if err != nil {
 			panic(err)
 		}
 
-		pluginDesc, err = tools.AskCmdInput("Enter the plugin description: ")
+		pluginDesc, err = tools.AskCmdInput("Enter the plugin description")
 		if err != nil {
 			panic(err)
 		}
