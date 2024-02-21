@@ -9,6 +9,11 @@ To enabel WSL 2, open PowerShell as an administrator and run the following comma
 wsl --install
 ```
 
+![Open PowerShell](./img/docker-install/00-open-cmd.png)
+![wsl --install](./img/docker-install/00-wsl-install.png)
+
+**IMPORTANT**: It is recommended to **restart your compouter** after intalling WSL.
+
 ## 2. Download docker installer
 
 Open your browser and head to [docker download page](https://docs.docker.com/desktop/install/windows-install/). Then click the button to download the Docker Desktop installer.
@@ -54,4 +59,4 @@ After updating, restart Docker Desktop.
 
 ## 10. Installing the Flare Hotspot SDK
 
-After installing Docker Desktop, you can now proceed to [installing the Flare Hotspot SDK](../../getting-started.md/#download-flare-hotspot-sdk).
+After installing Docker Desktop, you can now proceed to [installing the Flare Hotspot SDK](../../getting-started.md/#2-download-flare-hotspot-sdk).

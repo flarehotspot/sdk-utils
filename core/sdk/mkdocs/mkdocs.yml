@@ -6,7 +6,7 @@ site_description: 'Flare Hotspot platform for developers:
 
 nav:
   - Guides:
-      - 'Getting Started': getting-started.md
+      - 'Getting Started': guides/getting-started.md
       - 'Creating a plugin': guides/creating-a-plugin.md
       - 'Portal Routes': guides/portal-routes.md
       - 'Portal Items': guides/portal-items.md
