@@ -48,4 +48,4 @@ username: admin
 password: admin
 ```
 
-Next Topic: [Create Plugin](./creating-a-plugin.md)
+Next Topic: [Creating a Plugin](./creating-a-plugin.md)
