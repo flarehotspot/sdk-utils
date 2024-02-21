@@ -1,7 +1,6 @@
 default:
-	go run ./core/devkit/cli/flare.go fix-workspace
-	go run ./core/internal/cli/flare-internal.go make-mono
-	go run ./core/internal/main/main_mono.go
+	go run ./core/devkit/cli/flare.go install-go ./go
+	docker compose up --build
 
 
 docs-build:
