@@ -40,7 +40,7 @@ func InstallGo(installPath string) {
 		panic(err)
 	}
 
-	err = os.Rename(filepath.Join(EXTRACT_PATH, "go"), installPath)
+	err = sdkfs.RenameDir(filepath.Join(EXTRACT_PATH, "go"), installPath)
 	if err != nil {
 		panic(err)
 	}
@@ -55,6 +55,9 @@ func GoInstallExists(installPath string) bool {
 	GOOS := runtime.GOOS
 	GOARCH := runtime.GOARCH
 	GO_VERSION, err := GoVersion()
+	if err != nil {
+		panic(err)
+	}
 
 	goBin := filepath.Join(installPath, "bin", "go")
 	cmd := exec.Command(goBin, "env")

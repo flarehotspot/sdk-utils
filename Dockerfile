@@ -15,4 +15,4 @@ ENV FLARE_INT="./core/internal/cli/flare-internal.go"
 WORKDIR /build
 
 CMD go run $FLARE_INT make-mono && \
-    go run $FLARE_INT server
+        go run $FLARE_INT server

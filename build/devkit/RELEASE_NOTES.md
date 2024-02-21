@@ -1,3 +1,3 @@
 **Release Notes:**
 
-- Automatically push sdk sources to main branch.
+- Added `./bin/flare.exe` to devkit release.

@@ -30,7 +30,7 @@ use (
 			}
 
 			for _, entry := range entries {
-				pluginDir := filepath.Join(searchPath, entry.Name())
+				pluginDir := searchPath + "/" + entry.Name()
 				jsonFile := filepath.Join(pluginDir, "plugin.json")
 				if entry.IsDir() && sdkfs.Exists(jsonFile) {
 					goWork += "\n    ./" + pluginDir
@@ -45,5 +45,5 @@ use (
 		panic(err)
 	}
 
-    fmt.Printf("go.work file created: \n%s\n", goWork)
+	fmt.Printf("go.work file created: \n%s\n", goWork)
 }
