@@ -38,7 +38,7 @@ const main = async () => {
 
 If you are using Windows, Mac or Linux on x86, select the \`amd64\` zip file.
 If you are using Mac on Apple silicon, select the \`arm64\` zip file.
-Otherwise, select the version that's compatible with your device.
+Otherwise, select the version that's compatible with your CPU.
       `
     );
   }

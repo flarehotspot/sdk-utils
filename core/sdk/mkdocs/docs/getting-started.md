@@ -10,30 +10,31 @@ For a detailed instruction to install Docker Desktop, please refer to the [offic
 
 ## Download Flare Hotspot SDK
 
-To install the plugin SDK, download the latest **devkit-x.x.xzip** file from [https://github.com/flarehotspot/sdk/releases](https://github.com/flarehotspot/sdk/releases) repository. Select the appropriate zip file that's compatible with your CPU architecture.
+Download the latest **devkit-x.x.xzip** file from [https://github.com/flarehotspot/sdk/releases](https://github.com/flarehotspot/sdk/releases) repository. Select the appropriate zip file that's compatible with your CPU architecture. Windows computers are most likely be running Intel or AMD x86 CPUs, so just select `devkit-0.0.13-pre-amd64.zip` (whatever is the latest release file).
 
-![Extract Flare Hotspot SDK](./img/01-select-latest-release.png)
+![Download Flare Hotspot SDK](./img/01-select-latest-release.png)
 
 After downloading, extract the zip file to your desired location.
 
-Below is the directory structure of the zip file:
-```
-|- config
-|- core
-|- main
-|- mock-files
-|- plugins
-    |-- com.flarego.default-theme
-    |-- com.flarego.sample-plugin
-```
+![Extract Flare Hotspot Sdk](./img/02-extract-devkit.png)
+
+
+![Extract Flare Hotspot Sdk](./img/03-extract-devkit.png)
 
 ## Start The SDK Runtime
 
-To start the SDK runtime, you need to run:
+To start the SDK runtime, open windows `CMD` or `PowerShell` and navigate to the extracted file's root directory then run:
 ```sh
-cd ~/Documents/devkit-0.0.5
-docker compose up
+docker compose up --build
 ```
+
+For [VSCode](https://code.visualstudio.com/) users, you can also do this in the terminal.
+
+![Run docker compose up](./img/04-docker-compose-up.png)
+
+Docker may take sometime to download and install the container and its dependencies. Wait for the message `Listening on port :3000` which indicates that the server is already running and ready to accept connections.
+
+![Server is running](./img/05-server-is-running.png)
 
 Now you can access the Flare Hotspot web interface:
 
@@ -45,10 +46,4 @@ The default login for the admin dashboard is:
 ```
 username: admin
 password: admin
-```
-
-To stop the SDK runtime, you need to run:
-```sh
-cd ~/Documents/devkit-0.0.5
-docker compose down
 ```
