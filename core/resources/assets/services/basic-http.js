@@ -102,11 +102,8 @@ var BasicHttp = (function () {
       try {
         data = data || {};
         client.open(method, url, true);
-        client.setRequestHeader(
-          'Content-Type',
-          'application/x-www-form-urlencoded'
-        );
-        var params = serialize(data);
+        client.setRequestHeader('Content-Type', 'application/json');
+        var params = JSON.stringify(data);
         client.send(params);
       } catch (e) {
         handleError(errorCb, client);
