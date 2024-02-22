@@ -3,10 +3,12 @@
 
 ## RegisterPortalRoutes
 
-## RegisterAdminRoutes
-
 ## PortalRoute
+
+## RegisterAdminRoutes
 
 ## AdminRoute
 
 ## PortalItemsFunc
+
+## AdminNavsFunc

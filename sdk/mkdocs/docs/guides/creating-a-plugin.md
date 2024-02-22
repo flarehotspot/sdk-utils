@@ -3,7 +3,7 @@
 
 In this tutorial, we will create our first plugin. In Windows, open a terminal inside the devkit directory. Then type:
 
-```sh
+```cmd
 .\bin\flare.exe create-plugin
 ```
 

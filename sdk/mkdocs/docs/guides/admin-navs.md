@@ -2,6 +2,8 @@
 
 Admin navs are links to the [admin routes](./basic-routing.md#admin-routes). Therefore, to display an item in the admin panel, one must already have defined an admin route.
 
+Below is an example of registering an admin nav using the [VueRouter.AdminNavsFunc](../api/vue-router.md#adminnavsfunc) method.
+
 ```go
 api.Http().VueRouter().AdminNavsFunc(func(r *http.Request) []sdkhttp.VueAdminNav {
     adminNav := sdkhttp.VueAdminNav{

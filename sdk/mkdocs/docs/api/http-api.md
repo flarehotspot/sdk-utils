@@ -11,7 +11,7 @@ func Init(api sdkplugin.PluginApi) {
 }
 ```
 
-# Methods
+The following are the available methods in `HttpApi`.
 
 ## Auth
 It returns an instance of the [HttpAuth](../http-auth).
@@ -70,7 +70,7 @@ func (w http.ResponseWriter, r *http.Request) {
 ```
 
 ## MuxVars
-Returns a `map[string]string` of mux variables from the request path. For example, if the route pattern is `/sessions/:id` and the request path is `/sessions/1`, get the `id` param with:
+Returns a `map[string]string` of variables from the request path. Below is an example to get the value if `id` in the route path `/sessions/:id`
 ```go
 // handler
 func (w http.ResponseWriter, r *http.Request) {
