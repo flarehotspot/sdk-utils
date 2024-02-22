@@ -7,11 +7,11 @@ import (
 	"path/filepath"
 	"strings"
 
-	sdkhttp "github.com/flarehotspot/core/sdk/api/http"
-	sdkstr "github.com/flarehotspot/core/sdk/utils/strings"
 	"github.com/flarehotspot/core/internal/utils/crypt"
 	"github.com/flarehotspot/core/internal/web/middlewares"
 	"github.com/flarehotspot/core/internal/web/response"
+	sdkhttp "github.com/flarehotspot/core/sdk/api/http"
+	sdkstr "github.com/flarehotspot/core/sdk/utils/strings"
 	"github.com/gorilla/mux"
 )
 
@@ -41,12 +41,12 @@ func NewVueRouteComponent(api *PluginApi, name string, p string, handler http.Ha
 }
 
 type VueRouteComponent struct {
-	api                 *PluginApi       `json:"-"`
-	handler             http.HandlerFunc `json:"-"`
+	api                 *PluginApi
+	handler             http.HandlerFunc
 	path                string
 	name                string
-	file                string               `json:"-"`
-	hash                string               `json:"-"`
+	file                string
+	hash                string
 	MuxDataRouteName    sdkhttp.MuxRouteName `json:"mux_data_route_name"`
 	HttpDataFullPath    string               `json:"http_data_full_path"`
 	HttpWrapperFullPath string               `json:"http_wrapper_full_path"`

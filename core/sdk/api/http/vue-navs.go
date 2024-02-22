@@ -6,15 +6,17 @@ type AdminNavList struct {
 }
 
 type AdminNavItem struct {
-	Category     INavCategory `json:"category"`
-	Label        string       `json:"label"`
-	VueRouteName string       `json:"route_name"`
-	VueRoutePath string       `json:"route_path"`
+	Category       INavCategory      `json:"category"`
+	Label          string            `json:"label"`
+	VueRouteName   string            `json:"route_name"`
+	VueRoutePath   string            `json:"route_path"`
+	VueRouteParams map[string]string `json:"route_params"`
 }
 
 type PortalItem struct {
-	IconUri      string `json:"icon_uri"`
-	Label        string `json:"label"`
-	VueRouteName string `json:"route_name"`
-	VueRoutePath string `json:"route_path"`
+	IconUri        string            `json:"icon_uri"`
+	Label          string            `json:"label"`
+	VueRouteName   string            `json:"route_name"`
+	VueRoutePath   string            `json:"route_path"`
+	VueRouteParams map[string]string `json:"route_params"`
 }

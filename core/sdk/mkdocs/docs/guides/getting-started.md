@@ -45,8 +45,3 @@ The default login for the admin dashboard is:
 username: admin
 password: admin
 ```
-
-<div class="float-right">
-    Next Topic:
-    <a href="../creating-a-plugin/">Creating A Plugin</a>
-</div>

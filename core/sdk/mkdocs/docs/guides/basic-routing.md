@@ -45,22 +45,22 @@ func Init(api sdkplugin.PluginApi) {
 Admin routes are very similar to portal routes, but they are used to display web pages in the admin panel. The difference between portal routes and admin routes is that admin routes cannot be accessed by unauthenticated users. To define an admin route, we use the [VueRouter.RegisterAdminRoutes](../api/vue-router.md#registeradminroutes) api method.
 
 ```go
-    // define admin route
-    adminRoute := sdkhttp.VueAdminRoute{
-		RouteName: "admin.welcome",
-		RoutePath: "/welcome/:name",
-		Component: "admin/Welcome.vue",
-		HandlerFunc: func(w http.ResponseWriter, r *http.Request) {
-			params := api.Http().MuxVars(r)
-			name := params["name"]
-			data := map[string]interface{}{
-				"name": name,
-			}
-			api.Http().VueResponse().Json(w, data, 200)
-		},
-	}
-	// register the admin route
-	api.Http().VueRouter().RegisterAdminRoutes(adminRoute)
+// define admin route
+adminRoute := sdkhttp.VueAdminRoute{
+    RouteName: "admin.welcome",
+    RoutePath: "/welcome/:name",
+    Component: "admin/Welcome.vue",
+    HandlerFunc: func(w http.ResponseWriter, r *http.Request) {
+        params := api.Http().MuxVars(r)
+        name := params["name"]
+        data := map[string]interface{}{
+            "name": name,
+        }
+        api.Http().VueResponse().Json(w, data, 200)
+    },
+}
+// register the admin route
+api.Http().VueRouter().RegisterAdminRoutes(adminRoute)
 ```
 
 Below is the brief definition of each fields used to define the [Portal Route](../api/vue-router.md#portalroute) and [Admin Route](../api/vue-router.md#adminroute).
@@ -116,13 +116,3 @@ The `flareView` prop is automatically populated with the JSON data from the hand
 - `error`: A string containing the error message if the data loading fails.
 
 The `template` variable is a string containing the HTML code automatically extracted from the `<template>` tag. Note that there must be **ONLY ONE** root html tag of the template.
-
-<div class="float-left">
-Previous Topic:
-<a href="../creating-a-plugin/">Creating a Plugin</a>
-</div>
-
-<div class="float-right">
-Next Topic:
-<a href="../portal-items/">Portal Items</a>
-</div>

@@ -4,8 +4,8 @@ import (
 	"log"
 	"net/http"
 
-	sdkhttp "github.com/flarehotspot/core/sdk/api/http"
 	"github.com/flarehotspot/core/internal/web/helpers"
+	sdkhttp "github.com/flarehotspot/core/sdk/api/http"
 )
 
 func NewVueAdminNav(api *PluginApi, r *http.Request, nav sdkhttp.VueAdminNav) (sdkhttp.AdminNavItem, bool) {
@@ -37,9 +37,10 @@ func NewVueAdminNav(api *PluginApi, r *http.Request, nav sdkhttp.VueAdminNav) (s
 	}
 
 	return sdkhttp.AdminNavItem{
-		Category:     nav.Category,
-		Label:        nav.Label,
-		VueRouteName: routename,
-		VueRoutePath: routepath,
+		Category:       nav.Category,
+		Label:          nav.Label,
+		VueRouteName:   routename,
+		VueRoutePath:   routepath,
+		VueRouteParams: nav.RouteParams,
 	}, true
 }

@@ -34,13 +34,3 @@ func Init(api sdkplugin.PluginApi) {
 ```
 
 The `api` variable is an instance of the [PluginApi](../api/plugin-api.md), the root API of the Flare Hotspot SDK. Throughout the documentation, when you see `api`, it refers to this variable.
-
-<div class="float-left">
-Previous Topic:
-<a href="../getting-started/">Getting Started</a>
-</div>
-
-<div class="float-right">
-Next Topic:
-<a href="../basic-routing/">Basic Routing</a>
-</div>
