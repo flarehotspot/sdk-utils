@@ -1,5 +1,5 @@
 
-# Portal Routes
+# Basic Routing
 
 When creating a plugin, we need a way to display data to the users using HTML web pages. To display a web page in the captive portal,
 we are going to use the [VueRouter.RegisterPortalRoutes](../api/vue-router.md#registerportalroutes) api method.
@@ -68,10 +68,10 @@ func (w http.ResponseWriter, r *http.Request) {
 ```
 
 ## HandlerFunc
-This field is used to define the handler function for the Vue.js component. The returned response from [VueResponse.Json](../api/vue-response.md#json) will be available in the Vue component as `flareView` [prop](https://v2.vuejs.org/v2/guide/components-props).
+This field is used to define the handler function for the Vue.js component. The returned response from [VueResponse.Json](../api/vue-response.md#json) will be available in the Vue component in `flareView` [prop](https://v2.vuejs.org/v2/guide/components-props).
 
 ## Component
-This field defines the location of the Vue.js component file to be displayed in the web page. Vue components are loaded from the `resources/components` directory under the root directory of your plugin. Below is an example of a Vue component that displays the json data from the [HandlerFunc](#handlerfunc).
+This field defines the location of the [Vue.js component](https://v2.vuejs.org/v2/guide/components) file to be displayed in the web page. Vue components are loaded from the `resources/components` directory under the root directory of your plugin. Below is an example of a Vue component that displays the json data from the [HandlerFunc](#handlerfunc).
 
 ```html
 <!-- resources/components/portal/Welcome.vue -->
@@ -90,7 +90,7 @@ define(function () {
 </script>
 ```
 
-The `flareView` prop is automatically populated with the JSON data from the handler function defined in [HandlerFunc](#handlerfunc) field of the portal route. The `flareView` prop has three fields, namely:
+The `flareView` prop is automatically populated with the JSON data from the handler function defined in [HandlerFunc](#handlerfunc) field of the portal route. The `flareView` component prop has three fields, namely:
 
 - `data`: The JSON data returned from the handler function.
 - `loading`: A boolean value that indicates if the data is still loading.
