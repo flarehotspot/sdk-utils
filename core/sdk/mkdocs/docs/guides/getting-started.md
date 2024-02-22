@@ -1,4 +1,3 @@
-
 # Getting Started
 
 ## 1. Install Docker Desktop

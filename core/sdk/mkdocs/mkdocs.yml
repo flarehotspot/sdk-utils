@@ -25,4 +25,5 @@ nav:
   - API Reference:
       - 'PluginApi': api/plugin-api.md
       - 'AccountsApi': api/accounts-api.md
+      - 'HttpApi': api/http-api.md
   - Examples: examples/index.md

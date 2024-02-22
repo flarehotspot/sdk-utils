@@ -116,3 +116,13 @@ The `flareView` prop is automatically populated with the JSON data from the hand
 - `error`: A string containing the error message if the data loading fails.
 
 The `template` variable is a string containing the HTML code automatically extracted from the `<template>` tag. Note that there must be **ONLY ONE** root html tag of the template.
+
+<div class="float-left">
+Previous Topic:
+<a href="../creating-a-plugin/">Creating a Plugin</a>
+</div>
+
+<div class="float-right">
+Next Topic:
+<a href="../portal-items/">Portal Items</a>
+</div>
