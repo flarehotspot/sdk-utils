@@ -33,7 +33,6 @@ func init() {
 }
 
 func DefaultAdminAcct() Account {
-	var acct Account
 	f := filepath.Join(paths.DefaultsDir, "admin.json")
 
 	perms := []string{}
@@ -47,13 +46,8 @@ func DefaultAdminAcct() Account {
 		Perms:  perms,
 	}
 
-	bytes, err := os.ReadFile(f)
-	if err != nil {
-		return defAcct
-	}
-
-	err = json.Unmarshal(bytes, &acct)
-	if err != nil {
+	var acct Account
+	if err := sdkfs.ReadJson(f, &acct); err != nil {
 		return defAcct
 	}
 
