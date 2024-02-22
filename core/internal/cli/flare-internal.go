@@ -8,6 +8,7 @@ import (
 
 	"github.com/flarehotspot/core/devkit"
 	"github.com/flarehotspot/core/devkit/tools"
+	sdkfs "github.com/flarehotspot/core/sdk/utils/fs"
 )
 
 func main() {
@@ -32,6 +33,7 @@ func main() {
 		return
 
 	case "server":
+		SyncVersion() // sync core version to package.json
 		Server()
 		return
 	}
@@ -71,6 +73,21 @@ func Server() {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	err = cmd.Run()
+	if err != nil {
+		panic(err)
+	}
+}
+
+func SyncVersion() {
+	version := tools.CoreInfo().Version
+	packageJson := "package.json"
+	var pkg map[string]interface{}
+	err := sdkfs.ReadJson(packageJson, &pkg)
+	if err != nil {
+		panic(err)
+	}
+	pkg["version"] = version
+	err = sdkfs.WriteJson(packageJson, pkg)
 	if err != nil {
 		panic(err)
 	}
