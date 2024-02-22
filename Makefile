@@ -4,7 +4,7 @@ default:
 
 
 docs-build:
-	cd core/sdk/mkdocs && mkdocs build
+	cd sdk/mkdocs && mkdocs build
 
 docs-serve:
-	cd core/sdk/mkdocs && mkdocs serve
+	cd sdk/mkdocs && mkdocs serve

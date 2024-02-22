@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 
 	"github.com/flarehotspot/core/internal/plugins"
-	paths "github.com/flarehotspot/core/sdk/utils/paths"
+	paths "github.com/flarehotspot/sdk/utils/paths"
 	"github.com/flarehotspot/core/internal/utils/migrate"
 )
 

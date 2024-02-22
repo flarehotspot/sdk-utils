@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/flarehotspot/core/internal/accounts"
-	"github.com/flarehotspot/core/sdk/api/http"
+	"github.com/flarehotspot/sdk/api/http"
 )
 
 func CurrentAcct(r *http.Request) (*accounts.Account, error) {

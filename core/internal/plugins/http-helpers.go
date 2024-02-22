@@ -15,9 +15,9 @@ import (
 	"github.com/flarehotspot/core/internal/web/response"
 	"github.com/flarehotspot/core/internal/web/router"
 	rnames "github.com/flarehotspot/core/internal/web/routes/names"
-	sdkconnmgr "github.com/flarehotspot/core/sdk/api/connmgr"
-	sdkhttp "github.com/flarehotspot/core/sdk/api/http"
-	plugin "github.com/flarehotspot/core/sdk/api/plugin"
+	sdkconnmgr "github.com/flarehotspot/sdk/api/connmgr"
+	sdkhttp "github.com/flarehotspot/sdk/api/http"
+	plugin "github.com/flarehotspot/sdk/api/plugin"
 )
 
 type HttpHelpers struct {

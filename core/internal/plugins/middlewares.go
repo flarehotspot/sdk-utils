@@ -10,7 +10,7 @@ import (
 	"github.com/flarehotspot/core/internal/web/helpers"
 	"github.com/flarehotspot/core/internal/web/middlewares"
 	routenames "github.com/flarehotspot/core/internal/web/routes/names"
-	sdkhttp "github.com/flarehotspot/core/sdk/api/http"
+	sdkhttp "github.com/flarehotspot/sdk/api/http"
 )
 
 func NewPluginMiddlewares(api *PluginApi, mdls *models.Models, dmgr *connmgr.ClientRegister, pmgr *PaymentsMgr) *PluginMiddlewares {

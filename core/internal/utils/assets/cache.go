@@ -10,8 +10,8 @@ import (
 	"strings"
 
 	"github.com/flarehotspot/core/internal/utils/crypt"
-	sdkfs "github.com/flarehotspot/core/sdk/utils/fs"
-	paths "github.com/flarehotspot/core/sdk/utils/paths"
+	sdkfs "github.com/flarehotspot/sdk/utils/fs"
+	paths "github.com/flarehotspot/sdk/utils/paths"
 )
 
 var (

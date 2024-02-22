@@ -8,7 +8,7 @@ import (
 
 	"github.com/flarehotspot/core/devkit"
 	"github.com/flarehotspot/core/devkit/tools"
-	sdkfs "github.com/flarehotspot/core/sdk/utils/fs"
+	sdkfs "github.com/flarehotspot/sdk/utils/fs"
 )
 
 func main() {

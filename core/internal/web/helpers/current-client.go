@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"github.com/flarehotspot/core/internal/connmgr"
-	"github.com/flarehotspot/core/sdk/api/connmgr"
-	"github.com/flarehotspot/core/sdk/api/http"
+	"github.com/flarehotspot/sdk/api/connmgr"
+	"github.com/flarehotspot/sdk/api/http"
 	"github.com/flarehotspot/core/internal/utils/hostfinder"
 )
 

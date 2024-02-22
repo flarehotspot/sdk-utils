@@ -112,9 +112,9 @@ jobs:
           sudo apt update && \
           sudo apt-get install -y curl ca-certificates git
       - uses: actions/checkout@v4
-      - run: git clone https://oauth2:${{ secrets.DEVKIT_RELEASE_SECRET }}@github.com/flarehotspot/sdk.git
-      - run: cp -r core/sdk outdir
-      - run: cp -r sdk/.git outdir/.git
+      - run: git clone https://oauth2:${{ secrets.DEVKIT_RELEASE_SECRET }}@github.com/flarehotspot/sdk.git sdk-src
+      - run: cp -r sdk outdir
+      - run: cp -r sdk-src/.git outdir/.git
       - run: |
           cd outdir && \
             git config --global user.name "Flarego Self-Hosted" && \

@@ -6,7 +6,7 @@ package apictrl
 // 	"github.com/flarehotspot/core/internal/plugins"
 // 	"github.com/flarehotspot/core/internal/web/helpers"
 // 	"github.com/flarehotspot/core/internal/web/response"
-// 	models "github.com/flarehotspot/core/sdk/api/models"
+// 	models "github.com/flarehotspot/sdk/api/models"
 // )
 
 // type ClientApiCtrl struct {

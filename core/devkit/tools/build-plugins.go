@@ -8,8 +8,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	sdkfs "github.com/flarehotspot/core/sdk/utils/fs"
-	sdkpaths "github.com/flarehotspot/core/sdk/utils/paths"
+	sdkfs "github.com/flarehotspot/sdk/utils/fs"
+	sdkpaths "github.com/flarehotspot/sdk/utils/paths"
 )
 
 type GoBuildArgs struct {

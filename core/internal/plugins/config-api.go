@@ -2,7 +2,7 @@ package plugins
 
 import (
 	cfgapi "github.com/flarehotspot/core/internal/config/api"
-	"github.com/flarehotspot/core/sdk/api/config"
+	"github.com/flarehotspot/sdk/api/config"
 )
 
 func NewConfigApi(api *PluginApi) *ConfigApi {

@@ -9,10 +9,10 @@ import (
 
 	"encoding/json"
 
-	accounts "github.com/flarehotspot/core/sdk/api/accounts"
-	fs "github.com/flarehotspot/core/sdk/utils/fs"
-	sdkfs "github.com/flarehotspot/core/sdk/utils/fs"
-	paths "github.com/flarehotspot/core/sdk/utils/paths"
+	accounts "github.com/flarehotspot/sdk/api/accounts"
+	fs "github.com/flarehotspot/sdk/utils/fs"
+	sdkfs "github.com/flarehotspot/sdk/utils/fs"
+	paths "github.com/flarehotspot/sdk/utils/paths"
 )
 
 const (

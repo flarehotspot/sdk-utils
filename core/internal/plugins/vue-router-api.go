@@ -7,7 +7,7 @@ import (
 	"path"
 	"strings"
 
-	sdkhttp "github.com/flarehotspot/core/sdk/api/http"
+	sdkhttp "github.com/flarehotspot/sdk/api/http"
 )
 
 func NewVueRouterApi(api *PluginApi) *VueRouterApi {

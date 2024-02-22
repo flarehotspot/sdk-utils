@@ -7,9 +7,9 @@ import (
 	"path/filepath"
 
 	"encoding/json"
-	sdkplugin "github.com/flarehotspot/core/sdk/api/plugin"
-	fs "github.com/flarehotspot/core/sdk/utils/fs"
-	paths "github.com/flarehotspot/core/sdk/utils/paths"
+	sdkplugin "github.com/flarehotspot/sdk/api/plugin"
+	fs "github.com/flarehotspot/sdk/utils/fs"
+	paths "github.com/flarehotspot/sdk/utils/paths"
 )
 
 func GetPluginInfo(pluginPath string) (*sdkplugin.PluginInfo, error) {

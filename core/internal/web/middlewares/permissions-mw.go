@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	acct "github.com/flarehotspot/core/internal/accounts"
-	"github.com/flarehotspot/core/sdk/api/http"
+	"github.com/flarehotspot/sdk/api/http"
 )
 
 func PermsMiddleware(perms []string) func(http.Handler) http.Handler {

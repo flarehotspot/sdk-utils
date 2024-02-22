@@ -9,10 +9,10 @@ import (
 	"runtime"
 
 	"github.com/flarehotspot/core/devkit/tools"
-	sdkcfg "github.com/flarehotspot/core/sdk/api/config"
-	sdkfs "github.com/flarehotspot/core/sdk/utils/fs"
-	sdkpaths "github.com/flarehotspot/core/sdk/utils/paths"
-	sdkstr "github.com/flarehotspot/core/sdk/utils/strings"
+	sdkcfg "github.com/flarehotspot/sdk/api/config"
+	sdkfs "github.com/flarehotspot/sdk/utils/fs"
+	sdkpaths "github.com/flarehotspot/sdk/utils/paths"
+	sdkstr "github.com/flarehotspot/sdk/utils/strings"
 )
 
 const GOARCH = runtime.GOARCH
@@ -23,6 +23,7 @@ var (
 	DEVKIT_FILES = []string{
 		"go",
 		"bin",
+		"sdk",
 		"main/go.mod",
 		"config/.defaults",
 		"core/go.mod",
@@ -30,7 +31,6 @@ var (
 		"core/plugin.json",
 		"core/resources",
 		"core/go-version",
-		"core/sdk",
 	}
 )
 

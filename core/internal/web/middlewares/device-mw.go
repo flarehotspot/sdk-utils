@@ -7,7 +7,7 @@ import (
 
 	"github.com/flarehotspot/core/internal/connmgr"
 	"github.com/flarehotspot/core/internal/db"
-	"github.com/flarehotspot/core/sdk/api/http"
+	"github.com/flarehotspot/sdk/api/http"
 	"github.com/flarehotspot/core/internal/utils/hostfinder"
 	"github.com/flarehotspot/core/internal/web/response"
 )

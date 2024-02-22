@@ -9,8 +9,8 @@ import (
 
 	"github.com/flarehotspot/core/internal/accounts"
 	"github.com/flarehotspot/core/internal/config"
-	"github.com/flarehotspot/core/sdk/api/http"
-	"github.com/flarehotspot/core/sdk/libs/jwt"
+	"github.com/flarehotspot/sdk/api/http"
+	"github.com/flarehotspot/sdk/libs/jwt"
 	"github.com/flarehotspot/core/internal/utils/jsonwebtoken"
 )
 

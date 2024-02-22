@@ -4,7 +4,7 @@ import (
 	"net"
 	"sort"
 
-	sdkslices "github.com/flarehotspot/core/sdk/utils/slices"
+	sdkslices "github.com/flarehotspot/sdk/utils/slices"
 	networkutil "github.com/flarehotspot/core/internal/utils/network"
 )
 

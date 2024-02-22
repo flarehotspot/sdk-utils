@@ -12,9 +12,9 @@ package adminctrl
 
 // 	"github.com/flarehotspot/core/internal/accounts"
 // 	"github.com/flarehotspot/core/internal/plugins"
-// 	"github.com/flarehotspot/core/sdk/utils/contexts"
-// 	"github.com/flarehotspot/core/sdk/utils/paths"
-// 	"github.com/flarehotspot/core/sdk/utils/strings"
+// 	"github.com/flarehotspot/sdk/utils/contexts"
+// 	"github.com/flarehotspot/sdk/utils/paths"
+// 	"github.com/flarehotspot/sdk/utils/strings"
 // 	"github.com/flarehotspot/core/internal/web/response"
 // 	"github.com/flarehotspot/core/internal/web/router"
 // 	"github.com/flarehotspot/core/internal/web/routes/names"

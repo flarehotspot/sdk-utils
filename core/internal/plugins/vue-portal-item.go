@@ -3,7 +3,7 @@ package plugins
 import (
 	"net/http"
 
-	"github.com/flarehotspot/core/sdk/api/http"
+	"github.com/flarehotspot/sdk/api/http"
 )
 
 func NewVuePortalItem(api *PluginApi, r *http.Request, nav sdkhttp.VuePortalItem) sdkhttp.PortalItem {

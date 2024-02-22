@@ -8,8 +8,8 @@ import (
 
 	"github.com/flarehotspot/core/internal/db/models"
 	"github.com/flarehotspot/core/internal/network"
-	connmgr "github.com/flarehotspot/core/sdk/api/connmgr"
-	"github.com/flarehotspot/core/sdk/api/network"
+	connmgr "github.com/flarehotspot/sdk/api/connmgr"
+	"github.com/flarehotspot/sdk/api/network"
 	jobque "github.com/flarehotspot/core/internal/utils/job-que"
 	"github.com/flarehotspot/core/internal/utils/tc"
 )

@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	sdkfs "github.com/flarehotspot/core/sdk/utils/fs"
+	sdkfs "github.com/flarehotspot/sdk/utils/fs"
 )
 
 func CreateGoWorkspace() {
@@ -18,6 +18,7 @@ func CreateGoWorkspace() {
 
 use (
     ./core
+    ./sdk
     ./main`, goVersion)
 
 	pluginSearchPaths := []string{"plugins"}

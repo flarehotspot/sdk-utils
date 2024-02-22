@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/flarehotspot/core/internal/config"
-	"github.com/flarehotspot/core/sdk/utils/strings"
+	"github.com/flarehotspot/sdk/utils/strings"
 	"github.com/flarehotspot/core/internal/utils/mysql"
 	//
 	// UNCOMMENT BELOW LINES WHEN DEBUGGING SQL QUERIES:

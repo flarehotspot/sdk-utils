@@ -5,8 +5,8 @@ package uci
 import (
 	"path/filepath"
 
-	"github.com/flarehotspot/core/sdk/libs/go-uci"
-	paths "github.com/flarehotspot/core/sdk/utils/paths"
+	"github.com/flarehotspot/sdk/libs/go-uci"
+	paths "github.com/flarehotspot/sdk/utils/paths"
 )
 
 var treeRoot = filepath.Join(paths.AppDir, "openwrt-files/etc/config")

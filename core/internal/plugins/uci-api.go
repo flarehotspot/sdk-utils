@@ -2,8 +2,8 @@ package plugins
 
 import (
 	"github.com/flarehotspot/core/internal/utils/uci"
-	ucisdk "github.com/flarehotspot/core/sdk/api/uci"
-	gouci "github.com/flarehotspot/core/sdk/libs/go-uci"
+	ucisdk "github.com/flarehotspot/sdk/api/uci"
+	gouci "github.com/flarehotspot/sdk/libs/go-uci"
 )
 
 type UciApi struct {

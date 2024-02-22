@@ -8,10 +8,10 @@ import (
 
 	"github.com/flarehotspot/core/internal/config"
 	jobque "github.com/flarehotspot/core/internal/utils/job-que"
-	sdkplugin "github.com/flarehotspot/core/sdk/api/plugin"
-	fs "github.com/flarehotspot/core/sdk/utils/fs"
-	paths "github.com/flarehotspot/core/sdk/utils/paths"
-	strings "github.com/flarehotspot/core/sdk/utils/strings"
+	sdkplugin "github.com/flarehotspot/sdk/api/plugin"
+	fs "github.com/flarehotspot/sdk/utils/fs"
+	paths "github.com/flarehotspot/sdk/utils/paths"
+	strings "github.com/flarehotspot/sdk/utils/strings"
 )
 
 var (

@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	sdkplugin "github.com/flarehotspot/core/sdk/api/plugin"
+	sdkplugin "github.com/flarehotspot/sdk/api/plugin"
 )
 
 func PluginInfo(pluginDir string) (sdkplugin.PluginInfo, error) {

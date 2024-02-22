@@ -6,9 +6,9 @@ import (
 
 	"encoding/json"
 
-	sdkfs "github.com/flarehotspot/core/sdk/utils/fs"
-	paths "github.com/flarehotspot/core/sdk/utils/paths"
-	sse "github.com/flarehotspot/core/sdk/utils/sse"
+	sdkfs "github.com/flarehotspot/sdk/utils/fs"
+	paths "github.com/flarehotspot/sdk/utils/paths"
+	sse "github.com/flarehotspot/sdk/utils/sse"
 )
 
 var (

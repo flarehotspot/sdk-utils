@@ -4,7 +4,7 @@ package apictrl
 // 	"net/http"
 
 // 	"github.com/flarehotspot/core/internal/plugins"
-// 	sdkmdls "github.com/flarehotspot/core/sdk/api/models"
+// 	sdkmdls "github.com/flarehotspot/sdk/api/models"
 // 	"github.com/flarehotspot/core/internal/web/helpers"
 // 	"github.com/flarehotspot/core/internal/web/response"
 // )

@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/flarehotspot/core/internal/db"
-	"github.com/flarehotspot/core/sdk/utils/strings"
+	"github.com/flarehotspot/sdk/utils/strings"
 )
 
 type PurchaseModel struct {

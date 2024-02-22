@@ -4,7 +4,7 @@ import (
 	"log"
 
 	"github.com/flarehotspot/core/internal/config"
-	"github.com/flarehotspot/core/sdk/api/config"
+	"github.com/flarehotspot/sdk/api/config"
 )
 
 type SessionLimitsCfg struct{}

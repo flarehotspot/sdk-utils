@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/flarehotspot/core/internal/web/helpers"
-	sdkhttp "github.com/flarehotspot/core/sdk/api/http"
+	sdkhttp "github.com/flarehotspot/sdk/api/http"
 )
 
 func NewVueAdminNav(api *PluginApi, r *http.Request, nav sdkhttp.VueAdminNav) (sdkhttp.AdminNavItem, bool) {

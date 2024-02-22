@@ -1,7 +1,7 @@
 package network
 
 import (
-	"github.com/flarehotspot/core/sdk/api/network"
+	"github.com/flarehotspot/sdk/api/network"
 	"github.com/flarehotspot/core/internal/utils/ubus"
 )
 

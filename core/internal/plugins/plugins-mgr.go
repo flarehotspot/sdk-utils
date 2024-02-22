@@ -10,7 +10,7 @@ import (
 	"github.com/flarehotspot/core/internal/db/models"
 	"github.com/flarehotspot/core/internal/network"
 	"github.com/flarehotspot/core/internal/utils/migrate"
-	plugin "github.com/flarehotspot/core/sdk/api/plugin"
+	plugin "github.com/flarehotspot/sdk/api/plugin"
 )
 
 func NewPluginMgr(d *db.Database, m *models.Models, paymgr *PaymentsMgr, clntReg *connmgr.ClientRegister, clntMgr *connmgr.SessionsMgr, trfkMgr *network.TrafficMgr) *PluginsMgr {

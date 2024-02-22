@@ -10,7 +10,7 @@ import (
 
 	tools "github.com/flarehotspot/core/devkit/tools"
 	"github.com/flarehotspot/core/env"
-	sdkpaths "github.com/flarehotspot/core/sdk/utils/paths"
+	sdkpaths "github.com/flarehotspot/sdk/utils/paths"
 )
 
 var (
