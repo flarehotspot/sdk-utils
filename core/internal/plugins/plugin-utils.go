@@ -20,12 +20,12 @@ type PluginUtils struct {
 	api *PluginApi
 }
 
-func (utl *PluginUtils) Translate(msgtype string, msgk string, pairs ...interface{}) string {
+func (self *PluginUtils) Translate(msgtype string, msgk string, pairs ...interface{}) string {
 	if len(pairs)%2 != 0 {
 		return "Invalid number of translation params."
 	}
 
-	trnsdir := utl.Resource("translations")
+	trnsdir := self.Resource("translations")
 	appcfg, _ := config.ReadApplicationConfig()
 
 	f := filepath.Join(trnsdir, appcfg.Lang, msgtype, msgk+".txt")
@@ -51,18 +51,18 @@ func (utl *PluginUtils) Translate(msgtype string, msgk string, pairs ...interfac
 	return output.String()
 }
 
-func (utl *PluginUtils) Resource(path string) string {
-	return filepath.Join(utl.api.dir, "resources", path)
+func (self *PluginUtils) Resource(path string) string {
+	return filepath.Join(self.api.dir, "resources", path)
 }
 
-func (utl *PluginUtils) BundleAssetsWithHelper(w http.ResponseWriter, r *http.Request, entries ...assets.AssetWithData) (assets.CacheData, error) {
+func (self *PluginUtils) BundleAssetsWithHelper(w http.ResponseWriter, r *http.Request, entries ...assets.AssetWithData) (assets.CacheData, error) {
 	entriesWithHelpers := make([]assets.AssetWithData, len(entries))
 	for i, entry := range entries {
 		entriesWithHelpers[i] = assets.AssetWithData{
 			File: entry.File,
 			Data: &response.ViewData{
 				ViewData:    entry.Data,
-				ViewHelpers: utl.api.HttpAPI.Helpers(),
+				ViewHelpers: self.api.HttpAPI.Helpers(),
 			},
 		}
 	}

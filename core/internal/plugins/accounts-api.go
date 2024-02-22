@@ -5,12 +5,12 @@ import (
 	acct "github.com/flarehotspot/core/sdk/api/accounts"
 )
 
-type AccountsApi struct {
-	api *PluginApi
-}
-
 func NewAcctApi(api *PluginApi) *AccountsApi {
 	return &AccountsApi{api}
+}
+
+type AccountsApi struct {
+	api *PluginApi
 }
 
 func (self *AccountsApi) Create(uname string, pass string, perms []string) (acct.Account, error) {

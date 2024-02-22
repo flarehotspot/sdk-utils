@@ -10,14 +10,14 @@ import (
 	"strings"
 	texttemplate "text/template"
 
-	sdkconnmgr "github.com/flarehotspot/core/sdk/api/connmgr"
-	sdkhttp "github.com/flarehotspot/core/sdk/api/http"
-	plugin "github.com/flarehotspot/core/sdk/api/plugin"
 	"github.com/flarehotspot/core/internal/utils/flaretmpl"
 	"github.com/flarehotspot/core/internal/web/helpers"
 	"github.com/flarehotspot/core/internal/web/response"
 	"github.com/flarehotspot/core/internal/web/router"
 	rnames "github.com/flarehotspot/core/internal/web/routes/names"
+	sdkconnmgr "github.com/flarehotspot/core/sdk/api/connmgr"
+	sdkhttp "github.com/flarehotspot/core/sdk/api/http"
+	plugin "github.com/flarehotspot/core/sdk/api/plugin"
 )
 
 type HttpHelpers struct {
@@ -28,12 +28,12 @@ func NewViewHelpers(api *PluginApi) sdkhttp.HttpHelpers {
 	return &HttpHelpers{api: api}
 }
 
-func (h *HttpHelpers) Translate(msgtype string, msgk string) string {
-	return h.api.Utl.Translate(msgtype, msgk)
+func (self *HttpHelpers) Translate(msgtype string, msgk string) string {
+	return self.api.Utl.Translate(msgtype, msgk)
 }
 
-func (h *HttpHelpers) GetClientDevice(r *http.Request) (sdkconnmgr.ClientDevice, error) {
-	return helpers.CurrentClient(h.api.ClntReg, r)
+func (self *HttpHelpers) GetClientDevice(r *http.Request) (sdkconnmgr.ClientDevice, error) {
+	return helpers.CurrentClient(self.api.ClntReg, r)
 }
 
 func (self *HttpHelpers) AssetPath(p string) string {
@@ -104,33 +104,33 @@ func (self *HttpHelpers) EmbedCss(path string, data interface{}) template.CSS {
 	return template.CSS(output.String())
 }
 
-func (h *HttpHelpers) PluginMgr() plugin.PluginsMgrApi {
-	return h.api.PluginsMgrApi
+func (self *HttpHelpers) PluginMgr() plugin.PluginsMgrApi {
+	return self.api.PluginsMgrApi
 }
 
-func (h *HttpHelpers) AdView() (html template.HTML) {
+func (self *HttpHelpers) AdView() (html template.HTML) {
 	return ""
 }
 
-func (h *HttpHelpers) MuxRouteName(name string) sdkhttp.MuxRouteName {
-	return h.api.HttpAPI.HttpRouter().MuxRouteName(sdkhttp.PluginRouteName(name))
+func (self *HttpHelpers) MuxRouteName(name string) sdkhttp.MuxRouteName {
+	return self.api.HttpAPI.HttpRouter().MuxRouteName(sdkhttp.PluginRouteName(name))
 }
 
-func (h *HttpHelpers) UrlForMuxRoute(name string, pairs ...string) string {
-	return h.api.HttpAPI.HttpRouter().UrlForMuxRoute(sdkhttp.MuxRouteName(name), pairs...)
+func (self *HttpHelpers) UrlForMuxRoute(name string, pairs ...string) string {
+	return self.api.HttpAPI.HttpRouter().UrlForMuxRoute(sdkhttp.MuxRouteName(name), pairs...)
 }
 
-func (h *HttpHelpers) UrlForRoute(name string, pairs ...string) string {
-	return h.api.HttpAPI.httpRouter.UrlForRoute(sdkhttp.PluginRouteName(name), pairs...)
+func (self *HttpHelpers) UrlForRoute(name string, pairs ...string) string {
+	return self.api.HttpAPI.httpRouter.UrlForRoute(sdkhttp.PluginRouteName(name), pairs...)
 }
 
-func (h *HttpHelpers) VueRouteName(name string) string {
-	return h.api.HttpAPI.vueRouter.VueRouteName(name)
+func (self *HttpHelpers) VueRouteName(name string) string {
+	return self.api.HttpAPI.vueRouter.VueRouteName(name)
 }
 
-func (h *HttpHelpers) VueRoutePath(name string, pairs ...string) string {
+func (self *HttpHelpers) VueRoutePath(name string, pairs ...string) string {
 	var path VueRoutePath
-	route, ok := h.api.HttpAPI.vueRouter.FindVueRoute(name)
+	route, ok := self.api.HttpAPI.vueRouter.FindVueRoute(name)
 	if !ok {
 		path = sdkhttp.VueNotFoundPath
 	}

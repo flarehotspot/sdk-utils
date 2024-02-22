@@ -50,8 +50,8 @@ func (self *VueResponse) Component(w http.ResponseWriter, vuefile string, data a
 	response.Text(w, vuefile, helpers, data)
 }
 
-func (res *VueResponse) Redirect(w http.ResponseWriter, routename string, pairs ...string) {
-	route, ok := res.router.FindVueRoute(routename)
+func (self *VueResponse) Redirect(w http.ResponseWriter, routename string, pairs ...string) {
+	route, ok := self.router.FindVueRoute(routename)
 	if !ok {
 		response.ErrorJson(w, "Vue route \""+routename+"\" not found", 500)
 		return
@@ -83,7 +83,7 @@ func (res *VueResponse) Redirect(w http.ResponseWriter, routename string, pairs 
 		}
 	}
 
-	newdata := res.data[rootjson].(map[string]any)
+	newdata := self.data[rootjson].(map[string]any)
 	newdata["redirect"] = true
 	newdata["routename"] = route.VueRouteName
 	newdata["params"] = params
@@ -93,26 +93,26 @@ func (res *VueResponse) Redirect(w http.ResponseWriter, routename string, pairs 
 	response.Json(w, data, http.StatusOK)
 }
 
-func (res *VueResponse) RedirectToPortal(w http.ResponseWriter) {
+func (self *VueResponse) RedirectToPortal(w http.ResponseWriter) {
     themecfg, err := config.ReadThemesConfig()
     if err != nil {
-        res.Error(w, err.Error(), 500)
+        self.Error(w, err.Error(), 500)
         return
     }
-    themePlugin, ok := res.router.api.PluginsMgr().FindByPkg(themecfg.Portal)
+    themePlugin, ok := self.router.api.PluginsMgr().FindByPkg(themecfg.Portal)
     if !ok {
-        res.Error(w, "Theme plugin not found", 500)
+        self.Error(w, "Theme plugin not found", 500)
         return
     }
 	portalIndexRoute := themePlugin.(*PluginApi).ThemesAPI.PortalIndexRoute
-	newdata := res.data[rootjson].(map[string]any)
+	newdata := self.data[rootjson].(map[string]any)
 	newdata["redirect"] = true
 	newdata["routename"] = portalIndexRoute.VueRouteName
 	data := map[string]any{rootjson: newdata}
 	response.Json(w, data, http.StatusOK)
 }
 
-func (res *VueResponse) Error(w http.ResponseWriter, err string, status int) {
-	res.FlashMsg("error", err)
-	res.Json(w, nil, status)
+func (self *VueResponse) Error(w http.ResponseWriter, err string, status int) {
+	self.FlashMsg("error", err)
+	self.Json(w, nil, status)
 }

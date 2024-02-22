@@ -2,16 +2,16 @@ package plugins
 
 import (
 	cnet "github.com/flarehotspot/core/internal/network"
-	sdknet "github.com/flarehotspot/core/sdk/api/network"
 	"github.com/flarehotspot/core/internal/utils/ubus"
+	sdknet "github.com/flarehotspot/core/sdk/api/network"
 )
-
-type NetworkApi struct {
-	trfk *cnet.TrafficMgr
-}
 
 func NewNetworkApi(trfk *cnet.TrafficMgr) *NetworkApi {
 	return &NetworkApi{trfk}
+}
+
+type NetworkApi struct {
+	trfk *cnet.TrafficMgr
 }
 
 func (self *NetworkApi) ListDevices() (netdevs []sdknet.NetworkDevice, err error) {

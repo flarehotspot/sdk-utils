@@ -24,44 +24,44 @@ type Purchase struct {
 	purchase *models.Purchase
 }
 
-func (p *Purchase) Name() string {
-	return p.purchase.Name()
+func (self *Purchase) Name() string {
+	return self.purchase.Name()
 }
 
-func (p *Purchase) FixedPrice() (float64, bool) {
-	return p.purchase.FixedPrice()
+func (self *Purchase) FixedPrice() (float64, bool) {
+	return self.purchase.FixedPrice()
 }
 
-func (p *Purchase) CreatePayment(amount float64, optname string) error {
-	mdls := p.api.models
-	_, err := mdls.Payment().Create(p.ctx, p.purchase.Id(), amount, optname)
+func (self *Purchase) CreatePayment(amount float64, optname string) error {
+	mdls := self.api.models
+	_, err := mdls.Payment().Create(self.ctx, self.purchase.Id(), amount, optname)
 	return err
 }
 
-func (p *Purchase) PayWithWallet(dbt float64) error {
-	err := p.purchase.Update(p.ctx, dbt, nil, p.purchase.CancelledAt(), p.purchase.ConfirmedAt(), nil)
+func (self *Purchase) PayWithWallet(dbt float64) error {
+	err := self.purchase.Update(self.ctx, dbt, nil, self.purchase.CancelledAt(), self.purchase.ConfirmedAt(), nil)
 	return err
 }
 
-func (p *Purchase) State() (sdkpayments.PurchaseState, error) {
+func (self *Purchase) State() (sdkpayments.PurchaseState, error) {
 	state := sdkpayments.PurchaseState{}
 
-	device, err := p.api.models.Device().Find(p.ctx, p.deviceId)
+	device, err := self.api.models.Device().Find(self.ctx, self.deviceId)
 	if err != nil {
 		return state, err
 	}
 
-	wallet, err := device.Wallet(p.ctx)
+	wallet, err := device.Wallet(self.ctx)
 	if err != nil {
 		return state, err
 	}
 
-	total, err := p.purchase.TotalPayment(p.ctx)
+	total, err := self.purchase.TotalPayment(self.ctx)
 	if err != nil {
 		return state, err
 	}
 
-	walletDebit := p.purchase.WalletDebit()
+	walletDebit := self.purchase.WalletDebit()
 	walletEndBal := wallet.Balance() - walletDebit
 
 	state.TotalPayment = total
@@ -72,22 +72,22 @@ func (p *Purchase) State() (sdkpayments.PurchaseState, error) {
 	return state, nil
 }
 
-func (p *Purchase) Execute(w http.ResponseWriter) {
-	res := p.api.HttpAPI.VueResponse()
-	pmgr := p.api.PluginsMgr()
-	callbackPkg, ok := pmgr.FindByPkg(p.purchase.CallbackPluginPkg())
+func (self *Purchase) Execute(w http.ResponseWriter) {
+	res := self.api.HttpAPI.VueResponse()
+	pmgr := self.api.PluginsMgr()
+	callbackPkg, ok := pmgr.FindByPkg(self.purchase.CallbackPluginPkg())
 	if !ok {
 		res.Error(w, "Unable to find plugin to receive the payment.", 500)
 		return
 	}
 
-	callbackPkg.Http().VueResponse().Redirect(w, p.purchase.CallbackVueRouteName())
+	callbackPkg.Http().VueResponse().Redirect(w, self.purchase.CallbackVueRouteName())
 }
 
-func (p *Purchase) Confirm() error {
-	return p.purchase.Confirm(p.ctx)
+func (self *Purchase) Confirm() error {
+	return self.purchase.Confirm(self.ctx)
 }
 
-func (p *Purchase) Cancel() error {
-	return p.purchase.Cancel(p.ctx)
+func (self *Purchase) Cancel() error {
+	return self.purchase.Cancel(self.ctx)
 }

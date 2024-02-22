@@ -20,9 +20,9 @@ type PluginsMgrUtils struct {
 	coreApi *PluginApi
 }
 
-func (util *PluginsMgrUtils) GetAdminRoutes() []map[string]interface{} {
+func (self *PluginsMgrUtils) GetAdminRoutes() []map[string]interface{} {
 	routes := []*VueRouteComponent{}
-	for _, p := range util.pmgr.All() {
+	for _, p := range self.pmgr.All() {
 		vueR := p.Http().VueRouter().(*VueRouterApi)
 		adminRoutes := vueR.adminRoutes
 		routes = append(routes, adminRoutes...)
@@ -42,7 +42,7 @@ func (util *PluginsMgrUtils) GetAdminRoutes() []map[string]interface{} {
 		log.Println("Error reading themes config: ", err)
 	}
 
-	themesPlugin, ok := util.pmgr.FindByPkg(themecfg.Admin)
+	themesPlugin, ok := self.pmgr.FindByPkg(themecfg.Admin)
 	if !ok {
 		log.Println("Invalid admin theme: ", themecfg.Admin)
 	}
@@ -76,9 +76,9 @@ func (util *PluginsMgrUtils) GetAdminRoutes() []map[string]interface{} {
 	return routesMap
 }
 
-func (util *PluginsMgrUtils) GetPortalRoutes() []map[string]any {
+func (self *PluginsMgrUtils) GetPortalRoutes() []map[string]any {
 	routes := []*VueRouteComponent{}
-	for _, p := range util.pmgr.All() {
+	for _, p := range self.pmgr.All() {
 		vueR := p.Http().VueRouter().(*VueRouterApi)
 		portalRoutes := vueR.portalRoutes
 		routes = append(routes, portalRoutes...)
@@ -98,7 +98,7 @@ func (util *PluginsMgrUtils) GetPortalRoutes() []map[string]any {
 		log.Println("Error reading themes config: ", err)
 	}
 
-	themesPlugin, ok := util.pmgr.FindByPkg(themecfg.Portal)
+	themesPlugin, ok := self.pmgr.FindByPkg(themecfg.Portal)
 	if !ok {
 		log.Println("Invalid portal theme: ", themecfg.Portal)
 	}
@@ -121,7 +121,7 @@ func (util *PluginsMgrUtils) GetPortalRoutes() []map[string]any {
 	return routesMap
 }
 
-func (utils *PluginsMgrUtils) GetAdminNavs(r *http.Request) []sdkhttp.AdminNavList {
+func (self *PluginsMgrUtils) GetAdminNavs(r *http.Request) []sdkhttp.AdminNavList {
 	navs := []sdkhttp.AdminNavList{}
 	categories := []sdkhttp.INavCategory{
 		sdkhttp.NavCategorySystem,
@@ -134,7 +134,7 @@ func (utils *PluginsMgrUtils) GetAdminNavs(r *http.Request) []sdkhttp.AdminNavLi
 	for _, category := range categories {
 		navItems := []sdkhttp.AdminNavItem{}
 
-		for _, p := range utils.pmgr.All() {
+		for _, p := range self.pmgr.All() {
 			vueR := p.Http().VueRouter().(*VueRouterApi)
 			adminNavs := vueR.GetAdminNavs(r)
 			for _, nav := range adminNavs {
@@ -145,7 +145,7 @@ func (utils *PluginsMgrUtils) GetAdminNavs(r *http.Request) []sdkhttp.AdminNavLi
 		}
 
 		navs = append(navs, sdkhttp.AdminNavList{
-			Label: utils.coreApi.Utl.Translate("label", string(category)),
+			Label: self.coreApi.Utl.Translate("label", string(category)),
 			Items: navItems,
 		})
 	}
@@ -153,9 +153,9 @@ func (utils *PluginsMgrUtils) GetAdminNavs(r *http.Request) []sdkhttp.AdminNavLi
 	return navs
 }
 
-func (utils *PluginsMgrUtils) GetPortalItems(r *http.Request) []sdkhttp.PortalItem {
+func (self *PluginsMgrUtils) GetPortalItems(r *http.Request) []sdkhttp.PortalItem {
 	items := []sdkhttp.PortalItem{}
-	for _, p := range utils.pmgr.All() {
+	for _, p := range self.pmgr.All() {
 		vueR := p.Http().VueRouter().(*VueRouterApi)
 		portalItems := vueR.GetPortalItems(r)
 		for _, item := range portalItems {

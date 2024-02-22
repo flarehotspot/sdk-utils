@@ -1,4 +1,4 @@
-package sdktheme
+package sdkthemes
 
 import (
 	"net/http"
