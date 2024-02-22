@@ -17,6 +17,7 @@ func (r *HttpRouter) Router() *mux.Router {
 }
 
 func (r *HttpRouter) Get(path string, h http.HandlerFunc, mw ...func(next http.Handler) http.Handler) sdkhttp.HttpRoute {
+	path = r.api.HttpAPI.vueRouter.VuePathToMuxPath(path)
 	finalHandler := http.Handler(h)
 	for i := len(mw) - 1; i >= 0; i-- {
 		finalHandler = mw[i](finalHandler)
@@ -25,6 +26,7 @@ func (r *HttpRouter) Get(path string, h http.HandlerFunc, mw ...func(next http.H
 	return &HttpRoute{r.api, route}
 }
 func (r *HttpRouter) Post(path string, h http.HandlerFunc, mw ...func(next http.Handler) http.Handler) sdkhttp.HttpRoute {
+	path = r.api.HttpAPI.vueRouter.VuePathToMuxPath(path)
 	finalHandler := http.Handler(h)
 	for i := len(mw) - 1; i >= 0; i-- {
 		finalHandler = mw[i](finalHandler)
@@ -34,6 +36,7 @@ func (r *HttpRouter) Post(path string, h http.HandlerFunc, mw ...func(next http.
 }
 
 func (r *HttpRouter) Group(path string, fn func(sdkhttp.RouterInstance)) {
+	path = r.api.HttpAPI.vueRouter.VuePathToMuxPath(path)
 	router := r.mux.PathPrefix(path).Subrouter()
 	newrouter := &HttpRouter{api: r.api, mux: router}
 	fn(newrouter)
