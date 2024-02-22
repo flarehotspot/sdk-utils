@@ -24,4 +24,5 @@ nav:
       - 'Create Theme': tutorials/creating-a-theme
   - API Reference:
       - 'PluginApi': api/plugin-api.md
+      - 'AccountsApi': api/accounts-api.md
   - Examples: examples/index.md

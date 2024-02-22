@@ -1,23 +1,6 @@
-+++
-title = "Accounts API"
-description = "Manage admin accounts and permissions."
-date = 2021-05-01T08:00:00+00:00
-updated = 2021-05-01T08:00:00+00:00
-draft = false
-weight = 20
-sort_by = "weight"
-template = "docs/page.html"
-
-[extra]
-lead = "Manage admin accounts and permissions."
-toc = true
-top = false
-+++
-
 # AccountsApi
 
-## Overview
-The `AccountsApi` let's you create, modify, remove and manage system admin accounts and permissions.
+The `AccountsApi` let's you create, modify, remove and manage system user accounts and permissions.
 
 # Methods
 First, get an instance of the `AccountsApi` from the [PluginApi](../plugin-api):
@@ -32,7 +15,7 @@ func Init(api sdkplugin.PluginApi) {
 The following are the available methods in `AccountsApi`.
 
 ## Create
-It creates a new admin account with the given username, password and [permissions](#permissions). It returns an [Account](#account-instance) instance and an `error` object.
+It creates a new user account with the given username, password and [permissions](#permissions). It returns an [Account](#account-instance) instance and an `error` object.
 ```go
 username := "admin"
 password := "admin"
@@ -45,7 +28,7 @@ fmt.Println(acct) // Account
 ```
 
 ## Find
-It finds an admin account by the given username. It returns an [Account](#account-instance) instance and an `error` object.
+It finds an user account by the given username. It returns an [Account](#account-instance) instance and an `error` object.
 ```go
 acct, err := accountsApi.Find("admin")
 if err != nil {
@@ -55,7 +38,7 @@ fmt.Println(acct) // Account
 ```
 
 ## GetAll
-It returns all the admin accounts, admin and non-admin. It returns a slice of [Account](#account-instance) instance and an `error` object.
+It returns all the user accounts, admin and non-admin. It returns a slice of [Account](#account-instance) instance and an `error` object.
 ```go
 accts, err := accountsApi.GetAll()
 if err != nil {
@@ -65,7 +48,7 @@ fmt.Println(accts) // []Account
 ```
 
 ## GetAdmins
-It returns all the admin accounts. It returns a slice of [Account](#account-instance) instance and an `error` object.
+It returns all the user accounts. It returns a slice of [Account](#account-instance) instance and an `error` object.
 ```go
 accts, err := accountsApi.GetAdmins()
 if err != nil {
@@ -105,7 +88,7 @@ fmt.Println(desc) // "New permission"
 ---
 
 # Account Instance
-Account instance represents a system admin account. First, find an admin account:
+Account instance represents a system user account. First, find an user account:
 ```go
 acct, err := accountsApi.Find("admin")
 if err != nil {
@@ -114,22 +97,22 @@ if err != nil {
 fmt.Println(acct) // Account
 ```
 
-Given an admin account instance, you can access the following properties and methods.
+Given an user account instance, you can access the following properties and methods.
 
 ## Username
-It returns the username of the admin account.
+It returns the username of the user account.
 ```go
 acct.Username() // "admin"
 ```
 
-## Permissions {#acct-perms}
-It returns the [permissions](#permissions) of the admin account.
+## Permissions
+It returns the [permissions](#permissions) of the user account.
 ```go
 acct.Permissions() // []string{"admin"}
 ```
 
 ## HasAllPerms
-Returns `true` if the admin account has all the given permissions. It can be used to check if an admin account has all the required permissions to access a certain part of the system.
+Returns `true` if the user account has all the given permissions. It can be used to check if an user account has all the required permissions to access a certain part of the system.
 ```go
 acct, _ := accountsApi.Find("admin")
 hasAll := acct.HasAllPerms([]string{"admin"})
@@ -137,7 +120,7 @@ fmt.Println(hasAll) // true
 ```
 
 ## HasAnyPerm
-It returns `true` if the admin account has any of the given permissions. It can be used to check if an admin account has any of the required permissions to access a certain part of the system.
+It returns `true` if the user account has any of the given permissions. It can be used to check if an user account has any of the required permissions to access a certain part of the system.
 ```go
 acct, _ := accountsApi.Find("admin")
 hasAny := acct.HasAnyPerm([]string{"admin"})
@@ -145,13 +128,13 @@ fmt.Println(hasAny) // true
 ```
 
 ## IsAdmin
-It returns `true` if the admin account has the `admin` permission.
+It returns `true` if the user account has the `admin` permission.
 ```go
 acct.IsAdmin() // true
 ```
 
 ## Update
-It updates the admin account with the given username, password and [permissions](#permissions). It returns an `error` object.
+It updates the user account with the given username, password and [permissions](#permissions). It returns an `error` object.
 ```go
 newUsername := "newadmin"
 newPassword := "********"
@@ -162,7 +145,7 @@ if err != nil {
 ```
 
 ## Delete
-It deletes the admin account. It returns an `error` object. Note: You cannot delete the last admin account since it is required for the system to function.
+It deletes the user account. It returns an `error` object. Note: You cannot delete the last user account since it is required for the system to function.
 ```go
 err := acct.Delete()
 if err != nil {
@@ -171,7 +154,7 @@ if err != nil {
 ```
 
 ## Emit
-Emit an [event](#events) to the admin account. It returns an `error` object.
+Emit an [event](#events) to the user account. It returns an `error` object.
 ```go
 evt := "some_event"
 data := map[string]any{"key": "value"}
@@ -184,7 +167,7 @@ acct.Emit(evt, data)
 # Permissions
 Permissions are used to control the access to various parts of the system. Users without the appropriate permissions will not be able to access the restricted parts of the system.
 
-These are the default permissions that you can assign to an admin account. Although you may define your custom permissions using the [Accounts API](#newperm).
+These are the default permissions that you can assign to an user account. Although you may define your custom permissions using the [Accounts API](#newperm).
 
 | Permission | Description
 | --- | --- |
@@ -196,6 +179,6 @@ These are the default permissions that you can assign to an admin account. Altho
 ---
 
 # Events
-Events are emitted to the admin accounts. You can listen to these events and perform certain actions when they are emitted. Here are the available events:
+Events are emitted to the user accounts. You can listen to these events and perform certain actions when they are emitted. Here are the available events:
 
 TODO: Add events

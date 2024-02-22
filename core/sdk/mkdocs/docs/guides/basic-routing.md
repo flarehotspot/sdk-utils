@@ -1,6 +1,7 @@
 
 # Basic Routing
 
+## Portal Routes
 When creating a plugin, we need a way to display data to the users using HTML web pages. To display a web page in the captive portal,
 we are going to use the [VueRouter.RegisterPortalRoutes](../api/vue-router.md#registerportalroutes) api method.
 Below is an example of how to define a portal route.
@@ -18,33 +19,51 @@ import (
 func main() {}
 
 func Init(api sdkplugin.PluginApi) {
+	// define the portal route
+	portalRoute := sdkhttp.VuePortalRoute{
+		RouteName: "portal.welcome",
+		RoutePath: "/welcome/:name",
+		Component: "portal/Welcome.vue",
+		HandlerFunc: func(w http.ResponseWriter, r *http.Request) {
+			params := api.Http().MuxVars(r)
+			name := params["name"]
 
-    // define the portal route
-    route := sdkhttp.VuePortalRoute{
-        RouteName: "portal.welcome",
-        RoutePath: "/welcome/:name",
-        Component: "portal/Welcome.vue",
-        HandlerFunc: func(w http.ResponseWriter, r *http.Request) {
+			data := map[string]interface{}{
+				"name": name,
+			}
 
-            // get the route params
-            params := api.Http().MuxVars(r)
-            name := params["name"]
+			api.Http().VueResponse().Json(w, data, 200)
+		},
+	}
 
-            data := map[string]interface{}{
-                "name": name,
-            }
-
-            // send json data to the view
-            api.Http().VueResponse().Json(w, data, 200)
-        },
-    }
-
-    // register the portal route
-    api.Http().VueRouter().RegisterPortalRoutes(route)
+    // register portal route
+	api.Http().VueRouter().RegisterPortalRoutes(portalRoute)
 }
 ```
 
-We'll explain the values we used to define the portal route below.
+## Admin Routes
+Admin routes are very similar to portal routes, but they are used to display web pages in the admin panel. The difference between portal routes and admin routes is that admin routes cannot be accessed by unauthenticated users. To define an admin route, we use the [VueRouter.RegisterAdminRoutes](../api/vue-router.md#registeradminroutes) api method.
+
+```go
+    // define admin route
+    adminRoute := sdkhttp.VueAdminRoute{
+		RouteName: "admin.welcome",
+		RoutePath: "/welcome/:name",
+		Component: "admin/Welcome.vue",
+		HandlerFunc: func(w http.ResponseWriter, r *http.Request) {
+			params := api.Http().MuxVars(r)
+			name := params["name"]
+			data := map[string]interface{}{
+				"name": name,
+			}
+			api.Http().VueResponse().Json(w, data, 200)
+		},
+	}
+	// register the admin route
+	api.Http().VueRouter().RegisterAdminRoutes(adminRoute)
+```
+
+Below is the brief definition of each fields used to define the [Portal Route](../api/vue-router.md#portalroute) and [Admin Route](../api/vue-router.md#adminroute).
 
 ## RouteName
 This field can be used to reference this route in case we want to link this page from another page using the [HttpHelpers.VueRoutePath](../api/http-helpers.md#vueroutepath) method. Below is an example of creating a link from another page to the portal route we defined above.

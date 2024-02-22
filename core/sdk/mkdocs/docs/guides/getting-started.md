@@ -1,8 +1,6 @@
 
 # Getting Started
 
----
-
 ## 1. Install Docker Desktop
 
 All we need to run Flare Hotspot development runtime is [Docker](https://www.docker.com/). You can download it from [here](https://www.docker.com/products/docker-desktop).
@@ -49,4 +47,7 @@ username: admin
 password: admin
 ```
 
-Next Topic: [Creating a Plugin](./creating-a-plugin.md)
+<div class="float-right">
+    Next Topic:
+    <a href="../creating-a-plugin/">Creating A Plugin</a>
+</div>

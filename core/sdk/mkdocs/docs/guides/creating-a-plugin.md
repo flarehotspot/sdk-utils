@@ -18,11 +18,11 @@ After that, your plugin will be created inside the `plugins` directory.
 ---
 
 <div class="float-left">
-Previous:
+Previous Topic:
 <a href="../getting-started/">Getting Started</a>
 </div>
 
 <div class="float-right">
-Next:
+Next Topic:
 <a href="../basic-routing/">Basic Routing</a>
 </div>
