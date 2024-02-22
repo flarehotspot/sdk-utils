@@ -16,13 +16,12 @@ import (
 func Init(api sdkplugin.PluginApi) {
     // You can start using the SDK here.
     // You can configure your routes, define your plugin components
-    // and register items in the portal and admin nav menu.
+    // and register items in the portal and admin nav menu, and more.
 }
 ```
 
 ---
 
-# Methods
 The following are the available methods in `PluginApi`.
 
 ## Name
