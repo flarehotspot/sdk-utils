@@ -2,9 +2,7 @@
 # Basic Routing
 
 ## Portal Routes
-When creating a plugin, we need a way to display data to the users using HTML web pages. To display a web page in the captive portal,
-we are going to use the [VueRouter.RegisterPortalRoutes](../api/vue-router.md#registerportalroutes) api method.
-Below is an example of how to define a portal route.
+Below is an example of how to define a [portal route](../api/vue-router.md#portalroute) using the [VueRouter.RegisterPortalRoutes](../api/vue-router.md#registerportalroutes) api method.
 
 ```go
 package main
