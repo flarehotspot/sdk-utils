@@ -36,7 +36,6 @@ nav:
       - 'Creating a plugin': guides/creating-a-plugin.md
       - 'Basic Routing': guides/basic-routing.md
       - 'Vue Components': guides/vue-components.md
-      - 'Http Helpers': guides/http-helpers.md
       - 'Creating a link': guides/creating-a-link.md
       - 'Portal Items': guides/portal-items.md
       - 'Admin Navs': guides/admin-navs.md

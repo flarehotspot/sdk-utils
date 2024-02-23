@@ -2,7 +2,8 @@
 
 The `AccountsApi` let's you create, modify, remove and manage system user accounts and permissions.
 
-First, get an instance of the `AccountsApi` from the [PluginApi](../plugin-api):
+First, get an instance of the `AccountsApi` from the [PluginApi](./plugin-api.md):
+
 ```go
 package main
 // imports...

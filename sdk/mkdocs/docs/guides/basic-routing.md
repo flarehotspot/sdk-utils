@@ -68,10 +68,10 @@ api.Http().VueRouter().RegisterAdminRoutes(adminRoute)
 
 Below is the brief definition of each fields used to define the [Portal Route](../api/vue-router.md#portalroute) and [Admin Route](../api/vue-router.md#adminroute).
 
-## RouteName
+## RouteName (required)
 This field can be used to reference this route in case we want to link this page from another page using the [HttpHelpers.VueRoutePath](../api/http-helpers.md#vueroutepath) method. Learn more about [creating a link](./creating-a-link.md).
 
-## RoutePath
+## RoutePath (required)
 This field is used to match the URL in the browser which will trigger the portal route. Route params can be extracted using
 [HttpApi.MuxVars](../api/http-api.md#muxvars) method. For example, to get the `name` param from the route path `/welcome/:name`, you would do:
 
@@ -84,7 +84,10 @@ func (w http.ResponseWriter, r *http.Request) {
 }
 ```
 
-## HandlerFunc
+## Component (required)
+This field defines the location of the [Vue Component](./vue-components.md) file to be displayed in the web page. Vue components are loaded from the `resources/components` directory of your plugin. Learn more about [Vue Components](./vue-components.md).
+
+## HandlerFunc (optional)
 This field is used to define the handler function for the [Vue Component](./vue-components.md). The returned response from [VueResponse.Json](../api/vue-response.md#json) will be available in the Vue component in `flareView` [prop](https://v2.vuejs.org/v2/guide/components-props). A handler function is a function that accepts `http.ResponseWriter` and `*http.Request` arguments:
 
 ```go title="main.go"
@@ -94,10 +97,7 @@ func (w http.ResponseWriter, r *http.Request) {
 }
 ```
 
-## Component
-This field defines the location of the [Vue Component](./vue-components.md) file to be displayed in the web page. Vue components are loaded from the `resources/components` directory of your plugin. Learn more about [Vue Components](./vue-components.md).
-
-## Middlewares
+## Middlewares (optional)
 Middlewares are used to perform operations before the handler function is executed. Middlewares are functions that accept `http.Handler` and return `http.Handler`. Below is an example of how to define a middleware:
 ```go title="main.go"
 mw := func (next http.Handler) http.Handler {
@@ -116,14 +116,15 @@ portalRoute := sdkhttp.VuePortalRoute{
 }
 ```
 
-## PermitFn
-This field is used to define the permissions required to access the admin route. The function accepts a slice of strings which contains the required permissions. The function should return `true` if the user has the required permissions, otherwise `false`.
+## PermitFn (optional)
+This field is used to define the permissions required to access the admin route. The function accepts a slice of strings which contains the permissions of the account that's accessing the page. It's up to you to validate if the user can access the page. The function should return `true` if the user has the required permissions, otherwise `false`.
 ```go title="main.go"
-permit := func(perms []string) bool {
+permit := func (perms []string) bool {
     // check if the user has the required permissions
     return true
 }
 ```
+
 Then you can use the permit function in the route definition:
 ```go title="main.go"
 adminRoute := sdkhttp.VueAdminRoute{
