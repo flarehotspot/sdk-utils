@@ -17,5 +17,4 @@ type VueAdminNav struct {
 	Label       string
 	RouteName   string
 	RouteParams map[string]string
-	PermitFn    func(perms []string) bool
 }

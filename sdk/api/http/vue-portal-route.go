@@ -8,5 +8,4 @@ type VuePortalRoute struct {
 	Component    string
 	HandlerFunc  http.HandlerFunc
 	Middlewares  []func(http.Handler) http.Handler
-	DisableCache bool
 }

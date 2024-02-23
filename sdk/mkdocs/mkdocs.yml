@@ -35,12 +35,11 @@ nav:
       - 'Getting Started': guides/getting-started.md
       - 'Creating a plugin': guides/creating-a-plugin.md
       - 'Basic Routing': guides/basic-routing.md
+      - 'Vue Components': guides/vue-components.md
+      - 'Http Helpers': guides/http-helpers.md
       - 'Creating a link': guides/creating-a-link.md
       - 'Portal Items': guides/portal-items.md
       - 'Admin Navs': guides/admin-navs.md
-      - 'Vue Components': guides/vue-components.md
-      - 'Vue Response': guides/vue-response.md
-      - 'Http Helpers': guides/http-helpers.md
       - 'Form Submission': guides/form-submission.md
       - 'Translations': guides/translations.md
       - 'Route Middlewares': guides/route-middlewares.md

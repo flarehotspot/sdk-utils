@@ -5,7 +5,7 @@ This is a step-by-step guide on installing Docker Desktop for windows. If you ar
 ## 1. Enable WSL 2 (Windows Subsystem for Linux)
 
 To enabel WSL 2, open PowerShell as an administrator and run the following command:
-```powershell
+```sh title="PowerShell"
 wsl --install
 ```
 
