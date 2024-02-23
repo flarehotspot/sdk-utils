@@ -67,9 +67,9 @@ Below is the brief definition of each fields used to define the [Portal Route](.
 This field can be used to reference this route in case we want to link this page from another page using the [HttpHelpers.VueRoutePath](../api/http-helpers.md#vueroutepath) method. Below is an example of creating a link from another page to the portal route we defined above.
 
 ```html
-<!-- Create a link to the portal route named "portal.welcome" with a param "name" of value "Jhon" -->
 <router-link :to='<% .Helpers.VueRoutePath "portal.welcome" "name" "Jhon" %>'>Go to welcome page</router-link>
 ```
+This creates a link to the portal route named `portal.welcome` with a param `name` of value `Jhon`. Learn more about [creating a link](./creating-a-link.md).
 
 ## RoutePath
 This field is used to match the URL in the browser which will trigger the portal route. Route params can be extracted using
@@ -88,7 +88,7 @@ func (w http.ResponseWriter, r *http.Request) {
 This field is used to define the handler function for the Vue.js component. The returned response from [VueResponse.Json](../api/vue-response.md#json) will be available in the Vue component in `flareView` [prop](https://v2.vuejs.org/v2/guide/components-props).
 
 ## Component
-This field defines the location of the [Vue.js component](https://v2.vuejs.org/v2/guide/components) file to be displayed in the web page. Vue components are loaded from the `resources/components` directory under the root directory of your plugin. Below is an example of a Vue component that displays the json data from the [HandlerFunc](#handlerfunc).
+This field defines the location of the [Vue.js component](https://v2.vuejs.org/v2/guide/components) file to be displayed in the web page. Vue components are loaded from the `resources/components` directory of your plugin. Below is an example of a Vue component that displays the json data from the [HandlerFunc](#handlerfunc).
 
 ```html
 <!-- resources/components/portal/Welcome.vue -->

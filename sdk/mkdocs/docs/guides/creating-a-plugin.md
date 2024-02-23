@@ -1,8 +1,9 @@
 
 # Creating a Plugin
 
-In this tutorial, we will create our first plugin. In Windows, open a terminal inside the devkit directory. Then type:
+To create a new plugin, open a terminal and navigate inside the devkit directory.
 
+If you are using Windows, type:
 ```cmd
 .\bin\flare.exe create-plugin
 ```
@@ -33,4 +34,5 @@ func Init(api sdkplugin.PluginApi) {
 }
 ```
 
-The `api` variable is an instance of the [PluginApi](../api/plugin-api.md), the root API of the Flare Hotspot SDK. Throughout the documentation, when you see `api`, it refers to this variable.
+!!! note
+    The `api` variable is an instance of the [PluginApi](../api/plugin-api.md), the root API of the Flare Hotspot SDK. Throughout the documentation, when you see `api`, it refers to this variable.
