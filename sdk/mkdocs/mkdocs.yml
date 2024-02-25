@@ -34,7 +34,7 @@ nav:
   - Guides:
       - 'Getting Started': guides/getting-started.md
       - 'Creating a plugin': guides/creating-a-plugin.md
-      - 'Basic Routing': guides/basic-routing.md
+      - 'Routes and Links': guides/routes-and-links.md
       - 'Vue Components': guides/vue-components.md
       - 'Portal Items': guides/portal-items.md
       - 'Admin Navs': guides/admin-navs.md

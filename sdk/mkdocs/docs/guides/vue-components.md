@@ -55,9 +55,5 @@ The `template` variable is a string containing the HTML code automatically extra
     </template>
     ```
 
-## Go html/template package
-
 ### Helpers
-Aside from the [Http.VueRoutePath](../api/http-helpers.md#vuerouetpath) method we used to create a link, there are other useful methods within the [HttpHelpers](../api/http-helpers.md) package. The `HttpHelpers` can be accessed in the views as `.Helpers` (notice the dot prefix).
-
-You can check the [HttpHelpers](../api/http-helpers.md) documentation for more information.
+Aside from the [Http.VueRoutePath](../api/http-helpers.md#vuerouetpath) method we used to create a link, there are other useful methods within the [HttpHelpers](../api/http-helpers.md) package. The `HttpHelpers` can be accessed in the views as `.Helpers` (notice the dot prefix). Visit the [HttpHelpers](../api/http-helpers.md) API documentation to learn more.
