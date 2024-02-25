@@ -1,8 +1,9 @@
-
 # Basic Routing
 
-## Portal Routes
-Below is an example of how to define a [portal route](../api/vue-router.md#portalroute) using the [VueRouter.RegisterPortalRoutes](../api/vue-router.md#registerportalroutes) api method.
+## Registering Routes
+
+### Portal Routes {#portal-routes}
+Below is an example of how to register a [portal route](../api/vue-router.md#portalroute) using the [VueRouter.RegisterPortalRoutes](../api/vue-router.md#registerportalroutes) api method.
 
 ```go title="main.go"
 package main
@@ -39,8 +40,8 @@ func Init(api sdkplugin.PluginApi) {
 }
 ```
 
-## Admin Routes
-Admin routes are very similar to portal routes, but they are used to display web pages in the admin panel. The difference between portal routes and admin routes is that admin routes cannot be accessed by unauthenticated users. To define an admin route, we use the [VueRouter.RegisterAdminRoutes](../api/vue-router.md#registeradminroutes) api method.
+### Admin Routes {#admin-routes}
+Admin routes are very similar to portal routes, but are only accessible by authenticated user accounts. To define an admin route, we use the [VueRouter.RegisterAdminRoutes](../api/vue-router.md#registeradminroutes) api method.
 
 ```go title="main.go"
 // define admin route
@@ -66,12 +67,14 @@ adminRoute := sdkhttp.VueAdminRoute{
 api.Http().VueRouter().RegisterAdminRoutes(adminRoute)
 ```
 
+## Route Definition {#route-definition}
+
 Below is the brief definition of each fields used to define the [Portal Route](../api/vue-router.md#portalroute) and [Admin Route](../api/vue-router.md#adminroute).
 
-## RouteName (required)
+### RouteName (required) {#routename}
 This field can be used to reference this route in case we want to link this page from another page using the [HttpHelpers.VueRoutePath](../api/http-helpers.md#vueroutepath) method. Learn more about [creating a link](./creating-a-link.md).
 
-## RoutePath (required)
+### RoutePath (required) {#routepath}
 This field is used to match the URL in the browser which will trigger the portal route. Route params can be extracted using
 [HttpApi.MuxVars](../api/http-api.md#muxvars) method. For example, to get the `name` param from the route path `/welcome/:name`, you would do:
 
@@ -84,10 +87,10 @@ func (w http.ResponseWriter, r *http.Request) {
 }
 ```
 
-## Component (required)
+### Component (required) {#component}
 This field defines the location of the [Vue Component](./vue-components.md) file to be displayed in the web page. Vue components are loaded from the `resources/components` directory of your plugin. Learn more about [Vue Components](./vue-components.md).
 
-## HandlerFunc (optional)
+### HandlerFunc (optional) {#handlerfunc}
 This field is used to define the handler function for the [Vue Component](./vue-components.md). The returned response from [VueResponse.Json](../api/vue-response.md#json) will be available in the Vue component in `flareView` [prop](https://v2.vuejs.org/v2/guide/components-props). A handler function is a function that accepts `http.ResponseWriter` and `*http.Request` arguments:
 
 ```go title="main.go"
@@ -97,7 +100,7 @@ func (w http.ResponseWriter, r *http.Request) {
 }
 ```
 
-## Middlewares (optional)
+### Middlewares (optional) {#middlewares}
 Middlewares are used to perform operations before the handler function is executed. Middlewares are functions that accept `http.Handler` and return `http.Handler`. Below is an example of how to define a middleware:
 ```go title="main.go"
 mw := func (next http.Handler) http.Handler {
@@ -116,8 +119,8 @@ portalRoute := sdkhttp.VuePortalRoute{
 }
 ```
 
-## PermitFn (optional)
-This field is used to define the permissions required to access the admin route. The function accepts a slice of strings which contains the permissions of the account that's accessing the page. It's up to you to validate if the user can access the page. The function should return `true` if the user has the required permissions, otherwise `false`.
+### PermitFn (optional) {#permitfn}
+This field is applicable only to admin routes. This function is used to validate the to access the admin route. The function accepts a slice of strings which contains the permissions of the account that's accessing the page. It's up to you to validate if the user can access the page. The function should return `true` if the user has the required permissions, otherwise `false`.
 ```go title="main.go"
 permit := func (perms []string) bool {
     // check if the user has the required permissions
@@ -131,4 +134,22 @@ adminRoute := sdkhttp.VueAdminRoute{
     // other fields...
     PermitFn: permit,
 }
+```
+
+## Creating a Link
+
+### RouterLink
+A router link is a vue component that's part of the official [vue-router](https://github.com/vuejs/vue-router) package. We can create a link to a [portal route](./basic-routing.md#portal-routes) or an [admin route](./basic-routing.md#admin-routes) by using the [HttpHelpers.VueRoutePath](../api/http-helpers.md#vueroutepath) method.
+
+```html title="AnotherPage.vue"
+<router-link :to='<% .Helpers.VueRoutePath "portal.welcome" "name" "Jhon" %>'>Go to welcome page</router-link>
+```
+This creates a link to the portal route named `portal.welcome` with a param `name` of value `Jhon`.
+
+### Passing Route Params
+Route params can be passed to the [Helpers.VueRoutePath](../api/http-helpers.md#vueroutepath) as key-value pairs. For example you have a route path `/users/:user_id/posts/:post_id`, and the [name](./basic-routing.md#routename) of the path is `user.posts`, this is how you can create a link to that route with params:
+```html
+<router-link :to='<% .Helpers.VueRoutePath "user.posts" "user_id" "1" "post_id" "2" %>'>
+    User posts
+</router-link>
 ```
