@@ -1,3 +1,7 @@
+/*
+Copyright (c) 2020-present, Anthony Fu
+MIT License
+*/
 var VueDemi = function (VueDemi, Vue, VueCompositionAPI) {
   if (VueDemi.install) {
     return VueDemi;
