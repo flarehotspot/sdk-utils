@@ -1,7 +1,5 @@
 # Vue Components
 
-## Introduction
-
 Flare Hotspot uses [Vue.js](https://v2.vuejs.org) to build the user interface. But we are not using the standard build tools for Vue.js project since we need to support dynamic components from the plugins. Hence, the syntax for declaring vue components are slightly different. This guide will help you understand how to build and use Vue components in the Flare Hotspot project. Vue components are placed in the `resources/components` directory in your plugin.
 
 Take a look at the following example:
@@ -24,7 +22,7 @@ define(function () {
 </script>
 ```
 
-### The `flareView` prop
+## The `flareView` prop
 
 The `flareView` prop is automatically populated with the JSON data from the handler function defined in [HandlerFunc](#routes-and-links.md#handlerfunc) field of the portal/admin route. The `flareView` component prop has three fields, namely:
 
@@ -32,7 +30,7 @@ The `flareView` prop is automatically populated with the JSON data from the hand
 - `loading`: A boolean value that indicates if the data is still loading.
 - `error`: A string containing the error message if the data loading fails.
 
-### The `template` variable
+## The `template` variable
 
 The `template` variable is a string containing the HTML code automatically extracted from the `<template>` tag.
 
@@ -55,5 +53,5 @@ The `template` variable is a string containing the HTML code automatically extra
     </template>
     ```
 
-### Helpers
+## Helpers
 Aside from the [Http.VueRoutePath](../api/http-helpers.md#vuerouetpath) method we used to create a link, there are other useful methods within the [HttpHelpers](../api/http-helpers.md) package. The `HttpHelpers` can be accessed in the views as `.Helpers` (notice the dot prefix). Visit the [HttpHelpers](../api/http-helpers.md) API documentation to learn more.

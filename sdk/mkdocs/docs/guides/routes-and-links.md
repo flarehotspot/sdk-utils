@@ -1,4 +1,5 @@
 # Routes and Links
+Routes are used to trigger parts of your plugin by matching the requested URL to a [RoutePath](#routepath). A [link](#creating-a-link) is a form of clickable element in the web page that redirects a user to a certain URL and eventually triggering the matched route.
 
 ## Registering Routes
 
@@ -150,7 +151,7 @@ A router link is a vue component that's part of the official [vue-router](https:
 This creates a link to the portal route named `portal.welcome` with a param `name` of value `Jhon`.
 
 ### Route Params {#route-params}
-Route params can be passed to the [Helpers.VueRoutePath](../api/http-helpers.md#vueroutepath) as key-value pairs. For example you have a route path `/users/:user_id/posts/:post_id`, and the [name](./routes-and-links.md#routename) of the route is `user.posts`, this is how you can create a link to that route with params:
+Route params can be passed to the [Helpers.VueRoutePath](../api/http-helpers.md#vueroutepath) as key-value pairs. For example, if you have a route path `/users/:user_id/posts/:post_id` and the [name](./routes-and-links.md#routename) of the route is `user.posts`, this is how you can create a link to that route with params:
 ```html
 <router-link :to='<% .Helpers.VueRoutePath "user.posts" "user_id" "1" "post_id" "2" %>'>
     User posts

@@ -22,16 +22,17 @@ api.Http().VueRouter().PortalItemsFunc(func(r *http.Request) []sdkhttp.VuePortal
 })
 ```
 
-A portal item has the following properties:
+## Portal Item Definition
+A portal item is defined by the following fields:
 
-## Label
+### Label
 This is the text label that will be displayed in the captive portal.
 
-## IconPath
+### IconPath
 This is the path to the icon image that will be displayed next to the label. Icon paths are searched in `resources/assets` directory.
 
-## RouteName
+### RouteName
 This is the [route name](./routes-and-links.md#routename) field of the portal route that the item will link to.
 
-## RouteParams
+### RouteParams
 This is a map of [parameters](./routes-and-links.md#route-params) that will be passed to the [portal route](./routes-and-links.md#portal-routes) to form the link.
