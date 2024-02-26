@@ -1,5 +1,5 @@
 # Routes and Links
-Routes are used to trigger parts of your plugin by matching the requested URL to a [RoutePath](#routepath). A [link](#creating-a-link) is a form of clickable element in the web page that redirects a user to a certain URL and eventually triggering the matched route.
+Routes are used to handle user navigation by matching the requested URL to a [RoutePath](#routepath). A [link](#creating-a-link) is a form of clickable element in the web page that redirects a user to a certain URL and eventually triggering the matched route.
 
 ## Registering Routes
 
