@@ -1,9 +1,9 @@
 /**
  * Copyright 2021-2022 Flarego Technologies Corp. <business@flarego.ph>
- * @file             : http.js
+ * @file             : basic-http.js
  * @author           : Adones Pitogo <pitogo.adones@gmail.com>
  * Date              : Nov 29, 2022
- * Last Modified Date: Nov 29, 2022
+ * Last Modified Date: Feb 27, 2024
  */
 
 /*

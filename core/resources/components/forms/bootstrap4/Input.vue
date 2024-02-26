@@ -1,3 +1,9 @@
+<!--
+This Source Code Form is subject to the terms of the Mozilla Public
+License, v. 2.0. If a copy of the MPL was not distributed with this
+file, You can obtain one at https://mozilla.org/MPL/2.0/.
+-->
+
 <template>
   <div class="row mb-2">
     <div class="col-xs-12 col-md-3 text-md-right pt-md-2">
