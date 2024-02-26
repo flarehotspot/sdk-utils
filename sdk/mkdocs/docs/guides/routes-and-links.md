@@ -100,6 +100,9 @@ func (w http.ResponseWriter, r *http.Request) {
 }
 ```
 
+!!! note
+    If the handler function is not defined, the server will just return `null` json data.
+
 ### Middlewares (optional) {#middlewares}
 Middlewares are used to perform operations before the handler function is executed. Middlewares are functions that accept `http.Handler` and return `http.Handler`. Below is an example of how to define a middleware:
 ```go title="main.go"
@@ -139,7 +142,7 @@ adminRoute := sdkhttp.VueAdminRoute{
 ## Creating a Link {#creating-a-link}
 
 ### RouterLink {#routerlink}
-A router link is a vue component that's part of the official [vue-router](https://github.com/vuejs/vue-router) package. We can create a link to a [portal route](./basic-routing.md#portal-routes) or an [admin route](./basic-routing.md#admin-routes) by using the [HttpHelpers.VueRoutePath](../api/http-helpers.md#vueroutepath) method.
+A router link is a vue component that's part of the official [vue-router](https://github.com/vuejs/vue-router) package. We can create a link to a [portal route](./routes-and-links.md#portal-routes) or an [admin route](./routes-and-links.md#admin-routes) by using the [HttpHelpers.VueRoutePath](../api/http-helpers.md#vueroutepath) method.
 
 ```html title="AnotherPage.vue"
 <router-link :to='<% .Helpers.VueRoutePath "portal.welcome" "name" "Jhon" %>'>Go to welcome page</router-link>
@@ -147,7 +150,7 @@ A router link is a vue component that's part of the official [vue-router](https:
 This creates a link to the portal route named `portal.welcome` with a param `name` of value `Jhon`.
 
 ### Route Params {#route-params}
-Route params can be passed to the [Helpers.VueRoutePath](../api/http-helpers.md#vueroutepath) as key-value pairs. For example you have a route path `/users/:user_id/posts/:post_id`, and the [name](./basic-routing.md#routename) of the path is `user.posts`, this is how you can create a link to that route with params:
+Route params can be passed to the [Helpers.VueRoutePath](../api/http-helpers.md#vueroutepath) as key-value pairs. For example you have a route path `/users/:user_id/posts/:post_id`, and the [name](./routes-and-links.md#routename) of the route is `user.posts`, this is how you can create a link to that route with params:
 ```html
 <router-link :to='<% .Helpers.VueRoutePath "user.posts" "user_id" "1" "post_id" "2" %>'>
     User posts

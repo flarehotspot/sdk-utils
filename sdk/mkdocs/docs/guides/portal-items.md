@@ -6,7 +6,7 @@
 TODO: add image here
 ```
 
-A portal item is just a link to an existing [portal route](./basic-routing.md#portal-routes). Therefore, to display an item in the captive portal, one must already have defined a portal route.
+A portal item is just a link to an existing [portal route](./routes-and-links.md#portal-routes). Therefore, to display an item in the captive portal, one must already have defined a portal route.
 
 To register a portal item to be displayed in the captive portal, we will use the [VueRouter.PortalItemsFunc](../api/vue-router.md#portalitemsfunc) method:
 
@@ -31,7 +31,7 @@ This is the text label that will be displayed in the captive portal.
 This is the path to the icon image that will be displayed next to the label. Icon paths are searched in `resources/assets` directory.
 
 ## RouteName
-This is the name of the [portal route](./basic-routing.md#portal-routes) that the item will link to.
+This is the [route name](./routes-and-links.md#routename) field of the portal route that the item will link to.
 
 ## RouteParams
-This is a map of parameters that will be passed to the [portal route](./basic-routing.md#portal-routes) when the item is clicked.
+This is a map of [parameters](./routes-and-links.md#route-params) that will be passed to the [portal route](./routes-and-links.md#portal-routes) to form the link.
