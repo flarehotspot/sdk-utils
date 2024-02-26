@@ -8,3 +8,6 @@ Flare Hotspot SDK is a collection of tools and libraries for interacting with th
 pip install mkdocs mkdocs-material
 cd mkdocs && mkdocs serve
 ```
+
+## License
+Mozilla Public License 2.0
