@@ -1,6 +1,8 @@
 
 # Creating a Plugin
 
+## The create-plugin command
+
 To create a new plugin, open a terminal and navigate inside the devkit directory.
 
 If you are using Windows, type:
@@ -13,8 +15,26 @@ If you are using Linux or Mac, type:
 ./bin/flare create-plugin
 ```
 
-Follow the instructions in the command prompt and enter the necessary details for your plugin.
-After that, your plugin will be created inside the `plugins` directory. Inside your plugin directory, you will find a `main.go` file. This file contains `Init` function which will be called when your plugin is loaded into the system. Below is the initial content of `main.go` file:
+## Plugin Details
+
+Follow the instructions in the command prompt and enter the necessary details for your plugin. Below are the needed details for your plugin:
+
+### Package Name
+This is the primary identifier of your plugin. It should be unique and follow reverse domain naming convention, e.g `com.your-domain.your-plugin`. The package name should be in lowercase and should not contain any special characters or spaces except period, underscore and hyphen (`.`, `_`, `-`).
+
+### Plugin Name
+This is the name of your plugin. It should be a human-readable name that describes the purpose of your plugin.
+
+### Description
+This is a brief description of your plugin. It should describe the purpose of your plugin.
+
+## The main.go file
+
+After that, your plugin will be created inside the `plugins` directory. Inside your plugin directory, you will find a `main.go` file.
+
+![main.go location](./img/main-go-location.png)
+
+This file contains `Init` function which will be called when your plugin is loaded into the system. Below is the initial content of `main.go` file:
 
 ```go title="main.go"
 
