@@ -53,5 +53,13 @@ The `template` variable is a string containing the HTML code automatically extra
     </template>
     ```
 
-## Helpers
-Aside from the [Http.VueRoutePath](../api/http-helpers.md#vuerouetpath) method we used to create a link, there are other useful methods within the [HttpHelpers](../api/http-helpers.md) package. The `HttpHelpers` can be accessed in the views as `.Helpers` (notice the dot prefix). Visit the [HttpHelpers](../api/http-helpers.md) API documentation to learn more.
+## Template helpers
+Aside from the [HttpHelpers.VueRoutePath](../api/http-helpers.md#vueroutepath) method we used to create a link, there are other useful methods within the [HttpHelpers](../api/http-helpers.md) API. The [HttpHelpers](../api/http-helpers.md) can be accessed in the views as `.Helpers` (notice the dot prefix) enclosed by `<%` and `%>` delimiters. Visit the [HttpHelpers](../api/http-helpers.md) API documentation to learn more.
+
+For example, to build a link to another route, you can use the `HttpHelpers.VueRoutePath` method as shown below:
+```html
+<router-link :to='<% .Helpers.VueRoutePath "portal.welcome" %>'>Welcome</router-link>
+```
+
+## Browser Compatibility
+Since we are not using standard build tools like webpack or vite, it is recommended to use basic form of javascript and css to ensure compatibility with older browsers. For example, use `var` instead of `let` or `const` and use `function` instead of arrow functions.
