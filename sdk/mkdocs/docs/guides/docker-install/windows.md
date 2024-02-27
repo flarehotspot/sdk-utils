@@ -15,6 +15,10 @@ wsl --install
 !!! alert "Important"
     It is recommended to **restart your computer** after intalling WSL.
 
+After rebooting, you will be asked to setup the Ubuntu account. Just enter your desired `username` and `password`. Then confirm your password.
+
+![Ubuntu setup](./img/docker-install/00-set-ubuntu-username.png)
+
 ## 2. Download docker installer
 
 Open your browser and head to [docker download page](https://docs.docker.com/desktop/install/windows-install/). Then click the button to download the Docker Desktop installer.
