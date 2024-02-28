@@ -1,7 +1,7 @@
 # Form Submission
 
 ## Post Request Handler
-We need a route and handler to handle the submitted form data.
+We need a route and handler to handle the submitted form data. Below is an example of a route and handler to handle the form submission.
 
 ```go
 api.Http().HttpRouter().PluginRouter().Post("/payments/receieved", func (w http.ResponseWriter, r *http.Request) {
@@ -16,6 +16,10 @@ api.Http().HttpRouter().PluginRouter().Post("/payments/receieved", func (w http.
 
 }).Name("payment.received")
 ```
+
+In this example, we are using the `Post` method to handle the form submission. The first argument is the route URL, and the second argument is the handler function. The handler function accepts two arguments, the first argument is the `http.ResponseWriter`, and the second argument is the `*http.Request`.
+
+Then we are decoding the form data using the `json.NewDecoder(r.Body).Decode(&data)` method. The `json.NewDecoder(r.Body).Decode(&data)` method decodes the form data from the request body and stores it in the `data` variable.
 
 ## Form Component
 
