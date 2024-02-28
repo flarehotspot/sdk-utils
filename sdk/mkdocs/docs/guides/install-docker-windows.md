@@ -65,4 +65,4 @@ NOTE: This will only restart the Docker Desktop application, not your PC.
 
 ## 8. Download the Flare Hotspot SDK
 
-After installing Docker Desktop, you can now proceed to [download the Flare Hotspot SDK](../getting-started.md/#2-download-flare-hotspot-sdk).
+After installing Docker Desktop, you can now proceed to [download the Flare Hotspot SDK](./getting-started.md/#2-download-flare-hotspot-sdk).
