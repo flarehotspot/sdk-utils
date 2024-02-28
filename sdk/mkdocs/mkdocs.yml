@@ -1,5 +1,5 @@
 ---
-site_name: Flare Hotspot
+site_name: Flare Hotspot Developers
 site_url: https://developer.flarehotspot.com
 site_description: 'Flare Hotspot platform for developers:
   Build. Innovate. Get Paid.'
@@ -12,11 +12,13 @@ theme:
     accent: light-blue
   features:
     - navigation.sections
+    - navigation.tracking
+    - navigation.instant
+    - navigation.footer
     - search.highlight
     - search.suggestions
     - content.code.annotate
     - content.code.copy
-    - navigation.footer
 
 markdown_extensions:
   - pymdownx.highlight:
@@ -40,7 +42,6 @@ nav:
       - 'Admin Navs': guides/admin-navs.md
       - 'Form Submission': guides/form-submission.md
       - 'Translations': guides/translations.md
-      - 'Route Middlewares': guides/route-middlewares.md
       - 'Database Migrations': guides/database-migrations.md
   - Tutorials:
       - 'Manage Sessions': tutorials/manage-sessions.md
@@ -50,7 +51,8 @@ nav:
       - 'PluginApi': api/plugin-api.md
       - 'AccountsApi': api/accounts-api.md
       - 'HttpApi': api/http-api.md
-  - Examples: examples/index.md
+  - Free Plugins:
+      - 'Flare Hotspot Theme': 'plugins/com.flarego.default-theme.md'
 
 copyright: |
   &copy; 2024 <a href="https://www.flarego.ph">Flarego Technologies Corp.</a>
