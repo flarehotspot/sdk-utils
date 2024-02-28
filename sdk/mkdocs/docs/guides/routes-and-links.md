@@ -4,7 +4,7 @@ Routes are used to handle user navigation by matching the requested URL to a [Ro
 ## Registering Routes
 
 ### Portal Routes {#portal-routes}
-Below is an example of how to register a [portal route](../api/vue-router.md#portalroute) using the [VueRouter.RegisterPortalRoutes](../api/vue-router.md#registerportalroutes) api method.
+Below is an example of how to register a [portal route](../api/vue-router-api.md#portalroute) using the [VueRouter.RegisterPortalRoutes](../api/vue-router-api.md#registerportalroutes) api method.
 
 ```go title="main.go"
 package main
@@ -42,7 +42,7 @@ func Init(api sdkplugin.PluginApi) {
 ```
 
 ### Admin Routes {#admin-routes}
-Admin routes are very similar to [portal routes](#portal-routes), but are only accessible by authenticated user accounts. To define an admin route, we use the [VueRouter.RegisterAdminRoutes](../api/vue-router.md#registeradminroutes) api method.
+Admin routes are very similar to [portal routes](#portal-routes), but are only accessible by authenticated user accounts. To define an admin route, we use the [VueRouter.RegisterAdminRoutes](../api/vue-router-api.md#registeradminroutes) api method.
 
 ```go title="main.go"
 // define admin route
@@ -70,7 +70,7 @@ api.Http().VueRouter().RegisterAdminRoutes(adminRoute)
 
 ## Route Definition {#route-definition}
 
-Below is the brief definition of each fields used to define the [Portal Route](../api/vue-router.md#portalroute) and [Admin Route](../api/vue-router.md#adminroute).
+Below is the brief definition of each fields used to define the [Portal Route](../api/vue-router-api.md#portalroute) and [Admin Route](../api/vue-router-api.md#adminroute).
 
 ### RouteName (required) {#routename}
 This field can be used to reference this route in case we want to link this page from another page using the [HttpHelpers.VueRoutePath](../api/http-helpers.md#vueroutepath) method. Learn more about [creating a link](./creating-a-link.md).

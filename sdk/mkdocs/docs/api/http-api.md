@@ -25,7 +25,7 @@ httpRouter := api.Http().HttpRouter()
 ```
 
 ### VueRouter
-It returns an instance of [VueRouter](./vue-router.md).
+It returns an instance of [VueRouter](./vue-router-api.md).
 ```go
 vueRouter := api.Http().VueRouter()
 ```

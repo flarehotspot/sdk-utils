@@ -50,6 +50,11 @@ nav:
       - 'PluginApi': api/plugin-api.md
       - 'AccountsApi': api/accounts-api.md
       - 'HttpApi': api/http-api.md
+      - 'HttpRouterApi': api/http-router-api.md
+      - 'HttpAuth': api/http-auth.md
+      - 'HttpResponse': api/http-response.md
+      - 'VueRouterApi': api/vue-router-api.md
+      - 'window.$flare': api/flare-global-variable.md
   - Free Plugins:
       - 'Flare Hotspot Theme': 'plugins/com.flarego.default-theme.md'
 

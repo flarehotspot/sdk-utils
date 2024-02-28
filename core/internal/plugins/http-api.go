@@ -50,7 +50,7 @@ func (self *HttpApi) HttpRouter() sdkhttp.HttpRouter {
 	return self.httpRouter
 }
 
-func (self *HttpApi) VueRouter() sdkhttp.VueRouter {
+func (self *HttpApi) VueRouter() sdkhttp.VueRouterApi {
 	return self.vueRouter
 }
 

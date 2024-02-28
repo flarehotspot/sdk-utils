@@ -25,7 +25,7 @@ type HttpApi interface {
 	HttpRouter() HttpRouter
 
 	// Returns the router API for vue requests.
-	VueRouter() VueRouter
+	VueRouter() VueRouterApi
 
 	// Returns the middlewares API.
 	Middlewares() Middlewares
