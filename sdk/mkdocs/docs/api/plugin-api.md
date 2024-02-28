@@ -125,7 +125,7 @@ func Init(api sdkplugin.PluginApi) {
 ```
 
 ## Acct
-It returns the [AccountsApi](../accounts-api/) object which is used to access and modify the system admin accounts.
+It returns the [AccountsApi](./accounts-api.md) object which is used to access and modify the system admin accounts.
 ```go
 package main
 // truncated code...
@@ -136,7 +136,7 @@ func Init(api sdkplugin.PluginApi) {
 ```
 
 ## Http
-It returns the [`HttpApi`](../http-api/) object which is used to configure routes and serve HTTP requests.
+It returns the [`HttpApi`](./http-api.md) object which is used to configure routes and serve HTTP requests.
 ```go
 package main
 // truncated code...
@@ -147,7 +147,7 @@ func Init(api sdkplugin.PluginApi) {
 ```
 
 ## Config
-It returns the [`ConfigApi`](../config-api/) object which is used to access and modify the system configuration.
+It returns the [`ConfigApi`](./config-api.md) object which is used to access and modify the system configuration.
 ```go
 package main
 // truncated code...

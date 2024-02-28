@@ -1,4 +1,6 @@
 # Form Submission
+In this tutorial, we will learn how to submit a form using Flare. We will create a form component and submit the form data to the server using the [$flare.http.post](../api/flare-global-variable.md#http-post) method.
+The [$flare](../api/flare-global-variable.md) variable is a global variable in the browser that contains helper functions to work with the Flare API.
 
 ## Post Request Handler
 We need a route and handler to handle the submitted form data. Below is an example of a route and handler to handle the form submission.
@@ -17,9 +19,12 @@ api.Http().HttpRouter().PluginRouter().Post("/payments/receieved", func (w http.
 }).Name("payment.received")
 ```
 
-In this example, we are using the `Post` method to handle the form submission. The first argument is the route URL, and the second argument is the handler function. The handler function accepts two arguments, the first argument is the `http.ResponseWriter`, and the second argument is the `*http.Request`.
+In this example, we are using the `Post` method from [PluginRouter](../api/http-router-api.md#pluginrouter) to handle the form submission. The first argument is the route URL, and the second argument is the handler function. The handler function accepts two arguments, the first argument is the `http.ResponseWriter`, and the second argument is the `*http.Request`.
 
 Then we are decoding the form data using the `json.NewDecoder(r.Body).Decode(&data)` method. The `json.NewDecoder(r.Body).Decode(&data)` method decodes the form data from the request body and stores it in the `data` variable.
+
+To create admin only routes, you can use the [AdminRouter](../api/http-router-api.md#adminrouter) method instead of `PluginRouter` method.
+```go
 
 ## Form Component
 
