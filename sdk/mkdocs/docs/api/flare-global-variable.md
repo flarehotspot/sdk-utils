@@ -4,7 +4,7 @@ The `$flare` global variable is a global variable in the browser that contains h
 ## $flare.http {#flare-http}
 The `$flare.http` object is used to make AJAX requests. It contains two methods, namely `get` and `post`.
 
-### get {#flare-http-get}
+### $flare.http.get {#flare-http-get}
 The `$flare.http.get` method accepts two arguments, the first argument is the URL to send the form data to, and the second argument is the query params.
 ```js
 var queryParams = {amount: 100};
@@ -18,7 +18,7 @@ $flare.http.get('/path/to/handler', queryParams)
     });
 ```
 
-### post {#flare-http-post}
+### $flare.http.post {#flare-http-post}
 The `$flare.http.post` method accepts two arguments, the first argument is the URL to send the form data to, and the second argument is the form data.
 
 ```js
