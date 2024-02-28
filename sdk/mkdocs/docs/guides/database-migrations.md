@@ -2,6 +2,7 @@
 
 Database migrations are a way to manage changes to your database schema over time. They are a way to keep track of changes to your database schema and apply them in a consistent way. This is important because as your application evolves, the database schema will need to change to reflect that.
 
+## Creating Migration Files
 To create migration files for your database, you can use the `db-migrate` command:
 
 In Windows:
@@ -18,7 +19,9 @@ This will create new migration files in the `resources/migrations` directory of 
 
 The file with the `.up.sql` extension contains the SQL commands to apply the migration, and the file with the `.down.sql` extension contains the SQL commands to revert the migration.
 
-SQL commands must be written for MySQL database since we are using MySQL as the database for Flare Hotspot. Below is an example of a migration file:
+SQL commands must be written for MySQL database since we are using MySQL as the database for Flare Hotspot.
+
+Below is an example of a migration file:
 
 ```sql title="resources/migrations/20210101000000_create_users_table.up.sql"
 CREATE TABLE IF NOT EXISTS users (
@@ -30,11 +33,15 @@ CREATE TABLE IF NOT EXISTS users (
 );
 ```
 
-While below is an example of the down migration file:
+Below is an example of the down migration file:
 ```sql title="resources/migrations/20210101000000_create_users_table.down.sql"
 DROP TABLE IF EXISTS users;
 ```
 
-The up migration file automatically gets executed during plugin installation and application boot up (if not yet executed). The down migration file is used when the plugin is uninstalled.
+## Running Migration Files
+
+You don't have to manually run the migration files. The up migration file automatically gets executed during plugin installation and application boot up (if not yet executed). The down migration file is used when the plugin is uninstalled.
+
+## Troubleshooting
 
 **TODO**: Add a section for logging or debugging migrations.
