@@ -1,5 +1,5 @@
 # Form Submission
-In this tutorial, we will learn how to submit a form using Flare. We will create a form component and submit the form data to the server using the [$flare.http.post](../api/flare-global-variable.md#http-post) method.
+In this tutorial, we will create a form component and submit the form data to the server using the [$flare.http.post](../api/flare-global-variable.md#http-post) method.
 The [$flare](../api/flare-global-variable.md) variable is a global variable in the browser that contains helper functions to work with the Flare API.
 
 ## Post Request Handler
