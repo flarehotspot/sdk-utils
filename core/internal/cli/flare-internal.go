@@ -24,6 +24,14 @@ func main() {
 		tools.CreateMonoFiles()
 		return
 
+	case "create-migration":
+		name, err := tools.AskCmdInput("Enter migration name, e.g. create_users_table")
+		if err != nil {
+			panic(err)
+		}
+		tools.MigrationCreate("core", name)
+		return
+
 	case "create-devkit":
 		devkit.CreateDevkit()
 		return
@@ -96,12 +104,14 @@ func SyncVersion() {
 func Usage() string {
 	return `
 Available commands:
-    server          Start the flare server
+    server              Start the flare server
 
-    make-mono       Create mono-repo files
+    make-mono           Create mono-repo files
 
-    create-devkit   Generate devkit files
+    create-migration    Create new migration files
 
-    build-cli       Build the flare executable CLI
+    create-devkit       Generate devkit files
+
+    build-cli           Build the flare executable CLI
 `
 }

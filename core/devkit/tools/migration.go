@@ -11,11 +11,11 @@ import (
 	sdkstr "github.com/flarehotspot/sdk/utils/strings"
 )
 
-func MigrationCreate(pluginPkg string, name string) {
+func MigrationCreate(pluginDir string, name string) {
 	currentTime := time.Now()
 	timestamp := currentTime.Format("20060102150405.000000")
     timestamp = strings.Replace(timestamp, ".", "", 1)
-	migrationsDir := filepath.Join("plugins", pluginPkg, "resources/migrations")
+	migrationsDir := filepath.Join(pluginDir, "resources/migrations")
 
 	name = sdkstr.Slugify(name)
 	migrationUpPath := filepath.Join(migrationsDir, timestamp+"_"+name+".up.sql")
@@ -26,11 +26,14 @@ func MigrationCreate(pluginPkg string, name string) {
 		panic(err)
 	}
 
-	if err := os.WriteFile(migrationUpPath, []byte(""), sdkfs.PermFile); err != nil {
+    contentUp := "-- Write your sql for up migration here\n"
+    contentDown := "-- Write your sql for down migration here\n"
+
+	if err := os.WriteFile(migrationUpPath, []byte(contentUp), sdkfs.PermFile); err != nil {
 		panic(err)
 	}
 
-	if err := os.WriteFile(migrationDownPath, []byte(""), sdkfs.PermFile); err != nil {
+	if err := os.WriteFile(migrationDownPath, []byte(contentDown), sdkfs.PermFile); err != nil {
 		panic(err)
 	}
 

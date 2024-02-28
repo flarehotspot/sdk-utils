@@ -97,7 +97,8 @@ func main() {
 			panic(err)
 		}
 
-		tools.MigrationCreate(pluginPkg, name)
+		pluginDir := filepath.Join("plugins", pluginPkg)
+		tools.MigrationCreate(pluginDir, name)
 		return
 
 	case "build-plugin":
