@@ -22,7 +22,7 @@ type HttpApi interface {
 	Helpers() HttpHelpers
 
 	// Returns the router API.
-	HttpRouter() HttpRouter
+	HttpRouter() HttpRouterApi
 
 	// Returns the router API for vue requests.
 	VueRouter() VueRouterApi

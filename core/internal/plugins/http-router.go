@@ -40,7 +40,7 @@ func (self *HttpRouter) Post(path string, h http.HandlerFunc, mw ...func(next ht
 	return NewHttpRoute(self.api, route)
 }
 
-func (self *HttpRouter) Group(path string, fn func(sdkhttp.RouterInstance)) {
+func (self *HttpRouter) Group(path string, fn func(sdkhttp.HttpRouterInstance)) {
 	path = self.api.HttpAPI.vueRouter.VuePathToMuxPath(path)
 	router := self.mux.PathPrefix(path).Subrouter()
 	newrouter := NewHttpRouter(self.api, router)

@@ -6,9 +6,9 @@ import (
 
 	"github.com/flarehotspot/core/internal/connmgr"
 	"github.com/flarehotspot/core/internal/db"
-	sdkhttp "github.com/flarehotspot/sdk/api/http"
 	"github.com/flarehotspot/core/internal/web/middlewares"
 	"github.com/flarehotspot/core/internal/web/router"
+	sdkhttp "github.com/flarehotspot/sdk/api/http"
 )
 
 type HttpRouterApi struct {
@@ -30,11 +30,11 @@ func NewHttpRouterApi(api *PluginApi, db *db.Database, clnt *connmgr.ClientRegis
 	return &HttpRouterApi{api, adminRouter, pluginRouter}
 }
 
-func (self *HttpRouterApi) AdminRouter() sdkhttp.RouterInstance {
+func (self *HttpRouterApi) AdminRouter() sdkhttp.HttpRouterInstance {
 	return self.adminRouter
 }
 
-func (self *HttpRouterApi) PluginRouter() sdkhttp.RouterInstance {
+func (self *HttpRouterApi) PluginRouter() sdkhttp.HttpRouterInstance {
 	return self.pluginRouter
 }
 
