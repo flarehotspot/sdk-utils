@@ -2,83 +2,75 @@
 
 The `AccountsApi` let's you create, modify, remove and manage system user accounts and permissions.
 
-First, get an instance of the `AccountsApi` from the [PluginApi](./plugin-api.md):
-
-```go
-package main
-// imports...
-func Init(api sdkplugin.PluginApi) {
-    accountsApi := api.Acct()
-}
-```
+## AccountsApi Methods
 
 The following are the available methods in `AccountsApi`.
 
-## Create
+### Create
 It creates a new user account with the given username, password and [permissions](#permissions). It returns an [Account](#account-instance) instance and an `error` object.
 ```go
 username := "admin"
 password := "admin"
 permissions := []string{"admin"}
-acct, err := accountsApi.Create(username, password, permissions)
+acct, err := api.Acct().Create(username, password, permissions)
 if err != nil {
     fmt.Println(err) // Error
 }
 fmt.Println(acct) // Account
 ```
 
-## Find
+### Find
 It finds an user account by the given username. It returns an [Account](#account-instance) instance and an `error` object.
 ```go
-acct, err := accountsApi.Find("admin")
+acct, err := api.Acct().Find("admin")
 if err != nil {
     fmt.Println(err) // Error
 }
 fmt.Println(acct) // Account
 ```
 
-## GetAll
+### GetAll
 It returns all the user accounts, admin and non-admin. It returns a slice of [Account](#account-instance) instance and an `error` object.
 ```go
-accts, err := accountsApi.GetAll()
+accts, err := api.Acct().GetAll()
 if err != nil {
     fmt.Println(err) // Error
 }
 fmt.Println(accts) // []Account
 ```
 
-## GetAdmins
+### GetAdmins
 It returns all the user accounts. It returns a slice of [Account](#account-instance) instance and an `error` object.
 ```go
-accts, err := accountsApi.GetAdmins()
+accts, err := api.Acct().GetAdmins()
 if err != nil {
     fmt.Println(err) // Error
 }
 fmt.Println(accts) // []Account
 ```
 
-## NewPerm
+### NewPerm
 It creates a new permission with the given name and description. It returns an `error` object.
 ```go
 name := "newperm"
 desc := "New permission"
-err := accountsApi.NewPerm(name, desc)
+err := api.Acct().NewPerm(name, desc)
 if err != nil {
     fmt.Println(err) // Error
 }
 ```
 
-## GetPerms
+### GetPerms
 It returns all the available permissions, including custom ones from plugins. The return type is `map[string]string` (name and description pairs of permissions).
 ```go
-perms := accountsApi.GetPerms()
+perms := api.Acct().GetPerms()
 fmt.Println(perms) // map[string]string{"admin": "The admin permission"}
 ```
 
-## PermDesc
+### PermDesc
 Returns the description of the given permission. It returns a `string` and an `error` object.
 ```go
-desc, err := accountsApi.PermDesc("newperm")
+desc, err := api.Acct().PermDesc("newperm")
 if err != nil {
     fmt.Println(err) // Error
 }
@@ -87,10 +79,10 @@ fmt.Println(desc) // "New permission"
 
 ---
 
-# Account Instance
+## Account Instance
 Account instance represents a system user account. First, find an user account:
 ```go
-acct, err := accountsApi.Find("admin")
+acct, err := api.Acct().Find("admin")
 if err != nil {
     fmt.Println(err) // Error
 }
@@ -99,41 +91,41 @@ fmt.Println(acct) // Account
 
 Given an user account instance, you can access the following properties and methods.
 
-## Username
+### Username
 It returns the username of the user account.
 ```go
 acct.Username() // "admin"
 ```
 
-## Permissions
+### Permissions
 It returns the [permissions](#permissions) of the user account.
 ```go
 acct.Permissions() // []string{"admin"}
 ```
 
-## HasAllPerms
+### HasAllPerms
 Returns `true` if the user account has all the given permissions. It can be used to check if an user account has all the required permissions to access a certain part of the system.
 ```go
-acct, _ := accountsApi.Find("admin")
+acct, _ := api.Acct().Find("admin")
 hasAll := acct.HasAllPerms([]string{"admin"})
 fmt.Println(hasAll) // true
 ```
 
-## HasAnyPerm
+### HasAnyPerm
 It returns `true` if the user account has any of the given permissions. It can be used to check if an user account has any of the required permissions to access a certain part of the system.
 ```go
-acct, _ := accountsApi.Find("admin")
+acct, _ := api.Acct().Find("admin")
 hasAny := acct.HasAnyPerm([]string{"admin"})
 fmt.Println(hasAny) // true
 ```
 
-## IsAdmin
+### IsAdmin
 It returns `true` if the user account has the `admin` permission.
 ```go
 acct.IsAdmin() // true
 ```
 
-## Update
+### Update
 It updates the user account with the given username, password and [permissions](#permissions). It returns an `error` object.
 ```go
 newUsername := "newadmin"
@@ -144,7 +136,7 @@ if err != nil {
 }
 ```
 
-## Delete
+### Delete
 It deletes the user account. It returns an `error` object. Note: You cannot delete the last user account since it is required for the system to function.
 ```go
 err := acct.Delete()
@@ -153,18 +145,18 @@ if err != nil {
 }
 ```
 
-## Emit
+### Emit
 Emit an [event](#events) to the user account. It returns an `error` object.
 ```go
 evt := "some_event"
 data := map[string]any{"key": "value"}
-acct, _ := accountsApi.Find("admin")
+acct, _ := api.Acct().Find("admin")
 acct.Emit(evt, data)
 ```
 
 ---
 
-# Permissions
+## Permissions
 Permissions are used to control the access to various parts of the system. Users without the appropriate permissions will not be able to access the restricted parts of the system.
 
 These are the default permissions that you can assign to an user account. Although you may define your custom permissions using the [Accounts API](#newperm).
@@ -178,7 +170,7 @@ These are the default permissions that you can assign to an user account. Althou
 
 ---
 
-# Events
+## Events
 Events are emitted to the user accounts. You can listen to these events and perform certain actions when they are emitted. Here are the available events:
 
 TODO: Add events

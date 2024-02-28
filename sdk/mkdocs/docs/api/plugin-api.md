@@ -83,7 +83,7 @@ func Init(api sdkplugin.PluginApi) {
 ```
 
 ## Translate
-It is a utility function used to convert a key into a translated string. Example usage:
+It is a utility function used to convert a message key into a translated string. Example usage:
 ```go
 package main
 // truncated code...
@@ -112,7 +112,7 @@ func Init(api sdkplugin.PluginApi) {
 ```
 
 ## SqlDb
-It returns [`*sql.DB`](http://go-database-sql.org/overview.html) instance which is used to query, insert, update and delete database entities.
+It returns [*sql.DB](http://go-database-sql.org/overview.html) instance which is used to query, insert, update and delete database entities.
 ```go
 package main
 // truncated code...

@@ -2,66 +2,59 @@
 
 The `HttpApi` is used to access various HTTP server functionalities including authentication, routing, and http responses.
 
-First, get an instance of the `HttpApi` from the [PluginApi](./plugin-api.md):
-```go
-package main
-// imports...
-func Init(api sdkplugin.PluginApi) {
-    httpApi := api.Http()
-}
-```
+## Methods
 
 The following are the available methods in `HttpApi`.
 
-## Auth
+### Auth
 It returns an instance of the [HttpAuth](./http-auth.md).
 ```go
-auth := httpApi.Auth()
+auth := api.Http().Auth()
 ```
 
-## Helpers
+### Helpers
 It returns an instance of the [HttpHelpers](./http-helpers.md).
 ```go
-helpers := httpApi.Helpers()
+helpers := api.Http().Helpers()
 ```
 
-## HttpRouter
-It returns an instance of [HttpRouter](./http-router.md).
+### HttpRouter
+It returns an instance of [HttpRouterApi](./http-router-api.md).
 ```go
-httpRouter := httpApi.Router()
+httpRouter := api.Http().HttpRouter()
 ```
 
-## VueRouter
+### VueRouter
 It returns an instance of [VueRouter](./vue-router.md).
 ```go
-vueRouter := httpApi.VueRouter()
+vueRouter := api.Http().VueRouter()
 ```
 
-## Middlewares
+### Middlewares
 Returns an instance of [Middlewares](./middlewares.md).
 ```go
-middlewares := httpApi.Middlewares()
+middlewares := api.Http().Middlewares()
 ```
 
-## HttpResponse
+### HttpResponse
 Returns an instance of [HttpResponse](./http-response.md).
 ```go
-httpResponse := httpApi.HttpResponse()
+httpResponse := api.Http().HttpResponse()
 ```
 
-## VueResponse
+### VueResponse
 Returns an instance of [VueResponse](./vue-response.md).
 ```go
-vueResponse := httpApi.VueResponse()
+vueResponse := api.Http().VueResponse()
 ```
 
-## GetDevice
+### GetDevice
 Get the device information from the http request. It returns and instance of [ClientDevice](./client-device.md) and an `error`.
 ```go
 // handler
 func (w http.ResponseWriter, r *http.Request) {
     // other logic...
-    device, err := httpApi.GetDevice(r)
+    device, err := api.Http().GetDevice(r)
     if err != nil {
         // handle error
     }
@@ -69,35 +62,35 @@ func (w http.ResponseWriter, r *http.Request) {
 }
 ```
 
-## MuxVars
+### MuxVars
 Returns a `map[string]string` of variables from the request path. Below is an example to get the value if `id` in the route path `/sessions/:id`
 ```go
 // handler
 func (w http.ResponseWriter, r *http.Request) {
     // other logic...
-    vars := httpApi.MuxVars(r) // map[string]string
+    vars := api.Http().MuxVars(r) // map[string]string
     id := vars["id"]
     fmt.Println(id) // "1"
 }
 ```
 
-## GetAdminNavs
+### GetAdminNavs
 Returns a slice of [AdminNavList](#adminnavlist)
 ```go
 // handler
 func (w http.ResponseWriter, r *http.Request) {
     // other logic...
-    navList := httpApi.GetAdminNavs(r)
+    navList := api.Http().GetAdminNavs(r)
     fmt.Println(navList) // []AdminNavList
 }
 ```
-## GetPortalItems
+### GetPortalItems
 Returns a slice of [PortalItem](#portalitem)
 ```go
 // handler
 func (w http.ResponseWriter, r *http.Request) {
     // other logic...
-    portalItems := httpApi.GetPortalItems(r)
+    portalItems := api.Http().GetPortalItems(r)
     fmt.Println(portalItems) // []PortalItem
 }
 ```
