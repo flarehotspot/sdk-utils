@@ -6,6 +6,7 @@ import (
 	sdkfs "github.com/flarehotspot/sdk/utils/fs"
 )
 
+// PluginPathList returns a list of plugin (absolute) paths
 func PluginPathList() []string {
 	searchPaths := []string{"plugins"}
 	pluginPaths := []string{}

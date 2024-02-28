@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"plugin"
+	"strconv"
 	"strings"
 
 	tools "github.com/flarehotspot/core/devkit/tools"
@@ -59,6 +60,44 @@ func main() {
 		}
 
 		tools.CreatePlugin(pluginPkg, pluginName, pluginDesc)
+		return
+
+	case "create-migration":
+		pluginPaths := tools.PluginPathList()
+		pluginPkgs := make([]string, len(pluginPaths))
+		for i, pluginPath := range pluginPaths {
+			pluginPkgs[i] = filepath.Base(pluginPath)
+		}
+
+		pluginNums := make([]string, len(pluginPkgs))
+		for i, pluginPkg := range pluginPkgs {
+			pluginNums[i] = fmt.Sprintf("%d. %s", i+1, pluginPkg)
+		}
+
+		selectPkgAsk := fmt.Sprintf("\nSelect the plugin to create the migration for:\n%s\n\nEnter the number of the corresponding plugin", strings.Join(pluginNums, "\n"))
+
+		selectPkg, err := tools.AskCmdInput(selectPkgAsk)
+		if err != nil {
+			panic(err)
+		}
+
+		pluginIdx, err := strconv.Atoi(selectPkg)
+		if err != nil {
+			panic(err)
+		}
+
+		if pluginIdx < 1 || pluginIdx > len(pluginPkgs) {
+			panic(fmt.Errorf("Invalid plugin number: %d", pluginIdx))
+		}
+
+		pluginPkg := pluginPkgs[pluginIdx-1]
+
+		name, err := tools.AskCmdInput("Enter the migration name, e.g. create_users_table")
+		if err != nil {
+			panic(err)
+		}
+
+		tools.MigrationCreate(pluginPkg, name)
 		return
 
 	case "build-plugin":
@@ -126,6 +165,8 @@ list of commands:
     server                              Start the flare server
 
     create-plugin                       Create a new plugin
+
+    create-migration                    Create a new migration
 
     build-plugin <plugin path>          Build plugin.so file. If no plugin path is provided, all plugins will be built.
 
