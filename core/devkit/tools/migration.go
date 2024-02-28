@@ -18,8 +18,8 @@ func MigrationCreate(pluginPkg string, name string) {
 	migrationsDir := filepath.Join("plugins", pluginPkg, "resources/migrations")
 
 	name = sdkstr.Slugify(name)
-	migrationUpPath := filepath.Join(migrationsDir, timestamp+"_"+name+"_up.sql")
-	migrationDownPath := filepath.Join(migrationsDir, timestamp+"_"+name+"_down.sql")
+	migrationUpPath := filepath.Join(migrationsDir, timestamp+"_"+name+".up.sql")
+	migrationDownPath := filepath.Join(migrationsDir, timestamp+"_"+name+".down.sql")
 
 	err := sdkfs.EnsureDir(migrationsDir)
 	if err != nil {
