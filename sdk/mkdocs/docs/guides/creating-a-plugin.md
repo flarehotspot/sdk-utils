@@ -23,7 +23,7 @@ Follow the instructions in the command prompt and enter the necessary details fo
 This is the primary identifier of your plugin. It should be unique and follow reverse domain naming convention, e.g `com.your-domain.your-plugin`. The package name should be in lowercase and should not contain any special characters or spaces except period, underscore and hyphen (`.`, `_`, `-`).
 
 ### Plugin Name
-This is the name of your plugin. It should be a human-readable name that describes the purpose of your plugin.
+This is the name of your plugin, e.g. "System Monitor".
 
 ### Description
 This is a brief description of your plugin. It should describe the purpose of your plugin.
@@ -32,9 +32,9 @@ This is a brief description of your plugin. It should describe the purpose of yo
 
 After that, your plugin will be created inside the `plugins` directory. Inside your plugin directory, you will find a `main.go` file.
 
-![main.go location](./img/main-go-location.png)
+![main.go file](./img/main-go-location.png)
 
-This file contains `Init` function which will be called when your plugin is loaded into the system. Below is the initial content of `main.go` file:
+This file contains `Init` function which will be called when your plugin gets loaded into the system. Below is the initial content of `main.go` file:
 
 ```go title="main.go"
 
@@ -43,7 +43,6 @@ package main
 import (
 	"net/http"
 
-	sdkhttp "github.com/flarehotspot/sdk/api/http"
 	sdkplugin "github.com/flarehotspot/sdk/api/plugin"
 )
 

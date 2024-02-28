@@ -1,12 +1,10 @@
 # PluginApi
 
-The `PluginApi` provides access to methods used to manipulate system accounts, network devices, theme configuration, user sessions and payment system. Each plugin is provided with an instance of `PluginApi`, the root interface of our SDK.
+The `PluginApi` is the root interface of Flare Hotspot SDK. It provides access to methods used to manipulate system accounts, network devices, theme configuration, user sessions, payment system and more. Each plugin is provided with an instance of `PluginApi`.
 
-When the plugin is first loaded into the system, the system looks for the `Init` function of the plugin's `main` package. The `PluginApi` object is then passed to the init function. From here, you can start configuring the routes and components of your plugin. An example of a plugin's init function:
+When the plugin is first loaded into the system, the system looks for the `Init` function of the plugin's `main` package. The `PluginApi` object is then passed to the plugin's `Init` function. From here, you can start configuring the routes and components of your plugin. An example of a plugin's init function:
 
-```go
-// file: plugins/com.mydomain.myplugin/main.go
-
+```go title="plugins/com.mydomain.myplugin/main.go"
 package main
 
 import (
@@ -85,12 +83,8 @@ func Init(api sdkplugin.PluginApi) {
 ## Translate
 It is a utility function used to convert a message key into a translated string. Example usage:
 ```go
-package main
-// truncated code...
-func Init(api sdkplugin.PluginApi) {
-    msg := api.Translate("info", "payment_received", "amount", 1.00)
-    fmt.Println(msg) // "Payment received USD 1.0.0"
-}
+msg := api.Translate("info", "payment_received", "amount", 1.00)
+fmt.Println(msg) // "Payment received USD 1.0.0"
 ```
 
 In this example, given that the [application](../api/config-api.md#application) language is set to `en`, the system will look for the file `resources/translations/en/info/payment_received.txt` inside your plugin directory. If the file is found, the system will use the contents of the file as the translation template.
