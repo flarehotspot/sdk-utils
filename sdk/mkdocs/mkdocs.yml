@@ -41,7 +41,6 @@ nav:
       - 'Form Submission': guides/form-submission.md
       - 'Translations': guides/translations.md
       - 'Route Middlewares': guides/route-middlewares.md
-      - 'Database Access': guides/database-access.md
       - 'Database Migrations': guides/database-migrations.md
   - Tutorials:
       - 'Manage Sessions': tutorials/manage-sessions.md
