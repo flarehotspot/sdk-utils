@@ -7,20 +7,20 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func NewHttpRouter(api *PluginApi, mux *mux.Router) *HttpRouter {
-	return &HttpRouter{api, mux}
+func NewHttpRouterInstance(api *PluginApi, mux *mux.Router) *HttpRouterInstance {
+	return &HttpRouterInstance{api, mux}
 }
 
-type HttpRouter struct {
+type HttpRouterInstance struct {
 	api *PluginApi
 	mux *mux.Router
 }
 
-func (self *HttpRouter) Router() *mux.Router {
+func (self *HttpRouterInstance) Router() *mux.Router {
 	return self.mux
 }
 
-func (self *HttpRouter) Get(path string, h http.HandlerFunc, mw ...func(next http.Handler) http.Handler) sdkhttp.HttpRoute {
+func (self *HttpRouterInstance) Get(path string, h http.HandlerFunc, mw ...func(next http.Handler) http.Handler) sdkhttp.HttpRoute {
 	path = self.api.HttpAPI.vueRouter.VuePathToMuxPath(path)
 	finalHandler := http.Handler(h)
 	for i := len(mw) - 1; i >= 0; i-- {
@@ -30,7 +30,7 @@ func (self *HttpRouter) Get(path string, h http.HandlerFunc, mw ...func(next htt
 	return NewHttpRoute(self.api, route)
 }
 
-func (self *HttpRouter) Post(path string, h http.HandlerFunc, mw ...func(next http.Handler) http.Handler) sdkhttp.HttpRoute {
+func (self *HttpRouterInstance) Post(path string, h http.HandlerFunc, mw ...func(next http.Handler) http.Handler) sdkhttp.HttpRoute {
 	path = self.api.HttpAPI.vueRouter.VuePathToMuxPath(path)
 	finalHandler := http.Handler(h)
 	for i := len(mw) - 1; i >= 0; i-- {
@@ -40,14 +40,14 @@ func (self *HttpRouter) Post(path string, h http.HandlerFunc, mw ...func(next ht
 	return NewHttpRoute(self.api, route)
 }
 
-func (self *HttpRouter) Group(path string, fn func(sdkhttp.HttpRouterInstance)) {
+func (self *HttpRouterInstance) Group(path string, fn func(sdkhttp.HttpRouterInstance)) {
 	path = self.api.HttpAPI.vueRouter.VuePathToMuxPath(path)
 	router := self.mux.PathPrefix(path).Subrouter()
-	newrouter := NewHttpRouter(self.api, router)
+	newrouter := NewHttpRouterInstance(self.api, router)
 	fn(newrouter)
 }
 
-func (self *HttpRouter) Use(middlewares ...func(http.Handler) http.Handler) {
+func (self *HttpRouterInstance) Use(middlewares ...func(http.Handler) http.Handler) {
 	for _, mw := range middlewares {
 		self.mux.Use(mw)
 	}
