@@ -22,65 +22,47 @@ func Init(api sdkplugin.PluginApi) {
 
 ---
 
+## PluginApi Methods
+
 The following are the available methods in `PluginApi`.
 
-## Name
+### Name
 It returns the `name` field defined in `plugin.json`.
 
 ```go
-package main
-// truncated code...
-func Init(api sdkplugin.PluginApi) {
-    name := api.Name()
-    fmt.Println(name) // "My Plugin"
-}
+name := api.Name()
+fmt.Println(name) // "My Plugin"
 ```
 
-## Pkg
+### Pkg
 It returns the `package` field defined in [plugin.json](../plugin-json/).
 ```go
-package main
-// truncated code...
-func Init(api sdkplugin.PluginApi) {
-    pkg := api.Pkg()
-    fmt.Println(pkg) // "com.mydomain.myplugin"
-}
+pkg := api.Pkg()
+fmt.Println(pkg) // "com.mydomain.myplugin"
 ```
 
-## Version
+### Version
 It returns the `version` field defined in [plugin.json](../plugin-json/).
 ```go
-package main
-// truncated code...
-func Init(api sdkplugin.PluginApi) {
-    version := api.Version()
-    fmt.Println(version) // "1.0.0"
-}
+version := api.Version()
+fmt.Println(version) // "1.0.0"
 ```
 
-## Description
+### Description
 It returns the `description` field defined in [plugin.json](../plugin-json/).
 ```go
-package main
-// truncated code...
-func Init(api sdkplugin.PluginApi) {
-    description := api.Description()
-    fmt.Println(description) // "My plugin description"
-}
+description := api.Description()
+fmt.Println(description) // "My plugin description"
 ```
 
-## Dir
+### Dir
 It returns the absolute path of the plugin's installtion directory.
 ```go
-package main
-// truncated code...
-func Init(api sdkplugin.PluginApi) {
-    dir := api.Dir()
-    fmt.Println(dir) // "/path/to/com.mydomain.myplugin"
-}
+dir := api.Dir()
+fmt.Println(dir) // "/path/to/com.mydomain.myplugin"
 ```
 
-## Translate
+### Translate
 It is a utility function used to convert a message key into a translated string. Example usage:
 ```go
 msg := api.Translate("info", "payment_received", "amount", 1.00)
@@ -94,156 +76,100 @@ Sometimes we want to put variables inside the translation message. In this examp
 Payment received: USD <% .amount %>
 ```
 
-## Resource
+### Resource
 It returns the absolute path of the file under the plugin's resource directory.
 ```go
-package main
-// truncated code...
-func Init(api sdkplugin.PluginApi) {
-    resource := api.Resource("/my-resource.txt")
-    fmt.Println(resource) // "/path/to/com.mydomain.myplugin/resources/my-resource.txt"
-}
+resource := api.Resource("/my-resource.txt")
+fmt.Println(resource) // "/path/to/com.mydomain.myplugin/resources/my-resource.txt"
 ```
 
-## SqlDb
+### SqlDb
 It returns [*sql.DB](http://go-database-sql.org/overview.html) instance which is used to query, insert, update and delete database entities.
 ```go
-package main
-// truncated code...
-func Init(api sdkplugin.PluginApi) {
-    db := api.SqlDb()
-    fmt.Println(db) // *sql.DB
-}
+db := api.SqlDb()
+fmt.Println(db) // *sql.DB
 ```
 
-## Acct
+### Acct
 It returns the [AccountsApi](./accounts-api.md) object which is used to access and modify the system admin accounts.
 ```go
-package main
-// truncated code...
-func Init(api sdkplugin.PluginApi) {
-    acct := api.Acct()
-    fmt.Println(acct) // AccountsApi
-}
+acct := api.Acct()
+fmt.Println(acct) // AccountsApi
 ```
 
-## Http
+### Http
 It returns the [`HttpApi`](./http-api.md) object which is used to configure routes and serve HTTP requests.
 ```go
-package main
-// truncated code...
-func Init(api sdkplugin.PluginApi) {
-    http := api.Http()
-    fmt.Println(http) // HttpApi
-}
+http := api.Http()
+fmt.Println(http) // HttpApi
 ```
 
-## Config
+### Config
 It returns the [`ConfigApi`](./config-api.md) object which is used to access and modify the system configuration.
 ```go
-package main
-// truncated code...
-func Init(api sdkplugin.PluginApi) {
-    config := api.Config()
-    fmt.Println(config) // ConfigApi
-}
+config := api.Config()
+fmt.Println(config) // ConfigApi
 ```
 
-## Payments
+### Payments
 It return the [`PaymentsApi`](../payments-api/) object which is used to create payment options or create system transactions.
 ```go
-package main
-// truncated code...
-func Init(api sdkplugin.PluginApi) {
-    payments := api.Payments()
-    fmt.Println(payments) // PaymentsApi
-}
+payments := api.Payments()
+fmt.Println(payments) // PaymentsApi
 ```
 
-## InAppPurchases
+### InAppPurchases
 It returns the [`InAppPurchasesApi`](../in-app-purchases-api/) object which is used to create and manage in-app purchases.
 ```go
-package main
-// truncated code...
-func Init(api sdkplugin.PluginApi) {
-    inAppPurchases := api.InAppPurchases()
-    fmt.Println(inAppPurchases) // InAppPurchasesApi
-}
+inAppPurchases := api.InAppPurchases()
+fmt.Println(inAppPurchases) // InAppPurchasesApi
 ```
 
-## Ads
+### Ads
 It returns the [`AdsApi`](../ads-api/) object which is used to create and manage ads.
 ```go
-package main
-// truncated code...
-func Init(api sdkplugin.PluginApi) {
-    ads := api.Ads()
-    fmt.Println(ads) // AdsApi
-}
+ads := api.Ads()
+fmt.Println(ads) // AdsApi
 ```
 
-## PluginsMgr
+### PluginsMgr
 It returns the [`PluginsMgrApi`](../plugins-mgr-api/) object which is used to manage plugins.
 ```go
-package main
-// truncated code...
-func Init(api sdkplugin.PluginApi) {
-    pluginsMgr := api.PluginsMgr()
-    fmt.Println(pluginsMgr) // PluginsMgrApi
-}
+pluginsMgr := api.PluginsMgr()
+fmt.Println(pluginsMgr) // PluginsMgrApi
 ```
 
-## Network
+### Network
 It returns the [`NetworkApi`](../network-api/) object which is used to manage the network.
 ```go
-package main
-// truncated code...
-func Init(api sdkplugin.PluginApi) {
-    network := api.Network()
-    fmt.Println(network) // NetworkApi
-}
+network := api.Network()
+fmt.Println(network) // NetworkApi
 ```
 
-## DeviceHooks
+### DeviceHooks
 It returns the [`DeviceHooksApi`](../device-hooks-api/) object which is used to manage device registration hooks.
 ```go
-package main
-// truncated code...
-func Init(api sdkplugin.PluginApi) {
-    deviceHooks := api.DeviceHooks()
-    fmt.Println(deviceHooks) // DeviceHooksApi
-}
+deviceHooks := api.DeviceHooks()
+fmt.Println(deviceHooks) // DeviceHooksApi
 ```
 
-## SessionsMgr
+### SessionsMgr
 It returns the [`SessionsMgrApi`](../sessions-mgr-api/) object which is used to manage user sessions.
 ```go
-package main
-// truncated code...
-func Init(api sdkplugin.PluginApi) {
-    sessionsMgr := api.SessionsMgr()
-    fmt.Println(sessionsMgr) // SessionsMgrApi
-}
+sessionsMgr := api.SessionsMgr()
+fmt.Println(sessionsMgr) // SessionsMgrApi
 ```
 
-## Uci
+### Uci
 It returns the [`UciApi`](../uci-api/) object which is a wrapper to [OpenWRT's UCI](https://openwrt.org/docs/guide-user/base-system/uci).
 ```go
-package main
-// truncated code...
-func Init(api sdkplugin.PluginApi) {
-    uci := api.Uci()
-    fmt.Println(uci) // UciApi
-}
+uci := api.Uci()
+fmt.Println(uci) // UciApi
 ```
 
-## Themes
+### Themes
 It returns the [`ThemesApi`](../themes-api/) object which is used to manage system UI themes.
 ```go
-package main
-// truncated code...
-func Init(api sdkplugin.PluginApi) {
-    themes := api.Themes()
-    fmt.Println(themes) // ThemesApi
-}
+themes := api.Themes()
+fmt.Println(themes) // ThemesApi
 ```

@@ -2,7 +2,7 @@
 
 The `HttpApi` is used to access various HTTP server functionalities including authentication, routing, and http responses.
 
-## Methods
+## HttpApi Methods
 
 The following are the available methods in `HttpApi`.
 
@@ -95,7 +95,7 @@ func (w http.ResponseWriter, r *http.Request) {
 }
 ```
 
-# AdminNavList
+## AdminNavList
 `AdminNavList` is a list of items for the admin navigation. It has the following fields:
 ```go
 type AdminNavList struct {
@@ -104,7 +104,7 @@ type AdminNavList struct {
 }
 ```
 
-# AdminNavItem
+## AdminNavItem
 `AdminNavItem` is an item for the admin navigation. It has the following fields:
 ```go
 type AdminNavItem struct {
@@ -116,7 +116,7 @@ type AdminNavItem struct {
 }
 ```
 
-# PortalItem
+## PortalItem
 `PortalItem` is an item for the portal navigation. It has the following fields:
 ```go
 type PortalItem struct {
