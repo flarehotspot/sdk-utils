@@ -1,4 +1,5 @@
 # Form Submission
+
 In this tutorial, we will create a form component and submit the form data to the server using the [$flare.http.post](../api/flare-global-variable.md#http-post) method.
 The [$flare](../api/flare-global-variable.md) variable is a global variable in the browser that contains helper functions to work with the Flare API.
 
@@ -7,14 +8,14 @@ We need a route and handler to handle the submitted form data. Below is an examp
 
 ```go
 api.Http().HttpRouter().PluginRouter().Post("/payments/receieved", func (w http.ResponseWriter, r *http.Request) {
-    var data struct {
-        Amount int `json:"amount"`
-    }
-    if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
-        http.Error(w, err.Error(), http.StatusBadRequest)
-        return
-    }
-    fmt.Fprintf(w, "Payment Received: %d", data.Amount)
+  var data struct {
+    Amount int `json:"amount"`
+  }
+  if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
+    http.Error(w, err.Error(), http.StatusBadRequest)
+    return
+  }
+  fmt.Fprintf(w, "Payment Received: %d", data.Amount)
 
 }).Name("payment.received")
 ```
@@ -31,35 +32,36 @@ The `$flare.http.post` method accepts two arguments, the first argument is the U
 
 ```html title="resources/components/Form.vue"
 <template>
-    <form @click.prevent="submit">
-        <label>Amount:</label>
-        <input type="text" v-model="amount">
-        <button type="submit">Submit</button>
-    </form>
+  <form @click.prevent="submit">
+    <label>Amount:</label>
+    <input type="text" v-model="amount">
+    <button type="submit">Submit</button>
+  </form>
 </template>
 
 <script>
 define(function(){
-    return {
-        props: ['flareView'],
-        template: template,
-        data: function() {
-            return {amount: 0};
-        },
-        methods: {
-            submit: function(){
-                var self = this;
-                var formData = {amount: self.amount};
-                $flare.http.post('<% .Helpers.VueRoutePath "payment.received" %>', formData)
-                    .then(function(response){
-                        console.log(response);
-                    })
-                    .catch(function(error){
-                        console.log(error);
-                    });
-            }
-        }
-    };
+  return {
+    props: ['flareView'],
+    template: template,
+    data: function() {
+      return {amount: 0};
+    },
+    methods: {
+      submit: function() {
+        var self = this;
+        var formData = {amount: self.amount};
+
+        $flare.http.post('<% .Helpers.VueRoutePath "payment.received" %>', formData)
+          .then(function(response){
+            console.log(response);
+          })
+          .catch(function(error){
+            console.log(error);
+          });
+      }
+    }
+  };
 });
 </script>
 ```

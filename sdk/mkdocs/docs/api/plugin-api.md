@@ -93,14 +93,12 @@ func Init(api sdkplugin.PluginApi) {
 }
 ```
 
-In this example, given that the application language config is set to `en`, the system will look for the file `com.mydomain.myplugin/resources/translations/en/info/payment_received.txt`. If the file is found, the system will use the contents of the file as the translation template.
+In this example, given that the [application](../api/config-api.md#application) language is set to `en`, the system will look for the file `resources/translations/en/info/payment_received.txt` inside your plugin directory. If the file is found, the system will use the contents of the file as the translation template.
 
-We also want the to replace the amount with the actual amount. We can do that by passing the amount param as key-value pairs (e.g "amount", 1.00) to the `Translate` method. Translation params are represented as `<% .param %>` (with a dot prefix) in the translation file. Therefore the content of `payment_received.txt` should be:
+Sometimes we want to put variables inside the translation message. In this example, we want to pass the `amount` as a paramenter to the message. We can do that by passing the amount param as key-value pairs to the `Translate` method. Internally, the param pairs are converted into a type `map[any]any`. To use the `amount` param in the translation file, we'll enclose it with `<%` and `%>` delimiters (with dot prefix). Therefore the content of `payment_received.txt` should be:
 ```go
 Payment received: USD <% .amount %>
 ```
-
-Internally, the param pairs are converted into a `map[any]any`.
 
 ## Resource
 It returns the absolute path of the file under the plugin's resource directory.
