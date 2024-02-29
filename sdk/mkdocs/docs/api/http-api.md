@@ -24,14 +24,8 @@ It returns an instance of [HttpRouterApi](./http-router-api.md).
 httpRouter := api.Http().HttpRouter()
 ```
 
-### VueRouter
-It returns an instance of [VueRouterApi](./vue-router-api.md).
-```go
-vueRouter := api.Http().VueRouter()
-```
-
 ### Middlewares
-Returns an instance of [Middlewares](./middlewares.md).
+Returns an instance of [Middlewares](./http-middlewares.md).
 ```go
 middlewares := api.Http().Middlewares()
 ```
@@ -40,6 +34,12 @@ middlewares := api.Http().Middlewares()
 Returns an instance of [HttpResponse](./http-response.md).
 ```go
 httpResponse := api.Http().HttpResponse()
+```
+
+### VueRouter
+It returns an instance of [VueRouterApi](./vue-router-api.md).
+```go
+vueRouter := api.Http().VueRouter()
 ```
 
 ### VueResponse
