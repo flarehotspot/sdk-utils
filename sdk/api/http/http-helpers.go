@@ -26,7 +26,7 @@ type HttpHelpers interface {
 	VueComponentPath(path string) (uri string)
 
 	// Returns the html for the ads view.
-	AdView() (html template.HTML)
+	AdsView() (html template.HTML)
 
 	// Translates a message into the current language settings from application config.
 	// msgtype is the message type, e.g. "error", "success", "info", "warning".

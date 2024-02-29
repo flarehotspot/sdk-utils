@@ -42,11 +42,11 @@ uri := api.Http().Helpers().VueComponentPath("sample-component.vue")
 fmt.Println(uri) // /plugins/your-plugin-id/0.0.1/components/sample-component.vue
 ```
 
+### AdsView
+TODO: implement advertisements feature
+
 ### VueRoutePath
 Alias to [VueRouterApi.VueRouterPath](./vue-router-api.md#vueroutepath) method.
-
-### AddView
-TODO: implement advertisements feature
 
 ### Translate
 Alias to [PluginApi.Translate](./plugin-api.md#translate) method.

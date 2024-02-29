@@ -101,7 +101,7 @@ func (self *HttpHelpers) PluginMgr() plugin.PluginsMgrApi {
 	return self.api.PluginsMgrApi
 }
 
-func (self *HttpHelpers) AdView() (html template.HTML) {
+func (self *HttpHelpers) AdsView() (html template.HTML) {
 	return ""
 }
 
