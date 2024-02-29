@@ -1,5 +1,5 @@
 # The `$flare` global variable
-The `$flare` variable is a global variable in the browser that contains helper functions to work with the Flare API.
+The `$flare` variable is a global variable in the browser that contains helper functions to work with the Flare Hotspot API.
 
 ### $flare.http.get {#flare-http-get}
 The `$flare.http.get` method is used to perform a `GET` AJAX request. It accepts two arguments, the first argument is the URL to send the form data to, and the second argument is the query params.
@@ -15,6 +15,9 @@ $flare.http.get('/path/to/handler', queryParams)
     });
 ```
 
+!!!note
+    You must use [VueResponse](./vue-response.md) in the server side to perform http resposes with `$flare.http.get` and `$flare.http.post`.
+
 ### $flare.http.post {#flare-http-post}
 The `$flare.http.post` method is used to perform a `POST` AJAX request. It accepts two arguments, the first argument is the URL to send the form data to, and the second argument is the form data.
 
@@ -29,6 +32,9 @@ $flare.http.post('/path/to/handler', formData)
         console.log(error);
     });
 ```
+
+!!!note
+    You must use [VueResponse](./vue-response.md) in the server side to perform http resposes with `$flare.http.get` and `$flare.http.post`.
 
 ## $flare.events {#flare-events}
 The `$flare.events` object is used to listen to events emitted by the server via [Server-Sent Events](https://www.w3schools.com/html/html5_serversentevents.asp). Below is an example of how to listen to an event:

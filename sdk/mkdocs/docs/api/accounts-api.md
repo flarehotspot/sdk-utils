@@ -172,7 +172,7 @@ You can listen to these events and perform certain actions when they are emitted
 | `session:connected` | Emitted when a session is started and internet connection is available.
 | `session:disconnected` | Emitted when a session is ended and internet connection is lost.
 
-You can listen to this events in the browser using the [$flare.events](./flare-global-variable.md#flare-events) object like so:
+You can listen to this events in the browser using the [$flare.events](./flare-variable.md#flare-events) object like so:
 ```js
 $flare.events.addEventListener("some_event", function(res) {
     console.log("Session connected: ", res.data);
