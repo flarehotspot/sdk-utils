@@ -32,87 +32,15 @@ func main() {
 		return
 
 	case "create-plugin":
-		var (
-			err        error
-			pluginPkg  string
-			pluginName string
-			pluginDesc string
-		)
-
-		for len(strings.Split(pluginPkg, ".")) < 3 {
-			pluginPkg, err = tools.AskCmdInput("Enter the plugin package name, e.g. com.mydomain.plugin")
-			if err != nil {
-				panic(err)
-			}
-			if len(strings.Split(pluginPkg, ".")) < 3 {
-				fmt.Println("Error: Package name must be at least 3 segments. For example: com.my-domain.my-plugin")
-			}
-		}
-
-		pluginName, err = tools.AskCmdInput("Enter the plugin name, e.g. MyPlugin")
-		if err != nil {
-			panic(err)
-		}
-
-		pluginDesc, err = tools.AskCmdInput("Enter the plugin description")
-		if err != nil {
-			panic(err)
-		}
-
-		tools.CreatePlugin(pluginPkg, pluginName, pluginDesc)
+		CreatePlugin()
 		return
 
 	case "create-migration":
-		pluginPaths := tools.PluginPathList()
-		pluginPkgs := make([]string, len(pluginPaths))
-		for i, pluginPath := range pluginPaths {
-			pluginPkgs[i] = filepath.Base(pluginPath)
-		}
-
-		pluginNums := make([]string, len(pluginPkgs))
-		for i, pluginPkg := range pluginPkgs {
-			pluginNums[i] = fmt.Sprintf("%d. %s", i+1, pluginPkg)
-		}
-
-		selectPkgAsk := fmt.Sprintf("\nSelect the plugin to create the migration for:\n%s\n\nEnter the number of the corresponding plugin", strings.Join(pluginNums, "\n"))
-
-		selectPkg, err := tools.AskCmdInput(selectPkgAsk)
-		if err != nil {
-			panic(err)
-		}
-
-		pluginIdx, err := strconv.Atoi(selectPkg)
-		if err != nil {
-			panic(err)
-		}
-
-		if pluginIdx < 1 || pluginIdx > len(pluginPkgs) {
-			panic(fmt.Errorf("Invalid plugin number: %d", pluginIdx))
-		}
-
-		pluginPkg := pluginPkgs[pluginIdx-1]
-
-		name, err := tools.AskCmdInput("Enter the migration name, e.g. create_users_table")
-		if err != nil {
-			panic(err)
-		}
-
-		pluginDir := filepath.Join("plugins", pluginPkg)
-		tools.MigrationCreate(pluginDir, name)
+		CreateMigration()
 		return
 
 	case "build-plugin":
-		var err error
-		if len(os.Args) < 3 {
-			err = tools.BuildAllPlugins()
-		} else {
-			pluginPath := os.Args[2]
-			err = tools.BuildPlugin(pluginPath)
-		}
-		if err != nil {
-			fmt.Println("Error building plugin: " + err.Error())
-			os.Exit(1)
-		}
+		BuildPlugin()
 		return
 
 	case "fix-workspace":
@@ -120,17 +48,15 @@ func main() {
 		return
 
 	case "install-go":
-		var installPath string
-		if len(os.Args) > 2 {
-			installPath = os.Args[2]
-		}
-		if installPath == "" {
-			installPath = os.Getenv("GO_CUSTOM_PATH")
-		}
-		if installPath == "" {
-			installPath = filepath.Join("go")
-		}
-		tools.InstallGo(installPath)
+		InstallGo()
+		return
+
+	case "help":
+		fmt.Println(Usage())
+		return
+
+	case "-h":
+		fmt.Println(Usage())
 		return
 
 	default:
@@ -138,6 +64,105 @@ func main() {
 	}
 
 	fmt.Println(Usage())
+	os.Exit(1)
+}
+
+func CreatePlugin() {
+	var (
+		err        error
+		pluginPkg  string
+		pluginName string
+		pluginDesc string
+	)
+
+	for len(strings.Split(pluginPkg, ".")) < 3 {
+		pluginPkg, err = tools.AskCmdInput("Enter the plugin package name, e.g. com.mydomain.plugin")
+		if err != nil {
+			panic(err)
+		}
+		if len(strings.Split(pluginPkg, ".")) < 3 {
+			fmt.Println("Error: Package name must be at least 3 segments. For example: com.my-domain.my-plugin")
+		}
+	}
+
+	pluginName, err = tools.AskCmdInput("Enter the plugin name, e.g. MyPlugin")
+	if err != nil {
+		panic(err)
+	}
+
+	pluginDesc, err = tools.AskCmdInput("Enter the plugin description")
+	if err != nil {
+		panic(err)
+	}
+
+	tools.CreatePlugin(pluginPkg, pluginName, pluginDesc)
+}
+
+func CreateMigration() {
+	pluginPaths := tools.PluginPathList()
+	pluginPkgs := make([]string, len(pluginPaths))
+	for i, pluginPath := range pluginPaths {
+		pluginPkgs[i] = filepath.Base(pluginPath)
+	}
+
+	pluginNums := make([]string, len(pluginPkgs))
+	for i, pluginPkg := range pluginPkgs {
+		pluginNums[i] = fmt.Sprintf("%d. %s", i+1, pluginPkg)
+	}
+
+	selectPkgAsk := fmt.Sprintf("\nSelect the plugin to create the migration for:\n%s\n\nEnter the number of the corresponding plugin", strings.Join(pluginNums, "\n"))
+
+	selectPkg, err := tools.AskCmdInput(selectPkgAsk)
+	if err != nil {
+		panic(err)
+	}
+
+	pluginIdx, err := strconv.Atoi(selectPkg)
+	if err != nil {
+		panic(err)
+	}
+
+	if pluginIdx < 1 || pluginIdx > len(pluginPkgs) {
+		panic(fmt.Errorf("Invalid plugin number: %d", pluginIdx))
+	}
+
+	pluginPkg := pluginPkgs[pluginIdx-1]
+
+	name, err := tools.AskCmdInput("Enter the migration name, e.g. create_users_table")
+	if err != nil {
+		panic(err)
+	}
+
+	pluginDir := filepath.Join("plugins", pluginPkg)
+	tools.MigrationCreate(pluginDir, name)
+}
+
+func BuildPlugin() {
+	var err error
+	if len(os.Args) < 3 {
+		err = tools.BuildAllPlugins()
+	} else {
+		pluginPath := os.Args[2]
+		err = tools.BuildPlugin(pluginPath)
+	}
+	if err != nil {
+		fmt.Println("Error building plugin: " + err.Error())
+		os.Exit(1)
+	}
+}
+
+func InstallGo() {
+	var installPath string
+	if len(os.Args) > 2 {
+		installPath = os.Args[2]
+	}
+	if installPath == "" {
+		installPath = os.Getenv("GO_CUSTOM_PATH")
+	}
+	if installPath == "" {
+		installPath = filepath.Join("go")
+	}
+	tools.InstallGo(installPath)
 }
 
 func Server() {
