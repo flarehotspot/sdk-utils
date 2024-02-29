@@ -12,13 +12,13 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 (function ($flare) {
-  var http = window.BasicHttp;
-  var vueHttp = {};
+  var basicHttp = window.BasicHttp;
+  var http = {};
   var rootres = '$vue_response';
-  $flare.http = vueHttp;
+  $flare.http = http;
 
-  vueHttp.get = function (url, params) {
-    return http
+  http.get = function (url, params) {
+    return basicHttp
       .GetJson(url, params)
       .then(function (data) {
         return parseRespones(data);
@@ -28,8 +28,8 @@
       });
   };
 
-  vueHttp.post = function (url, params) {
-    return http
+  http.post = function (url, params) {
+    return basicHttp
       .PostJson(url, params)
       .then(function (data) {
         return parseRespones(data);

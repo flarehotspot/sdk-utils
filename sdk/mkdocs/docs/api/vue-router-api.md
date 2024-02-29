@@ -12,3 +12,7 @@
 ## PortalItemsFunc
 
 ## AdminNavsFunc
+
+## VueRouteName
+
+## VueRoutePath

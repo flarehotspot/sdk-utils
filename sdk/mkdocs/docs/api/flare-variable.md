@@ -36,6 +36,21 @@ $flare.http.post('/path/to/handler', formData)
 !!!note
     You must use [VueResponse](./vue-response.md) in the server side to perform http resposes with `$flare.http.get` and `$flare.http.post`.
 
+## $flare.vueLazyLoad
+The `$flare.vueLazyLoad` method is used to lazy load vue components.
+
+```js
+var component = '<% .Helpers.VueComponentPath "sample-child.vue" %>';
+var lazyComponent = $flare.vueLazyLoad(component);
+
+var app = new Vue({
+    el: '#app',
+    components: {
+        'sample-child': lazyComponent
+    }
+});
+```
+
 ## $flare.events {#flare-events}
 The `$flare.events` object is used to listen to events emitted by the server via [Server-Sent Events](https://www.w3schools.com/html/html5_serversentevents.asp). Below is an example of how to listen to an event:
 ```js
@@ -46,3 +61,4 @@ $flare.events.addEventListener("session:connected", function(res) {
 
 !!!note
     Flare Hotspot SDK already includes a polyfill for the `EventSource` object for browsers that don't support Server-Sent Events.
+

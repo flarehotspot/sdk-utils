@@ -61,5 +61,45 @@ For example, to build a link to another route, you can use the `HttpHelpers.VueR
 <router-link :to='<% .Helpers.VueRoutePath "portal.welcome" %>'>Welcome</router-link>
 ```
 
+## Lazy loading components
+Lazy loading vue components can be done using the [HttpHelpers.VueComponentPath](../api/http-helpers.md#vuecomponentpath) method in combination with the [$flare.vueLazyLoad](../api/flare-variable.md#flarevuelazyload) method:
+
+```html title="resources/components/SampleParent.vue"
+<template>
+    <sample-child></sample-child>
+</template>
+
+<script>
+define(function(){
+
+    var child = $flare.vueLazyLoad('<% .Helpers.VueComponentPath "sample-child.vue" %>');
+
+    return {
+        props: ['flareView'],
+        template: template,
+        components: {
+            'sample-child': child
+        }
+    };
+});
+</script>
+```
+
+```html title="resources/components/SampleChild.vue"
+<template>
+    <div>
+        <h1>Sample Child</h1>
+    </div>
+</template>
+
+<script>
+define(function(){
+    return {
+        template: template
+    };
+});
+</script>
+```
+
 ## Browser Compatibility
 Since we are not using standard build tools like webpack or vite, it is recommended to use basic form of javascript and css to ensure compatibility with older browsers. For example, use `var` instead of `let` or `const` and use `function` instead of arrow functions.
