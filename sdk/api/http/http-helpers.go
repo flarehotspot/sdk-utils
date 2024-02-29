@@ -14,14 +14,6 @@ import (
 // For example, to use the Translate() method in html templates, use <% .Helpers.Translate "label" "network_settings" %>.
 type HttpHelpers interface {
 
-	// Translates a message into the current language settings from application config.
-	// msgtype is the message type, e.g. "error", "success", "info", "warning".
-	// For example, if the current language is "en", then the following code in your template:
-	//  <% .Helpers.Translate "error" "some-key" %>
-	// will look for the file "/resources/translations/en/error/some-key.txt" under the plugin root directory
-	// and displays the text inside that file.
-	Translate(msgtype string, msgk string) string
-
 	// Returns the uri path of a static file in resources/assets directory from your plugin
 	AssetPath(path string) (uri string)
 
@@ -35,6 +27,14 @@ type HttpHelpers interface {
 
 	// Returns the html for the ads view.
 	AdView() (html template.HTML)
+
+	// Translates a message into the current language settings from application config.
+	// msgtype is the message type, e.g. "error", "success", "info", "warning".
+	// For example, if the current language is "en", then the following code in your template:
+	//  <% .Helpers.Translate "error" "some-key" %>
+	// will look for the file "/resources/translations/en/error/some-key.txt" under the plugin root directory
+	// and displays the text inside that file.
+	Translate(msgtype string, msgk string) string
 
 	// Returns the muxnmame for the route name in your plugin.
 	// "muxname" is a route name that can be used for the UrlForMuxRoute() method.

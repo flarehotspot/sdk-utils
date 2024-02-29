@@ -12,9 +12,6 @@ It can also be accessed in the views, assets and vue components using `<% .Helpe
 
 Below are the methods available in the `HttpHelpers`:
 
-### Translate
-Alias to [PluginApi.Translate](./plugin-api.md#translate) method.
-
 ### AssetPath
 Returns the URI path of a static file in `resources/assets` directory from your plugin.
 For example to get the uri path of the file in `resources/assets/css/style.css`:
@@ -51,6 +48,9 @@ Alias to [VueRouterApi.VueRouterPath](./vue-router-api.md#vueroutepath) method.
 ### AddView
 TODO: implement advertisements feature
 
+### Translate
+Alias to [PluginApi.Translate](./plugin-api.md#translate) method.
+
 ### MuxRouteName
 Alias to [HttpRouterApi.MuxRouteName](./http-router-api.md#muxroutename) method.
 
@@ -59,3 +59,9 @@ Alias to [HttpRouterApi.UrlForMuxRoute](./http-router-api.md#urlformuxroute) met
 
 ### UrlForRoute
 Alias to [HttpRouterApi.UrlForRoute](./http-router-api#urlforroute) method.
+
+### VueRouteName
+Alias to [VueRouterApi.VueRouteName](./vue-router-api.md#vueroutename) method.
+
+### VueRoutePath
+Alias to [VueRouterApi.VueRoutePath](./vue-router-api.md#vueroutepath) method.
