@@ -6,6 +6,16 @@ The `HttpApi` is used to access various HTTP server functionalities including au
 
 The following are the available methods in `HttpApi`.
 
+### GetClientDevice
+Get the [client device](./client-device.md) info from the http request:
+```go
+// handler
+func (w http.ResponseWriter, r *http.Request) {
+    device := api.Http().Helpers().GetClientDevice(r)
+    fmt.Println(device) // ClientDevice
+}
+```
+
 ### Auth
 It returns an instance of the [HttpAuth](./http-auth.md).
 ```go

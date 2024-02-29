@@ -72,7 +72,7 @@ Lazy loading vue components can be done using the [HttpHelpers.VueComponentPath]
 <script>
 define(function(){
 
-    var child = $flare.vueLazyLoad('<% .Helpers.VueComponentPath "sample-child.vue" %>');
+    var child = $flare.vueLazyLoad('<% .Helpers.VueComponentPath "SampleChild.vue" %>');
 
     return {
         props: ['flareView'],
