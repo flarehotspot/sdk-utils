@@ -4,18 +4,15 @@ import (
 	"fmt"
 	"html/template"
 	"log"
-	"net/http"
 	"path"
 	"path/filepath"
 	"strings"
 	texttemplate "text/template"
 
 	"github.com/flarehotspot/core/internal/utils/flaretmpl"
-	"github.com/flarehotspot/core/internal/web/helpers"
 	"github.com/flarehotspot/core/internal/web/response"
 	"github.com/flarehotspot/core/internal/web/router"
 	rnames "github.com/flarehotspot/core/internal/web/routes/names"
-	sdkconnmgr "github.com/flarehotspot/sdk/api/connmgr"
 	sdkhttp "github.com/flarehotspot/sdk/api/http"
 	plugin "github.com/flarehotspot/sdk/api/plugin"
 )
@@ -30,10 +27,6 @@ func NewViewHelpers(api *PluginApi) sdkhttp.HttpHelpers {
 
 func (self *HttpHelpers) Translate(msgtype string, msgk string) string {
 	return self.api.Utl.Translate(msgtype, msgk)
-}
-
-func (self *HttpHelpers) GetClientDevice(r *http.Request) (sdkconnmgr.ClientDevice, error) {
-	return helpers.CurrentClient(self.api.ClntReg, r)
 }
 
 func (self *HttpHelpers) AssetPath(p string) string {

@@ -37,7 +37,7 @@ type HttpApi interface {
 	VueResponse() VueResponse
 
 	// Returns the current client device from http request.
-	GetDevice(r *http.Request) (sdkconnmgr.ClientDevice, error)
+	GetClientDevice(r *http.Request) (clnt sdkconnmgr.ClientDevice, err error)
 
 	// Returns the http variables in your routes. For example, if your route path is "/some/path/{varname}",
 	// then you can get the value of "varname" by calling GetMuxVars(r)["varname"].

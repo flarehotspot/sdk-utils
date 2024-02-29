@@ -6,9 +6,9 @@ import (
 	"github.com/flarehotspot/core/internal/connmgr"
 	"github.com/flarehotspot/core/internal/db"
 	"github.com/flarehotspot/core/internal/db/models"
+	"github.com/flarehotspot/core/internal/web/helpers"
 	sdkconnmgr "github.com/flarehotspot/sdk/api/connmgr"
 	sdkhttp "github.com/flarehotspot/sdk/api/http"
-	"github.com/flarehotspot/core/internal/web/helpers"
 	"github.com/gorilla/mux"
 )
 
@@ -38,12 +38,12 @@ type HttpApi struct {
 	middlewares *PluginMiddlewares
 }
 
-func (self *HttpApi) Auth() sdkhttp.HttpAuth {
-	return self.auth
+func (self *HttpApi) GetClientDevice(r *http.Request) (sdkconnmgr.ClientDevice, error) {
+	return helpers.CurrentClient(self.api.ClntReg, r)
 }
 
-func (self *HttpApi) GetDevice(r *http.Request) (sdkconnmgr.ClientDevice, error) {
-	return helpers.CurrentClient(self.api.ClntReg, r)
+func (self *HttpApi) Auth() sdkhttp.HttpAuth {
+	return self.auth
 }
 
 func (self *HttpApi) HttpRouter() sdkhttp.HttpRouterApi {
