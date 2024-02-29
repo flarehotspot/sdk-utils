@@ -30,4 +30,11 @@ type VueRouterApi interface {
 	// Used to register a function that returns a slice of *PortalNavItem.
 	// Items returned from this function is added to the captive portal navigation items.
 	PortalItemsFunc(VuePortalItemsFunc)
+
+	// Returns the vue route name for a named route which can be used in vue router, e.g.
+	//   $this.push({name: '<% .Helpers.VueRouteName "login" %>'})
+	VueRouteName(name string) string
+
+    // Returns the vue route path for a named route
+	VueRoutePath(name string, pairs ...string) string
 }

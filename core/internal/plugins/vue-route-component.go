@@ -33,8 +33,8 @@ func NewVueRouteComponent(api *PluginApi, name string, p string, handler http.Ha
 		hash:                compHash,
 		handler:             handler,
 		MuxDataRouteName:    api.HttpAPI.httpRouter.MuxRouteName(sdkhttp.PluginRouteName(name + ".data")),
-		VueRouteName:        api.HttpAPI.vueRouter.VueRouteName(name),
-		VueRoutePath:        api.HttpAPI.vueRouter.VueRoutePath(p),
+		VueRouteName:        api.HttpAPI.vueRouter.MakeVueRouteName(name),
+		VueRoutePath:        api.HttpAPI.vueRouter.MakeVueRoutePath(p),
 		PermissionsRequired: permsReq,
 		PermissionsAnyOf:    permsAny,
 	}

@@ -129,11 +129,5 @@ func (self *HttpHelpers) VueRouteName(name string) string {
 }
 
 func (self *HttpHelpers) VueRoutePath(name string, pairs ...string) string {
-	var path VueRoutePath
-	route, ok := self.api.HttpAPI.vueRouter.FindVueRoute(name)
-	if !ok {
-		path = sdkhttp.VueNotFoundPath
-	}
-	path = route.VueRoutePath
-	return path.URL(pairs...)
+	return self.api.HttpAPI.vueRouter.VueRoutePath(name, pairs...)
 }

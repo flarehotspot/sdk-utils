@@ -103,7 +103,7 @@ func (self *VueRouterApi) GetPortalItems(r *http.Request) []sdkhttp.PortalItem {
 }
 
 func (self *VueRouterApi) FindVueRoute(name string) (*VueRouteComponent, bool) {
-	routeName := self.VueRouteName(name)
+	routeName := self.MakeVueRouteName(name)
 	for _, route := range self.adminRoutes {
 		if route.VueRouteName == routeName {
 			return route, true
@@ -116,7 +116,7 @@ func (self *VueRouterApi) FindVueRoute(name string) (*VueRouteComponent, bool) {
 		}
 	}
 
-	if self.loginRoute != nil && self.loginRoute.VueRouteName == self.VueRouteName(name) {
+	if self.loginRoute != nil && self.loginRoute.VueRouteName == self.MakeVueRouteName(name) {
 		return self.loginRoute, true
 	}
 
@@ -124,11 +124,25 @@ func (self *VueRouterApi) FindVueRoute(name string) (*VueRouteComponent, bool) {
 }
 
 func (self *VueRouterApi) VueRouteName(name string) string {
+	return self.MakeVueRouteName(name)
+}
+
+func (self *VueRouterApi) VueRoutePath(name string, pairs ...string) string {
+	var path VueRoutePath
+	route, ok := self.api.HttpAPI.vueRouter.FindVueRoute(name)
+	if !ok {
+		path = sdkhttp.VueNotFoundPath
+	}
+	path = route.VueRoutePath
+	return path.URL(pairs...)
+}
+
+func (self *VueRouterApi) MakeVueRouteName(name string) string {
 	name = fmt.Sprintf("%s.%s", self.api.Pkg(), name)
 	return name
 }
 
-func (self *VueRouterApi) VueRoutePath(p string) VueRoutePath {
+func (self *VueRouterApi) MakeVueRoutePath(p string) VueRoutePath {
 	p = path.Join("/", self.api.Pkg(), self.api.Version(), p)
 	return VueRoutePath(strings.TrimSuffix(p, "/"))
 }
