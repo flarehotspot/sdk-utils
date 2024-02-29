@@ -57,5 +57,6 @@ type HttpHelpers interface {
 	//   $this.push({name: '<% .Helpers.VueRouteName "login" %>'})
 	VueRouteName(name string) string
 
+    // Returns the vue route path for a named route
 	VueRoutePath(name string, pairs ...string) string
 }
