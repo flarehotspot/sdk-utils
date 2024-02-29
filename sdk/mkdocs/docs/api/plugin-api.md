@@ -20,8 +20,6 @@ func Init(api sdkplugin.PluginApi) {
 }
 ```
 
----
-
 ## PluginApi Methods
 
 The following are the available methods in `PluginApi`.
