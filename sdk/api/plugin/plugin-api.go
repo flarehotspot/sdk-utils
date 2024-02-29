@@ -24,11 +24,11 @@ import (
 // PluginApi is the root of all plugin APIs.
 type PluginApi interface {
 
-	// Returns the name of the plugin as defined in package.yml "name" field.
-	Name() string
-
 	// Returns the package name of the plugin as defined in package.yml "package" field.
 	Pkg() string
+
+	// Returns the name of the plugin as defined in package.yml "name" field.
+	Name() string
 
 	// Returns the version of the plugin as defined in package.yml "version" field.
 	Version() string
@@ -44,7 +44,7 @@ type PluginApi interface {
 
 	// Returns the absolute path to the given file in /resources folder of your plugin.
 	// For example, if you have the following code:
-	//  api.Utils().Resource("some-file.txt")
+	//  api.Resource("some-file.txt")
 	// then it will return the absolute path to the file "[plugin_root_dir]/resources/some-file.txt" under the plugin's root directory.
 	Resource(f string) (path string)
 
@@ -84,5 +84,6 @@ type PluginApi interface {
 	// Returns an instance of the uci api.
 	Uci() sdkuci.UciApi
 
+    // Returns an instance of the themes api.
 	Themes() sdktheme.ThemesApi
 }

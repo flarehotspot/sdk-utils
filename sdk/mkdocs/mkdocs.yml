@@ -56,7 +56,7 @@ nav:
       - 'HttpResponse': api/http-response.md
       - 'VueRouterApi': api/vue-router-api.md
       - 'VueResponse': api/vue-response.md
-      - 'window.$flare': api/flare-global-variable.md
+      - '$flare': api/flare-global-variable.md
   - Free Plugins:
       - 'Flare Hotspot Theme': 'plugins/com.flarego.default-theme.md'
 

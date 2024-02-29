@@ -98,7 +98,7 @@ acct.Username() // "admin"
 ```
 
 ### Permissions
-It returns the [permissions](#permissions) of the user account.
+It returns the [permissions](#permissions-sec) of the user account.
 ```go
 acct.Permissions() // []string{"admin"}
 ```
@@ -154,23 +154,27 @@ acct, _ := api.Acct().Find("admin")
 acct.Emit(evt, data)
 ```
 
----
-
-## Permissions
+## Permissions {#permissions-sec}
 Permissions are used to control the access to various parts of the system. Users without the appropriate permissions will not be able to access the restricted parts of the system.
 
-These are the default permissions that you can assign to an user account. Although you may define your custom permissions using the [Accounts API](#newperm).
+These are the default permissions that you can assign to an user account. Although you may define your custom permissions using the [AccountsApi.NewPerm](#newperm) method.
 
 | Permission | Description
 | --- | --- |
 | `admin` | The admin permission grants full access to the system. |
 
-**TODO:**
-- Add more permissions.
-
----
-
 ## Events
-Events are emitted to the user accounts. You can listen to these events and perform certain actions when they are emitted. Here are the available events:
+Events are emitted to the user accounts via SSE (Server-Sent Events) in the browser.
+You can listen to these events and perform certain actions when they are emitted. Here are the available events:
 
-TODO: Add events
+| Event | Description
+| --- | ---
+| `session:connected` | Emitted when a session is started and internet connection is available.
+| `session:disconnected` | Emitted when a session is ended and internet connection is lost.
+
+You can listen to this events in the browser using the [$flare.events](./flare-global-variable.md#flare-events) object like so:
+```js
+$flare.events.addEventListener("some_event", function(res) {
+    console.log("Session connected: ", res.data);
+});
+```

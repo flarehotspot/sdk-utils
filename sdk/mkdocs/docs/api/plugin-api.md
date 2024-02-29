@@ -24,19 +24,18 @@ func Init(api sdkplugin.PluginApi) {
 
 The following are the available methods in `PluginApi`.
 
-### Name
-It returns the `name` field defined in `plugin.json`.
-
-```go
-name := api.Name()
-fmt.Println(name) // "My Plugin"
-```
-
 ### Pkg
 It returns the `package` field defined in [plugin.json](../plugin-json/).
 ```go
 pkg := api.Pkg()
 fmt.Println(pkg) // "com.mydomain.myplugin"
+```
+
+### Name
+It returns the `name` field defined in `plugin.json`.
+```go
+name := api.Name()
+fmt.Println(name) // "My Plugin"
 ```
 
 ### Version
