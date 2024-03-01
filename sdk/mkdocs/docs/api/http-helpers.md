@@ -22,15 +22,16 @@ fmt.Println(uri) // /plugins/your-plugin-id/0.0.1/assets/css/style.css
 
 ### AssetWithHelpersPath
 Similar to [AssetPath](#assetpath), but the assets are pre-processed with access to the `HttpHelpers` instance.
-For example, if you want to have an asset that points to a certain route in your plugin, you can do:
-```go title="main.go"
-uri := api.Http().Helpers().AssetWithHelpersPath("js/script.js")
-fmt.Println(uri) // /plugins/your-plugin-id/0.0.1/assets/js/script.js
-```
+For example, if you want to have a script file that points to a certain route in your plugin, you can do:
 
 ```js title="resources/assets/js/script.js"
 var url = '<% .Helpers.VueRoutePath "some.routename" %>';
 console.log(url);
+```
+
+```go title="main.go"
+jsPath := api.Http().Helpers().AssetWithHelpersPath("js/script.js")
+fmt.Println(jsPath) // /plugins/your-plugin-id/0.0.1/assets/js/script.js
 ```
 
 ### VueComponentPath
@@ -42,11 +43,11 @@ uri := api.Http().Helpers().VueComponentPath("sample-component.vue")
 fmt.Println(uri) // /plugins/your-plugin-id/0.0.1/components/sample-component.vue
 ```
 
+### AdsView
+TODO: implement advertisements feature
+
 ### VueRoutePath
 Alias to [VueRouterApi.VueRouterPath](./vue-router-api.md#vueroutepath) method.
-
-### AddView
-TODO: implement advertisements feature
 
 ### Translate
 Alias to [PluginApi.Translate](./plugin-api.md#translate) method.
