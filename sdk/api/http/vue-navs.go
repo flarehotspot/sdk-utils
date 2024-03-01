@@ -20,8 +20,8 @@ type AdminNavItem struct {
 }
 
 type PortalItem struct {
-	IconUri        string            `json:"icon_uri"`
 	Label          string            `json:"label"`
+	IconUrl        string            `json:"icon_url"`
 	VueRouteName   string            `json:"route_name"`
 	VueRoutePath   string            `json:"route_path"`
 	VueRouteParams map[string]string `json:"route_params"`

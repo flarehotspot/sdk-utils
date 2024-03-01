@@ -61,8 +61,8 @@ For example, to build a link to another route, you can use the `HttpHelpers.VueR
 <router-link :to='<% .Helpers.VueRoutePath "portal.welcome" %>'>Welcome</router-link>
 ```
 
-## Lazy loading components
-Lazy loading vue components can be done using the [HttpHelpers.VueComponentPath](../api/http-helpers.md#vuecomponentpath) method in combination with the [$flare.vueLazyLoad](../api/flare-variable.md#flarevuelazyload) method:
+## Loading child components
+Loading child components can be done using the [HttpHelpers.VueComponentPath](../api/http-helpers.md#vuecomponentpath) method in combination with the [$flare.vueLazyLoad](../api/flare-variable.md#flarevuelazyload) method:
 
 ```html title="resources/components/SampleParent.vue"
 <template>

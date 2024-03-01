@@ -35,7 +35,7 @@ httpRouter := api.Http().HttpRouter()
 ```
 
 ### Middlewares
-Returns an instance of [Middlewares](./http-middlewares.md).
+Returns an instance of [Middlewares](./http-router-api.md#middlewares).
 ```go
 middlewares := api.Http().Middlewares()
 ```
@@ -105,7 +105,7 @@ func (w http.ResponseWriter, r *http.Request) {
 }
 ```
 
-## AdminNavList
+## Admin Nav List {#adminnavlist}
 `AdminNavList` is a list of items for the admin navigation. It has the following fields:
 ```go
 type AdminNavList struct {
@@ -114,7 +114,7 @@ type AdminNavList struct {
 }
 ```
 
-## AdminNavItem
+## Admin Nav Item {#adminnavitem}
 `AdminNavItem` is an item for the admin navigation. It has the following fields:
 ```go
 type AdminNavItem struct {
@@ -126,7 +126,7 @@ type AdminNavItem struct {
 }
 ```
 
-## PortalItem
+## Portal Item {#portalitem}
 `PortalItem` is an item for the portal navigation. It has the following fields:
 ```go
 type PortalItem struct {

@@ -20,7 +20,7 @@ api.Http().HttpRouter().PluginRouter().Post("/payments/receieved", func (w http.
 }).Name("payment.received")
 ```
 
-In this example, we are using the `Post` method from [PluginRouter](../api/http-router-api.md#pluginrouter) to handle the form submission. The first argument is the route path, and the second argument is the handler function. The handler function accepts two arguments, the first argument is the `http.ResponseWriter`, and the second argument is the `*http.Request`.
+In this example, we are using the `Post` method from [PluginRouter](../api/http-router-api.md#post) to handle the form submission. The first argument is the route path, and the second argument is the handler function. The handler function accepts two arguments, the first argument is the `http.ResponseWriter`, and the second argument is the `*http.Request`.
 
 Then we are decoding the form data using the `json.NewDecoder(r.Body).Decode(&data)` method. The `json.NewDecoder(r.Body).Decode(&data)` method decodes the form data from the request body and stores it in the `data` variable.
 

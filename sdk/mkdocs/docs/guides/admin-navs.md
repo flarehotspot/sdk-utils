@@ -1,6 +1,6 @@
 # Admin Navs
 
-Admin navs are navigation links that points to an [admin route](./routes-and-links.md#admin-routes). Therefore, to display an item in the admin panel, one must already have defined an admin route.
+[Admin navs](../api/http-api.md#adminnavitem) are navigation links that points to an [admin route](./routes-and-links.md#admin-routes). Therefore, to display an item in the admin panel, one must already have defined an admin route.
 
 To add an admin nav, we will use the [VueRouterApi.AdminNavsFunc](../api/vue-router-api.md#adminnavsfunc) method.
 

@@ -105,14 +105,6 @@ func (self *HttpHelpers) AdsView() (html template.HTML) {
 	return ""
 }
 
-func (self *HttpHelpers) MuxRouteName(name string) sdkhttp.MuxRouteName {
-	return self.api.HttpAPI.HttpRouter().MuxRouteName(sdkhttp.PluginRouteName(name))
-}
-
-func (self *HttpHelpers) UrlForMuxRoute(name string, pairs ...string) string {
-	return self.api.HttpAPI.HttpRouter().UrlForMuxRoute(sdkhttp.MuxRouteName(name), pairs...)
-}
-
 func (self *HttpHelpers) UrlForRoute(name string, pairs ...string) string {
 	return self.api.HttpAPI.httpRouter.UrlForRoute(sdkhttp.PluginRouteName(name), pairs...)
 }

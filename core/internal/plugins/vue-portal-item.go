@@ -22,7 +22,7 @@ func NewVuePortalItem(api *PluginApi, r *http.Request, nav sdkhttp.VuePortalItem
 
 	return sdkhttp.PortalItem{
 		Label:          nav.Label,
-		IconUri:        api.HttpAPI.Helpers().AssetPath(nav.IconPath),
+		IconUrl:        api.HttpAPI.Helpers().AssetPath(nav.IconPath),
 		VueRouteName:   routeName,
 		VueRoutePath:   routePath,
 		VueRouteParams: nav.RouteParams,
