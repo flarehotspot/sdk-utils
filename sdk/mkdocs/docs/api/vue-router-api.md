@@ -16,3 +16,5 @@
 ## VueRouteName
 
 ## VueRoutePath
+
+## VuePkgRoutePath

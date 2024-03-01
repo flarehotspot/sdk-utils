@@ -63,3 +63,11 @@ func (self *HttpRouterApi) UrlForRoute(name sdkhttp.PluginRouteName, pairs ...st
 	muxname := self.MuxRouteName(name)
 	return self.UrlForMuxRoute(muxname, pairs...)
 }
+
+func (self *HttpRouterApi) UrlForPkgRoute(pkg string, name string, pairs ...string) string {
+	otherPkg, ok := self.api.PluginsMgrApi.FindByPkg(pkg)
+	if !ok {
+		return ""
+	}
+	return otherPkg.Http().Helpers().UrlForRoute(name, pairs...)
+}

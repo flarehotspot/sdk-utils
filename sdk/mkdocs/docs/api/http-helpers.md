@@ -60,8 +60,14 @@ Alias to [HttpRouterApi.UrlForMuxRoute](./http-router-api.md#urlformuxroute) met
 ### UrlForRoute
 Alias to [HttpRouterApi.UrlForRoute](./http-router-api#urlforroute) method.
 
+### UrlForPkgRoute
+Alias to [HttpRouterApi.UrlForPkgRoute](./http-router-api#urlforpkgroute) method.
+
 ### VueRouteName
 Alias to [VueRouterApi.VueRouteName](./vue-router-api.md#vueroutename) method.
 
 ### VueRoutePath
 Alias to [VueRouterApi.VueRoutePath](./vue-router-api.md#vueroutepath) method.
+
+### VuePkgRoutePath
+Alias to [VueRouterApi.VuePkgRoutePath](./vue-router-api.md#vuepkgroutepath) method.

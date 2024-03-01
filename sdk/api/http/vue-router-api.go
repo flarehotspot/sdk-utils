@@ -37,4 +37,7 @@ type VueRouterApi interface {
 
     // Returns the vue route path for a named route
 	VueRoutePath(name string, pairs ...string) string
+
+    // Returns the vue route from another plugin
+    VuePkgRoutePath(pkg string, name string, pairs ...string) string
 }

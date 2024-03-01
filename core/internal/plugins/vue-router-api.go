@@ -137,6 +137,14 @@ func (self *VueRouterApi) VueRoutePath(name string, pairs ...string) string {
 	return path.URL(pairs...)
 }
 
+func (self *VueRouterApi) VuePkgRoutePath(pkg string, name string, pairs ...string) string {
+	otherPkg, ok := self.api.PluginsMgrApi.FindByPkg(pkg)
+	if !ok {
+		return ""
+	}
+	return otherPkg.Http().VueRouter().VueRoutePath(name, pairs...)
+}
+
 func (self *VueRouterApi) MakeVueRouteName(name string) string {
 	name = fmt.Sprintf("%s.%s", self.api.Pkg(), name)
 	return name
