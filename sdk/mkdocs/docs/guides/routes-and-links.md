@@ -124,7 +124,7 @@ portalRoute := sdkhttp.VuePortalRoute{
 }
 ```
 
-There are some built-in middlewares that you can use. See the [middlewares](../api/http-router-api.md#middlewares) documentation.
+There are some built-in middlewares that you can use. See the [middlewares](../api/http-api.md#middlewares) documentation.
 
 ### PermitFn (optional) {#permitfn}
 This field is applicable only to admin routes. This function is used to validate access to the admin route. The function accepts a slice of strings which contains the [permissions](../api/accounts-api.md#permissions-sec) of the account that's currently trying to access the page. It's up to you to validate if the user can access the page. The function should return `true` if the user has the required permissions, otherwise `false`.

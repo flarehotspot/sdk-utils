@@ -17,11 +17,10 @@ type HttpRouterApi interface {
     // Returns a generic plugin router.
 	PluginRouter() HttpRouterInstance
 
-	// Returns the url for the route.
-	// The difference between UrlForMuxRoute() vs UrlForRoute() is that UrlForMuxRoute() only accepts route names built-in to the core system.
+	// Returns the url for the given route name.
 	UrlForRoute(name PluginRouteName, pairs ...string) (url string)
 
     // Returns the url for the route from third-party plugins.
-    // This is used to reference routes from other plugins.
+    // This is used create links to routes from other plugins.
     UrlForPkgRoute(pkg string, name string, pairs ...string) (url string)
 }

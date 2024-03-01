@@ -32,7 +32,11 @@ url := api.Http().HttpRouter().UrlForRoute("portal.welcome", "name", "John")
 
 ### UrlForPkgRoute
 
-This method is used to generate the url for third-party plugin route name. This method accepts three arguments, the first argument is the plugin package name (e.g `com.flarego.core`), the second argument is the route name and the third argument is the route parameters (key-value pairs).
+This method is used to generate the url for third-party plugin route name. This method accepts three arguments, the first argument is the plugin package name (e.g `com.flarego.core`), the second argument is the route name and the third argument is the route parameters (similar to [UrlForRoute](#urlforroute) method):
+
+```go
+url := api.Http().HttpRouter().UrlForPkgRoute("com.flarego.core", "portal.welcome", "name", "John")
+```
 
 ## Router Instance
 
@@ -63,9 +67,49 @@ This method is used to create a route for the `GET` http method. This method acc
 router := api.Http().HttpRouter().PluginRouter()
 router.Get("/payments/options", func(w http.ResponseWriter, r *http.Request) {
     // Handle the request
-})
+}).Name("payments.options") // set the route name
 ```
 
 ### Post
 
+This method is used to create a route for the `POST` http method. This method accepts tree (or more) arguments, the first argument is the route path, the second argument is the handler function and the third and subsequent arguments are the list of (optional) [middlewares](#middlewares). Take a look at the example below:
+
+```go
+router := api.Http().HttpRouter().AdminRouter()
+router.Post("/settings/save", func(w http.ResponseWriter, r *http.Request) {
+    // Handle the request
+}).Name("settings.save") // set the route name
+```
+
+### Use
+
+This method is used to add a middleware to the router. This method accepts a list of middlewares.
+All routes defined after the `Use` method will use the middleware.
+Take a look at the example below:
+```go
+router.Use(middleware)
+```
+
 ## Middlewares
+
+A middleware is a function of type `func(next http.Handler) http.Handler`. It is used to perform operations on the request before it reaches the handler function. Middlewares are functions that accept a http handler function and returns another http handler function. Below is an example of a middleware:
+
+```go
+middleware := func (next http.Handler) http.Handler {
+    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        // do something before the handler function
+        next.ServeHTTP(w, r)
+    })
+}
+```
+
+Then you can use the middleware in the route definition:
+
+```go
+router := api.Http().HttpRouter().AdminRouter()
+router.Post("/settings/save", func(w http.ResponseWriter, r *http.Request) {
+    // Handle the request
+}, middleware) // use the middleware
+```
+
+There are builtin-middlewares that you can use. See the [middlewares](./http-api.md#middlewares) documentation.
