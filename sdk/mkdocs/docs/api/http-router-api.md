@@ -92,7 +92,10 @@ router.Use(middleware)
 
 ## Middlewares
 
-A middleware is a function of type `func(next http.Handler) http.Handler`. It is used to perform operations on the request before it reaches the handler function. Middlewares are functions that accept a http handler function and returns another http handler function. Below is an example of a middleware:
+A middleware is a function of type `func(next http.Handler) http.Handler`. It is used to perform operations on the request before it reaches the handler function. Middlewares are functions that accept a http handler function and returns another http handler function.
+
+### Declaring a Middleware
+Below is an example of a middleware:
 
 ```go
 middleware := func (next http.Handler) http.Handler {
@@ -112,4 +115,14 @@ router.Post("/settings/save", func(w http.ResponseWriter, r *http.Request) {
 }, middleware) // use the middleware
 ```
 
-There are builtin-middlewares that you can use. See the [middlewares](./http-api.md#middlewares) documentation.
+### Built-in Middlewares
+
+There are builtin-middlewares that you can use.
+Below are built-in middlewares available in the `Middlewares` instance:
+
+```go
+middlewares := api.Http().Middlewares()
+middlewares.AdminAuth() // It returns a middleware that checks if the user is authenticated.
+middlewares.CacheResponse() // It returns a middleware that caches the response.
+```
+

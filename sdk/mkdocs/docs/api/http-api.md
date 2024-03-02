@@ -50,14 +50,6 @@ Returns the built-in [middlewares](./http-router-api.md#middlewares).
 middlewares := api.Http().Middlewares()
 ```
 
-Below are built-in middlewares available in the `Middlewares` instance:
-
-```go
-middlewares.AdminAuth() // It returns a middleware that checks if the user is authenticated.
-middlewares.CacheResponse() // It returns a middleware that caches the response.
-```
-
-
 ### HttpResponse
 
 Returns an instance of [HttpResponse](./http-response.md).
