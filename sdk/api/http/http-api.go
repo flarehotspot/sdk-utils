@@ -24,9 +24,6 @@ type HttpApi interface {
 	// Returns the router API.
 	HttpRouter() HttpRouterApi
 
-	// Returns the middlewares API.
-	Middlewares() Middlewares
-
 	// Returns the http response writer API.
 	HttpResponse() HttpResponse
 

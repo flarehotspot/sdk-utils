@@ -42,14 +42,6 @@ It returns an instance of [HttpRouterApi](./http-router-api.md).
 httpRouter := api.Http().HttpRouter()
 ```
 
-### Middlewares
-
-Returns the built-in [middlewares](./http-router-api.md#middlewares).
-
-```go
-middlewares := api.Http().Middlewares()
-```
-
 ### HttpResponse
 
 Returns an instance of [HttpResponse](./http-response.md).
