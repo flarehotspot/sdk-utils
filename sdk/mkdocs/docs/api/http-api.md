@@ -66,22 +66,6 @@ Returns an instance of [VueResponse](./vue-response.md).
 vueResponse := api.Http().VueResponse()
 ```
 
-### GetDevice
-
-Get the device information from the http request. It returns and instance of [ClientDevice](./client-device.md) and an `error`.
-
-```go
-// handler
-func (w http.ResponseWriter, r *http.Request) {
-    // other logic...
-    device, err := api.Http().GetDevice(r)
-    if err != nil {
-        // handle error
-    }
-    fmt.Println(device) // ClientDevice
-}
-```
-
 ### MuxVars
 
 Returns a `map[string]string` of variables from the request path. Below is an example to get the value if `id` in the route path `/sessions/:id`
