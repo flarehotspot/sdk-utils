@@ -100,6 +100,6 @@ func PortalIndexPage(g *plugins.CoreGlobals) http.Handler {
 		}
 
 		api := g.CoreAPI
-		api.Http().HttpResponse().View(w, r, "portal/index.html", vdata)
+		api.Http().HttpResponse().PortalView(w, r, "index.html", vdata)
 	})
 }

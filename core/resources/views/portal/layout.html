@@ -1,8 +1,31 @@
 <!doctype html>
-<html lang="en">
-    <head></head>
-    <body>
-        <h3>Portal Layout</h3>
-        {{ .ContentHtml }}
-    </body>
+<html lang="<% .Data.Lang %>">
+
+<head>
+    <title>Captive Portal</title>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="<% .Data.VendorStyles %>" />
+</head>
+
+<body>
+    <div id="app">
+        <% .ContentHtml %>
+    </div>
+
+    <script>
+        var $flare = {};
+    </script>
+    <script type="text/javascript" src="<% .Data.VendorScripts %>"></script>
+
+    <!-- Embed these assets to void cache -->
+    <script>
+      <% .Helpers.EmbedJs "services/forms.js" .Data %>
+    </script>
+
+    <script type="text/javascript" src='<% .Helpers.AssetPath "libs/require-2.3.6.min.js" %>'
+        data-main='<% .Helpers.AssetPath "portal/main.js" %>'></script>
+</body>
+
 </html>

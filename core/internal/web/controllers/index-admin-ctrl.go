@@ -105,6 +105,6 @@ func AdminIndexPage(g *plugins.CoreGlobals) http.Handler {
 		}
 
 		api := g.CoreAPI
-		api.Http().HttpResponse().View(w, r, "admin/index.html", vdata)
+		api.Http().HttpResponse().AdminView(w, r, "index.html", vdata)
 	})
 }
