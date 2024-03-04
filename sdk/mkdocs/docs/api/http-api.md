@@ -140,7 +140,7 @@ func (w http.ResponseWriter, r *http.Request) {
 
 ## Admin Nav List {#adminnavlist}
 
-`AdminNavList` is a list of items for the admin navigation. It has the following fields:
+`AdminNavList` is a list of [items](#adminnavitem) for the admin navigation. It has the following fields:
 
 ```go
 type AdminNavList struct {
