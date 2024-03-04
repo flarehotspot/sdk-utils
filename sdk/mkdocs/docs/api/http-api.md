@@ -4,7 +4,7 @@ The `HttpApi` is used to access various HTTP server functionalities including au
 
 ## HttpApi Methods
 
-The following are the available methods in `HttpApi`.
+The following are the available methods in `HttpApi`:
 
 ### GetClientDevice
 

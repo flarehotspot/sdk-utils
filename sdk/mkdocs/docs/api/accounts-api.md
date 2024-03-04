@@ -2,9 +2,9 @@
 
 The `AccountsApi` let's you create, modify, remove and manage system user accounts and permissions.
 
-## AccountsApi Methods
+## 1. AccountsApi Methods {#accounts-api-methods}
 
-The following are the available methods in `AccountsApi`.
+The following are the available methods in `AccountsApi`:
 
 ### Create
 It creates a new user account with the given username, password and [permissions](#permissions). It returns an [Account](#account-instance) instance and an `error` object.
@@ -79,7 +79,7 @@ fmt.Println(desc) // "New permission"
 
 ---
 
-## Account Instance
+## 2. Account Instance {#account-instance}
 Account instance represents a system user account. First, find an user account:
 ```go
 acct, err := api.Acct().Find("admin")
@@ -89,7 +89,7 @@ if err != nil {
 fmt.Println(acct) // Account
 ```
 
-Given an user account instance, you can access the following properties and methods.
+Given an user account instance, you can access the following properties and methods:
 
 ### Username
 It returns the username of the user account.
@@ -154,7 +154,7 @@ acct, _ := api.Acct().Find("admin")
 acct.Emit(evt, data)
 ```
 
-## Permissions {#permissions-sec}
+## 3. Permissions {#permissions-sec}
 Permissions are used to control the access to various parts of the system. Users without the appropriate permissions will not be able to access the restricted parts of the system.
 
 These are the default permissions that you can assign to an user account. Although you may define your custom permissions using the [AccountsApi.NewPerm](#newperm) method.
@@ -163,7 +163,7 @@ These are the default permissions that you can assign to an user account. Althou
 | --- | --- |
 | `admin` | The admin permission grants full access to the system. |
 
-## Events
+## 4. Events {#events}
 Events are emitted to the user accounts via SSE (Server-Sent Events) in the browser.
 You can listen to these events and perform certain actions when they are emitted. Here are the available events:
 

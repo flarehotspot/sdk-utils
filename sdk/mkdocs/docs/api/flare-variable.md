@@ -56,6 +56,8 @@ $flare.events.addEventListener("session:connected", function(res) {
 });
 ```
 
+See the user account events in the [AccountsApi](./accounts-api.md#events) documentation.
+
 !!!note
     Flare Hotspot SDK already includes a polyfill for the `EventSource` object for browsers that don't support Server-Sent Events.
 

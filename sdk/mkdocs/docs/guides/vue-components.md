@@ -22,7 +22,7 @@ define(function () {
 </script>
 ```
 
-## 1. The `flareView` prop
+## 1. The `flareView` prop {#flareview-prop}
 
 The `flareView` prop is automatically populated with the JSON data from the handler function defined in [HandlerFunc](routes-and-links.md#handlerfunc) fields of the [portal](./routes-and-links.md#portalroutes) and [admin](./routes-and-links.md#adminroutes) routes. The `flareView` component prop has three fields, namely:
 
@@ -30,7 +30,7 @@ The `flareView` prop is automatically populated with the JSON data from the hand
 - `loading`: A boolean value that indicates if the data is still loading.
 - `error`: A string containing the error message if the data loading fails.
 
-## 2. The `template` variable
+## 2. The `template` variable {#template-variable}
 
 The `template` variable is a string containing the HTML code automatically extracted from the `<template>` tag.
 
@@ -53,7 +53,7 @@ The `template` variable is a string containing the HTML code automatically extra
     </template>
     ```
 
-## 3. Template helpers
+## 3. Template helpers {#template-helpers}
 Aside from the [HttpHelpers.VueRoutePath](../api/http-helpers.md#vueroutepath) method we used to create a link, there are other useful methods within the [HttpHelpers](../api/http-helpers.md) API. The [HttpHelpers](../api/http-helpers.md) can be accessed anywhere inside the component as `.Helpers` (notice the dot prefix) enclosed by `<%` and `%>` delimiters. Visit the [HttpHelpers](../api/http-helpers.md) API documentation to learn more.
 
 For example, to build a link to another route, you can use the `HttpHelpers.VueRoutePath` method as shown below:
@@ -61,7 +61,7 @@ For example, to build a link to another route, you can use the `HttpHelpers.VueR
 <router-link :to='<% .Helpers.VueRoutePath "portal.welcome" %>'>Welcome</router-link>
 ```
 
-## 4. Loading child components
+## 4. Loading child components {#loading-child-components}
 Loading child components can be done using the [HttpHelpers.VueComponentPath](../api/http-helpers.md#vuecomponentpath) method in combination with the [$flare.vueLazyLoad](../api/flare-variable.md#flarevuelazyload) method:
 
 ```html title="resources/components/SampleParent.vue"
@@ -101,5 +101,5 @@ define(function(){
 </script>
 ```
 
-## 5. Browser Compatibility
+## 5. Browser Compatibility {#browser-compatibility}
 Since we are not using standard build tools like webpack or vite, it is recommended to use basic form of javascript and css to ensure compatibility with older browsers. For example, use `var` instead of `let` or `const` and use `function` instead of arrow functions.
