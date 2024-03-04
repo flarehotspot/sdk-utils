@@ -6,7 +6,7 @@
 helprs := api.Http().Helpers()
 ```
 
-It can also be accessed in the views, assets and vue components using `<% .Helpers %>`.
+It can also be accessed in the views, assets and vue components using `<% .Helpers %>`. See [template parsing](./http-response.md#template-parsing) for more details.
 
 ## Methods
 
@@ -24,7 +24,7 @@ fmt.Println(uri) // /plugins/your-plugin-id/0.0.1/assets/css/style.css
 
 ### AssetWithHelpersPath
 
-Similar to [AssetPath](#assetpath), but the assets are pre-processed with access to the `HttpHelpers` instance.
+Similar to [AssetPath](#assetpath), but the assets are [parsed](./http-response.md#template-parsing) with access to the [HttpHelpers](./http-helpers.md) instance.
 For example, if you want to have a script file that points to a certain route in your plugin, you can do:
 
 ```js title="resources/assets/js/script.js"
