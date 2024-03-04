@@ -83,12 +83,38 @@ router.Post("/settings/save", func(w http.ResponseWriter, r *http.Request) {
 
 ### Use
 
-This method is used to add a middleware to the router. This method accepts a list of middlewares.
+This method is used to add a [middleware](#middlewares) to the router. This method accepts a list of middlewares.
 All routes defined after the `Use` method will use the middleware.
-Take a look at the example below:
+
+Below is using a middleware for plugin sub-router:
 ```go
-router.Use(middleware)
+middleware := func (next http.Handler) http.Handler {
+    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        // do something before the handler function
+        next.ServeHTTP(w, r)
+    })
+}
+
+api.Http().HttpRouter().PluginRouter().Group("/payments", func (subrouter sdkhttp.HttpRouterInstance) {
+    subrouter.Use(middware)
+})
 ```
+
+Below is using a middleware for admin sub-router:
+```go
+middleware := func (next http.Handler) http.Handler {
+    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        // do something before the handler function
+        next.ServeHTTP(w, r)
+    })
+}
+
+api.Http().HttpRouter().AdminRouter().Group("/settings", func (subrouter sdkhttp.HttpRouterInstance) {
+    subrouter.Use(middware)
+})
+```
+
+In the examples above, the middleware is used to perform operations on the request before it reaches the handler function inside the sub-router.
 
 ## Middlewares
 
