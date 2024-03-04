@@ -58,10 +58,6 @@ func (self *HttpApi) Helpers() sdkhttp.HttpHelpers {
 	return NewViewHelpers(self.api)
 }
 
-func (self *HttpApi) Middlewares() sdkhttp.Middlewares {
-	return self.middlewares
-}
-
 func (self *HttpApi) HttpResponse() sdkhttp.HttpResponse {
 	return self.httpResp
 }

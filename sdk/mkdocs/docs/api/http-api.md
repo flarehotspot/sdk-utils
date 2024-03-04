@@ -42,22 +42,6 @@ It returns an instance of [HttpRouterApi](./http-router-api.md).
 httpRouter := api.Http().HttpRouter()
 ```
 
-### Middlewares
-
-Returns the built-in [middlewares](./http-router-api.md#middlewares).
-
-```go
-middlewares := api.Http().Middlewares()
-```
-
-Below are built-in middlewares available in the `Middlewares` instance:
-
-```go
-middlewares.AdminAuth() // It returns a middleware that checks if the user is authenticated.
-middlewares.CacheResponse() // It returns a middleware that caches the response.
-```
-
-
 ### HttpResponse
 
 Returns an instance of [HttpResponse](./http-response.md).
@@ -80,22 +64,6 @@ Returns an instance of [VueResponse](./vue-response.md).
 
 ```go
 vueResponse := api.Http().VueResponse()
-```
-
-### GetDevice
-
-Get the device information from the http request. It returns and instance of [ClientDevice](./client-device.md) and an `error`.
-
-```go
-// handler
-func (w http.ResponseWriter, r *http.Request) {
-    // other logic...
-    device, err := api.Http().GetDevice(r)
-    if err != nil {
-        // handle error
-    }
-    fmt.Println(device) // ClientDevice
-}
 ```
 
 ### MuxVars
