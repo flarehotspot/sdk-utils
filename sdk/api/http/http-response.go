@@ -24,15 +24,15 @@ type HttpResponse interface {
 	// It uses the layout.html from your plugin directory /resources/views/portal/http-layout.html
 	PortalView(w http.ResponseWriter, r *http.Request, view string, data any)
 
-	// Used to render views from /resources/views directory from your plugin.
+	// Used to render single file views (without layout) from /resources/views directory from your plugin.
 	// For example if you have a view in /resources/views/index.html,
 	// then you can render it with View(w, r, "index.html", data).
 	View(w http.ResponseWriter, r *http.Request, view string, data any)
 
-	// Used to javascript templates from /resources/views/js directory from your plugin.
-	// For example if you have a view in /resources/views/js/index.tpl.js,
-	// then you can render it with Script(w, r, "index.tpl.js", data).
-	Script(w http.ResponseWriter, r *http.Request, jspath string, data any)
+	// Used to render resource files  from the resources directory in your plugin.
+	// For example if you have a view in /resources/views/js/index.tmpl.js,
+	// then you can render it with Script(w, r, "views/js/index.tmpl.js", data).
+	File(w http.ResponseWriter, r *http.Request, jspath string, data any)
 
 	// Used to send json response.
 	Json(w http.ResponseWriter, data any, status int)

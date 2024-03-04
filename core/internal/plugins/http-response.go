@@ -4,8 +4,9 @@ import (
 	"net/http"
 	"path/filepath"
 
-	paths "github.com/flarehotspot/sdk/utils/paths"
+	"github.com/flarehotspot/core/internal/web/response"
 	resp "github.com/flarehotspot/core/internal/web/response"
+	paths "github.com/flarehotspot/sdk/utils/paths"
 )
 
 type HttpResponse struct {
@@ -54,7 +55,7 @@ func (self *HttpResponse) View(w http.ResponseWriter, r *http.Request, view stri
 	resp.View(w, viewfile, helpers, data)
 }
 
-func (self *HttpResponse) Script(w http.ResponseWriter, r *http.Request, file string, data interface{}) {
+func (self *HttpResponse) File(w http.ResponseWriter, r *http.Request, file string, data interface{}) {
 	if data == nil {
 		data = map[string]interface{}{}
 	}
@@ -62,8 +63,7 @@ func (self *HttpResponse) Script(w http.ResponseWriter, r *http.Request, file st
 	helpers := NewViewHelpers(self.api)
 	file = self.api.Utl.Resource(file)
 
-	w.Header().Set("Content-Type", "text/javascript")
-	resp.Text(w, file, helpers, data)
+	response.File(w, file, helpers, data)
 }
 
 func (res *HttpResponse) Json(w http.ResponseWriter, data interface{}, status int) {
