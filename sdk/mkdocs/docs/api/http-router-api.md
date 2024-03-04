@@ -2,7 +2,7 @@
 
 The `HttpRouterApi` is the backend for http routing in Flare Hotspot. The [VueRouterApi](./vue-router-api.md) uses the `HttpRouterApi` to generate the routes for the frontend. Each plugin are provided with a `HttpRouterApi` instance to generate their own routes.
 
-## HttpRouterApi Methods
+## 1. HttpRouterApi Methods {#httprouterapi-methods}
 
 Below are the available methods in `HttpRouterApi`:
 
@@ -38,7 +38,7 @@ This method is used to generate the url for third-party plugin route name. This 
 url := api.Http().HttpRouter().UrlForPkgRoute("com.flarego.core", "portal.welcome", "name", "John")
 ```
 
-## Router Instance
+## 2. Router Instance {#router-instance}
 
 Router instance is used to generate routes for the plugin. Below are the methods available in the router instance:
 
@@ -86,7 +86,7 @@ router.Post("/settings/save", func(w http.ResponseWriter, r *http.Request) {
 This method is used to add a [middleware](#middlewares) to the router. It accepts a list of middlewares.
 All routes defined after the `Use` method will use the middleware.
 
-## Middlewares
+## 3. Middlewares {#middlewares}
 
 A middleware is a function of type `func(next http.Handler) http.Handler`. It is used to perform operations on the request before it reaches the handler function. Middlewares are functions that accept a http handler function and returns another http handler function.
 

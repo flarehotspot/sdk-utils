@@ -2,7 +2,7 @@
 
 The `HttpResponse` has utility functions which can be used to send html, json, and file response to the client.
 
-## HttpResponse Methods
+## 1. HttpResponse Methods {#httpresponse-methods}
 
 ### PortalView
 
@@ -84,11 +84,11 @@ func (w http.ResponseWriter, r *http.Request) {
 }
 ```
 
-## Template Parsing
+## 2. Template Parsing {#template-parsing}
 
 The views are parsed using the [html/template](https://pkg.go.dev/html/template) package. But instead of using `{{ }}` as delimiters, we are using `<% %>` as delimiters. This is to avoid conflicts with the `{{ }}` delimiters used in the frontend framework.
 
-## Layout View
+## 3. Layout View {#layout-view}
 
 The layout view is a wrapper around the view which is used to render the view. It is used to define the structure of the view. The layout view is used to define the common structure of the view. For example, the layout view can be used to define the header, footer, and sidebar of the view. Below is an example of how to define the layout view:
 
