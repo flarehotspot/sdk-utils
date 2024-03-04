@@ -17,11 +17,12 @@ type VuePortalItemsFunc func(r *http.Request) []VuePortalItem
 
 // VueRouterApi is used to create navigation items in the application.
 type VueRouterApi interface {
-	// Set admin vue route
-	RegisterAdminRoutes(routes ...VueAdminRoute)
 
 	// Set portal vue routes
 	RegisterPortalRoutes(routes ...VuePortalRoute)
+
+	// Set admin vue route
+	RegisterAdminRoutes(routes ...VueAdminRoute)
 
 	// Used to register a function that returns a slice of admin navs.
 	// Items returned from this function is added to the admin navigation menu.
@@ -35,9 +36,9 @@ type VueRouterApi interface {
 	//   $this.push({name: '<% .Helpers.VueRouteName "login" %>'})
 	VueRouteName(name string) string
 
-    // Returns the vue route path for a named route
+	// Returns the vue route path for a named route
 	VueRoutePath(name string, pairs ...string) string
 
-    // Returns the vue route from another plugin
-    VuePkgRoutePath(pkg string, name string, pairs ...string) string
+	// Returns the vue route from another plugin
+	VuePkgRoutePath(pkg string, name string, pairs ...string) string
 }
