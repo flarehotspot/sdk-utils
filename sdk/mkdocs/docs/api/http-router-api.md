@@ -86,41 +86,12 @@ router.Post("/settings/save", func(w http.ResponseWriter, r *http.Request) {
 This method is used to add a [middleware](#middlewares) to the router. This method accepts a list of middlewares.
 All routes defined after the `Use` method will use the middleware.
 
-Below is using a middleware for plugin sub-router:
-```go
-middleware := func (next http.Handler) http.Handler {
-    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        // do something before the handler function
-        next.ServeHTTP(w, r)
-    })
-}
-
-api.Http().HttpRouter().PluginRouter().Group("/payments", func (subrouter sdkhttp.HttpRouterInstance) {
-    subrouter.Use(middware)
-})
-```
-
-Below is using a middleware for admin sub-router:
-```go
-middleware := func (next http.Handler) http.Handler {
-    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        // do something before the handler function
-        next.ServeHTTP(w, r)
-    })
-}
-
-api.Http().HttpRouter().AdminRouter().Group("/settings", func (subrouter sdkhttp.HttpRouterInstance) {
-    subrouter.Use(middware)
-})
-```
-
-In the examples above, the middleware is used to perform operations on the request before it reaches the handler function inside the sub-router.
-
 ## Middlewares
 
 A middleware is a function of type `func(next http.Handler) http.Handler`. It is used to perform operations on the request before it reaches the handler function. Middlewares are functions that accept a http handler function and returns another http handler function.
 
 ### Declaring a middleware
+
 Below is an example of a middleware:
 
 ```go
@@ -133,11 +104,23 @@ middleware := func (next http.Handler) http.Handler {
 ```
 
 ### Using a middleware
-Then you can use the middleware in the route definition:
+
+Below is using a middleware for plugin sub-router:
 
 ```go
-router := api.Http().HttpRouter().AdminRouter()
-router.Post("/settings/save", func(w http.ResponseWriter, r *http.Request) {
-    // Handle the request
-}, middleware) // use the middleware
+api.Http().HttpRouter().PluginRouter().Group("/payments", func (subrouter sdkhttp.HttpRouterInstance) {
+    subrouter.Use(middware)
+})
 ```
+
+Below is using a middleware for admin sub-router:
+
+```go
+api.Http().HttpRouter().AdminRouter().Group("/settings", func (subrouter sdkhttp.HttpRouterInstance) {
+    subrouter.Use(middware)
+})
+```
+
+In the examples above, the middleware is used to perform operations on the request before it reaches the handler function inside the sub-router.
+
+See this [guide](../guides/routes-and-links.md) for using a middleware in vue components.
