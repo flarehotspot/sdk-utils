@@ -15,9 +15,6 @@ $flare.http.get('/path/to/handler', queryParams)
     });
 ```
 
-!!!note
-    You must use [VueResponse](./vue-response.md) in the server side to perform http resposes with `$flare.http.get` and `$flare.http.post`.
-
 ### $flare.http.post {#flare-http-post}
 The `$flare.http.post` method is used to perform a `POST` AJAX request. It accepts two arguments, the first argument is the URL to send the form data to, and the second argument is the form data.
 
@@ -33,8 +30,8 @@ $flare.http.post('/path/to/handler', formData)
     });
 ```
 
-!!!note
-    You must use [VueResponse](./vue-response.md) in the server side to perform http resposes with `$flare.http.get` and `$flare.http.post`.
+!!!warning "Important"
+    You must use [VueResponse](./vue-response.md) in the server side to perform http resposes for both the [$flare.http.get](#flare-http-get) and [$flare.http.post](#flare-http-post) methods.
 
 ## $flare.vueLazyLoad
 The `$flare.vueLazyLoad` method is used to lazy load vue components.

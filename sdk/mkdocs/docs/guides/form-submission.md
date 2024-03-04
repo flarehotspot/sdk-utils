@@ -1,9 +1,9 @@
 # Form Submission
 
-In this tutorial, we will create a form component and submit the form data to the server using the [$flare.http.post](../api/flare-variable.md#http-post) method.
+In this tutorial, we will create a form component and submit the form data to the server using the [$flare.http.post](../api/flare-variable.md#flare-http-post) method.
 The [$flare](../api/flare-variable.md) variable is a global variable in the browser that contains helper functions to work with the Flare API.
 
-## Request Handler
+## 1. Request Handler
 We need a route and handler to handle the submitted form data. Below is an example of a route and handler to handle the form submission.
 
 ```go
@@ -24,7 +24,7 @@ In this example, we are using the `Post` method from [PluginRouter](../api/http-
 
 Then we are decoding the form data using the `json.NewDecoder(r.Body).Decode(&data)` method. The `json.NewDecoder(r.Body).Decode(&data)` method decodes the form data from the request body and stores it in the `data` variable.
 
-## Form Component
+## 2. Form Component
 
 To submit a form, we need to prevent the default form submission by using the `@click.prevent` directive on the form tag.
 Then, we will use the `$flare.http.post` method to send the form data to the server.

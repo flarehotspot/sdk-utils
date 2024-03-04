@@ -2,7 +2,7 @@
 
 Database migrations are a way to manage changes to your database schema over time. They are a way to keep track of changes to your database schema and apply them in a consistent way. This is important because as your application evolves, the database schema will need to change to reflect that.
 
-## Creating Migration Files
+## 1. Creating Migration Files
 To create migration files for your database, you can use the `db-migrate` command:
 
 In Windows:
@@ -38,10 +38,10 @@ Below is an example of the down migration file:
 DROP TABLE IF EXISTS users;
 ```
 
-## Running Migration Files
+## 2. Running Migration Files
 
 You don't have to manually run the migration files. The up migration file automatically gets executed during plugin installation and application boot up (if not yet executed). The down migration file is used when the plugin is uninstalled.
 
-## Troubleshooting
+## 3. Troubleshooting
 
 **TODO**: Add a section for logging or debugging migrations.
