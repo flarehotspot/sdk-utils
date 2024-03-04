@@ -15,18 +15,16 @@ If you are using Linux or Mac, type:
 ./bin/flare create-plugin
 ```
 
-## Plugin Details
-
 Follow the instructions in the command prompt and enter the necessary details for your plugin. Below are the needed details for your plugin:
 
-### Package Name
-This is the primary identifier of your plugin. It should be unique and follow reverse domain naming convention, e.g `com.your-domain.your-plugin`. The package name should be in lowercase and should not contain any special characters or spaces except period, underscore and hyphen (`.`, `_`, `-`).
+Package Name
+: This is the primary identifier of your plugin. It should be unique and follow reverse domain naming convention, e.g `com.your-domain.your-plugin`. The package name should be in lowercase and should not contain any special characters or spaces except period, underscore and hyphen (`.`, `_`, `-`).
 
-### Plugin Name
-This is the name of your plugin, e.g. "System Monitor".
+Plugin Name
+: This is the name of your plugin, e.g. "System Monitor".
 
-### Description
-This is a brief description of your plugin. It should describe the purpose of your plugin.
+Description
+: This is a brief description of your plugin. It should describe the purpose of your plugin.
 
 ## The main.go file
 
