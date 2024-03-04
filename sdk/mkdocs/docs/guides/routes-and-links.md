@@ -1,7 +1,7 @@
 # Routes and Links
 Routes are used to handle user navigation by matching the requested URL to a [RoutePath](#routepath). A [link](#creating-a-link) is a form of clickable element in the web page that redirects a user to a certain URL and eventually triggering the matched route.
 
-## Registering Routes
+## 1. Registering Routes
 The vue routes are divided into two types: [portal routes](#portal-routes) and [admin routes](#admin-routes). Portal routes are accessible to all users, while admin routes are only accessible to authenticated user accounts.
 
 ### Portal Routes {#portal-routes}
@@ -42,6 +42,8 @@ func Init(api sdkplugin.PluginApi) {
 }
 ```
 
+See [Route Fields](#route-fields) for the definition of each fields used to define a portal route.
+
 ### Admin Routes {#admin-routes}
 Admin routes are very similar to [portal routes](#portal-routes), but are only accessible by authenticated user accounts. To define an admin route, we use the [VueRouterApi.RegisterAdminRoutes](../api/vue-router-api.md#registeradminroutes) api method.
 
@@ -69,7 +71,9 @@ adminRoute := sdkhttp.VueAdminRoute{
 api.Http().VueRouter().RegisterAdminRoutes(adminRoute)
 ```
 
-## Route Definition {#route-definition}
+See [Route Fields](#route-fields) for the definition of each fields used to define an admin route.
+
+## 2. Route Fields {#route-fields}
 
 Below is the brief definition of each fields used to define the [Portal Route](../api/vue-router-api.md#portalroute) and [Admin Route](../api/vue-router-api.md#adminroute).
 
@@ -143,7 +147,7 @@ adminRoute := sdkhttp.VueAdminRoute{
 }
 ```
 
-## Creating a Link {#creating-a-link}
+## 3. Creating a Link {#creating-a-link}
 
 ### RouterLink {#routerlink}
 A router link is a vue component that's part of the official [vue-router](https://github.com/vuejs/vue-router) package. We can create a link to a [portal route](./routes-and-links.md#portal-routes) or an [admin route](./routes-and-links.md#admin-routes) by using the [HttpHelpers.VueRoutePath](../api/http-helpers.md#vueroutepath) method.

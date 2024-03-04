@@ -1,7 +1,7 @@
 
 # Creating a Plugin
 
-## The create-plugin command
+## 1. The `create-plugin` command
 
 To create a new plugin, open a terminal and navigate inside the devkit directory.
 
@@ -26,7 +26,7 @@ Plugin Name
 Description
 : This is a brief description of your plugin. It should describe the purpose of your plugin.
 
-## The main.go file
+## 2. The main.go file
 
 After that, your plugin will be created inside the `plugins` directory. Inside your plugin directory, you will find a `main.go` file.
 
