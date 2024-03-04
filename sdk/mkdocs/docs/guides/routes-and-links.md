@@ -106,7 +106,7 @@ func (w http.ResponseWriter, r *http.Request) {
     If the handler function is not defined, the server will just return `null` json data.
 
 ### Middlewares (optional) {#middlewares}
-Middlewares are used to perform operations before the handler function is executed. Middlewares are functions that accept `http.Handler` and return `http.Handler`. Below is an example of how to define a middleware:
+[Middlewares](../api/http-router-api.md#middlewares) are used to perform operations before the handler function is executed. Middlewares are functions that accept `http.Handler` and return `http.Handler`. Below is an example of how to define a middleware:
 ```go title="main.go"
 mw := func (next http.Handler) http.Handler {
     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

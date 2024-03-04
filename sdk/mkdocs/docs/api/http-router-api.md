@@ -61,7 +61,7 @@ router.Group("/payments", func (subrouter sdkhttp.HttpRouterInstance) {
 
 ### Get
 
-This method is used to create a route for the `GET` http method. This method accepts tree (or more) arguments, the first argument is the route path, the second argument is the handler function and the third and subsequent arguments are the list of (optional) [middlewares](#middlewares). Take a look at the example below:
+This method is used to create a route for the `GET` http method. It accepts tree (or more) arguments, the first argument is the route path, the second argument is the [handler function](../guides/form-submission.md#request-handler) and the third and subsequent arguments are the list of (optional) [middlewares](#middlewares). Take a look at the example below:
 
 ```go
 router := api.Http().HttpRouter().PluginRouter()
@@ -72,7 +72,7 @@ router.Get("/payments/options", func(w http.ResponseWriter, r *http.Request) {
 
 ### Post
 
-This method is used to create a route for the `POST` http method. This method accepts tree (or more) arguments, the first argument is the route path, the second argument is the handler function and the third and subsequent arguments are the list of (optional) [middlewares](#middlewares). Take a look at the example below:
+This method is used to create a route for the `POST` http method. It accepts three (or more) arguments, the first argument is the route path, the second argument is the [handler function](../guides/form-submission.md#request-handler) and the third and subsequent arguments are the list of (optional) [middlewares](#middlewares). Take a look at the example below:
 
 ```go
 router := api.Http().HttpRouter().AdminRouter()
@@ -83,7 +83,7 @@ router.Post("/settings/save", func(w http.ResponseWriter, r *http.Request) {
 
 ### Use
 
-This method is used to add a [middleware](#middlewares) to the router. This method accepts a list of middlewares.
+This method is used to add a [middleware](#middlewares) to the router. It accepts a list of middlewares.
 All routes defined after the `Use` method will use the middleware.
 
 ## Middlewares
