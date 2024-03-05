@@ -1,4 +1,4 @@
-package plugins
+package config
 
 import (
 	"encoding/json"
@@ -6,19 +6,20 @@ import (
 	"path/filepath"
 
 	fs "github.com/flarehotspot/sdk/utils/fs"
+	sdkfs "github.com/flarehotspot/sdk/utils/fs"
 	paths "github.com/flarehotspot/sdk/utils/paths"
 )
 
-func NewPLuginConfig(api *PluginApi) *PluginConfig {
-	return &PluginConfig{api}
+func NewPLuginConfig(pkg string) *PluginConfig {
+	return &PluginConfig{pkg}
 }
 
 type PluginConfig struct {
-	api *PluginApi
+	pkg string
 }
 
 func (c *PluginConfig) configPath() string {
-	return filepath.Join(paths.ConfigDir, "plugins", c.api.Pkg()+".json")
+	return filepath.Join(paths.ConfigDir, "plugins", c.pkg+".json")
 }
 
 func (c *PluginConfig) WriteJson(v interface{}) error {
@@ -27,8 +28,13 @@ func (c *PluginConfig) WriteJson(v interface{}) error {
 	if err != nil {
 		return err
 	}
-	b, err := json.Marshal(v)
-	err = os.WriteFile(c.configPath(), b, 0644)
+
+	b, err := json.MarshalIndent(v, "", "  ")
+	if err != nil {
+		return err
+	}
+
+	err = os.WriteFile(c.configPath(), b, sdkfs.PermFile)
 	return err
 }
 
