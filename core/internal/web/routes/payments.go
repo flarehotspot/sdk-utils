@@ -4,9 +4,9 @@ import (
 	"net/http"
 
 	"github.com/flarehotspot/core/internal/plugins"
-	sdkhttp "github.com/flarehotspot/sdk/api/http"
 	"github.com/flarehotspot/core/internal/web/helpers"
 	routenames "github.com/flarehotspot/core/internal/web/routes/names"
+	sdkhttp "github.com/flarehotspot/sdk/api/http"
 )
 
 func PaymentRoutes(g *plugins.CoreGlobals) {
@@ -18,8 +18,7 @@ func PaymentRoutes(g *plugins.CoreGlobals) {
 			res := g.CoreAPI.HttpAPI.VueResponse()
 			clnt, err := helpers.CurrentClient(g.ClientRegister, r)
 			if err != nil {
-				res.FlashMsg("error", err.Error())
-				res.Json(w, nil, http.StatusInternalServerError)
+				res.SendFlashMsg(w, "error", err.Error(), http.StatusInternalServerError)
 				return
 			}
 

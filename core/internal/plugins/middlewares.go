@@ -45,23 +45,20 @@ func (self *PluginMiddlewares) PendingPurchaseMw() sdkhttp.HttpMiddleware {
 
 			client, err := helpers.CurrentClient(self.api.ClntReg, r)
 			if err != nil {
-				res.FlashMsg("error", err.Error())
-				res.Json(w, nil, errCode)
+				res.SendFlashMsg(w, "error", err.Error(), errCode)
 				return
 			}
 
 			mdls := self.api.models
 			device, err := mdls.Device().Find(ctx, client.Id())
 			if err != nil {
-				res.FlashMsg("error", err.Error())
-				res.Json(w, nil, errCode)
+				res.SendFlashMsg(w, "error", err.Error(), errCode)
 				return
 			}
 
 			purchase, err := mdls.Purchase().PendingPurchase(ctx, device.Id())
 			if err != nil && !errors.Is(err, sql.ErrNoRows) {
-				res.FlashMsg("error", err.Error())
-				res.Json(w, nil, errCode)
+				res.SendFlashMsg(w, "error", err.Error(), errCode)
 				return
 			}
 

@@ -25,13 +25,18 @@ type VueResponse struct {
 	data   map[string]any
 }
 
-func (self *VueResponse) FlashMsg(msgType string, msg string) {
+func (self *VueResponse) SetFlashMsg(msgType string, msg string) {
 	newdata := self.data[rootjson].(map[string]any)
 	newdata["flash"] = map[string]string{
 		"type": msgType, // "success", "error", "warning", "info
 		"msg":  msg,
 	}
 	self.data[rootjson] = newdata
+}
+
+func (self *VueResponse) SendFlashMsg(w http.ResponseWriter, msgType string, msg string, status int) {
+	self.SetFlashMsg(msgType, msg)
+	self.Json(w, nil, status)
 }
 
 func (self *VueResponse) Json(w http.ResponseWriter, data any, status int) {
@@ -94,16 +99,16 @@ func (self *VueResponse) Redirect(w http.ResponseWriter, routename string, pairs
 }
 
 func (self *VueResponse) RedirectToPortal(w http.ResponseWriter) {
-    themecfg, err := config.ReadThemesConfig()
-    if err != nil {
-        self.Error(w, err.Error(), 500)
-        return
-    }
-    themePlugin, ok := self.router.api.PluginsMgr().FindByPkg(themecfg.Portal)
-    if !ok {
-        self.Error(w, "Theme plugin not found", 500)
-        return
-    }
+	themecfg, err := config.ReadThemesConfig()
+	if err != nil {
+		self.Error(w, err.Error(), 500)
+		return
+	}
+	themePlugin, ok := self.router.api.PluginsMgr().FindByPkg(themecfg.Portal)
+	if !ok {
+		self.Error(w, "Theme plugin not found", 500)
+		return
+	}
 	portalIndexRoute := themePlugin.(*PluginApi).ThemesAPI.PortalIndexRoute
 	newdata := self.data[rootjson].(map[string]any)
 	newdata["redirect"] = true
@@ -113,6 +118,5 @@ func (self *VueResponse) RedirectToPortal(w http.ResponseWriter) {
 }
 
 func (self *VueResponse) Error(w http.ResponseWriter, err string, status int) {
-	self.FlashMsg("error", err)
-	self.Json(w, nil, status)
+	self.SendFlashMsg(w, "error", err, status)
 }

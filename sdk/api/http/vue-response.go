@@ -10,10 +10,14 @@ import "net/http"
 
 type VueResponse interface {
 
-	// Sends a flash message to the user. It does not send http response to the client.
-	// It should be used along with methods that send actual http response like "Data" and "Redirect" methods.
+	// Sets a flash message. It does not send http response to the client.
+	// It should be used along with methods that send actual http response like "Json" and "Redirect" methods.
 	// Message types are "success", "error", "warning", "info".
-	FlashMsg(msgType string, msg string)
+	SetFlashMsg(msgType string, msg string)
+
+
+    // Similar to SetFlashMsg, but it sends an HTTP response to the client.
+	SendFlashMsg(w http.ResponseWriter, msgType string, msg string, status int)
 
 	// Respond with json data.
     // It sends an HTTP response and must be put as last line in the handler function.

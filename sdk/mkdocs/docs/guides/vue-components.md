@@ -102,4 +102,6 @@ define(function(){
 ```
 
 ## 5. Browser Compatibility {#browser-compatibility}
-Since we are not using standard build tools like webpack or vite, it is recommended to use basic form of javascript and css to ensure compatibility with older browsers. For example, use `var` instead of `let` or `const` and use `function` instead of arrow functions.
+Since we are not using standard build tools like webpack or vite, it is recommended to use basic form of javascript and css to ensure compatibility with older browsers.
+For example, use `var` instead of `let` or `const` and use `function` instead of arrow functions.
+Array `map`, `filter`, `reduce`, etc. should also be avoided.
