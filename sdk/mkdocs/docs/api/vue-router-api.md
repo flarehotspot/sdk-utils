@@ -6,7 +6,7 @@ This is the API for the frontend router.
 
 ### RegisterPortalRoutes
 
-This method is used to register the [portal routes](#portalroute).
+This method is used to register the [portal routes](#portalroute). It is a *variadic function* that accepts multiple instances of `sdkhttp.VuePortalRoute`.
 
 ```go
 api.Http().VueRouter().RegisterPortalRoutes(sdkhttp.VuePortalRoute{
@@ -21,7 +21,8 @@ api.Http().VueRouter().RegisterPortalRoutes(sdkhttp.VuePortalRoute{
 
 ### RegisterAdminRoutes
 
-This method is used to register the [admin routes](#adminroute).
+This method is used to register the [admin routes](#adminroute). It is a *variadic function* that accepts multiple instances of `sdkhttp.VueAdminRoute`.
+
 ```go
 api.Http().VueRouter().RegisterAdminRoutes(sdkhttp.VueAdminRoute{
     RouteName:   "admin-dashboard",
@@ -35,15 +36,21 @@ api.Http().VueRouter().RegisterAdminRoutes(sdkhttp.VueAdminRoute{
 
 ### PortalItemsFunc
 
-This method is used to show items in the captive portal. See [Portal Items](../guides/portal-items.md).
+This method is used to show items in the captive portal.
+The items are a slice of `sdkhttp.VuePortalItem`.
+This function is called every time the captive portal is loaded.
+See [Portal Items](../guides/portal-items.md) for example.
 
 ### AdminNavsFunc
 
-This method is used to add items to the admin navigation. See [Admin Navs](../guides/admin-navs.md).
+This method is used to add items to the admin navigation.
+The items are a slice of `sdkhttp.VueAdminNav`.
+See [Admin Navs](../guides/admin-navs.md) for examples.
 
 ### VueRouteName
 
 This method returns the vue route name that can be used for `router-link` vue component:
+
 ```go
 data := map[string]string{
     "VueRouteName": api.Http().VueRouter().VueRouteName("insert-coin"),
@@ -82,11 +89,14 @@ data := map[string]string{
 <router-link :to="vueRoutePath">
 ```
 
-
 ## 2. PortalRoute {#portalroute}
+
+A portal route is an instance of `sdkhttp.VuePortalRoute` that is used to register portal routes.
 
 See [Portal Routes](../guides/routes-and-links.md#portal-routes).
 
 ## 3. AdminRoute {#adminroute}
+
+An admin route is an instance of `sdkhttp.VueAdminRoute` that is used to register admin routes.
 
 See [Admin Routes](../guides/routes-and-links.md#admin-routes).
