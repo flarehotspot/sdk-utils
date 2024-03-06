@@ -18,12 +18,6 @@ type ConfigApi interface {
 	// Get the database configuration api.
 	Database() DbCfg
 
-	// Get the http session rates configuration api.
-	SessionRates() SessionRatesCfg
-
-	// Get the sessions configuration api.
-	Sessions() SessionLimitsCfg
-
 	// Get the bandwidth configuration api.
 	Bandwidth() BandwidthCfg
 }

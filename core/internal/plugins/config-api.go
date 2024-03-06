@@ -25,14 +25,6 @@ func (self *ConfigApi) Database() sdkcfg.DbCfg {
 	return cfgapi.NewDbCfgApi()
 }
 
-func (self *ConfigApi) SessionRates() sdkcfg.SessionRatesCfg {
-	return cfgapi.NewSessionRatesCfgApi()
-}
-
-func (self *ConfigApi) Sessions() sdkcfg.SessionLimitsCfg {
-	return cfgapi.NewSessionsCfg()
-}
-
 func (self *ConfigApi) Bandwidth() sdkcfg.BandwidthCfg {
 	return cfgapi.NewBandwdCfgApi()
 }
