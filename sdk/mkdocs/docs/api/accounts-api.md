@@ -80,7 +80,7 @@ fmt.Println(desc) // "New permission"
 ---
 
 ## 2. Account Instance {#account-instance}
-Account instance represents a system user account. First, find an user account:
+Account instance represents a system user account. First, find an user account by username:
 ```go
 acct, err := api.Acct().Find("admin")
 if err != nil {
