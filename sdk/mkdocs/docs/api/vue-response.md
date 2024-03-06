@@ -8,7 +8,8 @@ The methods within `VueResponse` are used to send http response to the browser t
 
 This method is to send a toast message to the client. This does not send a response to the client.
 Thus, it must be called along with [Json](#json), [Redirect](#redirect) or
-[RedirectToPortal](#redirecttoportal) method to send the response to the client.
+[RedirectToPortal](#redirecttoportal) methods to send the response to the client.
+See the [Json](#json) documentation for sending json data.
 
 ```go
 data := nil
@@ -28,7 +29,7 @@ res.SendFlashMsg(w, "success", "Hello, World!", http.StatusOK)
 
 ### Json
 
-Used to send a JSON response to the client.
+Used to send a JSON response to the client. The data can be any type as long as it can be marshalled to JSON.
 
 ```go
 res := api.Http().VueResponse()
@@ -38,7 +39,7 @@ res.Json(w, data, http.StatusOK)
 ### Component
 
 This method is used to send a [Vue Component](../guides/vue-components.md) as a response. The [HttpHelpers.VueComponentPath](./http-helpers.md#vuecomponentpath) uses this method under the hood.
-The difference is that you can set additional data to your component using this method.
+The difference is that you can set additional data to your component from the [handler function](../guides/routes-and-links.md#handlerfunc) using this method.
 
 ```go
 res := api.Http().VueResponse()

@@ -32,7 +32,7 @@ url := api.Http().HttpRouter().UrlForRoute("portal.welcome", "name", "John")
 
 ### UrlForPkgRoute
 
-This method is used to generate the url for third-party plugin route name. This method accepts three arguments, the first argument is the plugin package name (e.g `com.flarego.core`), the second argument is the route name and the third argument is the route parameters (similar to [UrlForRoute](#urlforroute) method):
+This method is used to generate the url for third-party plugin route name. This method accepts three arguments, the first argument is the plugin package name (e.g `com.flarego.core`), the second argument is the route name and the third argument is the route parameters, similar to [UrlForRoute](#urlforroute) method.
 
 ```go
 url := api.Http().HttpRouter().UrlForPkgRoute("com.flarego.core", "portal.welcome", "name", "John")
