@@ -14,7 +14,7 @@ type ConfigApi struct {
 }
 
 func (self *ConfigApi) Plugin() sdkcfg.PluginCfg {
-	return NewPLuginConfig(self.api)
+	return cfgapi.NewPluginCfgApi(self.api.Pkg())
 }
 
 func (self *ConfigApi) Application() sdkcfg.ApplicationCfg {
