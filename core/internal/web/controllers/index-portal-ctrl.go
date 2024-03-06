@@ -8,7 +8,9 @@ import (
 	"github.com/flarehotspot/core/internal/config"
 	"github.com/flarehotspot/core/internal/plugins"
 	"github.com/flarehotspot/core/internal/utils/assets"
+	sse "github.com/flarehotspot/core/internal/utils/sse"
 	"github.com/flarehotspot/core/internal/web/response"
+	routenames "github.com/flarehotspot/core/internal/web/routes/names"
 )
 
 func PortalIndexPage(g *plugins.CoreGlobals) http.Handler {
@@ -45,6 +47,8 @@ func PortalIndexPage(g *plugins.CoreGlobals) http.Handler {
 			"Routes": string(routesJson),
 		}
 
+		ssePath := g.CoreAPI.HttpAPI.Helpers().UrlForRoute(routenames.RoutePortalSse)
+
 		jsFiles := []assets.AssetWithData{
 			// libs
 			{File: g.CoreAPI.Utl.Resource("assets/libs/nprogress-0.2.0.js")},
@@ -59,6 +63,7 @@ func PortalIndexPage(g *plugins.CoreGlobals) http.Handler {
 			{File: g.CoreAPI.Utl.Resource("assets/services/vue-lazy-load.js")},
 			{File: g.CoreAPI.Utl.Resource("assets/services/basic-http.js")},
 			{File: g.CoreAPI.Utl.Resource("assets/services/utils.js")},
+			{File: g.CoreAPI.Utl.Resource("assets/services/events.js"), Data: ssePath},
 			{File: g.CoreAPI.Utl.Resource("assets/services/vue-http.js")},
 			{File: g.CoreAPI.Utl.Resource("assets/services/notify.js")},
 			{File: g.CoreAPI.Utl.Resource("assets/portal/router.js"), Data: routesData},
@@ -102,4 +107,23 @@ func PortalIndexPage(g *plugins.CoreGlobals) http.Handler {
 		api := g.CoreAPI
 		api.Http().HttpResponse().PortalView(w, r, "index.html", vdata)
 	})
+}
+
+func PortalSseHandler(g *plugins.CoreGlobals) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		s, err := sse.NewSocket(w, r)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		clnt, err := g.CoreAPI.HttpAPI.GetClientDevice(r)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		sse.AddSocket(clnt.MacAddr(), s)
+		s.Listen()
+	}
 }

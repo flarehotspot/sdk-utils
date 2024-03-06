@@ -5,7 +5,7 @@ import (
 	"sync"
 	"sync/atomic"
 
-	sse "github.com/flarehotspot/sdk/utils/sse"
+	sse "github.com/flarehotspot/core/internal/utils/sse"
 )
 
 type BootProgData struct {

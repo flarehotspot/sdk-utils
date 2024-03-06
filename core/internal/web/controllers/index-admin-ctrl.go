@@ -8,7 +8,9 @@ import (
 	"github.com/flarehotspot/core/internal/config"
 	"github.com/flarehotspot/core/internal/plugins"
 	"github.com/flarehotspot/core/internal/utils/assets"
+	sse "github.com/flarehotspot/core/internal/utils/sse"
 	"github.com/flarehotspot/core/internal/web/response"
+	routenames "github.com/flarehotspot/core/internal/web/routes/names"
 )
 
 func AdminIndexPage(g *plugins.CoreGlobals) http.Handler {
@@ -47,6 +49,8 @@ func AdminIndexPage(g *plugins.CoreGlobals) http.Handler {
 			"LoginRouteName": loginVueName,
 		}
 
+		ssePath := g.CoreAPI.HttpAPI.Helpers().UrlForRoute(routenames.RouteAdminSse)
+
 		jsFiles := []assets.AssetWithData{
 			// libs
 			{File: g.CoreAPI.Utl.Resource("assets/libs/nprogress-0.2.0.js")},
@@ -63,6 +67,7 @@ func AdminIndexPage(g *plugins.CoreGlobals) http.Handler {
 			{File: g.CoreAPI.Utl.Resource("assets/services/require-config.js")},
 			{File: g.CoreAPI.Utl.Resource("assets/services/vue-lazy-load.js")},
 			{File: g.CoreAPI.Utl.Resource("assets/services/basic-http.js")},
+            {File: g.CoreAPI.Utl.Resource("assets/services/events.js"), Data: ssePath},
 			{File: g.CoreAPI.Utl.Resource("assets/services/utils.js")},
 			{File: g.CoreAPI.Utl.Resource("assets/services/vue-http.js")},
 			{File: g.CoreAPI.Utl.Resource("assets/services/notify.js")},
@@ -107,4 +112,23 @@ func AdminIndexPage(g *plugins.CoreGlobals) http.Handler {
 		api := g.CoreAPI
 		api.Http().HttpResponse().AdminView(w, r, "index.html", vdata)
 	})
+}
+
+func AdminSseHandler(g *plugins.CoreGlobals) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		s, err := sse.NewSocket(w, r)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		acct, err := g.CoreAPI.HttpAPI.Auth().CurrentAcct(r)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		sse.AddSocket(acct.Username(), s)
+		s.Listen()
+	}
 }

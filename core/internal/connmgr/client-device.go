@@ -7,6 +7,7 @@ import (
 	"github.com/flarehotspot/core/internal/db"
 	"github.com/flarehotspot/core/internal/db/models"
 	"github.com/flarehotspot/sdk/api/connmgr"
+	"github.com/flarehotspot/core/internal/utils/sse"
 )
 
 type ClientDevice struct {
@@ -92,4 +93,8 @@ func (self *ClientDevice) HasSession(ctx context.Context) bool {
 	}
 
 	return ok
+}
+
+func (self *ClientDevice) Emit(t string, data interface{}) {
+	sse.Emit(self.MacAddr(), t, data)
 }

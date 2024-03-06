@@ -4,7 +4,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-package sdksse
+package sse
 
 import (
 	"log"
@@ -12,13 +12,9 @@ import (
 )
 
 var (
-	mu            sync.RWMutex
-	deviceSockets map[string][]*SseSocket
-)
-
-func init() {
+	mu            = sync.RWMutex{}
 	deviceSockets = map[string][]*SseSocket{}
-}
+)
 
 func AddSocket(key string, socket *SseSocket) {
 	mu.Lock()

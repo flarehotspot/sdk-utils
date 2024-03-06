@@ -8,7 +8,7 @@ import (
 
 	sdkfs "github.com/flarehotspot/sdk/utils/fs"
 	paths "github.com/flarehotspot/sdk/utils/paths"
-	sse "github.com/flarehotspot/sdk/utils/sse"
+	sse "github.com/flarehotspot/core/internal/utils/sse"
 )
 
 var (

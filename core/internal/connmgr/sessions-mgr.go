@@ -9,11 +9,11 @@ import (
 	"github.com/flarehotspot/core/internal/db"
 	"github.com/flarehotspot/core/internal/db/models"
 	"github.com/flarehotspot/core/internal/network"
+	"github.com/flarehotspot/core/internal/utils/nftables"
+	"github.com/flarehotspot/core/internal/utils/sse"
 	connmgr "github.com/flarehotspot/sdk/api/connmgr"
 	sdknet "github.com/flarehotspot/sdk/api/network"
 	slices "github.com/flarehotspot/sdk/utils/slices"
-	sse "github.com/flarehotspot/sdk/utils/sse"
-	"github.com/flarehotspot/core/internal/utils/nftables"
 )
 
 const (

@@ -33,5 +33,5 @@ type ClientDevice interface {
 
 	// Emits a socket event to a client device.
 	// The event will be propagated to the client's browser via server-sent events.
-	// SocketEmit(clnt ClientDevice, t string, d map[string]any)
+	Emit(t string, d any)
 }
