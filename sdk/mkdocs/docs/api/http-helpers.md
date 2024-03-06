@@ -41,10 +41,6 @@ fmt.Println(jsPath) // /plugins/your-plugin-id/0.0.1/assets/js/script.js
 
 TODO: implement advertisements feature
 
-### VueRoutePath
-
-Alias to [VueRouterApi.VueRouterPath](./vue-router-api.md#vueroutepath) method.
-
 ### Translate
 
 Alias to [PluginApi.Translate](./plugin-api.md#translate) method.
@@ -63,7 +59,7 @@ Alias to [VueRouterApi.VueRouteName](./vue-router-api.md#vueroutename) method.
 
 ### VueRoutePath
 
-Alias to [VueRouterApi.VueRoutePath](./vue-router-api.md#vueroutepath) method.
+Alias to [VueRouterApi.VueRouterPath](./vue-router-api.md#vueroutepath) method.
 
 ### VuePkgRoutePath
 

@@ -15,27 +15,26 @@ type VueResponse interface {
 	// Message types are "success", "error", "warning", "info".
 	SetFlashMsg(msgType string, msg string)
 
-
-    // Similar to SetFlashMsg, but it sends an HTTP response to the client.
+	// Similar to SetFlashMsg, but it sends an HTTP response to the client.
 	SendFlashMsg(w http.ResponseWriter, msgType string, msg string, status int)
 
 	// Respond with json data.
-    // It sends an HTTP response and must be put as last line in the handler function.
+	// It sends an HTTP response and must be put as last line in the handler function.
 	Json(w http.ResponseWriter, data any, status int)
 
 	// Respond with a vue component. Useful for rendering dynamic component templates.
-    // It sends an HTTP response and must be put as last line in the handler function.
+	// It sends an HTTP response and must be put as last line in the handler function.
 	Component(w http.ResponseWriter, vuefile string, data any)
 
 	// Redirect to another vue route. "pairs" are param pairs, e.g. "id", "123", "name", "john".
-    // It sends an HTTP response and must be put as last line in the handler function.
+	// It sends an HTTP response and must be put as last line in the handler function.
 	Redirect(w http.ResponseWriter, routename string, pairs ...string)
 
 	// Redirect portal index page
-    // It sends an HTTP response and must be put as last line in the handler function.
+	// It sends an HTTP response and must be put as last line in the handler function.
 	RedirectToPortal(w http.ResponseWriter)
 
-    // Respond with an error flash message.
-    // It sends an HTTP response and must be put as last line in the handler function.
+	// Respond with an error flash message.
+	// It sends an HTTP response and must be put as last line in the handler function.
 	Error(w http.ResponseWriter, err string, status int)
 }
