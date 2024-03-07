@@ -18,8 +18,8 @@ type AppCfg struct {
 	Secret string `json:"secret"`
 }
 
-// ApplicationCfg is used to read and write application configuration.
-type ApplicationCfg interface {
-	Read() (AppCfg, error)
-	Write(AppCfg) error
+// AppCfgApi is used to read and write application configuration.
+type AppCfgApi interface {
+	Get() (AppCfg, error)
+	Save(AppCfg) error
 }

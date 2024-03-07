@@ -9,12 +9,12 @@ package sdkcfg
 // ConfigApi is used to access the configuration API.
 type ConfigApi interface {
 
-	// Get the plugin configuration guration api.
-	Plugin() PluginCfg
-
 	// Get the application configuration api.
-	Application() ApplicationCfg
+	Application() AppCfgApi
 
-	// Get the bandwidth configuration api.
-	Bandwidth() BandwidthCfg
+	// Get the bandwidth configuration api of a network interface.
+	Bandwidth(ifname string) BandwidthCfgApi
+
+	// Get the plugin configuration guration api.
+	Plugin() PluginCfgApi
 }

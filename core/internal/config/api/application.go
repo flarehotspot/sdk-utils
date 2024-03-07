@@ -11,7 +11,7 @@ func NewAppCfgApi() *AppCfgApi {
 
 type AppCfgApi struct{}
 
-func (c *AppCfgApi) Read() (sdkcfg.AppCfg, error) {
+func (c *AppCfgApi) Get() (sdkcfg.AppCfg, error) {
 	cfg, err := config.ReadApplicationConfig()
 	if err != nil {
 		return sdkcfg.AppCfg{}, err
@@ -24,7 +24,7 @@ func (c *AppCfgApi) Read() (sdkcfg.AppCfg, error) {
 	}, nil
 }
 
-func (c *AppCfgApi) Write(cfg sdkcfg.AppCfg) error {
+func (c *AppCfgApi) Save(cfg sdkcfg.AppCfg) error {
 	data := config.AppConfig{
 		Lang:     cfg.Lang,
 		Currency: cfg.Currency,

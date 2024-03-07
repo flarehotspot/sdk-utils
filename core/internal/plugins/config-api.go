@@ -13,14 +13,14 @@ type ConfigApi struct {
 	api *PluginApi
 }
 
-func (self *ConfigApi) Plugin() sdkcfg.PluginCfg {
+func (self *ConfigApi) Plugin() sdkcfg.PluginCfgApi {
 	return cfgapi.NewPluginCfgApi(self.api.Pkg())
 }
 
-func (self *ConfigApi) Application() sdkcfg.ApplicationCfg {
+func (self *ConfigApi) Application() sdkcfg.AppCfgApi {
 	return cfgapi.NewAppCfgApi()
 }
 
-func (self *ConfigApi) Bandwidth() sdkcfg.BandwidthCfg {
-	return cfgapi.NewBandwdCfgApi()
+func (self *ConfigApi) Bandwidth(ifname string) sdkcfg.BandwidthCfgApi {
+	return cfgapi.NewBandwdCfgApi(ifname)
 }
