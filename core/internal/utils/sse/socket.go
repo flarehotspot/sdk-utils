@@ -11,11 +11,35 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"math/rand"
 	"net/http"
-	"strconv"
 	"sync"
+
+	sdkstr "github.com/flarehotspot/sdk/utils/strings"
 )
+
+func NewSocket(w http.ResponseWriter, r *http.Request) (s *SseSocket, err error) {
+	f, ok := w.(http.Flusher)
+	if !ok {
+		log.Println("Streaming not supported in path: ", r.URL.Path)
+		err = errors.New("streaming not supported")
+		return nil, err
+	}
+
+	w.Header().Set("Content-Type", "text/event-stream")
+	w.Header().Set("Cache-Control", "no-cache")
+	w.Header().Set("Connection", "keep-alive")
+	f.Flush()
+
+	id := sdkstr.Rand(32)
+
+	return &SseSocket{
+		id:      id,
+		res:     w,
+		req:     r,
+		msgCh:   make(chan SseData),
+		flusher: f,
+	}, nil
+}
 
 type SseSocket struct {
 	mu      sync.RWMutex
@@ -39,7 +63,7 @@ func (s *SseSocket) Id() string {
 func (s *SseSocket) Emit(t string, jsonData interface{}) (err error) {
 	bytes, err := json.Marshal(jsonData)
 	if err != nil {
-        log.Printf("Unable to marshal json: %s\n", err)
+		log.Printf("Unable to marshal json: %s\n", err)
 		return err
 	}
 	s.msgCh <- SseData{t, bytes}
@@ -68,33 +92,4 @@ func (s *SseSocket) Listen() {
 			return
 		}
 	}
-}
-
-func RespondError(w http.ResponseWriter, err error) {
-	w.WriteHeader(http.StatusInternalServerError)
-	fmt.Fprint(w, err)
-}
-
-func NewSocket(w http.ResponseWriter, r *http.Request) (s *SseSocket, err error) {
-	f, ok := w.(http.Flusher)
-	if !ok {
-		log.Println("Streaming not supported in path: ", r.URL.Path)
-		err = errors.New("streaming not supported")
-		return nil, err
-	}
-
-	w.Header().Set("Content-Type", "text/event-stream")
-	w.Header().Set("Cache-Control", "no-cache")
-	w.Header().Set("Connection", "keep-alive")
-	f.Flush()
-
-	id := strconv.Itoa(int(rand.Int()))
-
-	return &SseSocket{
-		id:      id,
-		res:     w,
-		req:     r,
-		msgCh:   make(chan SseData),
-		flusher: f,
-	}, nil
 }
