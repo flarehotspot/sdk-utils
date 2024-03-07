@@ -21,10 +21,6 @@ func (self *ConfigApi) Application() sdkcfg.ApplicationCfg {
 	return cfgapi.NewAppCfgApi()
 }
 
-func (self *ConfigApi) Database() sdkcfg.DbCfg {
-	return cfgapi.NewDbCfgApi()
-}
-
 func (self *ConfigApi) Bandwidth() sdkcfg.BandwidthCfg {
 	return cfgapi.NewBandwdCfgApi()
 }

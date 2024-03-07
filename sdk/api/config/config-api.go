@@ -15,9 +15,6 @@ type ConfigApi interface {
 	// Get the application configuration api.
 	Application() ApplicationCfg
 
-	// Get the database configuration api.
-	Database() DbCfg
-
 	// Get the bandwidth configuration api.
 	Bandwidth() BandwidthCfg
 }
