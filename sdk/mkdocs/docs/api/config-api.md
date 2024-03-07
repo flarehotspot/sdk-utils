@@ -73,7 +73,7 @@ err := api.Config().Bandwidth("eth0").Save(sdkcfg.BandwdCfg{
 
 ## 3. Plugin
 
-The plugin configuration API is used to store custom configuration specific to the plugin you are developing. Using this API ensures that your plugin configuration can be migrated properly to a new system in case you want to flash new firmware or migrate to a new hardware.
+The plugin configuration API is used to store custom configuration specific to the plugin you are developing. Using this API ensures that your custom plugin configuration can be migrated properly to a new system in case you want to flash new firmware or migrate to a new hardware.
 
 To save your plugin configuration, use the `Save` method.
 
