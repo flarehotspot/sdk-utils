@@ -141,9 +141,8 @@ func (self *SessionsMgr) Connect(ctx context.Context, clnt sdkconnmgr.ClientDevi
 	return <-errCh
 }
 
-func (self *SessionsMgr) Disconnect(clnt sdkconnmgr.ClientDevice, notify error) error {
-	log.Println("Calling endsession()...")
-	err := self.endSession(clnt)
+func (self *SessionsMgr) Disconnect(ctx context.Context, clnt sdkconnmgr.ClientDevice, notify error) error {
+	err := self.endSession(ctx, clnt)
 	if err != nil {
 		notify = err
 	}
@@ -178,11 +177,13 @@ func (self *SessionsMgr) SocketEmit(clnt sdkconnmgr.ClientDevice, t string, d ma
 }
 
 func (self *SessionsMgr) loopSessions(clnt sdkconnmgr.ClientDevice) {
+	ctx := context.Background()
+
 	for nftables.IsConnected(clnt.MacAddr()) {
 		errCh := make(chan error)
 
 		go func() {
-			cs, err := self.GetSession(context.Background(), clnt.Id())
+			cs, err := self.GetSession(ctx, clnt.Id())
 			if err != nil {
 				errCh <- err
 				return
@@ -199,7 +200,7 @@ func (self *SessionsMgr) loopSessions(clnt sdkconnmgr.ClientDevice) {
 					return
 				}
 
-				err = rs.Start(context.Background(), cs)
+				err = rs.Start(ctx, cs)
 				log.Println("Start session error: ", err)
 				if err != nil {
 					errCh <- err
@@ -228,7 +229,7 @@ func (self *SessionsMgr) loopSessions(clnt sdkconnmgr.ClientDevice) {
 
 		if err != nil {
 			log.Println("Error in session loop: ", err)
-			self.Disconnect(clnt, err)
+			self.Disconnect(ctx, clnt, err)
 			break
 		}
 	}
@@ -243,7 +244,7 @@ func (self *SessionsMgr) getRunningSession(clnt sdkconnmgr.ClientDevice) (rs *Ru
 	return nil, false
 }
 
-func (self *SessionsMgr) endSession(clnt sdkconnmgr.ClientDevice) error {
+func (self *SessionsMgr) endSession(ctx context.Context, clnt sdkconnmgr.ClientDevice) error {
 	errCh := make(chan error)
 
 	go func() {
@@ -260,7 +261,7 @@ func (self *SessionsMgr) endSession(clnt sdkconnmgr.ClientDevice) error {
 		self.mu.RUnlock()
 
 		if ok {
-			err := rs.Stop(context.Background())
+			err := rs.Stop(ctx)
 			if err != nil {
 				errCh <- err
 				return

@@ -16,7 +16,7 @@ type SessionsMgr interface {
 
 	// Disconnects a client device from the internet.
 	// If notify is not nil, then the client device will be notified of the disconnection.
-	Disconnect(clnt ClientDevice, notify error) error
+	Disconnect(ctx context.Context, clnt ClientDevice, notify error) error
 
 	// Checks if a client device is connected to the internet.
 	IsConnected(clnt ClientDevice) (connected bool)
