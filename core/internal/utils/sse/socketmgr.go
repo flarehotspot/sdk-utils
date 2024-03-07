@@ -19,12 +19,15 @@ var (
 func AddSocket(key string, socket *SseSocket) {
 	mu.Lock()
 	defer mu.Unlock()
+
 	_, ok := deviceSockets[key]
 	if !ok {
 		deviceSockets[key] = []*SseSocket{}
 	}
+
 	deviceSockets[key] = append(deviceSockets[key], socket)
-	log.Printf("Socket %s attached to device %s...", socket.Id(), key)
+	log.Printf("Socket %s attached to \"%s\"...", socket.Id(), key)
+
 	go func() {
 		<-socket.Done()
 		RemoveSocket(key, socket)
@@ -34,6 +37,7 @@ func AddSocket(key string, socket *SseSocket) {
 func RemoveSocket(key string, socket *SseSocket) {
 	mu.Lock()
 	defer mu.Unlock()
+
 	_, ok := deviceSockets[key]
 	if ok {
 		sockets := deviceSockets[key]
@@ -56,6 +60,7 @@ func RemoveSocket(key string, socket *SseSocket) {
 func Emit(key string, event string, d interface{}) {
 	mu.RLock()
 	defer mu.RUnlock()
+
 	sockets, ok := deviceSockets[key]
 	if ok {
 		for _, s := range sockets {
@@ -67,6 +72,7 @@ func Emit(key string, event string, d interface{}) {
 func Broadcast(event string, d interface{}) {
 	mu.RLock()
 	defer mu.RUnlock()
+
 	for _, sockets := range deviceSockets {
 		for _, s := range sockets {
 			s.Emit(event, d)

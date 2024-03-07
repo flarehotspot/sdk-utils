@@ -39,6 +39,7 @@ func (s *SseSocket) Id() string {
 func (s *SseSocket) Emit(t string, jsonData interface{}) (err error) {
 	bytes, err := json.Marshal(jsonData)
 	if err != nil {
+        log.Printf("Unable to marshal json: %s\n", err)
 		return err
 	}
 	s.msgCh <- SseData{t, bytes}
