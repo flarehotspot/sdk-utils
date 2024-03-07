@@ -49,7 +49,7 @@ var app = new Vue({
 ```
 
 ## $flare.events {#flare-events}
-The `$flare.events` object is used to listen to events emitted by the server via [Server-Sent Events](https://www.w3schools.com/html/html5_serversentevents.asp). Below is an example of how to listen to an event:
+The `$flare.events` is an [EventSource](https://developer.mozilla.org/en-US/docs/Web/API/EventSource) object used to listen to events emitted by the server via [Server-Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events). Below is an example of how to listen to an event:
 ```js
 $flare.events.addEventListener("session:connected", function(res) {
     console.log("Session connected: ", res.data);
