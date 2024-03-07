@@ -2,7 +2,6 @@ package boot
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"time"
 
@@ -30,9 +29,9 @@ func InitHttpServer(g *plugins.CoreGlobals) {
 
 	err = server.Shutdown(ctx)
 	if err != nil {
-		fmt.Printf("Server shutdown error: %v\n", err)
+		log.Printf("Server shutdown error: %v\n", err)
 	} else {
-		fmt.Println("Server gracefully stopped")
+		log.Println("Server gracefully stopped")
 	}
 
 	// Restart the server with all routes
