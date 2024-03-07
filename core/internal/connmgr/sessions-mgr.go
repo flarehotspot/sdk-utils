@@ -11,9 +11,9 @@ import (
 	"github.com/flarehotspot/core/internal/network"
 	"github.com/flarehotspot/core/internal/utils/nftables"
 	"github.com/flarehotspot/core/internal/utils/sse"
-	connmgr "github.com/flarehotspot/sdk/api/connmgr"
-	sdknet "github.com/flarehotspot/sdk/api/network"
-	slices "github.com/flarehotspot/sdk/utils/slices"
+	"github.com/flarehotspot/sdk/api/connmgr"
+	"github.com/flarehotspot/sdk/api/network"
+	"github.com/flarehotspot/sdk/utils/slices"
 )
 
 const (
@@ -24,6 +24,7 @@ const (
 func NewSessionsMgr(dtb *db.Database, mdl *models.Models) *SessionsMgr {
 	return &SessionsMgr{
 		mu:       sync.RWMutex{},
+		db:       dtb,
 		mdl:      mdl,
 		sessions: []*RunningSession{},
 	}
@@ -31,6 +32,7 @@ func NewSessionsMgr(dtb *db.Database, mdl *models.Models) *SessionsMgr {
 
 type SessionsMgr struct {
 	mu       sync.RWMutex
+	db       *db.Database
 	mdl      *models.Models
 	sessions []*RunningSession
 }
@@ -108,7 +110,7 @@ func (self *SessionsMgr) StopSessions(ctx context.Context, iface string, reason 
 	<-done
 }
 
-func (self *SessionsMgr) Connect(clnt connmgr.ClientDevice) error {
+func (self *SessionsMgr) Connect(ctx context.Context, clnt sdkconnmgr.ClientDevice) error {
 	errCh := make(chan error)
 
 	go func() {
@@ -117,7 +119,7 @@ func (self *SessionsMgr) Connect(clnt connmgr.ClientDevice) error {
 			return
 		}
 
-		if !clnt.HasSession(context.Background()) {
+		if !self.HasSession(ctx, clnt.Id()) {
 			errCh <- errors.New("Device has no available sessions.")
 			return
 		}
@@ -139,7 +141,7 @@ func (self *SessionsMgr) Connect(clnt connmgr.ClientDevice) error {
 	return <-errCh
 }
 
-func (self *SessionsMgr) Disconnect(clnt connmgr.ClientDevice, notify error) error {
+func (self *SessionsMgr) Disconnect(clnt sdkconnmgr.ClientDevice, notify error) error {
 	log.Println("Calling endsession()...")
 	err := self.endSession(clnt)
 	if err != nil {
@@ -154,11 +156,11 @@ func (self *SessionsMgr) Disconnect(clnt connmgr.ClientDevice, notify error) err
 	return err
 }
 
-func (self *SessionsMgr) IsConnected(clnt connmgr.ClientDevice) (connected bool) {
+func (self *SessionsMgr) IsConnected(clnt sdkconnmgr.ClientDevice) (connected bool) {
 	return nftables.IsConnected(clnt.MacAddr())
 }
 
-func (self *SessionsMgr) CurrSession(clnt connmgr.ClientDevice) (cs connmgr.ClientSession, ok bool) {
+func (self *SessionsMgr) CurrSession(clnt sdkconnmgr.ClientDevice) (cs sdkconnmgr.ClientSession, ok bool) {
 	self.mu.RLock()
 	defer self.mu.RUnlock()
 
@@ -171,16 +173,16 @@ func (self *SessionsMgr) CurrSession(clnt connmgr.ClientDevice) (cs connmgr.Clie
 	return nil, false
 }
 
-func (self *SessionsMgr) SocketEmit(clnt connmgr.ClientDevice, t string, d map[string]interface{}) {
+func (self *SessionsMgr) SocketEmit(clnt sdkconnmgr.ClientDevice, t string, d map[string]interface{}) {
 	sse.Emit(clnt.MacAddr(), t, d)
 }
 
-func (self *SessionsMgr) loopSessions(clnt connmgr.ClientDevice) {
+func (self *SessionsMgr) loopSessions(clnt sdkconnmgr.ClientDevice) {
 	for nftables.IsConnected(clnt.MacAddr()) {
 		errCh := make(chan error)
 
 		go func() {
-			cs, err := clnt.ValidSession(context.Background())
+			cs, err := self.GetSession(context.Background(), clnt.Id())
 			if err != nil {
 				errCh <- err
 				return
@@ -232,7 +234,7 @@ func (self *SessionsMgr) loopSessions(clnt connmgr.ClientDevice) {
 	}
 }
 
-func (self *SessionsMgr) getRunningSession(clnt connmgr.ClientDevice) (rs *RunningSession, ok bool) {
+func (self *SessionsMgr) getRunningSession(clnt sdkconnmgr.ClientDevice) (rs *RunningSession, ok bool) {
 	for _, rs := range self.sessions {
 		if rs.GetSession().DeviceId() == clnt.Id() {
 			return rs, true
@@ -241,7 +243,7 @@ func (self *SessionsMgr) getRunningSession(clnt connmgr.ClientDevice) (rs *Runni
 	return nil, false
 }
 
-func (self *SessionsMgr) endSession(clnt connmgr.ClientDevice) error {
+func (self *SessionsMgr) endSession(clnt sdkconnmgr.ClientDevice) error {
 	errCh := make(chan error)
 
 	go func() {
@@ -272,7 +274,7 @@ func (self *SessionsMgr) endSession(clnt connmgr.ClientDevice) error {
 		}
 
 		self.mu.Lock()
-		self.sessions = slices.Filter(self.sessions, func(item *RunningSession) bool {
+		self.sessions = sdkslices.Filter(self.sessions, func(item *RunningSession) bool {
 			return item.GetSession().DeviceId() != clnt.Id()
 		})
 		self.mu.Unlock()
@@ -296,4 +298,28 @@ func (self *SessionsMgr) CreateSession(
 ) error {
 	_, err := self.mdl.Session().Create(ctx, devId, t, timeSecs, dataMbytes, expDays, downMbits, upMbits, useGlobal)
 	return err
+}
+
+func (self *SessionsMgr) GetSession(ctx context.Context, devId int64) (sdkconnmgr.ClientSession, error) {
+	self.mu.RLock()
+	defer self.mu.RUnlock()
+
+	s, err := self.mdl.Session().AvlForDev(ctx, devId)
+	if err != nil {
+		return nil, err
+	}
+
+	return NewClientSession(self.db, self.mdl, s), nil
+}
+
+func (self *SessionsMgr) HasSession(ctx context.Context, devId int64) bool {
+	self.mu.RLock()
+	defer self.mu.RUnlock()
+
+	ok, err := self.mdl.Session().DevHasSession(ctx, devId)
+	if err != nil {
+		return false
+	}
+
+	return ok
 }

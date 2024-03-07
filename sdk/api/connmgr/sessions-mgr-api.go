@@ -12,7 +12,7 @@ import "context"
 type SessionsMgr interface {
 
 	// Connects a client device to the internet.
-	Connect(clnt ClientDevice) error
+	Connect(ctx context.Context, clnt ClientDevice) error
 
 	// Disconnects a client device from the internet.
 	// If notify is not nil, then the client device will be notified of the disconnection.
@@ -21,8 +21,15 @@ type SessionsMgr interface {
 	// Checks if a client device is connected to the internet.
 	IsConnected(clnt ClientDevice) (connected bool)
 
+	// Create a session for the client device
+	CreateSession(ctx context.Context, devId int64, t uint8, timeSecs uint, dataMbytes float64, expDays *uint, downMbits int, upMbits int, useGlobal bool) error
+
 	// Get the current session of a client device.
 	CurrSession(clnt ClientDevice) (cs ClientSession, ok bool)
 
-	CreateSession(ctx context.Context, devId int64, t uint8, timeSecs uint, dataMbytes float64, expDays *uint, downMbits int, upMbits int, useGlobal bool) error
+	// Returns unconsumed session (if any) for the client device.
+	GetSession(ctx context.Context, devId int64) (ClientSession, error)
+
+	// Returns true if the client device has a valid session.
+	HasSession(ctx context.Context, devId int64) (ok bool)
 }

@@ -6,7 +6,6 @@ import (
 
 	"github.com/flarehotspot/core/internal/db"
 	"github.com/flarehotspot/core/internal/db/models"
-	"github.com/flarehotspot/sdk/api/connmgr"
 	"github.com/flarehotspot/core/internal/utils/sse"
 )
 
@@ -69,30 +68,6 @@ func (self *ClientDevice) Update(ctx context.Context, mac string, ip string, hos
 	self.ip = ip
 
 	return nil
-}
-
-func (self *ClientDevice) ValidSession(ctx context.Context) (sdkconnmgr.ClientSession, error) {
-	self.mu.RLock()
-	defer self.mu.RUnlock()
-
-	s, err := self.mdls.Session().AvlForDev(ctx, self.id)
-	if err != nil {
-		return nil, err
-	}
-
-	return NewClientSession(self.db, self.mdls, s), nil
-}
-
-func (self *ClientDevice) HasSession(ctx context.Context) bool {
-	self.mu.RLock()
-	defer self.mu.RUnlock()
-
-	ok, err := self.mdls.Session().DevHasSession(ctx, self.id)
-	if err != nil {
-		return false
-	}
-
-	return ok
 }
 
 func (self *ClientDevice) Emit(t string, data interface{}) {
