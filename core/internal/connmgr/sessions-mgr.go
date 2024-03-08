@@ -109,7 +109,7 @@ func (self *SessionsMgr) StopSessions(ctx context.Context, iface string, reason 
 	<-done
 }
 
-func (self *SessionsMgr) Connect(ctx context.Context, clnt sdkconnmgr.ClientDevice) error {
+func (self *SessionsMgr) Connect(ctx context.Context, clnt sdkconnmgr.ClientDevice, notify string) error {
 	errCh := make(chan error)
 
 	go func() {
@@ -132,7 +132,7 @@ func (self *SessionsMgr) Connect(ctx context.Context, clnt sdkconnmgr.ClientDevi
 
 		go self.loopSessions(clnt)
 
-		data := map[string]interface{}{"message": "You are now connected to internet."}
+		data := map[string]interface{}{"message": notify}
 		clnt.Emit(EventConnected, data)
 		errCh <- nil
 	}()
@@ -140,18 +140,15 @@ func (self *SessionsMgr) Connect(ctx context.Context, clnt sdkconnmgr.ClientDevi
 	return <-errCh
 }
 
-func (self *SessionsMgr) Disconnect(ctx context.Context, clnt sdkconnmgr.ClientDevice, notify error) error {
+func (self *SessionsMgr) Disconnect(ctx context.Context, clnt sdkconnmgr.ClientDevice, notify string) error {
 	err := self.endSession(ctx, clnt)
 	if err != nil {
-		notify = err
+		return err
 	}
 
-	if notify != nil {
-		data := map[string]interface{}{"message": notify.Error()}
-		clnt.Emit(EventDisconnected, data)
-	}
-
-	return err
+	data := map[string]interface{}{"message": notify}
+	clnt.Emit(EventDisconnected, data)
+	return nil
 }
 
 func (self *SessionsMgr) IsConnected(clnt sdkconnmgr.ClientDevice) (connected bool) {
@@ -224,7 +221,7 @@ func (self *SessionsMgr) loopSessions(clnt sdkconnmgr.ClientDevice) {
 
 		if err != nil {
 			log.Println("Error in session loop: ", err)
-			self.Disconnect(ctx, clnt, err)
+			self.Disconnect(ctx, clnt, err.Error())
 			break
 		}
 	}

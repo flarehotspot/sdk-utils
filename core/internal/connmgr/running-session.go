@@ -8,10 +8,10 @@ import (
 
 	"github.com/flarehotspot/core/internal/db/models"
 	"github.com/flarehotspot/core/internal/network"
-	connmgr "github.com/flarehotspot/sdk/api/connmgr"
-	"github.com/flarehotspot/sdk/api/network"
 	jobque "github.com/flarehotspot/core/internal/utils/job-que"
 	"github.com/flarehotspot/core/internal/utils/tc"
+	connmgr "github.com/flarehotspot/sdk/api/connmgr"
+	"github.com/flarehotspot/sdk/api/network"
 )
 
 var sessionQ *jobque.JobQues = jobque.NewJobQues()
@@ -90,7 +90,7 @@ func (self *RunningSession) Start(ctx context.Context, s connmgr.ClientSession) 
 		}
 
 		self.initTimeTicker()
-		log.Println("Session Tickeself has started...")
+		log.Println("Session Tick has started...")
 
 		return nil, nil
 	})
@@ -137,7 +137,7 @@ func (self *RunningSession) Stop(ctx context.Context) error {
 		defer self.mu.Unlock()
 
 		err := self.save(ctx)
-		self.cleanUpTickeself()
+		self.cleanUpTick()
 		self.runCallbacks(err)
 
 		return nil, nil
@@ -265,15 +265,15 @@ func (self *RunningSession) prepTc() error {
 	return nil
 }
 
-func (self *RunningSession) cleanUpTickeself() {
-	log.Println("Cleaning up tickeself...")
+func (self *RunningSession) cleanUpTick() {
+	log.Println("Cleaning up session tick...")
 	if self.timeTicker != nil {
 		self.timeTicker.Stop()
 		self.timeTicker = nil
 		self.tickerDone <- true
 		self.tickerDone = nil
 	}
-	log.Println("Done cleaning tickeself.")
+	log.Println("Done cleaning session tick.")
 }
 
 func (self *RunningSession) save(ctx context.Context) error {

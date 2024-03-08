@@ -11,11 +11,21 @@
  */
 
 (function ($flare) {
-  var events = new EventSource('<% .Data %>');
+  var sse = new EventSource('<% .Data %>');
 
   window.onbeforeunload = function () {
-    events.close();
+    sse.close();
   };
 
-  $flare.events = events;
+  $flare.events = {
+    on: function (event, callback) {
+      sse.addEventListener(event, function (res) {
+        var data = JSON.parse(res.data);
+        callback(data);
+      });
+    },
+    off: function (event, callback) {
+      sse.removeEventListener(event, callback);
+    }
+  };
 })(window.$flare);

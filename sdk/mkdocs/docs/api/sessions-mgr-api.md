@@ -18,6 +18,7 @@ func (w http.ResponseWriter, r *http.Request) {
 ### Disconnect
 
 This method will disconnect the client device from the internet. It will also pause the current running session of the client device.
+
 ```go
 func (w http.ResponseWriter, r *http.Request) {
     clnt, _ := api.Http().GetClientDevice(r)

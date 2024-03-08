@@ -12,11 +12,11 @@ import "context"
 type SessionsMgrApi interface {
 
 	// Connects a client device to the internet.
-	Connect(ctx context.Context, clnt ClientDevice) error
+	Connect(ctx context.Context, clnt ClientDevice, notify string) error
 
 	// Disconnects a client device from the internet.
 	// If notify is not nil, then the client device will be notified of the disconnection.
-	Disconnect(ctx context.Context, clnt ClientDevice, notify error) error
+	Disconnect(ctx context.Context, clnt ClientDevice, notify string) error
 
 	// Checks if a client device is connected to the internet.
 	IsConnected(clnt ClientDevice) (connected bool)

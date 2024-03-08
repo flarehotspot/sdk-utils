@@ -1,8 +1,11 @@
 # The `$flare` global variable
+
 The `$flare` variable is a global variable in the browser that contains helper functions to work with the Flare Hotspot API.
 
 ### $flare.http.get {#flare-http-get}
+
 The `$flare.http.get` method is used to perform a `GET` AJAX request. It accepts two arguments, the first argument is the URL to send the form data to, and the second argument is the query params.
+
 ```js
 var queryParams = {amount: 100};
 
@@ -16,6 +19,7 @@ $flare.http.get('/path/to/handler', queryParams)
 ```
 
 ### $flare.http.post {#flare-http-post}
+
 The `$flare.http.post` method is used to perform a `POST` AJAX request. It accepts two arguments, the first argument is the URL to send the form data to, and the second argument is the form data.
 
 ```js
@@ -34,6 +38,7 @@ $flare.http.post('/path/to/handler', formData)
     You must use [VueResponse](./vue-response.md) in the server side to perform http resposes for both the [$flare.http.get](#flare-http-get) and [$flare.http.post](#flare-http-post) methods.
 
 ## $flare.vueLazyLoad
+
 The `$flare.vueLazyLoad` method is used to lazy load vue components.
 
 ```js
@@ -49,17 +54,27 @@ var app = new Vue({
 ```
 
 ## $flare.events {#flare-events}
-The `$flare.events` is an [EventSource](https://developer.mozilla.org/en-US/docs/Web/API/EventSource) object used to listen to events emitted by the server via [Server-Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events). Below is an example of how to listen to an event:
+
+The `$flare.events` is used to listen to events emitted by the server.
+
+Below is an example of how to listen to an event:
+
 ```js
-$flare.events.addEventListener("session:connected", function(res) {
-    console.log("Session connected: ", res.data);
-});
+function listener (data) {
+    console.log("Session connected: ", data);
+}
+
+$flare.events.on("session:connected", listener);
+```
+
+To unregister an event listener, use the `off` method.
+
+```js
+$flare.events.off("session:connected", listener);
 ```
 
 See the user account events in the [AccountsApi](./accounts-api.md#events) documentation.
 
 See the client device events in the [ClientDevice](./client-device.md#events) documentation.
 
-!!!note
-    Flare Hotspot SDK already includes a polyfill for the `EventSource` object for browsers that don't support Server-Sent Events.
-
+## $flare.notify
