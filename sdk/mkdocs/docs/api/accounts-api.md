@@ -165,16 +165,16 @@ These are the default permissions that you can assign to an user account. Althou
 
 ## 4. Events {#events}
 Events are emitted to the user accounts via SSE (Server-Sent Events) in the browser.
-You can listen to these events and perform certain actions when they are emitted. Here are the available events:
 
-| Event | Description
-| --- | ---
-| `session:connected` | Emitted when a session is started and internet connection is available.
-| `session:disconnected` | Emitted when a session is ended and internet connection is lost.
+You can emit an event to a user account using the [Account.Emit](#emit) method like so:
+```go
+acct, _ := api.Acct().Find("admin")
+acct.Emit("some_event", map[string]any{"key": "value"})
+```
 
-You can listen to this events in the browser using the [$flare.events](./flare-variable.md#flare-events) object like so:
+You can listen to this events in the browser using the [$flare.events](./flare-variable.md#flare-events) like so:
 ```js
 $flare.events.addEventListener("some_event", function(res) {
-    console.log("Session connected: ", res.data);
+    console.log("An event occured: ", res.data);
 });
 ```

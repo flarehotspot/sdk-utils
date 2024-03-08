@@ -3,6 +3,7 @@
 package web
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -28,7 +29,7 @@ func StartServer(r *mux.Router, forever bool) *http.Server {
 	if !forever {
 		go func() {
 			err := srv.ListenAndServe()
-			if err != nil {
+			if err != nil && !errors.Is(http.ErrServerClosed, err) {
 				log.Printf("Error starting server: %v\n", err)
 			}
 		}()

@@ -49,6 +49,7 @@ nav:
   - API Reference:
       - 'PluginApi': api/plugin-api.md
       - 'AccountsApi': api/accounts-api.md
+      - 'ClientDevice': 'api/client-device.md'
       - 'ConfigApi': api/config-api.md
       - 'HttpApi': api/http-api.md
       - 'HttpAuth': api/http-auth.md
