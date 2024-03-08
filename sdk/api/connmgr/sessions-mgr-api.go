@@ -8,8 +8,8 @@ package sdkconnmgr
 
 import "context"
 
-// SessionsMgr is used to manage client devices.
-type SessionsMgr interface {
+// SessionsMgrApi is used to manage client devices.
+type SessionsMgrApi interface {
 
 	// Connects a client device to the internet.
 	Connect(clnt ClientDevice) error

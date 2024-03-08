@@ -140,7 +140,6 @@ func (self *SessionsMgr) Connect(clnt connmgr.ClientDevice) error {
 }
 
 func (self *SessionsMgr) Disconnect(clnt connmgr.ClientDevice, notify error) error {
-	log.Println("Calling endsession()...")
 	err := self.endSession(clnt)
 	if err != nil {
 		notify = err

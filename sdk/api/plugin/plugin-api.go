@@ -64,7 +64,7 @@ type PluginApi interface {
 	Payments() sdkpayments.PaymentsApi
 
 	// Returns an instance of network api.
-	Network() sdknet.Network
+	Network() sdknet.NetworkApi
 
 	// Returns an instance of ads api.
 	Ads() sdkads.AdsApi
@@ -79,7 +79,7 @@ type PluginApi interface {
 	DeviceHooks() sdkconnmgr.DeviceHooksApi
 
 	// Returns an instance of the client manager.
-	SessionsMgr() sdkconnmgr.SessionsMgr
+	SessionsMgr() sdkconnmgr.SessionsMgrApi
 
 	// Returns an instance of the uci api.
 	Uci() sdkuci.UciApi

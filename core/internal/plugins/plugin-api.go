@@ -159,7 +159,7 @@ func (self *PluginApi) PluginsMgr() sdkplugin.PluginsMgrApi {
 	return self.PluginsMgrApi
 }
 
-func (self *PluginApi) Network() sdknet.Network {
+func (self *PluginApi) Network() sdknet.NetworkApi {
 	return self.NetworkAPI
 }
 
@@ -167,7 +167,7 @@ func (self *PluginApi) DeviceHooks() sdkconnmgr.DeviceHooksApi {
 	return self.ClntReg
 }
 
-func (self *PluginApi) SessionsMgr() sdkconnmgr.SessionsMgr {
+func (self *PluginApi) SessionsMgr() sdkconnmgr.SessionsMgrApi {
 	return self.ClntMgr
 }
 

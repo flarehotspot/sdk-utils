@@ -6,8 +6,8 @@
 
 package sdknet
 
-// Network is used to get network data from the system.
-type Network interface {
+// NetworkApi is used to get network data from the system.
+type NetworkApi interface {
 
 	// Returns a list of all network devices.
 	ListDevices() ([]NetworkDevice, error)
