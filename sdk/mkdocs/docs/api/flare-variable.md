@@ -2,6 +2,8 @@
 
 The `$flare` variable is a global variable in the browser that contains helper functions to work with the Flare Hotspot API.
 
+## 1. $flare.http {#flare-http}
+
 ### $flare.http.get {#flare-http-get}
 
 The `$flare.http.get` method is used to perform a `GET` AJAX request. It accepts two arguments, the first argument is the URL to send the form data to, and the second argument is the query params.
@@ -37,7 +39,7 @@ $flare.http.post('/path/to/handler', formData)
 !!!warning "Important"
     You must use [VueResponse](./vue-response.md) in the server side to perform http resposes for both the [$flare.http.get](#flare-http-get) and [$flare.http.post](#flare-http-post) methods.
 
-## $flare.vueLazyLoad
+## 2. $flare.vueLazyLoad
 
 The `$flare.vueLazyLoad` method is used to lazy load vue components.
 
@@ -53,7 +55,7 @@ var app = new Vue({
 });
 ```
 
-## $flare.events {#flare-events}
+## 3. $flare.events {#flare-events}
 
 The `$flare.events` is used to listen to events emitted by the server.
 
@@ -77,4 +79,28 @@ See the user account events in the [AccountsApi](./accounts-api.md#events) docum
 
 See the client device events in the [ClientDevice](./client-device.md#events) documentation.
 
-## $flare.notify
+## 4. $flare.notify {#flare-notify}
+
+This is used to display a notification on the browser.
+It has 4 methods: `success`, `info`, `warning` and `error`.
+
+### Success
+
+```js
+$flare.notify.success('This is a success message.')
+```
+
+### Info
+```js
+$flare.notify.info('This is an info message.')
+```
+
+### Warning
+```js
+$flare.notify.warning('This is a warning message.')
+```
+
+### Error
+```js
+$flare.notify.error('This is an error message.')
+```
