@@ -1,6 +1,6 @@
 # ConfigApi
 
-## 1. Application
+## 1. Application {#application}
 
 The application configuration has the following fields:
 
@@ -34,7 +34,7 @@ err := api.Config().Application().Save(sdkcfg.AppCfg{
 })
 ```
 
-## 2. Bandwidth
+## 2. Bandwidth {#bandwidth}
 
 Bandwidth configuration is set per interface and has the following fields:
 
@@ -71,7 +71,7 @@ err := api.Config().Bandwidth("eth0").Save(sdkcfg.BandwdCfg{
 })
 ```
 
-## 3. Plugin
+## 3. Plugin {#plugin}
 
 The plugin configuration API is used to store custom configuration specific to the plugin you are developing. Using this API ensures that your custom plugin configuration can be migrated properly to a new system in case you want to flash new firmware or migrate to a new hardware.
 
