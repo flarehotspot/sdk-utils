@@ -63,7 +63,7 @@ func (self *PluginsMgr) MigrateAll() {
 	pluginDirs := config.PluginDirList()
 	for _, pdir := range pluginDirs {
 		migdir := filepath.Join(pdir, "resources/migrations")
-		err := migrate.MigrateUp(migdir, self.db.SqlDB())
+		err := migrate.MigrateUp(self.db.SqlDB(), migdir)
 		if err != nil {
 			log.Println("Error in plugin migration "+pdir, ":", err.Error())
 		} else {

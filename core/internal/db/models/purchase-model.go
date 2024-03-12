@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/flarehotspot/core/internal/db"
-	"github.com/flarehotspot/sdk/utils/strings"
 )
 
 type PurchaseModel struct {
@@ -19,16 +18,14 @@ type PurchaseModel struct {
 }
 
 func NewPurchaseModel(dtb *db.Database, mdls *Models) *PurchaseModel {
-	attrs := []string{"id", "device_id", "token", "sku", "name", "description", "price", "any_price", "callback_plugin", "callback_vue_route_name", "wallet_debit", "wallet_tx_id", "confirmed_at", "cancelled_at", "cancelled_reason", "created_at"}
+	attrs := []string{"id", "device_id", "sku", "name", "description", "price", "any_price", "callback_plugin", "callback_vue_route_name", "wallet_debit", "wallet_tx_id", "confirmed_at", "cancelled_at", "cancelled_reason", "created_at"}
 	return &PurchaseModel{dtb, mdls, attrs}
 }
 
 func (self *PurchaseModel) CreateTx(tx *sql.Tx, ctx context.Context, deviceId int64, sku string, name string, desc string, price float64, vprice bool, pkg string, routename string) (*Purchase, error) {
-	token := sdkstr.Rand(16)
 	query := `
     INSERT INTO purchases (
         device_id,
-        token,
         sku,
         name,
         description,
@@ -36,8 +33,8 @@ func (self *PurchaseModel) CreateTx(tx *sql.Tx, ctx context.Context, deviceId in
         any_price,
         callback_plugin,
         callback_vue_route_name
-    ) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)`
-	result, err := tx.ExecContext(ctx, query, deviceId, token, sku, name, desc, price, vprice, pkg, routename)
+    ) VALUES(?, ?, ?, ?, ?, ?, ?, ?)`
+	result, err := tx.ExecContext(ctx, query, deviceId, sku, name, desc, price, vprice, pkg, routename)
 	if err != nil {
 		log.Println("SQL Exec Error: ", err)
 		return nil, err
@@ -57,7 +54,7 @@ func (self *PurchaseModel) FindTx(tx *sql.Tx, ctx context.Context, id int64) (*P
 	attrs := strings.Join(self.attrs, ", ")
 	query := "SELECT " + attrs + " FROM purchases WHERE id = ? LIMIT 1"
 	err := tx.QueryRowContext(ctx, query, id).
-		Scan(&p.id, &p.deviceId, &p.token, &p.sku, &p.name, &p.description, &p.price, &p.anyPrice, &p.callbackPluginPkg, &p.callbackVueRouteName, &p.walletDebit, &p.walletTxId, &p.confirmedAt, &p.cancelledAt, &p.cancelledReason, &p.createdAt)
+		Scan(&p.id, &p.deviceId, &p.sku, &p.name, &p.description, &p.price, &p.anyPrice, &p.callbackPluginPkg, &p.callbackVueRouteName, &p.walletDebit, &p.walletTxId, &p.confirmedAt, &p.cancelledAt, &p.cancelledReason, &p.createdAt)
 
 	return p, err
 }
@@ -73,7 +70,7 @@ func (self *PurchaseModel) FindByDeviceIdTx(tx *sql.Tx, ctx context.Context, dev
   `, attrs)
 
 	err := tx.QueryRowContext(ctx, query, deviceId).
-		Scan(&p.id, &p.deviceId, &p.token, &p.sku, &p.name, &p.description, &p.price, &p.anyPrice, &p.callbackPluginPkg, &p.callbackVueRouteName, &p.walletDebit, &p.walletTxId, &p.confirmedAt, &p.cancelledAt, &p.cancelledReason, &p.createdAt)
+		Scan(&p.id, &p.deviceId, &p.sku, &p.name, &p.description, &p.price, &p.anyPrice, &p.callbackPluginPkg, &p.callbackVueRouteName, &p.walletDebit, &p.walletTxId, &p.confirmedAt, &p.cancelledAt, &p.cancelledReason, &p.createdAt)
 
 	return p, err
 }
@@ -96,7 +93,7 @@ func (self *PurchaseModel) PendingPurchaseTx(tx *sql.Tx, ctx context.Context, de
   LIMIT 1
 `, attrs)
 	err := tx.QueryRowContext(ctx, query, deviceId).
-		Scan(&p.id, &p.deviceId, &p.token, &p.sku, &p.name, &p.description, &p.price, &p.anyPrice, &p.callbackPluginPkg, &p.callbackVueRouteName, &p.walletDebit, &p.walletTxId, &p.confirmedAt, &p.cancelledAt, &p.cancelledReason, &p.createdAt)
+		Scan(&p.id, &p.deviceId, &p.sku, &p.name, &p.description, &p.price, &p.anyPrice, &p.callbackPluginPkg, &p.callbackVueRouteName, &p.walletDebit, &p.walletTxId, &p.confirmedAt, &p.cancelledAt, &p.cancelledReason, &p.createdAt)
 
 	return p, err
 }

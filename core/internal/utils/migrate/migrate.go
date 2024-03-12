@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func MigrateUp(dir string, db *sql.DB) error {
+func MigrateUp(db *sql.DB, dir string) error {
 	files, err := listFiles(dir, migration_Up)
 	if err != nil {
 		return err

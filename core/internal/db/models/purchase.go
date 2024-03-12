@@ -22,7 +22,6 @@ type Purchase struct {
 	models               *Models
 	id                   int64
 	deviceId             int64
-	token                string
 	sku                  string
 	name                 string
 	description          string
@@ -44,10 +43,6 @@ func (self *Purchase) Id() int64 {
 
 func (self *Purchase) DeviceId() int64 {
 	return self.deviceId
-}
-
-func (self *Purchase) Token() string {
-	return self.token
 }
 
 func (self *Purchase) Sku() string {

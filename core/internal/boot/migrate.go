@@ -5,8 +5,8 @@ import (
 	"path/filepath"
 
 	"github.com/flarehotspot/core/internal/plugins"
-	paths "github.com/flarehotspot/sdk/utils/paths"
 	"github.com/flarehotspot/core/internal/utils/migrate"
+	"github.com/flarehotspot/sdk/utils/paths"
 )
 
 func RunMigrations(g *plugins.CoreGlobals) {
@@ -18,7 +18,7 @@ func RunMigrations(g *plugins.CoreGlobals) {
 		return
 	}
 
-	err = migrate.MigrateUp(filepath.Join(paths.CoreDir, "resources/migrations"), db)
+	err = migrate.MigrateUp(db, filepath.Join(sdkpaths.CoreDir, "resources/migrations"))
 	if err != nil {
 		log.Printf("Core migrations error: %s", err.Error())
 	} else {

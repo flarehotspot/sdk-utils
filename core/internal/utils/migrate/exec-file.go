@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 )
 
 func execFile(path string, ctx context.Context, db *sql.DB) error {
@@ -14,10 +15,17 @@ func execFile(path string, ctx context.Context, db *sql.DB) error {
 		return err
 	}
 
-	_, err = db.ExecContext(ctx, string(b))
-	if err != nil {
-		log.Println(fmt.Sprintf("Error migrating file: %s \n%+v", path, err))
-		return err
+	content := string(b)
+	queries := strings.Split(content, ";")
+
+	for _, q := range queries {
+		if strings.TrimSpace(q) != "" {
+			_, err = db.ExecContext(ctx, q + ";")
+			if err != nil {
+                log.Println(fmt.Sprintf("Error migrating\nfile: %s \n%+v\nquery: %s", path, err, q))
+				return err
+			}
+		}
 	}
 
 	return nil

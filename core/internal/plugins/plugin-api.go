@@ -85,7 +85,7 @@ func (self *PluginApi) InitCoreApi(coreApi *PluginApi) {
 
 func (self *PluginApi) Migrate() error {
 	migdir := filepath.Join(self.dir, "resources/migrations")
-	err := migrate.MigrateUp(migdir, self.db.SqlDB())
+	err := migrate.MigrateUp(self.db.SqlDB(), migdir)
 	if err != nil {
 		log.Println("Error in plugin migration "+self.Name(), ":", err.Error())
 		return err
