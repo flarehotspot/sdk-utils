@@ -68,7 +68,7 @@ func (self *SessionsMgr) ReloadSessions(ctx context.Context, iface string) error
 					break
 				}
 
-				err = rs.Change(cs)
+				err = rs.Start(ctx, cs)
 				if err != nil {
 					errCh <- err
 					break
@@ -175,11 +175,14 @@ func (self *SessionsMgr) loopSessions(clnt sdkconnmgr.ClientDevice) {
 		errCh := make(chan error)
 
 		go func() {
+			log.Println("Getting new session...")
 			cs, err := self.GetSession(ctx, clnt.Id())
 			if err != nil {
 				errCh <- err
 				return
 			}
+
+			log.Printf("Got new session: %d\n", cs.Id())
 
 			self.mu.RLock()
 			rs, ok := self.getRunningSession(clnt)
@@ -202,12 +205,13 @@ func (self *SessionsMgr) loopSessions(clnt sdkconnmgr.ClientDevice) {
 				self.mu.Lock()
 				self.sessions = append(self.sessions, rs)
 				self.mu.Unlock()
-			} else {
-				err = rs.Change(cs)
-				if err != nil {
-					errCh <- err
-					return
-				}
+			}
+
+			err = rs.Start(ctx, cs)
+			log.Println("Start session error: ", err)
+			if err != nil {
+				errCh <- err
+				return
 			}
 
 			err = <-rs.Done()
@@ -222,7 +226,7 @@ func (self *SessionsMgr) loopSessions(clnt sdkconnmgr.ClientDevice) {
 		if err != nil {
 			log.Println("Error in session loop: ", err)
 			self.Disconnect(ctx, clnt, err.Error())
-			break
+			return
 		}
 	}
 }

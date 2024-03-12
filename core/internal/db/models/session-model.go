@@ -63,12 +63,12 @@ func (self *SessionModel) FindTx(tx *sql.Tx, ctx context.Context, id int64) (*Se
 	return s, err
 }
 
-func (self *SessionModel) UpdateTx(tx *sql.Tx, ctx context.Context, id int64, devId int64, t uint8, timeSecs uint, dataMbytes float64, timeCons uint, dataCons float64, started *time.Time, exp *uint, downMbit int, upMbit int, g bool) error {
+func (self *SessionModel) UpdateTx(tx *sql.Tx, ctx context.Context, id int64, devId int64, t uint8, secs uint, mb float64, timeCons uint, dataCons float64, started *time.Time, exp *uint, downMbit int, upMbit int, g bool) error {
 	query := `UPDATE sessions
   SET device_id = ?, session_type = ?, time_secs = ?, data_mbytes = ?, consumption_secs = ?, consumption_mb = ?, started_at = ?, exp_days = ?, down_mbits = ?, up_mbits = ?, use_global = ?
   WHERE id = ? LIMIT 1`
 
-	_, err := tx.ExecContext(ctx, query, devId, t, timeSecs, dataMbytes, timeCons, dataCons, started, exp, downMbit, upMbit, g, id)
+	_, err := tx.ExecContext(ctx, query, devId, t, secs, mb, timeCons, dataCons, started, exp, downMbit, upMbit, g, id)
 	return err
 }
 
@@ -80,7 +80,7 @@ func (self *SessionModel) AvlForDevTx(tx *sql.Tx, ctx context.Context, deviceId 
 		Scan(&s.id, &s.deviceId, &s.sessionType, &s.timeSecs, &s.dataMb, &s.timeCons, &s.dataCons, &s.startedAt, &s.expDays, &s.downMbits, &s.upMbits, &s.useGlobal, &s.createdAt, &s.expiresAt)
 
 	if errors.Is(err, sql.ErrNoRows) {
-		return nil, err
+		return nil, errors.New("No more available sessions for this device")
 	}
 
 	return s, err

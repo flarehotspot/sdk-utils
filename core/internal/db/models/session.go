@@ -122,15 +122,15 @@ func (self *Session) CreatedAt() time.Time {
 	return self.createdAt
 }
 
-func (self *Session) UpdateTx(tx *sql.Tx, ctx context.Context, devId int64, t uint8, minutes uint, mb float64, timecon uint, datacon float64, started *time.Time, exp *uint, downMbit int, upMbit int, g bool) error {
-	err := self.models.sessionModel.UpdateTx(tx, ctx, self.id, devId, t, minutes, mb, timecon, datacon, started, exp, downMbit, upMbit, g)
+func (self *Session) UpdateTx(tx *sql.Tx, ctx context.Context, devId int64, t uint8, secs uint, mb float64, timecon uint, datacon float64, started *time.Time, exp *uint, downMbit int, upMbit int, g bool) error {
+	err := self.models.sessionModel.UpdateTx(tx, ctx, self.id, devId, t, secs, mb, timecon, datacon, started, exp, downMbit, upMbit, g)
 	if err != nil {
 		return err
 	}
 
 	self.deviceId = devId
 	self.sessionType = t
-	self.timeSecs = minutes
+	self.timeSecs = secs
 	self.dataMb = mb
 	self.timeCons = timecon
 	self.dataCons = datacon
@@ -144,14 +144,14 @@ func (self *Session) SaveTx(tx *sql.Tx, ctx context.Context) error {
 	return self.UpdateTx(tx, ctx, self.deviceId, self.sessionType, self.timeSecs, self.dataMb, self.timeCons, self.dataCons, self.startedAt, self.expDays, self.downMbits, self.upMbits, self.useGlobal)
 }
 
-func (self *Session) Update(ctx context.Context, devId int64, t uint8, time uint, mb float64, timecon uint, datacon float64, started *time.Time, exp *uint, downMbit int, upMbit int, g bool) error {
+func (self *Session) Update(ctx context.Context, devId int64, t uint8, secs uint, mb float64, timecon uint, datacon float64, started *time.Time, exp *uint, downMbit int, upMbit int, g bool) error {
 	tx, err := self.db.SqlDB().BeginTx(ctx, nil)
 	if err != nil {
 		return err
 	}
 	defer tx.Rollback()
 
-	err = self.UpdateTx(tx, ctx, devId, t, time, mb, timecon, datacon, started, exp, downMbit, upMbit, g)
+	err = self.UpdateTx(tx, ctx, devId, t, secs, mb, timecon, datacon, started, exp, downMbit, upMbit, g)
 	if err != nil {
 		return err
 	}

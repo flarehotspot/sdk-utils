@@ -75,54 +75,30 @@ func (self *RunningSession) Start(ctx context.Context, s connmgr.ClientSession) 
 
 		self.session = s
 
-		started := time.Now()
-		s.SetStartedAt(&started)
-		err := s.Save(ctx)
-		if err != nil {
-			return nil, err
+		if s.StartedAt() == nil {
+			started := time.Now()
+			s.SetStartedAt(&started)
+
+			if err := s.Save(ctx); err != nil {
+				return nil, err
+			}
 		}
 
 		if self.tcClassId == nil {
-			err := self.prepTc()
+			err := self.initTc()
+			if err != nil {
+				return nil, err
+			}
+		} else {
+			err := self.updateTc()
 			if err != nil {
 				return nil, err
 			}
 		}
 
-		self.initTimeTicker()
-		log.Println("Session Tick has started...")
-
-		return nil, nil
-	})
-
-	return err
-}
-
-func (self *RunningSession) Change(cs connmgr.ClientSession) error {
-	_, err := sessionQ.Exec(func() (interface{}, error) {
-		self.mu.Lock()
-		defer self.mu.Unlock()
-
-		self.session = cs
-
-		downMbits, upMbits := cs.DownMbits(), cs.UpMbits()
-		if cs.UseGlobal() {
-			lan, err := network.FindByIp(self.ip)
-			if err != nil {
-				return nil, err
-			}
-
-			d, u := lan.Bandwidth()
-			downMbits, upMbits = int(d), int(u)
-		}
-
-		err := self.lan.ChangeClass(self.tcClassId.Uint(), downMbits, upMbits)
-		if err != nil {
-			return nil, err
-		}
-
-		if self.timeTicker != nil {
+		if self.timeTicker == nil {
 			self.initTimeTicker()
+			log.Println("Session Tick has started...")
 		}
 
 		return nil, nil
@@ -186,7 +162,7 @@ func (self *RunningSession) UpdateData(stats *sdknet.TrafficData) {
 
 	if dlok && ulok {
 		dataconMb := float64(download.Bytes+upload.Bytes) / (1 * 1000 * 1000)
-		log.Println("CONSUMTION MB: ", dataconMb)
+		log.Println("CONSUMPTION MB: ", dataconMb)
 		self.session.IncDataCons(dataconMb)
 
 		if self.isConsumed() {
@@ -241,7 +217,7 @@ func (self *RunningSession) initTimeTicker() {
 	}()
 }
 
-func (self *RunningSession) prepTc() error {
+func (self *RunningSession) initTc() error {
 	classid := tc.GetAvailableId()
 	defer classid.Cancel()
 
@@ -263,6 +239,26 @@ func (self *RunningSession) prepTc() error {
 	self.tcClassId = &classid
 
 	return nil
+}
+
+func (self *RunningSession) updateTc() error {
+	var (
+		downMbits = self.session.DownMbits()
+		upMbits   = self.session.UpMbits()
+		useGlobal = self.session.UseGlobal()
+	)
+
+	if useGlobal {
+		lan, err := network.FindByIp(self.ip)
+		if err != nil {
+			return err
+		}
+
+		d, u := lan.Bandwidth()
+		downMbits, upMbits = int(d), int(u)
+	}
+
+	return self.lan.ChangeClass(self.tcClassId.Uint(), downMbits, upMbits)
 }
 
 func (self *RunningSession) cleanUpTick() {
