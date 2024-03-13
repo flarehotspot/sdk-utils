@@ -20,7 +20,8 @@ jobs:
         include:
           - goos: linux
             goarch: amd64
-            distro: self-hosted-x64
+            # distro: self-hosted-x64
+            distro: ubuntu-latest
             cc: gcc
     env:
       GOARCH: ${{ matrix.goarch }}
@@ -49,7 +50,8 @@ jobs:
           path: devkit-release/**/*.zip
 
   build-arm:
-    runs-on: self-hosted-x64
+    # runs-on: self-hosted-x64
+    runs-on: ubuntu-latest
     name: Build on ${{ matrix.arch }}
     strategy:
       matrix:
@@ -100,7 +102,8 @@ jobs:
           path: devkit-release/**/*.zip
 
   push-sdk:
-    runs-on: self-hosted-x64
+    # runs-on: self-hosted-x64
+    runs-on: ubuntu-latest
     needs: [build-amd64, build-arm]
     steps:
       - name: 'Clean up build directory'
@@ -124,7 +127,8 @@ jobs:
             git push -u origin main
 
   publish-release:
-    runs-on: self-hosted-x64
+    # runs-on: self-hosted-x64
+    runs-on: ubuntu-latest
     needs: ['push-sdk']
     steps:
       - name: 'Cleanup build folder'
