@@ -47,6 +47,7 @@ jobs:
         with:
           name: devkit-${{ matrix.distro }}-${{ matrix.goarch }}
           path: devkit-release/**/*.zip
+          retention-days: 1
 
   build-arm:
     runs-on: self-hosted-x64
@@ -98,6 +99,7 @@ jobs:
         with:
           name: devkit-${{ matrix.distro }}-${{ matrix.goarch }}
           path: devkit-release/**/*.zip
+          retention-days: 1
 
   push-sdk:
     runs-on: self-hosted-x64
