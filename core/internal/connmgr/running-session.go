@@ -85,13 +85,11 @@ func (self *RunningSession) Start(ctx context.Context, s connmgr.ClientSession) 
 		}
 
 		if self.tcClassId == nil {
-			err := self.initTc()
-			if err != nil {
+			if err := self.initTc(); err != nil {
 				return nil, err
 			}
 		} else {
-			err := self.updateTc()
-			if err != nil {
+			if err := self.updateTc(); err != nil {
 				return nil, err
 			}
 		}

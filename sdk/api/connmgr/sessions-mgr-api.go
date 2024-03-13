@@ -22,7 +22,17 @@ type SessionsMgrApi interface {
 	IsConnected(clnt ClientDevice) (connected bool)
 
 	// Create a session for the client device
-	CreateSession(ctx context.Context, devId int64, t uint8, timeSecs uint, dataMbytes float64, expDays *uint, downMbits int, upMbits int, useGlobal bool) error
+	CreateSession(
+		ctx context.Context,
+		devId int64,
+		t uint8,
+		timeSecs uint,
+		dataMbytes float64,
+		expDays *uint,
+		downMbits int,
+		upMbits int,
+		useGlobal bool,
+	) error
 
 	// Get the current session of a client device.
 	CurrSession(clnt ClientDevice) (cs ClientSession, ok bool)

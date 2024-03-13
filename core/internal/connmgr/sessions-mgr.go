@@ -16,8 +16,8 @@ import (
 )
 
 const (
-	EventConnected    string = "session:connected"
-	EventDisconnected string = "session:disconnected"
+	EVENT_CONNECTED    string = "session:connected"
+	EVENT_DISCONNECTED string = "session:disconnected"
 )
 
 func NewSessionsMgr(dtb *db.Database, mdl *models.Models) *SessionsMgr {
@@ -133,7 +133,7 @@ func (self *SessionsMgr) Connect(ctx context.Context, clnt sdkconnmgr.ClientDevi
 		go self.loopSessions(clnt)
 
 		data := map[string]interface{}{"message": notify}
-		clnt.Emit(EventConnected, data)
+		clnt.Emit(EVENT_CONNECTED, data)
 		errCh <- nil
 	}()
 
@@ -147,7 +147,7 @@ func (self *SessionsMgr) Disconnect(ctx context.Context, clnt sdkconnmgr.ClientD
 	}
 
 	data := map[string]interface{}{"message": notify}
-	clnt.Emit(EventDisconnected, data)
+	clnt.Emit(EVENT_DISCONNECTED, data)
 	return nil
 }
 
@@ -271,8 +271,8 @@ func (self *SessionsMgr) endSession(ctx context.Context, clnt sdkconnmgr.ClientD
 		}
 
 		self.mu.Lock()
-		self.sessions = sdkslices.Filter(self.sessions, func(item *RunningSession) bool {
-			return item.GetSession().DeviceId() != clnt.Id()
+		self.sessions = sdkslices.Filter(self.sessions, func(rs *RunningSession) bool {
+			return rs.GetSession().DeviceId() != clnt.Id()
 		})
 		self.mu.Unlock()
 
