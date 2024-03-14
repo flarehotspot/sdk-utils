@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS purchases (
     id INT AUTO_INCREMENT PRIMARY KEY,
     device_id INT NOT NULL,
-    token CHAR(16) NOT NULL,
+    token CHAR(32) NOT NULL,
     sku VARCHAR(255) NOT NULL,
     name VARCHAR(255) NOT NULL,
     description TEXT,
