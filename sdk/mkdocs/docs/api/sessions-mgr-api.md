@@ -77,3 +77,7 @@ func (w http.ResponseWriter, r *http.Request) {
     )
 }
 ```
+
+### CurrSession
+
+This is the current running session of the [ClientDevice](./client-device.md).
