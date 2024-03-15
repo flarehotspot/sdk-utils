@@ -80,4 +80,4 @@ func (w http.ResponseWriter, r *http.Request) {
 
 ### CurrSession
 
-This is the current running session of the [ClientDevice](./client-device.md).
+This is the current [running session](./client-session.md) of the [ClientDevice](./client-device.md).
