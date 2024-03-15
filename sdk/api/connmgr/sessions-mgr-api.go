@@ -34,7 +34,7 @@ type SessionsMgrApi interface {
 		useGlobal bool,
 	) error
 
-	// Get the current session of a client device.
+	// Get the current running session of a client device.
 	CurrSession(clnt ClientDevice) (cs ClientSession, ok bool)
 
 	// Returns unconsumed session (if any) for the client device.

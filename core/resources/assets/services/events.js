@@ -19,10 +19,12 @@
 
   $flare.events = {
     on: function (event, callback) {
-      sse.addEventListener(event, function (res) {
+      var cb = function (res) {
         var data = JSON.parse(res.data);
         callback(data);
-      });
+      };
+      sse.addEventListener(event, cb);
+      return cb;
     },
     off: function (event, callback) {
       sse.removeEventListener(event, callback);

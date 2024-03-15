@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 
 	"github.com/flarehotspot/core/internal/plugins"
-	fs "github.com/flarehotspot/sdk/utils/fs"
 	"github.com/flarehotspot/core/internal/web/response"
+	"github.com/flarehotspot/sdk/utils/fs"
 	"github.com/gorilla/mux"
 )
 
@@ -19,8 +19,8 @@ type AssetsCtrl struct {
 	g *plugins.CoreGlobals
 }
 
-func (c *AssetsCtrl) GetFavicon(w http.ResponseWriter, r *http.Request) {
-	contents, err := os.ReadFile(c.g.CoreAPI.Utl.Resource("assets/images/default-favicon-32x32.png"))
+func (ctrl *AssetsCtrl) GetFavicon(w http.ResponseWriter, r *http.Request) {
+	contents, err := os.ReadFile(ctrl.g.CoreAPI.Utl.Resource("assets/images/default-favicon-32x32.png"))
 	if err != nil {
 		response.ErrorHtml(w, err.Error())
 		return
@@ -29,32 +29,32 @@ func (c *AssetsCtrl) GetFavicon(w http.ResponseWriter, r *http.Request) {
 	w.Write(contents)
 }
 
-func (c *AssetsCtrl) AssetWithHelpers(w http.ResponseWriter, r *http.Request) {
+func (ctrl *AssetsCtrl) AssetWithHelpers(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	pkg := vars["pkg"]
 	assetPath := vars["path"]
-	pluginApi, ok := c.g.PluginMgr.FindByPkg(pkg)
+	pluginApi, ok := ctrl.g.PluginMgr.FindByPkg(pkg)
 	if !ok {
 		http.Error(w, "Plugin not found: "+pkg, 404)
 		return
 	}
 
 	assetPath = filepath.Join(pluginApi.Resource("assets"), assetPath)
-	if !fs.Exists(assetPath) {
+	if !sdkfs.Exists(assetPath) {
 		http.Error(w, "Asset not found: "+assetPath, 404)
 		return
 	}
 
-	response.File(w, assetPath, c.g.CoreAPI.Http().Helpers(), nil)
+	response.File(w, assetPath, ctrl.g.CoreAPI.Http().Helpers(), nil)
 }
 
-func (c *AssetsCtrl) VueComponent(w http.ResponseWriter, r *http.Request) {
+func (ctrl *AssetsCtrl) VueComponent(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	pkg := vars["pkg"]
 	componentPath := vars["path"]
-	pluginApi, ok := c.g.PluginMgr.FindByPkg(pkg)
+	pluginApi, ok := ctrl.g.PluginMgr.FindByPkg(pkg)
 	if !ok {
-		c.g.CoreAPI.HttpAPI.VueResponse().Component(w, "empty-component.vue", vars)
+		ctrl.g.CoreAPI.HttpAPI.VueResponse().Component(w, "empty-component.vue", vars)
 		return
 	}
 

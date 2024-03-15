@@ -6,7 +6,9 @@
 
 package sdkhttp
 
-import "net/http"
+import (
+	"net/http"
+)
 
 const (
 	VueNotFoundPath = "/404"

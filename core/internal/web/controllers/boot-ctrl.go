@@ -9,35 +9,39 @@ import (
 	"github.com/flarehotspot/core/internal/web/routes/urls"
 )
 
+func NewBootCtrl(g *plugins.CoreGlobals, pmgr *plugins.PluginsMgr, api *plugins.PluginApi) BootCtrl {
+	return BootCtrl{g.BootProgress, pmgr, api}
+}
+
 type BootCtrl struct {
 	bp   *plugins.BootProgress
 	pmgr *plugins.PluginsMgr
 	api  *plugins.PluginApi
 }
 
-func (b *BootCtrl) IndexPage(w http.ResponseWriter, r *http.Request) {
+func (ctrl *BootCtrl) IndexPage(w http.ResponseWriter, r *http.Request) {
 	data := map[string]any{
 		"title":  "Booting",
-		"status": b.bp.Status(),
-		"done":   b.bp.IsDone(),
+		"status": ctrl.bp.Status(),
+		"done":   ctrl.bp.IsDone(),
 	}
 
-	b.api.Http().HttpResponse().View(w, r, "booting/index.html", data)
+	ctrl.api.Http().HttpResponse().View(w, r, "booting/index.html", data)
 }
 
-func (b *BootCtrl) SseHandler(w http.ResponseWriter, r *http.Request) {
+func (ctrl *BootCtrl) SseHandler(w http.ResponseWriter, r *http.Request) {
 	s, err := sse.NewSocket(w, r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	b.bp.AddSocket(s)
+	ctrl.bp.AddSocket(s)
 	s.Listen()
 }
 
-func (b *BootCtrl) Middleware(next http.Handler) http.Handler {
+func (ctrl *BootCtrl) Middleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		done := b.bp.IsDone()
+		done := ctrl.bp.IsDone()
 
 		if r.Method == "GET" && !helpers.IsAssetPath(r.URL.Path) {
 			if !done && r.URL.Path != urls.BOOT_URL && r.URL.Path != urls.BOOT_STATUS_URL {
@@ -53,8 +57,4 @@ func (b *BootCtrl) Middleware(next http.Handler) http.Handler {
 		// Call the next handler, which can be another middleware in the chain, or the final handler.
 		next.ServeHTTP(w, r)
 	})
-}
-
-func NewBootCtrl(g *plugins.CoreGlobals, pmgr *plugins.PluginsMgr, api *plugins.PluginApi) BootCtrl {
-	return BootCtrl{g.BootProgress, pmgr, api}
 }

@@ -11,12 +11,12 @@ import (
 	"github.com/flarehotspot/core/internal/db"
 )
 
-var (
+const (
 	// select all session fields sql query
-	selectQuery = `SELECT id, device_id, session_type, time_secs, data_mbytes, consumption_secs, consumption_mb, started_at, exp_days, down_mbits, up_mbits, use_global, created_at, IF(exp_days IS NOT NULL AND STARTED_AT IS NOT NULL, DATE_ADD(started_at, INTERVAL exp_days DAY), NULL) AS expires_at FROM sessions`
+	SELECT_QUERY = `SELECT id, device_id, session_type, time_secs, data_mbytes, consumption_secs, consumption_mb, started_at, exp_days, down_mbits, up_mbits, use_global, created_at, IF(exp_days IS NOT NULL AND STARTED_AT IS NOT NULL, DATE_ADD(started_at, INTERVAL exp_days DAY), NULL) AS expires_at FROM sessions`
 
 	// valid sessions sql where query
-	validWhereQuery = `(
+	VALID_WHERE_QUERY = `(
     (session_type = 0 AND consumption_secs < time_secs) OR
     (session_type = 1 AND consumption_mb < data_mbytes) OR
     (session_type = 2 AND consumption_mb < data_mbytes AND consumption_secs < time_secs)
@@ -56,7 +56,7 @@ func (self *SessionModel) CreateTx(tx *sql.Tx, ctx context.Context, devId int64,
 
 func (self *SessionModel) FindTx(tx *sql.Tx, ctx context.Context, id int64) (*Session, error) {
 	s := NewSession(self.db, self.models)
-	query := selectQuery + " WHERE id = ? LIMIT 1"
+	query := SELECT_QUERY + " WHERE id = ? LIMIT 1"
 	err := tx.QueryRowContext(ctx, query, id).
 		Scan(&s.id, &s.deviceId, &s.sessionType, &s.timeSecs, &s.dataMb, &s.timeCons, &s.dataCons, &s.startedAt, &s.expDays, &s.downMbits, &s.upMbits, &s.useGlobal, &s.createdAt, &s.expiresAt)
 
@@ -74,7 +74,7 @@ func (self *SessionModel) UpdateTx(tx *sql.Tx, ctx context.Context, id int64, de
 
 func (self *SessionModel) AvlForDevTx(tx *sql.Tx, ctx context.Context, deviceId int64) (*Session, error) {
 	s := NewSession(self.db, self.models)
-	query := selectQuery + " WHERE device_id = ? AND " + validWhereQuery + " LIMIT 1"
+	query := SELECT_QUERY + " WHERE device_id = ? AND " + VALID_WHERE_QUERY + " LIMIT 1"
 
 	err := tx.QueryRowContext(ctx, query, deviceId).
 		Scan(&s.id, &s.deviceId, &s.sessionType, &s.timeSecs, &s.dataMb, &s.timeCons, &s.dataCons, &s.startedAt, &s.expDays, &s.downMbits, &s.upMbits, &s.useGlobal, &s.createdAt, &s.expiresAt)
@@ -87,7 +87,7 @@ func (self *SessionModel) AvlForDevTx(tx *sql.Tx, ctx context.Context, deviceId 
 }
 
 func (self *SessionModel) SessionsForDevTx(tx *sql.Tx, ctx context.Context, devId int64) ([]*Session, error) {
-	query := selectQuery + " WHERE device_id = ? AND " + validWhereQuery
+	query := SELECT_QUERY + " WHERE device_id = ? AND " + VALID_WHERE_QUERY
 	rows, err := tx.QueryContext(ctx, query, devId)
 	if err != nil {
 		return nil, err
@@ -108,7 +108,7 @@ func (self *SessionModel) SessionsForDevTx(tx *sql.Tx, ctx context.Context, devI
 }
 
 func (self *SessionModel) DevHasSessionTx(tx *sql.Tx, ctx context.Context, devId int64) (bool, error) {
-	query := fmt.Sprintf("SELECT EXISTS(\n%s\n)", selectQuery+" WHERE device_id = ? AND "+validWhereQuery)
+	query := fmt.Sprintf("SELECT EXISTS(\n%s\n)", SELECT_QUERY+" WHERE device_id = ? AND "+VALID_WHERE_QUERY)
 
 	var exists bool
 	row := tx.QueryRowContext(ctx, query, devId)
@@ -120,7 +120,7 @@ func (self *SessionModel) DevHasSessionTx(tx *sql.Tx, ctx context.Context, devId
 }
 
 func (self *SessionModel) UpdateAllBandwidthTx(tx *sql.Tx, ctx context.Context, downMbits int, upMbits int, useGlobal bool) error {
-	query := `UPDATE sessions SET down_mbits = ?, up_mbits = ?, use_global = ? WHERE ` + validWhereQuery
+	query := `UPDATE sessions SET down_mbits = ?, up_mbits = ?, use_global = ? WHERE ` + VALID_WHERE_QUERY
 	_, err := tx.ExecContext(ctx, query, downMbits, upMbits, useGlobal)
 	return err
 }
