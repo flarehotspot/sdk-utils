@@ -2,6 +2,7 @@ package connmgr
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"log"
 	"sync"
@@ -303,6 +304,9 @@ func (self *SessionsMgr) GetSession(ctx context.Context, devId int64) (sdkconnmg
 
 	s, err := self.mdl.Session().AvlForDev(ctx, devId)
 	if err != nil {
+		if errors.Is(sql.ErrNoRows, err) {
+			return nil, errors.New("No more available sessions")
+		}
 		return nil, err
 	}
 

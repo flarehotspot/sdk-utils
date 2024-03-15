@@ -12,7 +12,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"sync"
+	"time"
 
 	sdkstr "github.com/flarehotspot/sdk/utils/strings"
 )
@@ -42,7 +42,6 @@ func NewSocket(w http.ResponseWriter, r *http.Request) (s *SseSocket, err error)
 }
 
 type SseSocket struct {
-	mu      sync.RWMutex
 	id      string
 	res     http.ResponseWriter
 	req     *http.Request
@@ -79,6 +78,9 @@ func (s *SseSocket) Flush() {
 }
 
 func (s *SseSocket) Listen() {
+
+	go s.pingLoop()
+
 	for {
 		select {
 		case d := <-s.msgCh:
@@ -91,5 +93,17 @@ func (s *SseSocket) Listen() {
 		case <-s.Done():
 			return
 		}
+	}
+}
+
+func (s *SseSocket) pingLoop() {
+	for {
+		select {
+		case <-time.After(30 * time.Second):
+			s.Emit("ping", nil)
+		case <-s.Done():
+			return
+		}
+
 	}
 }
