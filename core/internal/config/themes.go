@@ -19,7 +19,6 @@ var (
 )
 
 type ThemesConfig struct {
-	Auth   string `json:"auth"`
 	Portal string `json:"portal"`
 	Admin  string `json:"admin"`
 }
@@ -30,7 +29,6 @@ func ReadThemesConfig() (ThemesConfig, error) {
 		defer themeCfgMu.RUnlock()
 		// prevent cache modification
 		return ThemesConfig{
-			Auth:   themeCfgCache.Auth,
 			Portal: themeCfgCache.Portal,
 			Admin:  themeCfgCache.Admin,
 		}, nil
@@ -40,9 +38,6 @@ func ReadThemesConfig() (ThemesConfig, error) {
 	var cfg ThemesConfig
 	if err := readConfigFile(&cfg, themesConfigJsonFile); err != nil {
 		return cfg, err
-	}
-	if !isThemeValid(cfg.Auth) {
-		cfg.Auth = defaultThemePlugin
 	}
 	if !isThemeValid(cfg.Portal) {
 		cfg.Portal = defaultThemePlugin

@@ -11,8 +11,8 @@ func NewThemesApi(api *PluginApi) *ThemesApi {
 
 type ThemesApi struct {
 	api         *PluginApi
-	AdminTheme  themes.AdminTheme
-	PortalTheme themes.PortalTheme
+	AdminTheme  *themes.AdminTheme
+	PortalTheme *themes.PortalTheme
 
 	AdminLayoutRoute    *VueRouteComponent
 	AdminDashboardRoute *VueRouteComponent
@@ -40,7 +40,7 @@ func (self *ThemesApi) NewAdminTheme(theme themes.AdminTheme) {
 	self.AdminLoginRoute = loginComp
 	self.api.HttpAPI.vueRouter.AddAdminRoutes(dashComp)
 	self.api.HttpAPI.vueRouter.SetLoginRoute(loginComp)
-	self.AdminTheme = theme
+	self.AdminTheme = &theme
 }
 
 func (self *ThemesApi) NewPortalTheme(theme themes.PortalTheme) {
@@ -56,7 +56,7 @@ func (self *ThemesApi) NewPortalTheme(theme themes.PortalTheme) {
 	self.PortalLayoutRoute = layoutComp
 	self.PortalIndexRoute = indexComp
 	self.api.HttpAPI.vueRouter.AddPortalRoutes(indexComp)
-	self.PortalTheme = theme
+	self.PortalTheme = &theme
 }
 
 func (self *ThemesApi) GetAdminThemeAssets() themes.ThemeAssets {
