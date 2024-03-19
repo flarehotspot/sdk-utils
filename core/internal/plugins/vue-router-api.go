@@ -7,6 +7,7 @@ import (
 	"path"
 	"strings"
 
+	sdkconnmgr "github.com/flarehotspot/sdk/api/connmgr"
 	sdkhttp "github.com/flarehotspot/sdk/api/http"
 )
 
@@ -121,6 +122,10 @@ func (self *VueRouterApi) FindVueRoute(name string) (*VueRouteComponent, bool) {
 	}
 
 	return nil, false
+}
+
+func (self *VueRouterApi) ReloadPortalItems(clnt sdkconnmgr.ClientDevice) {
+	clnt.Emit("portal:items:reload", nil)
 }
 
 func (self *VueRouterApi) VueRouteName(name string) string {

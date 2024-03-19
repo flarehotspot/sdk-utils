@@ -127,3 +127,12 @@ func PortalSseHandler(g *plugins.CoreGlobals) http.HandlerFunc {
 		s.Listen()
 	}
 }
+
+func PortalItemsHandler(g *plugins.CoreGlobals) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		api := g.CoreAPI
+		items := api.Http().GetPortalItems(r)
+		res := api.Http().VueResponse()
+		res.Json(w, items, 200)
+	}
+}

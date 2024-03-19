@@ -9,11 +9,13 @@ import (
 
 func PortalRoutes(g *plugins.CoreGlobals) {
 	rootR := router.RootRouter
-    portalR := g.CoreAPI.HttpAPI.HttpRouter().PluginRouter()
+	portalR := g.CoreAPI.HttpAPI.HttpRouter().PluginRouter()
 
 	portalIndexCtrl := controllers.PortalIndexPage(g)
 	portalSseCtrl := controllers.PortalSseHandler(g)
+	portalItemsCtrl := controllers.PortalItemsHandler(g)
 
 	rootR.Handle("/", portalIndexCtrl).Methods("GET").Name(routenames.RoutePortalIndex)
 	portalR.Get("/events", portalSseCtrl).Name(routenames.RoutePortalSse)
+	portalR.Get("/nav/items", portalItemsCtrl).Name(routenames.PortalItems)
 }

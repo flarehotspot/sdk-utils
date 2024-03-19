@@ -1,6 +1,9 @@
 package plugins
 
 import (
+	"net/http"
+	"path/filepath"
+
 	themes "github.com/flarehotspot/sdk/api/themes"
 	sdkfs "github.com/flarehotspot/sdk/utils/fs"
 )
@@ -51,6 +54,7 @@ func (self *ThemesApi) NewPortalTheme(theme themes.PortalTheme) {
 
 	purMw := self.api.HttpAPI.middlewares.PendingPurchaseMw()
 	indexComp := NewVueRouteComponent(self.api, theme.IndexComponent.RouteName, "/theme/index", theme.IndexComponent.HandlerFunc, theme.IndexComponent.Component, nil, nil)
+	indexComp.WrapperFile = self.api.CoreAPI.Resource(filepath.Join("components", "portal", "IndexWrapper.vue"))
 	indexComp.MountRoute(compRouter, purMw)
 
 	self.PortalLayoutRoute = layoutComp
@@ -92,4 +96,12 @@ func (self *ThemesApi) GetFormFieldPath(vuefile string) (uri string) {
 	}
 	vuepath := "forms/" + string(self.AdminTheme.CssLib) + "/" + vuefile
 	return self.api.CoreAPI.HttpAPI.Helpers().VueComponentPath(vuepath)
+}
+
+func (self *ThemesApi) PortalItemsHandler() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		res := self.api.CoreAPI.HttpAPI.VueResponse()
+		items := self.api.HttpAPI.GetPortalItems(r)
+		res.Json(w, items, http.StatusOK)
+	}
 }

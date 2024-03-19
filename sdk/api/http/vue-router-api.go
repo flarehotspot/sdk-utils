@@ -8,6 +8,8 @@ package sdkhttp
 
 import (
 	"net/http"
+
+	sdkconnmgr "github.com/flarehotspot/sdk/api/connmgr"
 )
 
 const (
@@ -43,4 +45,7 @@ type VueRouterApi interface {
 
 	// Returns the vue route from another plugin
 	VuePkgRoutePath(pkg string, name string, pairs ...string) string
+
+	// Reloads the captive portal navigation items for the given client device
+	ReloadPortalItems(clnt sdkconnmgr.ClientDevice)
 }
