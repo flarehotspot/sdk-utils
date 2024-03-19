@@ -3,10 +3,10 @@ package plugins
 import (
 	"fmt"
 	"log"
-	"net/http"
 	"path"
 	"strings"
 
+	sdkacct "github.com/flarehotspot/sdk/api/accounts"
 	sdkconnmgr "github.com/flarehotspot/sdk/api/connmgr"
 	sdkhttp "github.com/flarehotspot/sdk/api/http"
 )
@@ -72,11 +72,11 @@ func (self *VueRouterApi) AdminNavsFunc(fn sdkhttp.VueAdminNavsFunc) {
 	self.adminNavsFn = fn
 }
 
-func (self *VueRouterApi) GetAdminNavs(r *http.Request) []sdkhttp.AdminNavItem {
+func (self *VueRouterApi) GetAdminNavs(acct sdkacct.Account) []sdkhttp.AdminNavItem {
 	navs := []sdkhttp.AdminNavItem{}
 	if self.adminNavsFn != nil {
-		for _, nav := range self.adminNavsFn(r) {
-			adminNav, ok := NewVueAdminNav(self.api, r, nav)
+		for _, nav := range self.adminNavsFn(acct) {
+			adminNav, ok := NewVueAdminNav(self.api, acct, nav)
 			if ok {
 				navs = append(navs, adminNav)
 			}
@@ -89,12 +89,12 @@ func (self *VueRouterApi) PortalItemsFunc(fn sdkhttp.VuePortalItemsFunc) {
 	self.portalNavsFn = fn
 }
 
-func (self *VueRouterApi) GetPortalItems(r *http.Request) []sdkhttp.PortalItem {
+func (self *VueRouterApi) GetPortalItems(clnt sdkconnmgr.ClientDevice) []sdkhttp.PortalItem {
 	navs := []sdkhttp.PortalItem{}
 
 	if self.portalNavsFn != nil {
-		for _, nav := range self.portalNavsFn(r) {
-			navs = append(navs, NewVuePortalItem(self.api, r, nav))
+		for _, nav := range self.portalNavsFn(clnt) {
+			navs = append(navs, NewVuePortalItem(self.api, nav))
 		}
 
 		return navs
@@ -125,7 +125,8 @@ func (self *VueRouterApi) FindVueRoute(name string) (*VueRouteComponent, bool) {
 }
 
 func (self *VueRouterApi) ReloadPortalItems(clnt sdkconnmgr.ClientDevice) {
-	clnt.Emit("portal:items:reload", nil)
+	items := self.api.HttpAPI.GetPortalItems(clnt)
+	clnt.Emit("portal:items:reload", items)
 }
 
 func (self *VueRouterApi) VueRouteName(name string) string {

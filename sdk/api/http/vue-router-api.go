@@ -7,8 +7,7 @@
 package sdkhttp
 
 import (
-	"net/http"
-
+	sdkacct "github.com/flarehotspot/sdk/api/accounts"
 	sdkconnmgr "github.com/flarehotspot/sdk/api/connmgr"
 )
 
@@ -16,8 +15,8 @@ const (
 	VueNotFoundPath = "/404"
 )
 
-type VueAdminNavsFunc func(r *http.Request) []VueAdminNav
-type VuePortalItemsFunc func(r *http.Request) []VuePortalItem
+type VueAdminNavsFunc func(acct sdkacct.Account) []VueAdminNav
+type VuePortalItemsFunc func(clnt sdkconnmgr.ClientDevice) []VuePortalItem
 
 // VueRouterApi is used to create navigation items in the application.
 type VueRouterApi interface {

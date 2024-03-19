@@ -88,7 +88,8 @@ Returns a slice of [AdminNavList](#adminnavlist)
 // handler
 func (w http.ResponseWriter, r *http.Request) {
     // other logic...
-    navList := api.Http().GetAdminNavs(r)
+    acct, _ := api.Http().Auth().CurrentAccount(r)
+    navList := api.Http().GetAdminNavs(acct)
     fmt.Println(navList) // []AdminNavList
 }
 ```
@@ -101,7 +102,8 @@ Returns a slice of [PortalItem](#portalitem)
 // handler
 func (w http.ResponseWriter, r *http.Request) {
     // other logic...
-    portalItems := api.Http().GetPortalItems(r)
+    clnt, _ := api.Http().GetClientDevice(r)
+    portalItems := api.Http().GetPortalItems(clnt)
     fmt.Println(portalItems) // []PortalItem
 }
 ```

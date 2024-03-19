@@ -1,12 +1,10 @@
 package plugins
 
 import (
-	"net/http"
-
 	"github.com/flarehotspot/sdk/api/http"
 )
 
-func NewVuePortalItem(api *PluginApi, r *http.Request, nav sdkhttp.VuePortalItem) sdkhttp.PortalItem {
+func NewVuePortalItem(api *PluginApi, nav sdkhttp.VuePortalItem) sdkhttp.PortalItem {
 	var routePath, routeName string
 	routePath = sdkhttp.VueNotFoundPath
 

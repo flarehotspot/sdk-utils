@@ -101,7 +101,12 @@ func (self *ThemesApi) GetFormFieldPath(vuefile string) (uri string) {
 func (self *ThemesApi) PortalItemsHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		res := self.api.CoreAPI.HttpAPI.VueResponse()
-		items := self.api.HttpAPI.GetPortalItems(r)
+		clnt, err := self.api.HttpAPI.GetClientDevice(r)
+		if err != nil {
+			res.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		items := self.api.HttpAPI.GetPortalItems(clnt)
 		res.Json(w, items, http.StatusOK)
 	}
 }

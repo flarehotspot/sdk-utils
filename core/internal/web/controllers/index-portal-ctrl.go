@@ -131,8 +131,15 @@ func PortalSseHandler(g *plugins.CoreGlobals) http.HandlerFunc {
 func PortalItemsHandler(g *plugins.CoreGlobals) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		api := g.CoreAPI
-		items := api.Http().GetPortalItems(r)
 		res := api.Http().VueResponse()
-		res.Json(w, items, 200)
+
+		clnt, err := api.HttpAPI.GetClientDevice(r)
+		if err != nil {
+			res.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		items := api.Http().GetPortalItems(clnt)
+		res.Json(w, items, http.StatusOK)
 	}
 }

@@ -1,12 +1,11 @@
 package plugins
 
 import (
-	"net/http"
-
+	sdkacct "github.com/flarehotspot/sdk/api/accounts"
 	sdkhttp "github.com/flarehotspot/sdk/api/http"
 )
 
-func NewVueAdminNav(api *PluginApi, r *http.Request, nav sdkhttp.VueAdminNav) (sdkhttp.AdminNavItem, bool) {
+func NewVueAdminNav(api *PluginApi, acct sdkacct.Account, nav sdkhttp.VueAdminNav) (sdkhttp.AdminNavItem, bool) {
 	var routename, routepath string
 	routepath = sdkhttp.VueNotFoundPath
 

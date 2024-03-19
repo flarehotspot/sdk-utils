@@ -7,6 +7,7 @@ import (
 	"github.com/flarehotspot/core/internal/db"
 	"github.com/flarehotspot/core/internal/db/models"
 	"github.com/flarehotspot/core/internal/web/helpers"
+	sdkacct "github.com/flarehotspot/sdk/api/accounts"
 	sdkconnmgr "github.com/flarehotspot/sdk/api/connmgr"
 	sdkhttp "github.com/flarehotspot/sdk/api/http"
 	"github.com/gorilla/mux"
@@ -70,10 +71,10 @@ func (self *HttpApi) MuxVars(r *http.Request) map[string]string {
 	return mux.Vars(r)
 }
 
-func (self *HttpApi) GetAdminNavs(r *http.Request) []sdkhttp.AdminNavList {
-	return self.api.PluginsMgrApi.Utils().GetAdminNavs(r)
+func (self *HttpApi) GetAdminNavs(acct sdkacct.Account) []sdkhttp.AdminNavList {
+	return self.api.PluginsMgrApi.Utils().GetAdminNavs(acct)
 }
 
-func (self *HttpApi) GetPortalItems(r *http.Request) []sdkhttp.PortalItem {
-	return self.api.PluginsMgrApi.Utils().GetPortalItems(r)
+func (self *HttpApi) GetPortalItems(clnt sdkconnmgr.ClientDevice) []sdkhttp.PortalItem {
+	return self.api.PluginsMgrApi.Utils().GetPortalItems(clnt)
 }

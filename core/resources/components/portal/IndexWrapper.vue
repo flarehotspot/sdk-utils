@@ -31,9 +31,12 @@ file, You can obtain one at https://mozilla.org/MPL/2.0/.
                 var self = this;
                 self.load();
 
-                reloadListener = $flare.events.on('portal:items:reload', function () {
-                    self.load();
-                });
+                reloadListener = $flare.events.on(
+                    'portal:items:reload',
+                    function (items) {
+                        self.items = items;
+                    }
+                );
             },
             beforeDestroy: function () {
                 if (reloadListener) {
