@@ -17,6 +17,8 @@ file, You can obtain one at https://mozilla.org/MPL/2.0/.
         '<% .Helpers.UrlForPkgRoute "com.flarego.core" "portal.items" %>';
 
     define([compPath], function (comp) {
+        var reloadListener = null;
+
         return {
             template: template,
             components: {
@@ -26,8 +28,17 @@ file, You can obtain one at https://mozilla.org/MPL/2.0/.
                 return { view: { loading: true, data: {}, error: null }, items: [] };
             },
             mounted: function () {
-                this.load();
-                // TODO: listen for portal reload event
+                var self = this;
+                self.load();
+
+                reloadListener = $flare.events.on('portal:items:reload', function () {
+                    self.load();
+                });
+            },
+            beforeDestroy: function () {
+                if (reloadListener) {
+                    $flare.events.off('portal:items:reload', reloadListener);
+                }
             },
             methods: {
                 load: function () {

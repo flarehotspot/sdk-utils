@@ -2,10 +2,12 @@ package connmgr
 
 import (
 	"context"
+	"fmt"
 	"sync"
 
 	"github.com/flarehotspot/core/internal/db"
 	"github.com/flarehotspot/core/internal/db/models"
+	"github.com/flarehotspot/core/internal/utils/events"
 	"github.com/flarehotspot/core/internal/utils/sse"
 )
 
@@ -70,6 +72,18 @@ func (self *ClientDevice) Update(ctx context.Context, mac string, ip string, hos
 	return nil
 }
 
-func (self *ClientDevice) Emit(t string, data interface{}) {
-	sse.Emit(self.MacAddr(), t, data)
+func (self *ClientDevice) Emit(event string, data interface{}) {
+	channel := self.GetEventChannel(event)
+	sse.Emit(self.MacAddr(), event, data)
+	events.Emit(channel, data)
+}
+
+func (self *ClientDevice) Subscribe(event string) <-chan []byte {
+	channel := self.GetEventChannel(event)
+    ch := events.Subscribe(channel)
+    return ch
+}
+
+func (self *ClientDevice) GetEventChannel(event string) string {
+	return fmt.Sprintf("%s:%s", self.MacAddr(), event)
 }

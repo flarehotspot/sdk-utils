@@ -27,5 +27,9 @@ type ClientDevice interface {
 
 	// Emits a socket event to a client device.
 	// The event will be propagated to the client's browser via server-sent events.
-	Emit(t string, d any)
+	Emit(event string, data any)
+
+	// Subscribes to a socket event.
+    // It returns a channel that will receive data when the event is emitted.
+	Subscribe(event string) <-chan []byte
 }
