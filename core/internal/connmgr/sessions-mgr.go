@@ -134,6 +134,7 @@ func (self *SessionsMgr) Connect(ctx context.Context, clnt sdkconnmgr.ClientDevi
 		go self.loopSessions(clnt)
 
 		data := map[string]interface{}{"message": notify}
+
 		clnt.Emit(EVENT_CONNECTED, data)
 		errCh <- nil
 	}()

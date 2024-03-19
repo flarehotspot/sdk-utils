@@ -12,7 +12,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"time"
+	// "time"
 
 	sdkstr "github.com/flarehotspot/sdk/utils/strings"
 )
@@ -79,7 +79,7 @@ func (s *SseSocket) Flush() {
 
 func (s *SseSocket) Listen() {
 
-	go s.pingLoop()
+	// go s.pingLoop()
 
 	for {
 		select {
@@ -96,14 +96,14 @@ func (s *SseSocket) Listen() {
 	}
 }
 
-func (s *SseSocket) pingLoop() {
-	for {
-		select {
-		case <-time.After(30 * time.Second):
-			s.Emit("ping", nil)
-		case <-s.Done():
-			return
-		}
+// func (s *SseSocket) pingLoop() {
+// 	for {
+// 		select {
+// 		case <-time.After(5 * time.Second):
+// 			s.Emit("ping", nil)
+// 		case <-s.Done():
+// 			return
+// 		}
 
-	}
-}
+// 	}
+// }

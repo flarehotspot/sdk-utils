@@ -9,6 +9,7 @@ package sdkhttp
 import (
 	"net/http"
 
+	sdkacct "github.com/flarehotspot/sdk/api/accounts"
 	sdkconnmgr "github.com/flarehotspot/sdk/api/connmgr"
 )
 
@@ -41,8 +42,8 @@ type HttpApi interface {
 	MuxVars(r *http.Request) map[string]string
 
 	// Returns the consolidated vue navigation list from all plugins for the admin dashboard.
-	GetAdminNavs(r *http.Request) []AdminNavList
+	GetAdminNavs(acct sdkacct.Account) []AdminNavList
 
 	// Returns the consolidated vue navigation list from all plugins for the portal.
-	GetPortalItems(r *http.Request) []PortalItem
+	GetPortalItems(clnt sdkconnmgr.ClientDevice) []PortalItem
 }

@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"time"
+	// "time"
 
 	"github.com/flarehotspot/core/env"
 	"github.com/gorilla/mux"
@@ -22,8 +22,8 @@ func StartServer(r *mux.Router, forever bool) *http.Server {
 		Handler: r,
 		Addr:    addr,
 		// Good practice: enforce timeouts for servers you create!
-		WriteTimeout: 15 * time.Second,
-		ReadTimeout:  15 * time.Second,
+		// WriteTimeout: 15 * time.Second,
+		// ReadTimeout:  15 * time.Second,
 	}
 
 	if !forever {

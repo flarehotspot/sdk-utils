@@ -15,11 +15,12 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func NewVueRouteComponent(api *PluginApi, name string, p string, handler http.HandlerFunc, file string, permsReq []string, permsAny []string) *VueRouteComponent {
+func NewVueRouteComponent(api *PluginApi, name string, path string, handler http.HandlerFunc, file string, permsReq []string, permsAny []string) *VueRouteComponent {
 
-	compPath := filepath.Join(api.Utl.Resource("components/" + file))
+	compPath := filepath.Join(api.Utl.Resource("components/"), file)
 	compHash, _ := crypt.SHA1Files(compPath)
-	compHash = sdkstr.Sha1Hash(name, p, compPath, compHash)
+	compHash = sdkstr.Sha1Hash(name, path, compPath, compHash)
+	wrapperFile := api.CoreAPI.Utl.Resource("components/Wrapper.vue")
 
 	if name == "" {
 		name = "empty-route-name-" + compHash
@@ -27,14 +28,15 @@ func NewVueRouteComponent(api *PluginApi, name string, p string, handler http.Ha
 
 	return &VueRouteComponent{
 		api:                 api,
-		path:                p,
-		name:                name,
-		file:                file,
 		hash:                compHash,
-		handler:             handler,
+		Path:                path,
+		Name:                name,
+		File:                file,
+		WrapperFile:         wrapperFile,
+		Handler:             handler,
 		MuxDataRouteName:    api.HttpAPI.httpRouter.MuxRouteName(sdkhttp.PluginRouteName(name + ".data")),
 		VueRouteName:        api.HttpAPI.vueRouter.MakeVueRouteName(name),
-		VueRoutePath:        api.HttpAPI.vueRouter.MakeVueRoutePath(p),
+		VueRoutePath:        api.HttpAPI.vueRouter.MakeVueRoutePath(path),
 		PermissionsRequired: permsReq,
 		PermissionsAnyOf:    permsAny,
 	}
@@ -42,11 +44,12 @@ func NewVueRouteComponent(api *PluginApi, name string, p string, handler http.Ha
 
 type VueRouteComponent struct {
 	api                 *PluginApi
-	handler             http.HandlerFunc
-	path                string
-	name                string
-	file                string
 	hash                string
+	Path                string
+	Name                string
+	File                string
+	WrapperFile         string
+	Handler             http.HandlerFunc
 	MuxDataRouteName    sdkhttp.MuxRouteName `json:"mux_data_route_name"`
 	HttpDataFullPath    string               `json:"http_data_full_path"`
 	HttpWrapperFullPath string               `json:"http_wrapper_full_path"`
@@ -57,11 +60,11 @@ type VueRouteComponent struct {
 }
 
 func (self *VueRouteComponent) HttpWrapperRouteName() string {
-	return fmt.Sprintf("%s.%s.%s", self.api.Pkg(), "wrapper", self.name)
+	return fmt.Sprintf("%s.%s.%s", self.api.Pkg(), "wrapper", self.Name)
 }
 
 func (self *VueRouteComponent) HttpWrapperRoutePath() string {
-	p := path.Join("/vue/components/wrapper", self.hash, "name", self.name, "file", self.file)
+	p := path.Join("/vue/components/wrapper", self.hash, "name", self.Name, "file", self.File)
 	if !strings.HasSuffix(p, ".vue") {
 		p = p + ".vue"
 	}
@@ -69,34 +72,33 @@ func (self *VueRouteComponent) HttpWrapperRoutePath() string {
 }
 
 func (self *VueRouteComponent) HttpComponentFullPath() string {
-	if self.file == "" {
+	if self.File == "" {
 		return self.api.CoreAPI.HttpAPI.Helpers().VueComponentPath("Empty.vue")
 	}
-	return self.api.HttpAPI.Helpers().VueComponentPath(self.file)
+	return self.api.HttpAPI.Helpers().VueComponentPath(self.File)
 }
 
 func (self *VueRouteComponent) HttpDataPath() string {
-	p := self.api.HttpAPI.vueRouter.VuePathToMuxPath(path.Join("/vue/data", self.hash, self.path))
+	p := self.api.HttpAPI.vueRouter.VuePathToMuxPath(path.Join("/vue/data", self.hash, self.Path))
 	return strings.TrimSuffix(p, "/")
 }
 
 func (self *VueRouteComponent) GetDataHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		res := NewVueResponse(self.api.HttpAPI.vueRouter)
-		if self.handler == nil {
+		if self.Handler == nil {
 			res.Json(w, nil, http.StatusOK)
 			return
 		}
-		self.handler(w, r)
+		self.Handler(w, r)
 	})
 }
 
 func (self *VueRouteComponent) GetComponentWrapperHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		wrapperFile := self.api.CoreAPI.Utl.Resource("components/Wrapper.vue")
 		helpers := self.api.Http().Helpers()
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
-		response.Text(w, wrapperFile, helpers, self)
+		response.Text(w, self.WrapperFile, helpers, self)
 	}
 }
 

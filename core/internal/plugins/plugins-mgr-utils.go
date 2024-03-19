@@ -2,9 +2,10 @@ package plugins
 
 import (
 	"log"
-	"net/http"
 
 	"github.com/flarehotspot/core/internal/config"
+	sdkacct "github.com/flarehotspot/sdk/api/accounts"
+	sdkconnmgr "github.com/flarehotspot/sdk/api/connmgr"
 	sdkhttp "github.com/flarehotspot/sdk/api/http"
 )
 
@@ -121,7 +122,7 @@ func (self *PluginsMgrUtils) GetPortalRoutes() []map[string]any {
 	return routesMap
 }
 
-func (self *PluginsMgrUtils) GetAdminNavs(r *http.Request) []sdkhttp.AdminNavList {
+func (self *PluginsMgrUtils) GetAdminNavs(acct sdkacct.Account) []sdkhttp.AdminNavList {
 	navs := []sdkhttp.AdminNavList{}
 	categories := []sdkhttp.INavCategory{
 		sdkhttp.NavCategorySystem,
@@ -136,7 +137,7 @@ func (self *PluginsMgrUtils) GetAdminNavs(r *http.Request) []sdkhttp.AdminNavLis
 
 		for _, p := range self.pmgr.All() {
 			vueR := p.Http().VueRouter().(*VueRouterApi)
-			adminNavs := vueR.GetAdminNavs(r)
+			adminNavs := vueR.GetAdminNavs(acct)
 			for _, nav := range adminNavs {
 				if nav.Category == category {
 					navItems = append(navItems, nav)
@@ -153,11 +154,11 @@ func (self *PluginsMgrUtils) GetAdminNavs(r *http.Request) []sdkhttp.AdminNavLis
 	return navs
 }
 
-func (self *PluginsMgrUtils) GetPortalItems(r *http.Request) []sdkhttp.PortalItem {
+func (self *PluginsMgrUtils) GetPortalItems(clnt sdkconnmgr.ClientDevice) []sdkhttp.PortalItem {
 	items := []sdkhttp.PortalItem{}
 	for _, p := range self.pmgr.All() {
 		vueR := p.Http().VueRouter().(*VueRouterApi)
-		portalItems := vueR.GetPortalItems(r)
+		portalItems := vueR.GetPortalItems(clnt)
 		for _, item := range portalItems {
 			items = append(items, item)
 		}

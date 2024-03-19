@@ -127,3 +127,19 @@ func PortalSseHandler(g *plugins.CoreGlobals) http.HandlerFunc {
 		s.Listen()
 	}
 }
+
+func PortalItemsHandler(g *plugins.CoreGlobals) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		api := g.CoreAPI
+		res := api.Http().VueResponse()
+
+		clnt, err := api.HttpAPI.GetClientDevice(r)
+		if err != nil {
+			res.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		items := api.Http().GetPortalItems(clnt)
+		res.Json(w, items, http.StatusOK)
+	}
+}

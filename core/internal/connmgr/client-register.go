@@ -8,8 +8,8 @@ import (
 
 	"github.com/flarehotspot/core/internal/db"
 	"github.com/flarehotspot/core/internal/db/models"
-	connmgr "github.com/flarehotspot/sdk/api/connmgr"
 	jobque "github.com/flarehotspot/core/internal/utils/job-que"
+	connmgr "github.com/flarehotspot/sdk/api/connmgr"
 )
 
 var regQue *jobque.JobQues = jobque.NewJobQues()
