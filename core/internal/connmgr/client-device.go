@@ -80,8 +80,8 @@ func (self *ClientDevice) Emit(event string, data interface{}) {
 
 func (self *ClientDevice) Subscribe(event string) <-chan []byte {
 	channel := self.GetEventChannel(event)
-    ch := events.Subscribe(channel)
-    return ch
+	ch := events.Subscribe(channel)
+	return ch
 }
 
 func (self *ClientDevice) GetEventChannel(event string) string {
