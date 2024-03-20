@@ -14,7 +14,7 @@ import (
 )
 
 func NewHttpApi(api *PluginApi, db *db.Database, clnt *connmgr.ClientRegister, mdls *models.Models, dmgr *connmgr.ClientRegister, pmgr *PaymentsMgr) *HttpApi {
-	auth := NewAuthApi(api)
+	auth := NewHttpAuth(api)
 	httpRouter := NewHttpRouterApi(api, db, clnt)
 	vueRouter := NewVueRouterApi(api)
 	httpResp := NewHttpResponse(api)
@@ -32,7 +32,7 @@ func NewHttpApi(api *PluginApi, db *db.Database, clnt *connmgr.ClientRegister, m
 
 type HttpApi struct {
 	api         *PluginApi
-	auth        *AuthApi
+	auth        *HttpAuth
 	httpRouter  *HttpRouterApi
 	vueRouter   *VueRouterApi
 	httpResp    *HttpResponse

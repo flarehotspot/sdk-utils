@@ -1,8 +1,8 @@
 package plugins
 
 import (
-	sdkacct "github.com/flarehotspot/sdk/api/accounts"
-	sdkhttp "github.com/flarehotspot/sdk/api/http"
+	"github.com/flarehotspot/sdk/api/accounts"
+	"github.com/flarehotspot/sdk/api/http"
 )
 
 func NewVueAdminNav(api *PluginApi, acct sdkacct.Account, nav sdkhttp.VueAdminNav) (sdkhttp.AdminNavItem, bool) {

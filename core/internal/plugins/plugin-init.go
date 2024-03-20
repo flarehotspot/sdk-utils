@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"plugin"
 
-	sdk "github.com/flarehotspot/sdk/api/plugin"
+	"github.com/flarehotspot/sdk/api/plugin"
 )
 
 func (api *PluginApi) Init() error {
@@ -21,7 +21,7 @@ func (api *PluginApi) Init() error {
 		return err
 	}
 
-	initFn := initSym.(func(sdk.PluginApi))
+	initFn := initSym.(func(sdkplugin.PluginApi))
 	initFn(api)
 
 	return nil

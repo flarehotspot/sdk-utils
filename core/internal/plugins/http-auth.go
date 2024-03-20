@@ -6,28 +6,28 @@ import (
 
 	"github.com/flarehotspot/core/internal/accounts"
 	"github.com/flarehotspot/core/internal/config"
-	acct "github.com/flarehotspot/sdk/api/accounts"
-	sdkhttp "github.com/flarehotspot/sdk/api/http"
 	"github.com/flarehotspot/core/internal/utils/jsonwebtoken"
 	"github.com/flarehotspot/core/internal/web/helpers"
 	"github.com/flarehotspot/core/internal/web/middlewares"
+	"github.com/flarehotspot/sdk/api/accounts"
+	"github.com/flarehotspot/sdk/api/http"
 )
 
-func NewAuthApi(api *PluginApi) *AuthApi {
-	return &AuthApi{
+func NewHttpAuth(api *PluginApi) *HttpAuth {
+	return &HttpAuth{
 		api: api,
 	}
 }
 
-type AuthApi struct {
+type HttpAuth struct {
 	api *PluginApi
 }
 
-func (self *AuthApi) CurrentAcct(r *http.Request) (acct.Account, error) {
+func (self *HttpAuth) CurrentAcct(r *http.Request) (sdkacct.Account, error) {
 	return helpers.CurrentAcct(r)
 }
 
-func (self *AuthApi) Authenticate(username string, password string) (acct.Account, error) {
+func (self *HttpAuth) Authenticate(username string, password string) (sdkacct.Account, error) {
 	acct, err := accounts.Find(username)
 	if err != nil {
 		return nil, err
@@ -40,7 +40,7 @@ func (self *AuthApi) Authenticate(username string, password string) (acct.Accoun
 	return acct, nil
 }
 
-func (self *AuthApi) SignIn(w http.ResponseWriter, acct acct.Account) error {
+func (self *HttpAuth) SignIn(w http.ResponseWriter, acct sdkacct.Account) error {
 	appcfg, err := config.ReadApplicationConfig()
 	if err != nil {
 		return err
@@ -56,7 +56,7 @@ func (self *AuthApi) SignIn(w http.ResponseWriter, acct acct.Account) error {
 	return nil
 }
 
-func (self *AuthApi) SignOut(w http.ResponseWriter) error {
+func (self *HttpAuth) SignOut(w http.ResponseWriter) error {
 	sdkhttp.SetCookie(w, middlewares.AuthTokenCookie, "")
 	return nil
 }

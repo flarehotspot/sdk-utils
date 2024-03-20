@@ -10,8 +10,8 @@ import (
 	"github.com/flarehotspot/core/internal/utils/crypt"
 	"github.com/flarehotspot/core/internal/web/middlewares"
 	"github.com/flarehotspot/core/internal/web/response"
-	sdkhttp "github.com/flarehotspot/sdk/api/http"
-	sdkstr "github.com/flarehotspot/sdk/utils/strings"
+	"github.com/flarehotspot/sdk/api/http"
+	"github.com/flarehotspot/sdk/utils/strings"
 	"github.com/gorilla/mux"
 )
 
