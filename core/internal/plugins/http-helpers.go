@@ -17,12 +17,13 @@ import (
 	plugin "github.com/flarehotspot/sdk/api/plugin"
 )
 
-type HttpHelpers struct {
-	api *PluginApi
+
+func NewHttpHelpers(api *PluginApi) sdkhttp.HttpHelpers {
+	return &HttpHelpers{api: api}
 }
 
-func NewViewHelpers(api *PluginApi) sdkhttp.HttpHelpers {
-	return &HttpHelpers{api: api}
+type HttpHelpers struct {
+	api *PluginApi
 }
 
 func (self *HttpHelpers) Translate(msgtype string, msgk string) string {

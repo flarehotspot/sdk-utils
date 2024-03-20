@@ -56,7 +56,7 @@ func (self *HttpApi) VueRouter() sdkhttp.VueRouterApi {
 }
 
 func (self *HttpApi) Helpers() sdkhttp.HttpHelpers {
-	return NewViewHelpers(self.api)
+	return NewHttpHelpers(self.api)
 }
 
 func (self *HttpApi) HttpResponse() sdkhttp.HttpResponse {

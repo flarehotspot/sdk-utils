@@ -30,7 +30,7 @@ func (self *ThemesApi) NewAdminTheme(theme themes.AdminTheme) {
 	compRouter := self.api.HttpAPI.httpRouter.pluginRouter.mux
 
 	layoutComp := NewVueRouteComponent(self.api, theme.LayoutComponent.RouteName, "/theme/layout", theme.LayoutComponent.HandlerFunc, theme.LayoutComponent.Component, nil, nil)
-	layoutComp.MountRoute(compRouter)
+	layoutComp.MountRoute(adminRouter)
 
 	loginComp := NewVueRouteComponent(self.api, theme.LoginComponent.RouteName, "/theme/login", theme.LoginComponent.HandlerFunc, theme.LoginComponent.Component, nil, nil)
 	loginComp.MountRoute(compRouter)

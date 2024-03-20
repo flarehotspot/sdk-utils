@@ -24,7 +24,7 @@ func (self *HttpResponse) AdminView(w http.ResponseWriter, r *http.Request, view
 		data = map[string]interface{}{}
 	}
 
-	helpers := NewViewHelpers(self.api)
+	helpers := NewHttpHelpers(self.api)
 	viewsDir := self.api.Utl.Resource("views/admin")
 	layoutFile := filepath.Join(viewsDir, "layout.html")
 	viewFile := filepath.Join(viewsDir, view)
@@ -36,7 +36,7 @@ func (self *HttpResponse) PortalView(w http.ResponseWriter, r *http.Request, vie
 		data = map[string]interface{}{}
 	}
 
-	helpers := NewViewHelpers(self.api)
+	helpers := NewHttpHelpers(self.api)
 	viewsDir := self.api.Utl.Resource("views/portal")
 	layoutFile := filepath.Join(viewsDir, "layout.html")
 	viewFile := filepath.Join(viewsDir, view)
@@ -48,7 +48,7 @@ func (self *HttpResponse) View(w http.ResponseWriter, r *http.Request, view stri
 		data = map[string]interface{}{}
 	}
 
-	helpers := NewViewHelpers(self.api)
+	helpers := NewHttpHelpers(self.api)
 	vdir := self.api.Utl.Resource("views")
 	viewfile := filepath.Join(vdir, view)
 
@@ -60,7 +60,7 @@ func (self *HttpResponse) File(w http.ResponseWriter, r *http.Request, file stri
 		data = map[string]interface{}{}
 	}
 
-	helpers := NewViewHelpers(self.api)
+	helpers := NewHttpHelpers(self.api)
 	file = self.api.Utl.Resource(file)
 
 	response.File(w, file, helpers, data)
