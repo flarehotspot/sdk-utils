@@ -178,3 +178,14 @@ func (self *PluginApi) Uci() sdkuci.UciApi {
 func (self *PluginApi) Themes() sdkthemes.ThemesApi {
 	return self.ThemesAPI
 }
+
+func (self *PluginApi) Features() []string {
+	features := []string{}
+	if self.ThemesAPI.AdminTheme != nil {
+		features = append(features, "theme:admin")
+	}
+	if self.ThemesAPI.PortalTheme != nil {
+		features = append(features, "theme:portal")
+	}
+	return features
+}
