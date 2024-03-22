@@ -24,7 +24,7 @@ func Subscribe(event string) <-chan []byte {
 	return ch
 }
 
-func Unsubscribe(event string, ch chan []byte) {
+func Unsubscribe(event string, ch <-chan []byte) {
 	v, ok := subscribers.Load(event)
 	if ok {
 		channels := v.([]chan []byte)

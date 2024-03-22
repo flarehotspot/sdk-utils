@@ -6,9 +6,10 @@ import (
 
 	"encoding/json"
 
+	"github.com/flarehotspot/core/internal/utils/events"
+	sse "github.com/flarehotspot/core/internal/utils/sse"
 	sdkfs "github.com/flarehotspot/sdk/utils/fs"
 	paths "github.com/flarehotspot/sdk/utils/paths"
-	sse "github.com/flarehotspot/core/internal/utils/sse"
 )
 
 var (
@@ -96,4 +97,18 @@ func (acct *Account) Update(uname string, pass string, perms []string) error {
 // Delete deletes the account
 func (acct *Account) Delete() error {
 	return Delete(acct.Uname)
+}
+
+func (acct *Account) Subscribe(event string) <-chan []byte {
+	channel := acct.GetChannel()
+	return events.Subscribe(channel)
+}
+
+func (acct *Account) Unsubscribe(event string, ch <-chan []byte) {
+	channel := acct.GetChannel()
+	events.Unsubscribe(channel, ch)
+}
+
+func (acct *Account) GetChannel() string {
+	return "account:" + acct.Uname
 }

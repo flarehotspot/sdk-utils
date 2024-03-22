@@ -33,4 +33,10 @@ type Account interface {
 	// Emit events to the browser for this account.
 	// Events will be propagated to the client's browser via server-sent events.
 	Emit(event string, data interface{})
+
+	// Subscribe to events for this account.
+	Subscribe(event string) <-chan []byte
+
+	// Unsubscribe from events for this account.
+	Unsubscribe(event string, ch <-chan []byte)
 }
