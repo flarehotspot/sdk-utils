@@ -211,3 +211,11 @@ It returns the [`ThemesApi`](../themes-api/) object which is used to manage syst
 themes := api.Themes()
 fmt.Println(themes) // ThemesApi
 ```
+
+### Features
+
+Returns the implement features of the plugin.
+```go
+features := api.Features()
+fmt.Println(features) // []string{"feature1", "feature2"}
+```
