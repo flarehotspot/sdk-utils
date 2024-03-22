@@ -8,18 +8,20 @@ import (
 	fs "github.com/flarehotspot/sdk/utils/fs"
 	sdkfs "github.com/flarehotspot/sdk/utils/fs"
 	paths "github.com/flarehotspot/sdk/utils/paths"
+	sdkstr "github.com/flarehotspot/sdk/utils/strings"
 )
 
-func NewPLuginConfig(pkg string) *PluginConfig {
-	return &PluginConfig{pkg}
+func NewPLuginConfig(key string, pkg string) *PluginConfig {
+	return &PluginConfig{key, pkg}
 }
 
 type PluginConfig struct {
+	key string
 	pkg string
 }
 
 func (c *PluginConfig) configPath() string {
-	return filepath.Join(paths.ConfigDir, "plugins", c.pkg+".json")
+	return filepath.Join(paths.ConfigDir, "plugins", c.pkg, sdkstr.Slugify(c.key)+".json")
 }
 
 func (c *PluginConfig) Get(v interface{}) error {
@@ -32,7 +34,7 @@ func (c *PluginConfig) Get(v interface{}) error {
 }
 
 func (c *PluginConfig) Save(v interface{}) error {
-	dir := filepath.Join(paths.ConfigDir, "plugins")
+	dir := filepath.Join(paths.ConfigDir, "plugins", c.pkg)
 	err := fs.EnsureDir(dir)
 	if err != nil {
 		return err

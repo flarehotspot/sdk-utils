@@ -5,6 +5,10 @@ import (
 	"github.com/flarehotspot/sdk/api/config"
 )
 
+const (
+	DEFAULT_CONFIG_KEY = "default"
+)
+
 func NewConfigApi(api *PluginApi) *ConfigApi {
 	return &ConfigApi{api}
 }
@@ -13,8 +17,11 @@ type ConfigApi struct {
 	api *PluginApi
 }
 
-func (self *ConfigApi) Plugin() sdkcfg.PluginCfgApi {
-	return cfgapi.NewPluginCfgApi(self.api.Pkg())
+func (self *ConfigApi) Plugin(key string) sdkcfg.PluginCfgApi {
+	if key == "" {
+		key = DEFAULT_CONFIG_KEY
+	}
+	return cfgapi.NewPluginCfgApi(key, self.api.Pkg())
 }
 
 func (self *ConfigApi) Application() sdkcfg.AppCfgApi {

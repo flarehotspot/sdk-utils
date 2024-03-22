@@ -16,5 +16,5 @@ type ConfigApi interface {
 	Bandwidth(ifname string) BandwidthCfgApi
 
 	// Get the plugin configuration guration api.
-	Plugin() PluginCfgApi
+	Plugin(key string) PluginCfgApi
 }
