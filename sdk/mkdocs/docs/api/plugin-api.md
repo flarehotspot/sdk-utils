@@ -217,5 +217,13 @@ fmt.Println(themes) // ThemesApi
 Returns the implement features of the plugin.
 ```go
 features := api.Features()
-fmt.Println(features) // []string{"feature1", "feature2"}
+fmt.Println(features) // []string{"theme:admin", "theme:portal"}
 ```
+
+Below are the available features and their descriptions:
+
+| Feature | Description |
+| --- | --- |
+| `theme:admin` | Plugin provides an admin theme
+| `theme:portal` | Plugin provides a portal theme
+
