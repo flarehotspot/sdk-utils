@@ -11,17 +11,18 @@ import (
 	"github.com/flarehotspot/core/internal/db/models"
 	"github.com/flarehotspot/core/internal/network"
 	"github.com/flarehotspot/core/internal/utils/migrate"
-	"github.com/flarehotspot/sdk/api/accounts"
-	"github.com/flarehotspot/sdk/api/ads"
-	"github.com/flarehotspot/sdk/api/config"
-	"github.com/flarehotspot/sdk/api/connmgr"
-	"github.com/flarehotspot/sdk/api/http"
-	"github.com/flarehotspot/sdk/api/inappur"
-	"github.com/flarehotspot/sdk/api/network"
-	"github.com/flarehotspot/sdk/api/payments"
-	"github.com/flarehotspot/sdk/api/plugin"
-	"github.com/flarehotspot/sdk/api/themes"
-	"github.com/flarehotspot/sdk/api/uci"
+	sdkacct "github.com/flarehotspot/sdk/api/accounts"
+	sdkads "github.com/flarehotspot/sdk/api/ads"
+	sdkcfg "github.com/flarehotspot/sdk/api/config"
+	sdkconnmgr "github.com/flarehotspot/sdk/api/connmgr"
+	sdkhttp "github.com/flarehotspot/sdk/api/http"
+	sdkinappur "github.com/flarehotspot/sdk/api/inappur"
+	sdklogger "github.com/flarehotspot/sdk/api/logger"
+	sdknet "github.com/flarehotspot/sdk/api/network"
+	sdkpayments "github.com/flarehotspot/sdk/api/payments"
+	sdkplugin "github.com/flarehotspot/sdk/api/plugin"
+	sdkthemes "github.com/flarehotspot/sdk/api/themes"
+	sdkuci "github.com/flarehotspot/sdk/api/uci"
 )
 
 func NewPluginApi(dir string, pmgr *PluginsMgr, trfkMgr *network.TrafficMgr) *PluginApi {
@@ -52,6 +53,7 @@ func NewPluginApi(dir string, pmgr *PluginsMgr, trfkMgr *network.TrafficMgr) *Pl
 	pluginApi.AdsAPI = NewAdsApi(pluginApi)
 	pluginApi.InAppPurchaseAPI = NewInAppPurchaseApi(pluginApi)
 	pluginApi.UciAPI = NewUciApi()
+	pluginApi.LoggerAPI = NewLoggerApi()
 
 	log.Println("NewPluginApi: ", dir, " - ", info.Package, " - ", info.Name, " - ", info.Version, " - ", info.Description)
 
@@ -77,6 +79,7 @@ type PluginApi struct {
 	ClntMgr          *connmgr.SessionsMgr
 	UciAPI           *UciApi
 	Utl              *PluginUtils
+	LoggerAPI        *LoggerApi
 }
 
 func (self *PluginApi) InitCoreApi(coreApi *PluginApi) {
@@ -188,4 +191,8 @@ func (self *PluginApi) Features() []string {
 		features = append(features, "theme:portal")
 	}
 	return features
+}
+
+func (self *PluginApi) Logger() sdklogger.LoggerApi {
+	return self.LoggerAPI
 }

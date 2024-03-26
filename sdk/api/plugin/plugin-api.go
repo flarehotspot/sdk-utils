@@ -15,6 +15,7 @@ import (
 	sdkconnmgr "github.com/flarehotspot/sdk/api/connmgr"
 	sdkhttp "github.com/flarehotspot/sdk/api/http"
 	sdkinappur "github.com/flarehotspot/sdk/api/inappur"
+	sdklogger "github.com/flarehotspot/sdk/api/logger"
 	sdknet "github.com/flarehotspot/sdk/api/network"
 	sdkpayments "github.com/flarehotspot/sdk/api/payments"
 	sdktheme "github.com/flarehotspot/sdk/api/themes"
@@ -89,4 +90,6 @@ type PluginApi interface {
 
 	// Features returns a slice of strings representing the features supported by the plugin.
 	Features() []string
+
+	Logger() sdklogger.LoggerApi
 }
