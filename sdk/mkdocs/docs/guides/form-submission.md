@@ -24,6 +24,8 @@ In this example, we are using the `Post` method from [PluginRouter](../api/http-
 
 Then we are decoding the form data using the `json.NewDecoder(r.Body).Decode(&data)` method. The `json.NewDecoder(r.Body).Decode(&data)` method decodes the form data from the request body and stores it in the `data` variable.
 
+Lastly, the `Name` method is used to give the route a name.
+
 ## 2. Form Component {#form-component}
 
 To submit a form, we need to prevent the default form submission by using the `@click.prevent` directive on the form tag.
