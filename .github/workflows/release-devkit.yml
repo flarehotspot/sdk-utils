@@ -43,11 +43,12 @@ jobs:
       - run: cp go.work.default go.work
       - run: go run ./core/internal/cli/flare-internal.go create-devkit
       - run: tree ./devkit-release
-      - uses: actions/upload-artifact@v4
-        with:
-          name: devkit-${{ matrix.distro }}-${{ matrix.goarch }}
-          path: devkit-release/**/*.zip
-          retention-days: 1
+      - run: sudo mkdir -p /var/tmp/gh-output && cp -r devkit-release/. /var/tmp/gh-output
+      # - uses: actions/upload-artifact@v4
+      #   with:
+      #     name: devkit-${{ matrix.distro }}-${{ matrix.goarch }}
+      #     path: devkit-release/**/*.zip
+      #     retention-days: 1
 
   build-arm:
     runs-on: self-hosted-x64
@@ -95,11 +96,12 @@ jobs:
               ./flare install-go ./go && \
               ./flare-internal create-devkit
       - run: tree ./devkit-release
-      - uses: actions/upload-artifact@v4
-        with:
-          name: devkit-${{ matrix.distro }}-${{ matrix.goarch }}
-          path: devkit-release/**/*.zip
-          retention-days: 1
+      - run: sudo mkdir -p /var/tmp/gh-output && cp -r devkit-release/. /var/tmp/gh-output
+      # - uses: actions/upload-artifact@v4
+      #   with:
+      #     name: devkit-${{ matrix.distro }}-${{ matrix.goarch }}
+      #     path: devkit-release/**/*.zip
+      #     retention-days: 1
 
   push-sdk:
     runs-on: self-hosted-x64
@@ -135,9 +137,10 @@ jobs:
           sudo rm -rf ./.??* || true
           ls -la ./
       - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-        with:
-          path: devkit-release
+      # - uses: actions/download-artifact@v4
+      #   with:
+      #     path: devkit-release
+      - run: rm -rf ./devkit-release && cp -r /var/tmp/gh-output ./devkit-release && rm -rf /var/tmp/gh-output
       - run: tree ./devkit-release
       - uses: actions/setup-node@v3
         with:
