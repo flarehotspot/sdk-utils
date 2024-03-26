@@ -50,10 +50,36 @@ func NewLoggerApi() *LoggerApi {
 	// run a go routine for log retention
 
 	return &LoggerApi{
-		debugLogger: log.New(os.Stdout, "", log.LstdFlags|log.Llongfile),
-		infoLogger:  log.New(os.Stdout, "", log.LstdFlags|log.Llongfile),
-		errorLogger: log.New(os.Stdout, "", log.LstdFlags|log.Llongfile),
+		debugLogger: log.New(os.Stdout, Debugprefix, log.LstdFlags|log.Lshortfile),
+		infoLogger:  log.New(os.Stdout, Infoprefix, log.LstdFlags|log.Lshortfile),
+		errorLogger: log.New(os.Stdout, Errorprefix, log.LstdFlags|log.Lshortfile),
 	}
+}
+
+func getColor(level int) int {
+	switch level {
+	case 0:
+		return lightGreen
+	case 1:
+		return cyan
+	case 2:
+		return lightRed
+	}
+
+	return white
+}
+
+func getPrefix(level int) string {
+	switch level {
+	case 0:
+		return Infoprefix
+	case 1:
+		return Debugprefix
+	case 2:
+		return Errorprefix
+	}
+
+	return Infoprefix
 }
 
 func openLogFile(path string) (*os.File, error) {
@@ -74,13 +100,13 @@ func openLogFile(path string) (*os.File, error) {
 	return logFile, nil
 }
 
-func logToConsole(l *log.Logger, msg string) error {
+func logToConsole(l *log.Logger, msg string, level int) error {
 	// set output to console
 	l.SetOutput(os.Stdout)
 
 	// log to console
-	l.SetPrefix(colorize(yellow, Infoprefix))
-	err := l.Output(2, msg)
+	l.SetPrefix(colorize(getColor(level), getPrefix(level)))
+	err := l.Output(3, msg)
 	if err != nil {
 		log.Fatal("Error logging to console", err)
 		return err
@@ -89,20 +115,21 @@ func logToConsole(l *log.Logger, msg string) error {
 	return nil
 }
 
-func logToFile(l *log.Logger, msg string) error {
+func logToFile(l *log.Logger, msg string, level int) error {
 	// open file
 	file, err := openLogFile(Logfilename)
 	if err != nil {
 		log.Fatal("Error opening log file: ", err)
 		return err
 	}
+	defer file.Close()
 
 	// set output to file
 	l.SetOutput(file)
 
 	// log to file
-	l.SetPrefix(Debugprefix)
-	err = l.Output(2, msg)
+	l.SetPrefix(getPrefix(level))
+	err = l.Output(3, msg)
 	if err != nil {
 		log.Fatal("Error logging to file", err)
 		return err
@@ -112,15 +139,17 @@ func logToFile(l *log.Logger, msg string) error {
 }
 
 func (self *LoggerApi) Debug(msg string) error {
+	level := 1
+
 	// log to file
-	err := logToFile(self.debugLogger, msg)
+	err := logToFile(self.debugLogger, msg, level)
 	if err != nil {
 		log.Fatal("Error logging to file: ", err)
 		return err
 	}
 
 	// log to console
-	err = logToConsole(self.debugLogger, msg)
+	err = logToConsole(self.debugLogger, msg, level)
 	if err != nil {
 		log.Fatal("Error logging to console: ", err)
 		return err
@@ -130,15 +159,17 @@ func (self *LoggerApi) Debug(msg string) error {
 }
 
 func (self *LoggerApi) Info(msg string) error {
+	level := 0
+
 	// log to file
-	err := logToFile(self.infoLogger, msg)
+	err := logToFile(self.infoLogger, msg, level)
 	if err != nil {
 		log.Fatal("Error logging to file: ", err)
 		return err
 	}
 
 	// log to console
-	err = logToConsole(self.infoLogger, msg)
+	err = logToConsole(self.infoLogger, msg, level)
 	if err != nil {
 		log.Fatal("Error logging to console: ", err)
 		return err
@@ -148,15 +179,17 @@ func (self *LoggerApi) Info(msg string) error {
 }
 
 func (self *LoggerApi) Error(msg string) error {
+	level := 2
+
 	// log to file
-	err := logToFile(self.errorLogger, msg)
+	err := logToFile(self.errorLogger, msg, level)
 	if err != nil {
 		log.Fatal("Error logging to file: ", err)
 		return err
 	}
 
 	// log to console
-	err = logToConsole(self.errorLogger, msg)
+	err = logToConsole(self.errorLogger, msg, level)
 	if err != nil {
 		log.Fatal("Error logging to console: ", err)
 		return err
