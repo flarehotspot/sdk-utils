@@ -5,6 +5,8 @@ import (
 	"log"
 	"os"
 	"strconv"
+
+	sdkpaths "github.com/flarehotspot/sdk/utils/paths"
 )
 
 const (
@@ -37,7 +39,6 @@ type LoggerApi struct {
 }
 
 const (
-	Logdir      = "./.tmp/logs"
 	Logfilename = "app.log"
 	Infoprefix  = "[INFO] "
 	Debugprefix = "[DEBUG] "
@@ -83,15 +84,17 @@ func getPrefix(level int) string {
 }
 
 func openLogFile(path string) (*os.File, error) {
+	logdir := "/" + sdkpaths.TmpDir + "/logs"
+
 	// ensure log file directory exists
-	err := os.MkdirAll(Logdir, 0700)
+	err := os.MkdirAll(logdir, 0700)
 	if err != nil {
 		log.Fatal("Error creating log directory: ", err)
 		return nil, err
 	}
 
 	// opening/creating file
-	logFile, err := os.OpenFile(Logdir+"/"+path, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0644)
+	logFile, err := os.OpenFile(logdir+"/"+path, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0644)
 	if err != nil {
 		log.Fatal("Error creating log file: ", err)
 		return nil, err
