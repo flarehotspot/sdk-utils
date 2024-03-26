@@ -54,3 +54,10 @@ docker compose restart app
     username: admin
     password: admin
     ```
+
+## 4. Upgrading The SDK {#upgrade-sdk}
+
+To upgrade the SDK, download the latest release from the [SDK releases page](https://github.com/flarehotspot/sdk/releases) and extract the contents to your desired destination. Then copy your plugin directory into the `plugins` directory inside the new SDK.
+
+Now you can [start](#start-sdk) the new SDK runtime.
+
