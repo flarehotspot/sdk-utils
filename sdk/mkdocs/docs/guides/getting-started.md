@@ -43,7 +43,7 @@ Now you can access the Flare Hotspot web interface:
 - Admin Dashboard: [http://localhost:3000/admin](http://localhost:3000/admin)
 - Database Management: [http://localhost:8080](http://localhost:8080)
 
-To restart the server and recompile the code, you can run:
+To restart the server and recompile the code, open a new terminal then run:
 ```sh
 docker compose restart app
 ```
