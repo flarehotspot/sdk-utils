@@ -54,7 +54,7 @@ define(function(){
         var self = this;
         var formData = {amount: self.amount};
 
-        $flare.http.post('<% .Helpers.VueRoutePath "payment.received" %>', formData)
+        $flare.http.post('<% .Helpers.UrlForRoute "payment.received" %>', formData)
           .then(function(response){
             console.log(response);
           })
