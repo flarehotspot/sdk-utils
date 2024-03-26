@@ -14,7 +14,6 @@
 /plugins/*
 /bin
 .null*
-/flarelogs/*.log
 
 .DS_Store
 *.so

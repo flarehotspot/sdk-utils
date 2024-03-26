@@ -37,7 +37,7 @@ type LoggerApi struct {
 }
 
 const (
-	Logdir      = "./flarelogs"
+	Logdir      = "./.tmp/logs"
 	Logfilename = "app.log"
 	Infoprefix  = "[INFO] "
 	Debugprefix = "[DEBUG] "
