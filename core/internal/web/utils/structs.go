@@ -11,3 +11,7 @@ type TmpThemeList struct {
 		ThemePkg  string `json:"theme_pkg"`
 	} `json:"theme_portal"`
 }
+type SavedThemeData struct {
+	ThemeAdmin  string `json:"admin"`
+	ThemePortal string `json:"portal"`
+}
