@@ -2,203 +2,110 @@ package plugins
 
 import (
 	"fmt"
-	"log"
+	"math"
 	"os"
+	"reflect"
+	"runtime"
 	"strconv"
+	"time"
 
 	sdkpaths "github.com/flarehotspot/sdk/utils/paths"
+	wsv "github.com/flarehotspot/sdk/utils/wsv"
 )
 
 const (
-	timeFormat = "[15:04:05.000]"
-
 	reset = "\033[0m"
 
-	black        = 30
-	red          = 31
-	green        = 32
-	yellow       = 33
-	blue         = 34
-	magenta      = 35
-	cyan         = 36
-	lightGray    = 37
-	darkGray     = 90
-	lightRed     = 91
-	lightGreen   = 92
-	lightYellow  = 93
-	lightBlue    = 94
-	lightMagenta = 95
-	lightCyan    = 96
-	white        = 97
+	darkGray    = 90
+	lightRed    = 91
+	lightYellow = 93
+	lightBlue   = 94
 )
 
-type LoggerApi struct {
-	debugLogger *log.Logger
-	infoLogger  *log.Logger
-	errorLogger *log.Logger
-}
-
 const (
-	Logfilename = "app.log"
+	LogFilename = "app.log"
 	Infoprefix  = "[INFO] "
 	Debugprefix = "[DEBUG] "
 	Errorprefix = "[ERROR] "
 )
 
+const (
+	Info  = 0
+	Debug = 1
+	Error = 2
+)
+
+type LoggerApi struct{}
+
 func NewLoggerApi() *LoggerApi {
+	// TODO: create log rotation
 	// run a go routine for log rotation
 
+	// TODO: create log retention
 	// run a go routine for log retention
 
-	return &LoggerApi{
-		debugLogger: log.New(os.Stdout, Debugprefix, log.LstdFlags|log.Lshortfile),
-		infoLogger:  log.New(os.Stdout, Infoprefix, log.LstdFlags|log.Lshortfile),
-		errorLogger: log.New(os.Stdout, Errorprefix, log.LstdFlags|log.Lshortfile),
-	}
+	return &LoggerApi{}
 }
 
-func getColor(level int) int {
+func itoa(i int, wid int) int {
+	num := i
+	d := 1
+
+	for i >= 10 {
+		q := i / 10
+		i = q
+		d++
+	}
+
+	return num / int(math.Pow10(d-wid))
+}
+
+func getLevelAsStr(level int) string {
 	switch level {
 	case 0:
-		return lightGreen
+		return "INFO"
 	case 1:
-		return cyan
+		return "DEBUG"
 	case 2:
-		return lightRed
+		return "ERROR"
 	}
 
-	return white
+	return "INFO"
 }
 
-func getPrefix(level int) string {
+func colorizeLevel(level int) string {
+	var color int
 	switch level {
 	case 0:
-		return Infoprefix
+		color = lightBlue
 	case 1:
-		return Debugprefix
+		color = lightYellow
 	case 2:
-		return Errorprefix
+		color = lightRed
 	}
-
-	return Infoprefix
+	return colorize(color, getLevelAsStr(level))
 }
 
-func openLogFile(path string) (*os.File, error) {
+var std = NewLoggerApi()
+
+func openLogFile() (*os.File, error) {
 	logdir := "/" + sdkpaths.TmpDir + "/logs"
 
 	// ensure log file directory exists
 	err := os.MkdirAll(logdir, 0700)
 	if err != nil {
-		log.Fatal("Error creating log directory: ", err)
+		std.Info("Error creating log directory", "error", err)
 		return nil, err
 	}
 
-	// opening/creating file
-	logFile, err := os.OpenFile(logdir+"/"+path, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0644)
+	// opening/creating log file
+	logFile, err := os.OpenFile(logdir+"/"+LogFilename, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0644)
 	if err != nil {
-		log.Fatal("Error creating log file: ", err)
+		std.Error("Error creating log file", "error", err)
 		return nil, err
 	}
 
 	return logFile, nil
-}
-
-func logToConsole(l *log.Logger, msg string, level int) error {
-	// set output to console
-	l.SetOutput(os.Stdout)
-
-	// log to console
-	l.SetPrefix(colorize(getColor(level), getPrefix(level)))
-	err := l.Output(3, msg)
-	if err != nil {
-		log.Fatal("Error logging to console", err)
-		return err
-	}
-
-	return nil
-}
-
-func logToFile(l *log.Logger, msg string, level int) error {
-	// open file
-	file, err := openLogFile(Logfilename)
-	if err != nil {
-		log.Fatal("Error opening log file: ", err)
-		return err
-	}
-	defer file.Close()
-
-	// set output to file
-	l.SetOutput(file)
-
-	// log to file
-	l.SetPrefix(getPrefix(level))
-	err = l.Output(3, msg)
-	if err != nil {
-		log.Fatal("Error logging to file", err)
-		return err
-	}
-
-	return nil
-}
-
-func (self *LoggerApi) Debug(msg string) error {
-	level := 1
-
-	// log to file
-	err := logToFile(self.debugLogger, msg, level)
-	if err != nil {
-		log.Fatal("Error logging to file: ", err)
-		return err
-	}
-
-	// log to console
-	err = logToConsole(self.debugLogger, msg, level)
-	if err != nil {
-		log.Fatal("Error logging to console: ", err)
-		return err
-	}
-
-	return nil
-}
-
-func (self *LoggerApi) Info(msg string) error {
-	level := 0
-
-	// log to file
-	err := logToFile(self.infoLogger, msg, level)
-	if err != nil {
-		log.Fatal("Error logging to file: ", err)
-		return err
-	}
-
-	// log to console
-	err = logToConsole(self.infoLogger, msg, level)
-	if err != nil {
-		log.Fatal("Error logging to console: ", err)
-		return err
-	}
-
-	return nil
-}
-
-func (self *LoggerApi) Error(msg string) error {
-	level := 2
-
-	// log to file
-	err := logToFile(self.errorLogger, msg, level)
-	if err != nil {
-		log.Fatal("Error logging to file: ", err)
-		return err
-	}
-
-	// log to console
-	err = logToConsole(self.errorLogger, msg, level)
-	if err != nil {
-		log.Fatal("Error logging to console: ", err)
-		return err
-	}
-
-	return nil
 }
 
 func colorize(colorCode int, v string) string {
@@ -207,3 +114,159 @@ func colorize(colorCode int, v string) string {
 
 // TODO: read logs
 // func readLogs() {}
+
+func (l *LoggerApi) Info(title string, body ...any) error {
+	calldepth := 1
+	level := 0
+
+	file, line := getCallerFileLine(calldepth)
+
+	logToConsole(file, line, level, title, body...)
+	logToFile(file, line, level, title, body...)
+
+	return nil
+}
+
+func (l *LoggerApi) Debug(title string, body ...any) error {
+	calldepth := 1
+	level := 1
+
+	file, line := getCallerFileLine(calldepth)
+
+	logToConsole(file, line, level, title, body...)
+	logToFile(file, line, level, title, body...)
+
+	return nil
+}
+
+func (l *LoggerApi) Error(title string, body ...any) error {
+	calldepth := 1
+	level := 2
+
+	file, line := getCallerFileLine(calldepth)
+
+	logToConsole(file, line, level, title, body...)
+	logToFile(file, line, level, title, body...)
+
+	return nil
+}
+
+func getCallerFileLine(calldepth int) (file string, line int) {
+	calldepth++
+
+	_, file, line, ok := runtime.Caller(calldepth)
+	if !ok {
+		std.Error("Cannot retrieve caller")
+	}
+
+	short := file
+	for i := len(file) - 1; i > 0; i-- {
+		if file[i] == '/' {
+			short = file[i+1:]
+			break
+		}
+	}
+	file = short
+
+	return
+}
+
+func logToConsole(file string, line int, level int, title string, body ...any) {
+	// date and time data
+	now := time.Now()
+	hour, min, sec := now.Clock()
+	year, month, day := now.Date()
+	nano := itoa(now.Nanosecond(), 3)
+
+	metadata := fmt.Sprintf("[%s:%d %d/%d/%d %d:%d:%d.%d]", file, line, year, month, day, hour, min, sec, nano)
+	content := colorize(darkGray, metadata)
+	content = fmt.Sprintf("%s\n%s %s", content, colorizeLevel(level), title)
+
+	// adding all body key-value pairs if any
+	for i, arg := range body {
+		value := reflect.ValueOf(arg)
+		var str string
+
+		switch value.Kind() {
+		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+			str = fmt.Sprintf("%d", value.Int())
+		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+			str = fmt.Sprintf("%d", value.Uint())
+		case reflect.Float32, reflect.Float64:
+			str = fmt.Sprintf("%f", value.Float())
+		case reflect.String:
+			str = value.String()
+		// Add cases for other types as needed
+		default:
+			str = fmt.Sprintf("%v", arg)
+		}
+
+		// if i is last and is even,
+		// means that the value is not given
+		if i == len(body)-1 && i%2 == 0 {
+			content = fmt.Sprintf("%s\n  \"%s\": -", content, str)
+			break
+		}
+
+		// if i is key
+		if i%2 == 0 {
+			content = fmt.Sprintf("%s\n  \"%v\": ", content, str)
+			continue
+		}
+
+		// if i is value
+		content = fmt.Sprintf("%s\"%s\"", content, str)
+	}
+
+	fmt.Println(content)
+}
+
+func logToFile(file string, line int, level int, title string, body ...any) {
+	// log file format:
+	// level title YYYY M d H m s n file line
+	// "key" "value" // if any
+	// --
+
+	f, err := openLogFile()
+	if err != nil {
+		std.Error("Failed to create log file", "error", err)
+		panic(err)
+	}
+	defer f.Close()
+
+	var content [][]string
+
+	// date and time data
+	now := time.Now()
+	hour, min, sec := now.Clock()
+	year, month, day := now.Date()
+	nano := itoa(now.Nanosecond(), 3)
+
+	var logInfo []string
+	logInfo = append(logInfo, strconv.Itoa(level), title, strconv.Itoa(year), strconv.Itoa(int(month)), strconv.Itoa(day), strconv.Itoa(hour), strconv.Itoa(min), strconv.Itoa(sec), strconv.Itoa(nano), file, strconv.Itoa(line))
+
+	for _, arg := range body {
+		value := reflect.ValueOf(arg)
+		var str string
+
+		switch value.Kind() {
+		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+			str = fmt.Sprintf("%d", value.Int())
+		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+			str = fmt.Sprintf("%d", value.Uint())
+		case reflect.Float32, reflect.Float64:
+			str = fmt.Sprintf("%f", value.Float())
+		case reflect.String:
+			str = value.String()
+		// Add cases for other types as needed
+		default:
+			str = fmt.Sprintf("%v", arg)
+		}
+
+		logInfo = append(logInfo, str)
+	}
+
+	content = append(content, logInfo)
+
+	f.WriteString(wsv.Serialize(content) + "\n")
+}

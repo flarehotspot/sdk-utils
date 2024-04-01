@@ -1,15 +1,12 @@
 package sdklogger
 
 type LoggerApi interface {
-	// Logs info msg to console and log file,
-	// adds additional info if build in dev
-	Debug(msg string) error
+	// Logs title and body with info level to console and log file
+	Debug(title string, body ...any) error
 
-	// Logs debug msg to console and log file,
-	// adds additional info if build in dev
-	Info(msg string) error
+	// Logs title and body with debug level to console and log file
+	Info(title string, body ...any) error
 
-	// Logs error msg to console and log file,
-	// adds additional info if build in dev
-	Error(msg string) error
+	// Logs title and body with error level to console and log file
+	Error(title string, body ...any) error
 }
