@@ -159,14 +159,14 @@ func getCallerFileLine(calldepth int) (file string, line int) {
 		std.Error("Cannot retrieve caller")
 	}
 
-	short := file
-	for i := len(file) - 1; i > 0; i-- {
-		if file[i] == '/' {
-			short = file[i+1:]
-			break
-		}
-	}
-	file = short
+	// short := file
+	// for i := len(file) - 1; i > 0; i-- {
+	// 	if file[i] == '/' {
+	// 		short = file[i+1:]
+	// 		break
+	// 	}
+	// }
+	// file = short
 
 	return
 }
