@@ -33,7 +33,7 @@ func cacheFile(k string) (f string, err error) {
 }
 
 func cacheKey(files []string) string {
-	hash, _ := crypt.FastHashFiles(files...)
+	hash, _ := crypt.SHA1Files(files...)
 	return hash
 }
 

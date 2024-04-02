@@ -53,3 +53,9 @@ func Init(api sdkplugin.PluginApi) {
 
 !!! note
     The `api` variable is an instance of the [PluginApi](../api/plugin-api.md), the root API of the Flare Hotspot SDK. Throughout the documentation, when you see `api`, it refers to this variable.
+
+!!! warning
+    For linux users, you must change the file permissions to fix errors in VSCode:
+    ```sh
+    sudo chown -R $USER .
+    ```

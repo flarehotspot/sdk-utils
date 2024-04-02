@@ -19,7 +19,7 @@ err := api.Config().Plugin(config_key).Save(my_config)
 
 Plugin configuration is separated into different keys for ease of management.
 
-To get your plugin data, use the [ConfigApi.Plugin.Get](../api/config-api.md#plugin) method:
+To get your plugin data for a specific key, use the [ConfigApi.Plugin.Get](../api/config-api.md#plugin) method:
 ```go
 
 my_config, err := api.Config().Plugin(my_key).Get()
