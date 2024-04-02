@@ -22,29 +22,6 @@ func AdminRoutes(g *plugins.CoreGlobals) {
 
 	g.CoreAPI.HttpAPI.VueRouter().RegisterAdminRoutes([]sdkhttp.VueAdminRoute{
 		{
-<<<<<<< HEAD
-			RouteName: "admin.welcome",
-			RoutePath: "/welcome/:name",
-			Component: "admin/Welcome.vue",
-			HandlerFunc: func(w http.ResponseWriter, r *http.Request) {
-				api.LoggerAPI.Info("Handling admin welcome route")
-				name := api.Http().MuxVars(r)["name"]
-				data := map[string]string{
-					"name": name,
-				}
-				g.CoreAPI.HttpAPI.VueResponse().Json(w, data, 200)
-			},
-			Middlewares: []func(http.Handler) http.Handler{},
-			PermitFn: func(perms []string) bool {
-				return true
-			},
-		},
-	}...)
-
-	adminR.Group("/themes", func(subrouter sdkhttp.HttpRouterInstance) {
-		subrouter.Get("/", func(w http.ResponseWriter, r *http.Request) {
-			// return the settings view
-=======
 			RouteName:   "theme-picker",
 			RoutePath:   "/theme-picker",
 			HandlerFunc: controllers.GetAvailableThemes(g),
@@ -57,7 +34,6 @@ func AdminRoutes(g *plugins.CoreGlobals) {
 			Component:   "admin/LogViewer.vue",
 		},
 	}...)
->>>>>>> dev/feat-logviewer
 
 	g.CoreAPI.HttpAPI.VueRouter().AdminNavsFunc(func(acct sdkacct.Account) []sdkhttp.VueAdminNav {
 		return []sdkhttp.VueAdminNav{
