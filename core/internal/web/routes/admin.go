@@ -27,6 +27,12 @@ func AdminRoutes(g *plugins.CoreGlobals) {
 			HandlerFunc: controllers.GetAvailableThemes(g),
 			Component:   "admin/ThemePicker.vue",
 		},
+		{
+			RouteName:   "logger",
+			RoutePath:   "/logger",
+			HandlerFunc: controllers.GetLogs(g),
+			Component:   "admin/LogViewer.vue",
+		},
 	}...)
 
 	g.CoreAPI.HttpAPI.VueRouter().AdminNavsFunc(func(acct sdkacct.Account) []sdkhttp.VueAdminNav {
@@ -35,6 +41,11 @@ func AdminRoutes(g *plugins.CoreGlobals) {
 				Category:  sdkhttp.NavCategoryThemes,
 				Label:     "Select Theme",
 				RouteName: "theme-picker",
+			},
+			{
+				Category:  sdkhttp.NavCategorySystem,
+				Label:     "View Logs",
+				RouteName: "logger",
 			},
 		}
 	})
