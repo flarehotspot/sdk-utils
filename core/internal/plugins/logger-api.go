@@ -1,7 +1,10 @@
 package plugins
 
 import (
+	"bufio"
 	"fmt"
+	"io"
+	"log"
 	"math"
 	"os"
 	"reflect"
@@ -113,7 +116,74 @@ func colorize(colorCode int, v string) string {
 }
 
 // TODO: read logs
-// func readLogs() {}
+func ReadLogs() {
+	// TODO : this method should only be accessible by the core
+	// It should handle file renaming in case of log rotation
+	logdir := "/" + sdkpaths.TmpDir + "/logs"
+
+	file, err := os.Open(logdir + "/" + LogFilename)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+
+	rd := bufio.NewReader(file)
+
+	for {
+		l, err := rd.ReadString('\n')
+
+		if err == io.EOF {
+			fmt.Println(l)
+			break
+		}
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		fmt.Println(l)
+	}
+
+	// scanner := bufio.NewScanner(file)
+	// scanner.Split(bufio.ScanLines)
+	// var txtlines []string
+
+	// for scanner.Scan() {
+	// 	// txtlines = append(txtlines, scanner.Text())
+
+	// 	level, title, year, month, day, hour, min, sec, nano, file, line, body, err := ParseLogLine(scanner.Text())
+	// 	if err != nil {
+	// 		fmt.Println("level", level)
+	// 		fmt.Println("title", title)
+	// 		fmt.Println("year", year)
+	// 		fmt.Println("month", month)
+	// 		fmt.Println("day", day)
+	// 		fmt.Println("hour", hour)
+	// 		fmt.Println("min", min)
+	// 		fmt.Println("sec", sec)
+	// 		fmt.Println("nano", nano)
+	// 		fmt.Println("file", file)
+	// 		fmt.Println("line", line)
+	// 		fmt.Println("body", body)
+	// 	}
+	// }
+}
+
+// TODO : parse read lines
+func ParseLogLine(logLine string) (level int, title string, year int, month int, day int, hour int, min int, sec int, nano int, file string, fileline int, body []string, err error) {
+	values, err := wsv.ParseLineAsArray(logLine)
+
+	if err != nil {
+		return
+	}
+
+	if len(values) >= 11 {
+		body = values[11:]
+	}
+
+	return
+}
 
 func (l *LoggerApi) Info(title string, body ...any) error {
 	calldepth := 1
@@ -128,6 +198,10 @@ func (l *LoggerApi) Info(title string, body ...any) error {
 }
 
 func (l *LoggerApi) Debug(title string, body ...any) error {
+	// TODO : remove this function
+	// just for testing
+	ReadLogs()
+
 	calldepth := 1
 	level := 1
 
