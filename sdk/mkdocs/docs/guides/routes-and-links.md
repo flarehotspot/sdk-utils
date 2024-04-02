@@ -78,10 +78,10 @@ See [Route Fields](#route-fields) for the definition of each fields used to defi
 Below is the brief definition of each fields used to define the [Portal Route](../api/vue-router-api.md#portalroute) and [Admin Route](../api/vue-router-api.md#adminroute).
 
 ### RouteName (required) {#routename}
-This field can be used to reference this route in case we want to link this page from another page using the [HttpHelpers.VueRoutePath](../api/http-helpers.md#vueroutepath) method. Learn more about [creating a link](./creating-a-link.md).
+This field can be used to reference this route in case we want to link this page from another page using the [HttpHelpers.VueRoutePath](../api/http-helpers.md#vueroutepath) method. Learn more about [creating a link](#creating-a-link).
 
 ### RoutePath (required) {#routepath}
-This field is used to match the URL in the browser which will trigger the portal route. Route params can be extracted using
+This field is used to match the URL in the browser to [portal](#portal-routes) or [admin](#admin-routes) route. Route params can be extracted using
 [HttpApi.MuxVars](../api/http-api.md#muxvars) method. For example, to get the `name` param from the route path `/welcome/:name`, you would do:
 
 ```go title="main.go"

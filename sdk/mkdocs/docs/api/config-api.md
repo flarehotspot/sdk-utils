@@ -90,7 +90,7 @@ err := api.Config().Plugin("some_key").Save(MyPluginCfg{
 })
 ```
 
-To get your plugin configuration, use the `Get` method.
+To get your plugin configuration for a specific key, use the `Get` method.
 
 ```go
 var myCfg MyPluginCfg

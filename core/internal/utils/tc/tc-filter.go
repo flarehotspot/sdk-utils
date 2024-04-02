@@ -23,7 +23,7 @@ type TcFilter struct {
 }
 
 func NewTcFilter(dev string, ip string, netmask int) (*TcFilter, error) {
-	seg, err := newIpsegt(ip, netmask)
+	seg, err := newIpsegmt(ip, netmask)
 	if err != nil {
 		log.Println("tc error: " + err.Error())
 		return nil, err
@@ -65,7 +65,7 @@ func (self *TcFilter) maskPosition(dev string) uint8 {
 // Return hash bucket handle for a given ip
 // TODO: Fix the max netmask limitation of /17
 func (self *TcFilter) hashBktFor(clientIp string) (hex string, err error) {
-	ipsg, err := newIpsegt(clientIp, self.ipsegmt.netmask)
+	ipsg, err := newIpsegmt(clientIp, self.ipsegmt.netmask)
 	if err != nil {
 		return hex, err
 	}

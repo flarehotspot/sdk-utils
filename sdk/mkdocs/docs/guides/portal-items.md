@@ -11,7 +11,7 @@ A portal item is just a link to an existing [portal route](./routes-and-links.md
 To register a portal item to be displayed in the captive portal, we will use the [VueRouterApi.PortalItemsFunc](../api/vue-router-api.md#portalitemsfunc) method:
 
 ```go
-api.Http().VueRouter().PortalItemsFunc(func(r *http.Request) []sdkhttp.VuePortalItem {
+api.Http().VueRouter().PortalItemsFunc(func(clnt sdkconnmgr.ClientDevice) []sdkhttp.VuePortalItem {
     portalItem := sdkhttp.VuePortalItem{
         Label:       "Welcome",
         IconPath:    "icons/welcome.png",

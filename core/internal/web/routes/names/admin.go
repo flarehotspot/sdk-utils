@@ -5,4 +5,5 @@ const (
 	AdminThemeIndex  = "admin.theme.index"
 	AdminThemeLogin  = "admin.theme.login"
 	AdminNavs        = "admin.navs"
+	RouteAdminThemes = "admin.themes.save"
 )

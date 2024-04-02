@@ -1,18 +1,15 @@
 package routes
 
 import (
-	"net/http"
-
-	"github.com/flarehotspot/core/internal/config"
 	"github.com/flarehotspot/core/internal/plugins"
 	"github.com/flarehotspot/core/internal/web/controllers"
 	"github.com/flarehotspot/core/internal/web/router"
 	routenames "github.com/flarehotspot/core/internal/web/routes/names"
+	sdkacct "github.com/flarehotspot/sdk/api/accounts"
 	sdkhttp "github.com/flarehotspot/sdk/api/http"
 )
 
 func AdminRoutes(g *plugins.CoreGlobals) {
-	api := g.CoreAPI
 	rootR := router.RootRouter
 	adminR := g.CoreAPI.HttpAPI.HttpRouter().AdminRouter()
 
@@ -21,9 +18,11 @@ func AdminRoutes(g *plugins.CoreGlobals) {
 
 	rootR.Handle("/admin", adminIndexCtrl).Methods("GET").Name(routenames.RouteAdminIndex)
 	adminR.Get("/events", adminSseCtrl).Name(routenames.RouteAdminSse)
+	adminR.Post("/themes", controllers.SaveThemeSettings(g)).Name(routenames.RouteAdminThemes)
 
 	g.CoreAPI.HttpAPI.VueRouter().RegisterAdminRoutes([]sdkhttp.VueAdminRoute{
 		{
+<<<<<<< HEAD
 			RouteName: "admin.welcome",
 			RoutePath: "/welcome/:name",
 			Component: "admin/Welcome.vue",
@@ -45,31 +44,33 @@ func AdminRoutes(g *plugins.CoreGlobals) {
 	adminR.Group("/themes", func(subrouter sdkhttp.HttpRouterInstance) {
 		subrouter.Get("/", func(w http.ResponseWriter, r *http.Request) {
 			// return the settings view
+=======
+			RouteName:   "theme-picker",
+			RoutePath:   "/theme-picker",
+			HandlerFunc: controllers.GetAvailableThemes(g),
+			Component:   "admin/ThemePicker.vue",
+		},
+		{
+			RouteName:   "logger",
+			RoutePath:   "/logger",
+			HandlerFunc: controllers.GetLogs(g),
+			Component:   "admin/LogViewer.vue",
+		},
+	}...)
+>>>>>>> dev/feat-logviewer
 
-			allPlugins := api.PluginsMgr().All()
-
-			for _, p := range allPlugins {
-				pluginApi := p.(*plugins.PluginApi)
-				if pluginApi.ThemesAPI.AdminTheme != nil {
-					// plugin has admin theme
-				}
-
-				if pluginApi.ThemesAPI.PortalTheme != nil {
-					// plugin has portal theme
-				}
-			}
-
-		}).Name("admin.themes.settings")
-
-		subrouter.Post("/save", func(w http.ResponseWriter, r *http.Request) {
-			// save the settings
-			cfg := config.ThemesConfig{
-				Portal: "com.flarego.xxxx",
-				Admin:  "com.flarego.xxxx",
-			}
-			config.WriteThemesConfig(cfg)
-			// check error
-		}).Name("admin.themes.save")
+	g.CoreAPI.HttpAPI.VueRouter().AdminNavsFunc(func(acct sdkacct.Account) []sdkhttp.VueAdminNav {
+		return []sdkhttp.VueAdminNav{
+			{
+				Category:  sdkhttp.NavCategoryThemes,
+				Label:     "Select Theme",
+				RouteName: "theme-picker",
+			},
+			{
+				Category:  sdkhttp.NavCategorySystem,
+				Label:     "View Logs",
+				RouteName: "logger",
+			},
+		}
 	})
-
 }

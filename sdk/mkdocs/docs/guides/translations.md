@@ -16,3 +16,9 @@ saveText := api.Translate("label", "save")
 ```
 
 In this example, the `Translate` method will look for the file `resources/translations/en/label/save.txt`. The contents of the file will be used as the template for the translated text. For more advanced translations, see [PluginApi.Translate](../api/plugin-api.md#translate) method documentation.
+
+The translate method can also be called within views using the `<% .Helpers.Translate %>` helper method. For example:
+
+```html
+<h1><% .Helpers.Translate "msg_key" %></h1>
+```

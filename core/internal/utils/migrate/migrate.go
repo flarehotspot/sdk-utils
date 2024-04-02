@@ -27,12 +27,11 @@ func MigrateUp(db *sql.DB, dir string) error {
 		}
 
 		if !done {
-			err = execFile(f, ctx, db)
-			if err != nil {
+			if err := execFile(f, ctx, db); err != nil {
 				return err
 			}
-			err := commitFile(f, ctx, db)
-			if err != nil {
+
+			if err := commitFile(f, ctx, db); err != nil {
 				return err
 			}
 		}
