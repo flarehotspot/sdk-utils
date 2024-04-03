@@ -6,7 +6,7 @@ The `SessionsMgrApi` contains methods to manage the [ClientDevice](./client-devi
 
 ### Connect
 
-This method will connect the client device to the internet if the client device has available session to consume.
+This method will connect the client device to the internet if the client device has available [ClientSession](./client-session.md) to consume.
 It takes a [context](https://gobyexample.com/context), a [ClientDevice](./client-device.md), and a notification `string` as parameters.
 
 ```go
@@ -18,7 +18,7 @@ func (w http.ResponseWriter, r *http.Request) {
 
 ### Disconnect
 
-This method will disconnect the client device from the internet. It will also pause the current running session of the client device. It takes a [context](https://gobyexample.com/context), a [ClientDevice](./client-device.md) and a notification `string` as parameters.
+This method will disconnect the client device from the internet. It will also pause the current running [ClientSession](./client-session.md) of the client device. It takes a [context](https://gobyexample.com/context), a [ClientDevice](./client-device.md) and a notification `string` as parameters.
 
 ```go
 func (w http.ResponseWriter, r *http.Request) {
@@ -80,4 +80,35 @@ func (w http.ResponseWriter, r *http.Request) {
 
 ### CurrSession
 
-This is the current [running session](./client-session.md) of the [ClientDevice](./client-device.md).
+This is the current running [ClientSession](./client-session.md) of the [ClientDevice](./client-device.md).
+
+```go
+func (w http.ResponseWriter, r *http.Request) {
+    clnt, _ := api.Http().GetClientDevice(r)
+    session, ok = api.SessionsMgr().CurrSession(clnt)
+}
+```
+
+### GetSession
+
+Returns any available [ClientSession](./client-session.md) for the given [ClientDevice](./client-device.md) ID. This may include the current running session or any paused session.
+
+```go
+func (w http.ResponseWriter, r *http.Request) {
+    ctx := r.Context()
+    clnt, _ := api.Http().GetClientDevice(r)
+    session, err = api.SessionsMgr().GetSession(ctx, clnt.Id())
+}
+```
+
+### HasSession
+
+Returns `true` if the [ClientDevice](./client-device.md) has available session, otherwise `false`.
+
+```go
+func (w http.ResponseWriter, r *http.Request) {
+    ctx := r.Context()
+    clnt, _ := api.Http().GetClientDevice(r)
+    ok := api.SessionsMgr().HasSession(ctx, clnt.Id())
+}
+```

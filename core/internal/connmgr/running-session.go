@@ -243,7 +243,7 @@ func (self *RunningSession) updateTc() error {
 	var (
 		downMbits = self.session.DownMbits()
 		upMbits   = self.session.UpMbits()
-		useGlobal = self.session.UseGlobal()
+		useGlobal = self.session.UseGlobalSpeed()
 	)
 
 	if useGlobal {

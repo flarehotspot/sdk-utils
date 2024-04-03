@@ -108,7 +108,7 @@ func (cs *ClientSession) UpMbits() int {
 	return cs.upMbits
 }
 
-func (cs *ClientSession) UseGlobal() bool {
+func (cs *ClientSession) UseGlobalSpeed() bool {
 	cs.mu.RLock()
 	defer cs.mu.RUnlock()
 	return cs.useGlobal
@@ -162,7 +162,7 @@ func (cs *ClientSession) SetUpMbits(mbits int) {
 	cs.upMbits = mbits
 }
 
-func (cs *ClientSession) SetUseGlobals(g bool) {
+func (cs *ClientSession) SetUseGlobalSpeed(g bool) {
 	cs.mu.Lock()
 	defer cs.mu.Unlock()
 	cs.useGlobal = g
@@ -178,6 +178,18 @@ func (cs *ClientSession) IncDataCons(mbytes float64) {
 	cs.mu.Lock()
 	defer cs.mu.Unlock()
 	cs.dataCons = cs.dataCons + mbytes
+}
+
+func (cs *ClientSession) RemainingTime() uint {
+	cs.mu.RLock()
+	defer cs.mu.RUnlock()
+	return cs.timeSecs - cs.timeCons
+}
+
+func (cs *ClientSession) RemainingData() float64 {
+	cs.mu.RLock()
+	defer cs.mu.RUnlock()
+	return cs.dataMb - cs.dataCons
 }
 
 func (cs *ClientSession) Update(timeSecs uint, dataMb float64, timeCons uint, dataCons float64, started *time.Time, exp *uint, downMbit int, upMbit int, g bool) error {

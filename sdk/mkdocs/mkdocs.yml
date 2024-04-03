@@ -50,7 +50,9 @@ nav:
   - API Reference:
       - 'PluginApi': api/plugin-api.md
       - 'AccountsApi': api/accounts-api.md
+      - 'AdsApi': api/ads-api.md
       - 'ClientDevice': 'api/client-device.md'
+      - 'ClientSession': 'api/client-session.md'
       - 'ConfigApi': api/config-api.md
       - 'HttpApi': api/http-api.md
       - 'HttpAuth': api/http-auth.md
