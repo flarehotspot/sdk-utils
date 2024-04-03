@@ -1,6 +1,6 @@
 # ClientDevice
 
-## 4. Events {#events}
+## 1. Events {#events}
 
 Events are emitted to the client device in the browser.
 
@@ -22,3 +22,10 @@ $flare.events.on("some_event", function(res) {
     console.log("An event occured: ", res.data);
 });
 ```
+
+The avaiable events geenerated by the system are:
+
+| Event | Description
+|--|--
+| `session:connected` | Emitted when a client device is connected to the internet.
+| `session:disconnected` | Emitted when a client device is disconnected from the internet.

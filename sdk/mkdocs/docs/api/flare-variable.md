@@ -62,11 +62,9 @@ The `$flare.events` is used to listen to events emitted by the server.
 Below is an example of how to listen to an event:
 
 ```js
-function listener (data) {
+var listener = $flare.events.on("session:connected", function (data) {
     console.log("Session connected: ", data);
-}
-
-$flare.events.on("session:connected", listener);
+});
 ```
 
 To unregister an event listener, use the `off` method.

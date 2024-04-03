@@ -39,7 +39,7 @@ export default {
 
 ## 1. The `flareView` prop {#flareview-prop}
 
-The `flareView` prop is automatically populated with the JSON data from the handler function defined in [HandlerFunc](routes-and-links.md#handlerfunc) field of the [portal](./routes-and-links.md#portalroutes) and [admin](./routes-and-links.md#adminroutes) routes. The `flareView` component prop has three fields, namely:
+The `flareView` prop is automatically populated with the JSON data from the handler function defined in [HandlerFunc](routes-and-links.md#handlerfunc) field of the [portal](./routes-and-links.md#portal-routes) and [admin](./routes-and-links.md#admin-routes) routes. The `flareView` component prop has three fields, namely:
 
 - `data`: The JSON data returned from [VueResponse.Json](../api/vue-response.md#json) method called inside the [handler function](./routes-and-links.md#handlerfunc).
 - `loading`: A boolean value that indicates if the data is still loading.
