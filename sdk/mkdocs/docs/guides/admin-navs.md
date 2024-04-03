@@ -5,7 +5,7 @@
 To add an admin nav, we will use the [VueRouterApi.AdminNavsFunc](../api/vue-router-api.md#adminnavsfunc) method.
 
 ```go
-api.Http().VueRouter().AdminNavsFunc(func(r *http.Request) []sdkhttp.VueAdminNav {
+api.Http().VueRouter().AdminNavsFunc(func(acct sdkacct.Account) []sdkhttp.VueAdminNav {
     adminNav := sdkhttp.VueAdminNav{
         Category:    sdkhttp.NavCategorySystem,
         Label:       "Welcome",
