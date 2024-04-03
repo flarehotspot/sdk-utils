@@ -15,28 +15,20 @@ import (
 var regQue *jobque.JobQues = jobque.NewJobQues()
 
 type ClientRegister struct {
-	db            *db.Database
-	mdls          *models.Models
-	mgr           *SessionsMgr
-	findHooks     []connmgr.ClientFindHookFn
-	createdHooks  []connmgr.ClientCreatedHookFn
-	changedHooks  []connmgr.ClientChangedHookFn
-	modifiedHooks []connmgr.ClientModifierHookFn
+	db           *db.Database
+	mdls         *models.Models
+	mgr          *SessionsMgr
+	createdHooks []connmgr.ClientCreatedHookFn
+	changedHooks []connmgr.ClientChangedHookFn
 }
 
 func NewClientRegister(dtb *db.Database, mdls *models.Models) *ClientRegister {
 	return &ClientRegister{
-		db:            dtb,
-		mdls:          mdls,
-		findHooks:     []connmgr.ClientFindHookFn{},
-		createdHooks:  []connmgr.ClientCreatedHookFn{},
-		changedHooks:  []connmgr.ClientChangedHookFn{},
-		modifiedHooks: []connmgr.ClientModifierHookFn{},
+		db:           dtb,
+		mdls:         mdls,
+		createdHooks: []connmgr.ClientCreatedHookFn{},
+		changedHooks: []connmgr.ClientChangedHookFn{},
 	}
-}
-
-func (reg *ClientRegister) ClientFindHook(fn connmgr.ClientFindHookFn) {
-	reg.findHooks = append(reg.findHooks, fn)
 }
 
 func (reg *ClientRegister) ClientCreatedHook(fn connmgr.ClientCreatedHookFn) {
@@ -45,10 +37,6 @@ func (reg *ClientRegister) ClientCreatedHook(fn connmgr.ClientCreatedHookFn) {
 
 func (reg *ClientRegister) ClientChangedHook(fn connmgr.ClientChangedHookFn) {
 	reg.changedHooks = append(reg.changedHooks, fn)
-}
-
-func (reg *ClientRegister) ClientModifierHook(fn connmgr.ClientModifierHookFn) {
-	reg.modifiedHooks = append(reg.modifiedHooks, fn)
 }
 
 func (reg *ClientRegister) Register(ctx context.Context, mac string, ip string, hostname string) (connmgr.ClientDevice, error) {
