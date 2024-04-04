@@ -11,6 +11,7 @@ import (
 	"reflect"
 	"runtime"
 	"strconv"
+	"strings"
 	"time"
 
 	sdkpaths "github.com/flarehotspot/sdk/utils/paths"
@@ -115,18 +116,6 @@ func GetCallerFileLine(calldepth int) (file string, line int) {
 		log.Println("Cannot retrieve caller")
 	}
 
-	// TODO: parse file info
-
-	// plugin or core
-	// short := file
-	// for i := len(file) - 1; i > 0; i-- {
-	// 	if file[i] == '/' {
-	// 		short = file[i+1:]
-	// 		break
-	// 	}
-	// }
-	// file = short
-
 	return
 }
 
@@ -179,30 +168,55 @@ func ReadLogs() ([]map[string]any, error) {
 func parseLog(logLine []string) (map[string]any, error) {
 	logLength := len(logLine)
 
+	// check if valid flare log file
 	if logLength < FLARELOG_METADATA_COUNT {
 		return nil, errors.New("invalid flarelog format")
 	}
 
-	var body any
+	// get file/packages
+	var pkgs []string
 
+	pathRaw := logLine[9] // raw file path
+	j := 0
+	for i := 0; i < len(pathRaw); i++ {
+		if pathRaw[i] == '/' {
+			pkgs = append(pkgs, pathRaw[j:i])
+			j = i + 1
+			continue
+		}
+	}
+	pkgs = append(pkgs, pathRaw[j:])
+
+	plugin := pkgs[2]
+	filename := pkgs[len(pkgs)-1]
+
+	// test print of packages
+	for _, p := range pkgs {
+		fmt.Println(p)
+	}
+
+	var body any
 	// check if log has body
 	if logLength > FLARELOG_METADATA_COUNT {
 		body = logLine[FLARELOG_METADATA_COUNT+1:]
 	}
 
 	log := map[string]any{
-		"level": logLine[0],
-		"title": logLine[1],
-		"year":  logLine[2],
-		"month": logLine[3],
-		"day":   logLine[4],
-		"hour":  logLine[5],
-		"min":   logLine[6],
-		"sec":   logLine[7],
-		"nano":  logLine[8],
-		"file":  logLine[9],
-		"line":  logLine[10],
-		"body":  body,
+		"level":          logLine[0],
+		"title":          logLine[1],
+		"year":           logLine[2],
+		"month":          logLine[3],
+		"day":            logLine[4],
+		"hour":           logLine[5],
+		"min":            logLine[6],
+		"sec":            logLine[7],
+		"nano":           logLine[8],
+		"fullpath":       logLine[9],
+		"plugin":         plugin,
+		"filepluginpath": strings.Join(pkgs[3:], "/"),
+		"filename":       filename,
+		"line":           logLine[10],
+		"body":           body,
 	}
 
 	return log, nil

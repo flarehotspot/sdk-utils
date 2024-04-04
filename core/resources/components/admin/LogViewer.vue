@@ -20,7 +20,7 @@
             <label for="pluginselection">Plugin</label>
             <select name="pluginselection" id="pluginselection">
                 <option value="all">All</option>
-                <option value="defaultTheme">Core</option>
+                <option value="core">Core</option>
                 <option value="defaultTheme">Default Theme</option>
                 <option value="themePicker">Theme Picker</option>
             </select>
@@ -34,11 +34,19 @@
         <button @click="filterLogs">Filter</button>
 
         <!-- logs list -->
-        <div v-for="log in flareView.data" v-if="log.level == level || level == 'all'">
+        <div v-for="log in flareView.data" v-if="(log.level == level || level == 'all') && (log.plugin == plugin || plugin == 'all')">
             <!-- datetime and file line-->
             <p>
                 <span>{{ log.year }}/{{ log.month }}/{{ log.day }} {{ log.hour }}:{{ log.min }}:{{ log.sec }}.{{
             log.nano }} {{ log.file }}:{{ log.line }}</span>
+            </p>
+
+            <!-- TODO: remove after test -->
+            <!-- test file paths -->
+            <p>
+                <span>{{ log.plugin }} </span>
+                <span>{{ log.filepluginpath}} </span>
+                <!-- <span>{{ log.filename }} </span> -->
             </p>
 
             <!-- level and title -->
@@ -75,6 +83,7 @@ define(function () {
         methods: {
             filterLogs() {
                 this.level = this.$el.querySelector('#levels').value;
+                this.plugin = this.$el.querySelector('#pluginselection').value;
                 console.log(this.level);
             }
         }
