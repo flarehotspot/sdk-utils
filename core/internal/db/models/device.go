@@ -161,3 +161,14 @@ func (self *Device) Sessions(ctx context.Context) ([]*Session, error) {
 
 	return sessions, tx.Commit()
 }
+
+func (self *Device) Clone() *Device {
+	return &Device{
+		db:       self.db,
+		models:   self.models,
+		id:       self.id,
+		macAddr:  self.macAddr,
+		ipAddr:   self.ipAddr,
+		hostname: self.hostname,
+	}
+}

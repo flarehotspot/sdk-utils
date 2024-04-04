@@ -143,7 +143,7 @@ useGlobal := session.UseGlobalSpeed()
 
 ### IncTimeCons
 
-Increments the consumed session time in seconds. The new value is not saved until the [save](#save) method is called.
+Increments the consumed session time by `n` seconds. The new value is not saved until the [save](#save) method is called.
 
 ```go
 session.IncTimeCons(60)
@@ -152,7 +152,7 @@ session.Save()
 
 ### IncDataCons
 
-Increments the consumed session data in Megabytes. The new value is not saved until the [save](#save) method is called.
+Increments the consumed session data by `n` Megabytes. The new value is not saved until the [save](#save) method is called.
 
 ```go
 session.IncDataCons(10)

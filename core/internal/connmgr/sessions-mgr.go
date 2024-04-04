@@ -27,6 +27,7 @@ func NewSessionsMgr(dtb *db.Database, mdl *models.Models) *SessionsMgr {
 		db:       dtb,
 		mdl:      mdl,
 		sessions: []*RunningSession{},
+		finderFn: []sdkconnmgr.FindSessionFn{},
 	}
 }
 
@@ -35,6 +36,7 @@ type SessionsMgr struct {
 	db       *db.Database
 	mdl      *models.Models
 	sessions []*RunningSession
+	finderFn []sdkconnmgr.FindSessionFn
 }
 
 func (self *SessionsMgr) ListenTraffic(trfk *network.TrafficMgr) {
@@ -119,8 +121,9 @@ func (self *SessionsMgr) Connect(ctx context.Context, clnt sdkconnmgr.ClientDevi
 			return
 		}
 
-		if !self.HasSession(ctx, clnt.Id()) {
-			errCh <- errors.New("Device has no available sessions.")
+		_, err := self.GetSession(ctx, clnt)
+		if err != nil {
+			errCh <- errors.New("Device has no more available sessions.")
 			return
 		}
 
@@ -178,7 +181,7 @@ func (self *SessionsMgr) loopSessions(clnt sdkconnmgr.ClientDevice) {
 
 		go func() {
 			log.Println("Getting new session...")
-			cs, err := self.GetSession(ctx, clnt.Id())
+			cs, err := self.GetSession(ctx, clnt)
 			if err != nil {
 				errCh <- err
 				return
@@ -207,13 +210,13 @@ func (self *SessionsMgr) loopSessions(clnt sdkconnmgr.ClientDevice) {
 				self.mu.Lock()
 				self.sessions = append(self.sessions, rs)
 				self.mu.Unlock()
-			}
-
-			err = rs.Start(ctx, cs)
-			log.Println("Start session error: ", err)
-			if err != nil {
-				errCh <- err
-				return
+			} else {
+				err = rs.Start(ctx, cs)
+				log.Println("Start session error: ", err)
+				if err != nil {
+					errCh <- err
+					return
+				}
 			}
 
 			err = <-rs.Done()
@@ -299,11 +302,19 @@ func (self *SessionsMgr) CreateSession(
 	return err
 }
 
-func (self *SessionsMgr) GetSession(ctx context.Context, devId int64) (sdkconnmgr.ClientSession, error) {
+func (self *SessionsMgr) GetSession(ctx context.Context, clnt sdkconnmgr.ClientDevice) (sdkconnmgr.ClientSession, error) {
 	self.mu.RLock()
 	defer self.mu.RUnlock()
 
-	s, err := self.mdl.Session().AvlForDev(ctx, devId)
+	if len(self.finderFn) > 0 {
+		for _, hookFn := range self.finderFn {
+			if session, ok := hookFn(ctx, clnt); session != nil && ok {
+				return session, nil
+			}
+		}
+	}
+
+	s, err := self.mdl.Session().AvlForDev(ctx, clnt.Id())
 	if err != nil {
 		if errors.Is(sql.ErrNoRows, err) {
 			return nil, errors.New("No more available sessions")
@@ -314,14 +325,8 @@ func (self *SessionsMgr) GetSession(ctx context.Context, devId int64) (sdkconnmg
 	return NewClientSession(self.db, self.mdl, s), nil
 }
 
-func (self *SessionsMgr) HasSession(ctx context.Context, devId int64) bool {
-	self.mu.RLock()
-	defer self.mu.RUnlock()
-
-	ok, err := self.mdl.Session().DevHasSession(ctx, devId)
-	if err != nil {
-		return false
-	}
-
-	return ok
+func (self *SessionsMgr) RegisterFindSessionHook(fn ...sdkconnmgr.FindSessionFn) {
+	self.mu.Lock()
+	defer self.mu.Unlock()
+	self.finderFn = append(self.finderFn, fn...)
 }
