@@ -107,21 +107,6 @@ func colorize(colorCode int, v string) string {
 	return fmt.Sprintf("\033[%sm%s%s", strconv.Itoa(colorCode), v, reset)
 }
 
-// TODO : parse read lines
-func ParseLogLine(logLine string) (level int, title string, year int, month int, day int, hour int, min int, sec int, nano int, file string, fileline int, body []string, err error) {
-	values, err := wsv.ParseLineAsArray(logLine)
-
-	if err != nil {
-		return
-	}
-
-	if len(values) >= 11 {
-		body = values[11:]
-	}
-
-	return
-}
-
 func GetCallerFileLine(calldepth int) (file string, line int) {
 	calldepth++
 
@@ -194,7 +179,7 @@ func ReadLogs() ([]map[string]any, error) {
 func parseLog(logLine []string) (map[string]any, error) {
 	logLength := len(logLine)
 
-	if logLength <= FLARELOG_METADATA_COUNT {
+	if logLength < FLARELOG_METADATA_COUNT {
 		return nil, errors.New("invalid flarelog format")
 	}
 
@@ -202,7 +187,7 @@ func parseLog(logLine []string) (map[string]any, error) {
 
 	// check if log has body
 	if logLength > FLARELOG_METADATA_COUNT {
-		body = logLine[FLARELOG_METADATA_COUNT:]
+		body = logLine[FLARELOG_METADATA_COUNT+1:]
 	}
 
 	log := map[string]any{

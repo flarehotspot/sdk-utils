@@ -11,5 +11,6 @@ func main() {}
 
 func Init() {
 	g := plugins.NewGlobals()
+	g.CoreAPI.LoggerAPI.Info("test inside the core")
 	boot.Init(g)
 }
