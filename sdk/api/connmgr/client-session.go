@@ -40,8 +40,8 @@ type ClientSession interface {
 	// Returns the time when session was started.
 	StartedAt() *time.Time
 
-    // Returns the created at time.
-    CreatedAt() time.Time
+	// Returns the created at time.
+	CreatedAt() time.Time
 
 	// Returns the session's expiration time in days.
 	// If session has no expiration, it returns nil.

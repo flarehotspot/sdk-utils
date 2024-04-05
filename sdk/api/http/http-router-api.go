@@ -19,8 +19,8 @@ type HttpRouterApi interface {
 	// Returns a generic plugin router.
 	PluginRouter() HttpRouterInstance
 
-    // Register global middleware.
-    UseMiddleware(middleware ...func(http.Handler) http.Handler)
+	// Register global middleware.
+	UseMiddleware(middleware ...func(http.Handler) http.Handler)
 
 	// Returns the url for the given route name.
 	UrlForRoute(name PluginRouteName, pairs ...string) (url string)

@@ -27,7 +27,7 @@ func NewSessionsMgr(dtb *db.Database, mdl *models.Models) *SessionsMgr {
 		db:       dtb,
 		mdl:      mdl,
 		sessions: []*RunningSession{},
-		finderFn: []sdkconnmgr.FindSessionFn{},
+		finderFn: []sdkconnmgr.SessionProviderFn{},
 	}
 }
 
@@ -36,7 +36,7 @@ type SessionsMgr struct {
 	db       *db.Database
 	mdl      *models.Models
 	sessions []*RunningSession
-	finderFn []sdkconnmgr.FindSessionFn
+	finderFn []sdkconnmgr.SessionProviderFn
 }
 
 func (self *SessionsMgr) ListenTraffic(trfk *network.TrafficMgr) {
@@ -186,7 +186,7 @@ func (self *SessionsMgr) loopSessions(clnt sdkconnmgr.ClientDevice) {
 				return
 			}
 
-            log.Println("Got new session from : " + cs.Provider())
+			log.Println("Got new session from : " + cs.Provider())
 
 			self.mu.RLock()
 			rs, ok := self.getRunningSession(clnt)
@@ -326,7 +326,7 @@ func (self *SessionsMgr) GetSession(ctx context.Context, clnt sdkconnmgr.ClientD
 	return NewClientSession(localSrc), nil
 }
 
-func (self *SessionsMgr) RegisterFindSessionHook(fn ...sdkconnmgr.FindSessionFn) {
+func (self *SessionsMgr) RegisterSessionProvider(fn ...sdkconnmgr.SessionProviderFn) {
 	self.mu.Lock()
 	defer self.mu.Unlock()
 	self.finderFn = append(self.finderFn, fn...)
