@@ -13,20 +13,12 @@ func (w http.ResponseWriter, r *http.Request) {
 
 The following methods are available in `ClientSession`.
 
-### Id
+### Provider
 
-Returns the session ID.
-
-```go
-id := session.Id()
-```
-
-### DeviceId
-
-Returns the [ClientDevice](./client-device.md) ID.
+Returns the session provider name. The provider name is a `string` value.
 
 ```go
-devId := session.DeviceId()
+provider := session.Provider()
 ```
 
 ### Type
@@ -63,7 +55,7 @@ mb := session.DataMb()
 
 ### TimeConsumption
 
-Returns the consumed session time in seconds. The return type is a `uint` value. This is only applicable for `time` and `time_or_data` sessions.
+Returns the consumed session time in seconds. The return type is a `uint` value. This is only applicable for `time` and `time_or_data` sessions. It is used to track the consumed time of the session.
 
 ```go
 consumedSecs := session.TimeConsumption()
@@ -71,7 +63,7 @@ consumedSecs := session.TimeConsumption()
 
 ### DataConsumption
 
-Returns the consumed session data in Megabytes. The return type is a `float64` value. This is only applicable for `data` and `time_or_data` sessions.
+Returns the consumed session data in Megabytes. The return type is a `float64` value. This is only applicable for `data` and `time_or_data` sessions. It is used to track the consumed data of the session.
 
 ```go
 consumedMb := session.DataConsumption()
@@ -99,6 +91,14 @@ Returns a `*time.Time` value representing the time the session started. A `nil` 
 
 ```go
 s := session.StartedAt()
+```
+
+### CreatedAt
+
+Returns a `time.Time` value representing the time the session was created.
+
+```go
+d := session.CreatedAt()
 ```
 
 ### ExpDays
@@ -143,7 +143,7 @@ useGlobal := session.UseGlobalSpeed()
 
 ### IncTimeCons
 
-Increments the consumed session time in seconds. The new value is not saved until the [save](#save) method is called.
+Increments the consumed session time by `n` seconds. The new value is not saved until the [save](#save) method is called.
 
 ```go
 session.IncTimeCons(60)
@@ -152,7 +152,7 @@ session.Save()
 
 ### IncDataCons
 
-Increments the consumed session data in Megabytes. The new value is not saved until the [save](#save) method is called.
+Increments the consumed session data by `n` Megabytes. The new value is not saved until the [save](#save) method is called.
 
 ```go
 session.IncDataCons(10)

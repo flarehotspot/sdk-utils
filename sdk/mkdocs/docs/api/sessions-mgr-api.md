@@ -44,7 +44,7 @@ It creates a [ClientSession](./client-session.md) for the [ClientDevice](./clien
 
 - `context.Context`
 - `int64` - the [ClientDevice](./client-device.md) ID
-- `uint8` - the [type of session](./client-session.md#session-types) to create
+- `uint8` - the [type of session](./client-session.md#type) to create
 - `uint` - the duration of the session in seconds, applicable only for `time` and `time_or_data` session types
 - `float64` - the data in mega bytes, applicable only for `data` and `time_or_data` session types
 - `*uint` - the expiration in days after the session is started, on top of the duration in seconds
@@ -97,18 +97,51 @@ Returns any available [ClientSession](./client-session.md) for the given [Client
 func (w http.ResponseWriter, r *http.Request) {
     ctx := r.Context()
     clnt, _ := api.Http().GetClientDevice(r)
-    session, err = api.SessionsMgr().GetSession(ctx, clnt.Id())
+    session, err = api.SessionsMgr().GetSession(ctx, clnt)
 }
 ```
 
-### HasSession
+### RegisterSessionProvider
 
-Returns `true` if the [ClientDevice](./client-device.md) has available session, otherwise `false`.
+Used to register a new session provider function. The function accepts a `context.Contxt` and a [ClientDevice](./client-device.md) parameters and it session should return an instance of [SessionSource](./session-source.md) and an `error` if any.
+
+The example below provides a `time` [session type](./client-session.md#session-types) for every client device:
 
 ```go
-func (w http.ResponseWriter, r *http.Request) {
-    ctx := r.Context()
-    clnt, _ := api.Http().GetClientDevice(r)
-    ok := api.SessionsMgr().HasSession(ctx, clnt.Id())
+type RemoteSession struct {
+    mu          sync.RWMutex
+    timeSeconds uint
 }
+
+func (rs *RemoteSession) Data() sdkconnmgr.SessionData {
+    return sdkconnmgr.SessionData{
+        Provider: "remote-session",
+        Type: 0,
+        TimeSecs: rs.timeSeconds,
+    }
+}
+
+func (rs *RemoteSession) Save(ctx context.Context, data sdkconnmgr.SessionData) error {
+    self.mu.Lock()
+    defer self.mu.Unlock()
+    // implemnt save logic here
+    rs.timeSeconds = data.TimeSecs
+    return nil
+}
+
+func (rs *RemoteSession) Reload(ctx context.Context) (sdkconnmgr.SessionData, error {
+    // implement reload logic here
+    return sdkconnmgr.SessionData{
+        Provider: "remote-session",
+        Type: 0,
+        TimeSecs: rs.timeSeconds,
+    }, nil
+}
+
+api.SessionsMgr().RegisterSessionProvider(func(ctx context.Context, clnt *sdkconnmgr.ClientDevice) (sdkconnmgr.SessionSource, error) {
+    // give every client device a 1 minute session
+    return &RemoteSession{
+        timeSeconds: 60,
+    }, nil
+})
 ```

@@ -11,15 +11,35 @@ import (
 	jobque "github.com/flarehotspot/core/internal/utils/job-que"
 	"github.com/flarehotspot/core/internal/utils/tc"
 	connmgr "github.com/flarehotspot/sdk/api/connmgr"
+	sdkconnmgr "github.com/flarehotspot/sdk/api/connmgr"
 	"github.com/flarehotspot/sdk/api/network"
 )
 
 var sessionQ *jobque.JobQues = jobque.NewJobQues()
 
+func NewRunningSession(clnt sdkconnmgr.ClientDevice, s connmgr.ClientSession) (*RunningSession, error) {
+	lan, err := network.FindByIp(clnt.IpAddr())
+	if err != nil {
+		return nil, err
+	}
+
+	rs := RunningSession{
+		session:   s,
+		clntId:    clnt.Id(),
+		ip:        clnt.IpAddr(),
+		mac:       clnt.MacAddr(),
+		lan:       lan,
+		callbacks: []chan error{},
+	}
+
+	return &rs, nil
+}
+
 type RunningSession struct {
 	mu         sync.RWMutex
-	mac        string
+	clntId     int64
 	ip         string
+	mac        string
 	lan        *network.NetworkLan
 	tcClassId  *tc.TcClassId
 	tcFilter   *tc.TcFilter
@@ -29,22 +49,10 @@ type RunningSession struct {
 	callbacks  []chan error
 }
 
-func NewRunningSession(mac string, ip string, s connmgr.ClientSession, classid *tc.TcClassId) (*RunningSession, error) {
-	lan, err := network.FindByIp(ip)
-	if err != nil {
-		return nil, err
-	}
-
-	rs := RunningSession{
-		tcClassId: classid,
-		session:   s,
-		mac:       mac,
-		ip:        ip,
-		lan:       lan,
-		callbacks: []chan error{},
-	}
-
-	return &rs, nil
+func (self *RunningSession) ClientId() int64 {
+	self.mu.RLock()
+	defer self.mu.RUnlock()
+	return self.clntId
 }
 
 func (self *RunningSession) GetSession() connmgr.ClientSession {

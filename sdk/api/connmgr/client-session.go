@@ -13,11 +13,8 @@ import (
 
 // ClientSession represents a client's internet connection session.
 type ClientSession interface {
-	// Returns the session's id.
-	Id() int64
-
-	// Returns the session's device id.
-	DeviceId() int64
+	// REturns the provider of the session record.
+	Provider() string
 
 	// Returns the session type.
 	Type() uint8
@@ -34,14 +31,17 @@ type ClientSession interface {
 	// Returns the session's data consumption in megabytes.
 	DataConsumption() (mbytes float64)
 
-    // Returns the session's remaining time in seconds.
-    RemainingTime() (sec uint)
+	// Returns the session's remaining time in seconds.
+	RemainingTime() (sec uint)
 
-    // Returns the session's remaining data in megabytes.
-    RemainingData() (mbytes float64)
+	// Returns the session's remaining data in megabytes.
+	RemainingData() (mbytes float64)
 
 	// Returns the time when session was started.
 	StartedAt() *time.Time
+
+	// Returns the created at time.
+	CreatedAt() time.Time
 
 	// Returns the session's expiration time in days.
 	// If session has no expiration, it returns nil.

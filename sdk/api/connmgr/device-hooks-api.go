@@ -6,12 +6,14 @@
 
 package sdkconnmgr
 
-import "net/http"
+import (
+	"context"
+)
 
-type ClientCreatedHookFn func(w http.ResponseWriter, r *http.Request, clnt ClientDevice) error
-type ClientChangedHookFn func(w http.ResponseWriter, r *http.Request, current ClientDevice, old ClientDevice) error
+type ClientCreatedHookFn func(ctx context.Context, clnt ClientDevice) error
+type ClientChangedHookFn func(ctx context.Context, current ClientDevice, old ClientDevice) error
 
 type DeviceHooksApi interface {
-	ClientCreatedHook(ClientCreatedHookFn)
-	ClientChangedHook(ClientChangedHookFn)
+	ClientCreatedHook(...ClientCreatedHookFn)
+	ClientChangedHook(...ClientChangedHookFn)
 }
