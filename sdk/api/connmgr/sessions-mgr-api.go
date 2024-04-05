@@ -10,7 +10,7 @@ import (
 	"context"
 )
 
-type FindSessionFn func(ctx context.Context, clnt ClientDevice) (cs ClientSession, ok bool)
+type FindSessionFn func(ctx context.Context, clnt ClientDevice) (cs SessionSource, ok bool)
 
 // SessionsMgrApi is used to manage client devices.
 type SessionsMgrApi interface {

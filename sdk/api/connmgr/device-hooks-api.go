@@ -6,14 +6,14 @@
 
 package sdkconnmgr
 
-import "net/http"
+import (
+	"context"
+)
 
-type ClientFinderFn func(r *http.Request, mac string, ip string, hostname string) (clnt ClientDevice, ok bool)
-type ClientCreatedHookFn func(r *http.Request, clnt ClientDevice) error
-type ClientChangedHookFn func(r *http.Request, current ClientDevice, old ClientDevice) error
+type ClientCreatedHookFn func(ctx context.Context, clnt ClientDevice) error
+type ClientChangedHookFn func(ctx context.Context, current ClientDevice, old ClientDevice) error
 
 type DeviceHooksApi interface {
-	ClientFinderHook(...ClientFinderFn)
 	ClientCreatedHook(...ClientCreatedHookFn)
 	ClientChangedHook(...ClientChangedHookFn)
 }
