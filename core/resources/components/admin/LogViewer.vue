@@ -145,9 +145,6 @@ define(function () {
         },
         beforeMount() {
             this.setInitialDates();
-
-            console.log("date start value after initializing dates inside before mount function: ", this.datestart);
-            console.log("date end value after initializing dates inside before mount function: ", this.dateend);
         }
     };
 });
