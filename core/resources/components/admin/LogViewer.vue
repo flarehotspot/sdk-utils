@@ -35,19 +35,11 @@
         </form>
         <button @click="filterLogs">Filter</button>
 
-        {{ console.log("date start: ", datestart) }}
-        {{ console.log(datestart.getTime()) }}
-
-
         <!-- logs list -->
         <div v-for="log in flareView.data"
             v-if="(log.level == level || level == 'all') &&
                 (log.plugin == plugin || plugin == 'all') &&
                 (new Date(`${log.year}-${log.month}-${log.day} ${log.hour}:${log.min}:${log.sec}`).getTime() >= datestart.getTime() && new Date(`${log.year}-${log.month}-${log.day} ${log.hour}:${log.min}`).getTime() < dateend.getTime())">
-
-            {{ console.log(new Date(`${log.year}-${log.month}-${log.day} ${log.hour}:${log.min}:${log.sec}`).getTime())
-            }}
-            <!-- {{ console.log(`${log.year}-${log.month}-${log.day} ${log.hour}:${log.min}:${log.sec}.${log.nano}`) }} -->
 
             <!-- datetime and file line-->
             <p>
@@ -103,6 +95,7 @@ define(function () {
                 this.datestart = new Date(this.$el.querySelector('#datestart').value);
                 this.dateend = new Date(this.$el.querySelector('#dateend').value);
 
+                this.setDatestartTimeToMidnight();
                 this.setDateendTimeBeforeMidnight();
             },
             dateToYYYYMMDD(d) {
@@ -126,7 +119,7 @@ define(function () {
                 this.dateend.setMilliseconds(999);
             },
             setDatestartTimeToMidnight() {
-                // set the time of the filter end date to 23:59:59
+                // set the time of the filter start date to 0:0:0
                 this.datestart.setHours(0);
                 this.datestart.setMinutes(0);
                 this.datestart.setSeconds(0);
@@ -142,9 +135,6 @@ define(function () {
         },
         beforeMount() {
             this.setInitialDates();
-
-            console.log("date start value after initializing dates inside before mount function: ", this.datestart);
-            console.log("date end value after initializing dates inside before mount function: ", this.dateend);
         }
     };
 });
