@@ -2,7 +2,7 @@
     <div>
         <h1> Logs </h1>
 
-        <button @click="console.log(document.querySelecor('#levels'))">Test</button>
+        <!-- <button @click="console.log(document.querySelecor('#levels'))">Test</button> -->
 
         <!-- search and filter-->
         <form action="">
@@ -26,26 +26,28 @@
             </select>
 
             <label for="datestart">From</label>
-            <input type="date" name="datestart">
+            <input type="date" name="datestart" id="datestart" :value="dateToYYYYMMDD(datestart)"
+                @input="datestart = $event.target.valueAsDate">
             <label for="dateend">To</label>
-            <input type="date" name="dateend">
+            <input type="date" name="dateend" id="dateend" :value="dateToYYYYMMDD(dateend)" @input="dateend=$event.target.valueAsDate">
 
         </form>
         <button @click="filterLogs">Filter</button>
 
         <!-- logs list -->
-        <div v-for="log in flareView.data" v-if="(log.level == level || level == 'all') && (log.plugin == plugin || plugin == 'all')">
+        <div v-for="log in flareView.data"
+            v-if="(log.level == level || level == 'all') &&
+                (log.plugin == plugin || plugin == 'all') &&
+                (new Date(`${log.year}-${log.month}-${log.day} ${log.hour}:${log.min}`).getTime() > datestart.getTime() && new Date(`${log.year}-${log.month}-${log.day} ${log.hour}:${log.min}`).getTime() < dateend.getTime())">
             <!-- datetime and file line-->
             <p>
                 <span>{{ log.year }}/{{ log.month }}/{{ log.day }} {{ log.hour }}:{{ log.min }}:{{ log.sec }}.{{
-            log.nano }} {{ log.file }}:{{ log.line }}</span>
+                log.nano }} {{ log.file }}:{{ log.line }}</span>
             </p>
 
-            <!-- TODO: remove after test -->
-            <!-- test file paths -->
             <p>
                 <span>{{ log.plugin }} </span>
-                <span>{{ log.filepluginpath}} </span>
+                <span>{{ log.filepluginpath }} </span>
                 <!-- <span>{{ log.filename }} </span> -->
             </p>
 
@@ -67,9 +69,10 @@
             </div>
         </div>
     </div>
+
 </template>
 
-<script>
+<script setup>
 define(function () {
     return {
         template: template,
@@ -78,14 +81,46 @@ define(function () {
             return {
                 level: "all",
                 plugin: "all",
+                datestart: new Date(),
+                dateend: new Date(),
             }
         },
         methods: {
             filterLogs() {
                 this.level = this.$el.querySelector('#levels').value;
                 this.plugin = this.$el.querySelector('#pluginselection').value;
-                console.log(this.level);
+
+                this.datestart = new Date(this.$el.querySelector('#datestart').value);
+                this.dateend = new Date(this.$el.querySelector('#dateend').value);
+
+                this.setDateendTimeBeforeMidnight();
+            },
+            dateToYYYYMMDD(d) {
+                var day = ("0" + d.getDate()).slice(-2);
+                var month = ("0" + (d.getMonth() + 1)).slice(-2);
+                var converted = d.getFullYear()+"-"+(month)+"-"+(day) ;
+
+                return converted;
+            },
+            setInitialDates() {
+                var now = new Date();
+                this.datestart = now;
+                this.dateend = now;
+                this.dateend.setHours(23);
+                this.dateend.setMinutes(59);
+                this.dateend.setSeconds(59);
+                this.dateend.setMilliseconds(999);
+            },
+            setDateendTimeBeforeMidnight() {
+                // set the time of the filter end date to 23:59:59
+                this.dateend.setHours(23);
+                this.dateend.setMinutes(59);
+                this.dateend.setSeconds(59);
+                this.dateend.setMilliseconds(999);
             }
+        },
+        beforeMount() {
+            this.setInitialDates();
         }
     };
 });

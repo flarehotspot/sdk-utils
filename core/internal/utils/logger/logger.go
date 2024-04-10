@@ -189,11 +189,7 @@ func parseLog(logLine []string) (map[string]any, error) {
 
 	plugin := pkgs[2]
 	filename := pkgs[len(pkgs)-1]
-
-	// test print of packages
-	for _, p := range pkgs {
-		fmt.Println(p)
-	}
+	filepluginpath := strings.Join(pkgs[3:], "/")
 
 	var body any
 	// check if log has body
@@ -213,7 +209,7 @@ func parseLog(logLine []string) (map[string]any, error) {
 		"nano":           logLine[8],
 		"fullpath":       logLine[9],
 		"plugin":         plugin,
-		"filepluginpath": strings.Join(pkgs[3:], "/"),
+		"filepluginpath": filepluginpath,
 		"filename":       filename,
 		"line":           logLine[10],
 		"body":           body,
