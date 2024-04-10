@@ -37,10 +37,6 @@
         </form>
         <button @click="filterLogs">Filter</button>
 
-        {{ console.log("date start: ", datestart) }}
-        {{ console.log(datestart.getTime()) }}
-
-
         <!-- logs list -->
         <div v-for="log in flareView.data"
             v-if="(log.level == level || level == 'all') &&
