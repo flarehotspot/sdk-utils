@@ -2,9 +2,13 @@
     <div>
         <h1> Logs </h1>
 
-        <!-- <button @click="console.log(document.querySelecor('#levels'))">Test</button> -->
+        <!-- search  -->
+        <form action="">
+            <input type="text" name="search" id="search">
+        </form>
+        <button @click="searchLogs">search</button>
 
-        <!-- search and filter-->
+        <!-- filter-->
         <form action="">
             <label for="levels">Select level: </label>
 
@@ -31,8 +35,6 @@
             <label for="dateend">To</label>
             <input type="date" name="dateend" id="dateend" :value="dateToYYYYMMDD(dateend)"
                 @input="dateend = $event.target.valueAsDate">
-            <input type="date" name="dateend" id="dateend" :value="dateToYYYYMMDD(dateend)"
-                @input="dateend = $event.target.valueAsDate">
 
         </form>
         <button @click="filterLogs">Filter</button>
@@ -41,6 +43,7 @@
         <div v-for="log in flareView.data"
             v-if="(log.level == level || level == 'all') &&
                 (log.plugin == plugin || plugin == 'all') &&
+                (log.title.includes(search) || search == '') &&
                 (new Date(`${log.year}-${log.month}-${log.day} ${log.hour}:${log.min}:${log.sec}`).getTime() >= datestart.getTime() && new Date(`${log.year}-${log.month}-${log.day} ${log.hour}:${log.min}`).getTime() < dateend.getTime())">
 
             <!-- datetime and file line-->
@@ -72,8 +75,10 @@
                 </p>
             </div>
         </div>
-    </div>
 
+        <!-- pagination -->
+
+    </div>
 </template>
 
 <script setup>
@@ -87,9 +92,14 @@ define(function () {
                 plugin: "all",
                 datestart: new Date(),
                 dateend: new Date(),
+                search: "",
             }
         },
         methods: {
+            searchLogs(){
+                this.search = this.$el.querySelector('#search').value;
+                console.log(this.search);
+            },
             filterLogs() {
                 this.level = this.$el.querySelector('#levels').value;
                 this.plugin = this.$el.querySelector('#pluginselection').value;
