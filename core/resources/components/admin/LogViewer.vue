@@ -29,16 +29,26 @@
             <input type="date" name="datestart" id="datestart" :value="dateToYYYYMMDD(datestart)"
                 @input="datestart = $event.target.valueAsDate">
             <label for="dateend">To</label>
-            <input type="date" name="dateend" id="dateend" :value="dateToYYYYMMDD(dateend)" @input="dateend=$event.target.valueAsDate">
+            <input type="date" name="dateend" id="dateend" :value="dateToYYYYMMDD(dateend)"
+                @input="dateend = $event.target.valueAsDate">
 
         </form>
         <button @click="filterLogs">Filter</button>
+
+        {{ console.log("date start: ", datestart) }}
+        {{ console.log(datestart.getTime()) }}
+
 
         <!-- logs list -->
         <div v-for="log in flareView.data"
             v-if="(log.level == level || level == 'all') &&
                 (log.plugin == plugin || plugin == 'all') &&
-                (new Date(`${log.year}-${log.month}-${log.day} ${log.hour}:${log.min}`).getTime() > datestart.getTime() && new Date(`${log.year}-${log.month}-${log.day} ${log.hour}:${log.min}`).getTime() < dateend.getTime())">
+                (new Date(`${log.year}-${log.month}-${log.day} ${log.hour}:${log.min}:${log.sec}`).getTime() >= datestart.getTime() && new Date(`${log.year}-${log.month}-${log.day} ${log.hour}:${log.min}`).getTime() < dateend.getTime())">
+
+            {{ console.log(new Date(`${log.year}-${log.month}-${log.day} ${log.hour}:${log.min}:${log.sec}`).getTime())
+            }}
+            <!-- {{ console.log(`${log.year}-${log.month}-${log.day} ${log.hour}:${log.min}:${log.sec}.${log.nano}`) }} -->
+
             <!-- datetime and file line-->
             <p>
                 <span>{{ log.year }}/{{ log.month }}/{{ log.day }} {{ log.hour }}:{{ log.min }}:{{ log.sec }}.{{
@@ -98,18 +108,29 @@ define(function () {
             dateToYYYYMMDD(d) {
                 var day = ("0" + d.getDate()).slice(-2);
                 var month = ("0" + (d.getMonth() + 1)).slice(-2);
-                var converted = d.getFullYear()+"-"+(month)+"-"+(day) ;
+                var converted = d.getFullYear() + "-" + (month) + "-" + (day);
 
                 return converted;
             },
             setInitialDates() {
-                var now = new Date();
-                this.datestart = now;
-                this.dateend = now;
+                this.datestart = new Date();
+                this.datestart.setHours(0);
+                this.datestart.setMinutes(0);
+                this.datestart.setSeconds(0);
+                this.datestart.setMilliseconds(0);
+
+                this.dateend = new Date();
                 this.dateend.setHours(23);
                 this.dateend.setMinutes(59);
                 this.dateend.setSeconds(59);
                 this.dateend.setMilliseconds(999);
+            },
+            setDatestartTimeToMidnight() {
+                // set the time of the filter end date to 23:59:59
+                this.datestart.setHours(0);
+                this.datestart.setMinutes(0);
+                this.datestart.setSeconds(0);
+                this.datestart.setMilliseconds(0);
             },
             setDateendTimeBeforeMidnight() {
                 // set the time of the filter end date to 23:59:59
@@ -121,6 +142,9 @@ define(function () {
         },
         beforeMount() {
             this.setInitialDates();
+
+            console.log("date start value after initializing dates inside before mount function: ", this.datestart);
+            console.log("date end value after initializing dates inside before mount function: ", this.dateend);
         }
     };
 });
