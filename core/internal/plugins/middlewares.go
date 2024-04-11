@@ -10,7 +10,6 @@ import (
 	"github.com/flarehotspot/core/internal/web/helpers"
 	"github.com/flarehotspot/core/internal/web/middlewares"
 	routenames "github.com/flarehotspot/core/internal/web/routes/names"
-	sdkhttp "github.com/flarehotspot/sdk/api/http"
 )
 
 func NewPluginMiddlewares(api *PluginApi, mdls *models.Models, dmgr *connmgr.ClientRegister, pmgr *PaymentsMgr) *PluginMiddlewares {
@@ -24,19 +23,19 @@ type PluginMiddlewares struct {
 	pmgr   *PaymentsMgr
 }
 
-func (self *PluginMiddlewares) AdminAuth() sdkhttp.HttpMiddleware {
+func (self *PluginMiddlewares) AdminAuth() func(http.Handler) http.Handler {
 	return middlewares.AdminAuth
 }
 
-func (self *PluginMiddlewares) Device() sdkhttp.HttpMiddleware {
+func (self *PluginMiddlewares) Device() func(http.Handler) http.Handler {
 	return middlewares.DeviceMiddleware(self.api.db, self.creg)
 }
 
-func (self *PluginMiddlewares) CacheResponse(days int) sdkhttp.HttpMiddleware {
+func (self *PluginMiddlewares) CacheResponse(days int) func(http.Handler) http.Handler {
 	return middlewares.CacheResponse(days)
 }
 
-func (self *PluginMiddlewares) PendingPurchaseMw() sdkhttp.HttpMiddleware {
+func (self *PluginMiddlewares) PendingPurchaseMw() func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			ctx := r.Context()

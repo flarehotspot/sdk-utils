@@ -4,7 +4,7 @@ import (
 	"github.com/flarehotspot/core/internal/plugins"
 	"github.com/flarehotspot/core/internal/web/controllers"
 	"github.com/flarehotspot/core/internal/web/router"
-	"github.com/flarehotspot/core/internal/web/routes/names"
+	routenames "github.com/flarehotspot/core/internal/web/routes/names"
 )
 
 func PortalRoutes(g *plugins.CoreGlobals) {
