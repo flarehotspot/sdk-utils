@@ -8,6 +8,10 @@
         </form>
         <button @click="searchLogs">search</button>
 
+        <router-link to='<% .Helpers.VueRoutePath "logger" "page" "1" %>'>
+            view logs
+        </router-link>
+
         <!-- filter-->
         <form action="">
             <label for="levels">Select level: </label>
@@ -29,27 +33,27 @@
                 <option value="themePicker">Theme Picker</option>
             </select>
 
-            <label for="datestart">From</label>
-            <input type="date" name="datestart" id="datestart" :value="dateToYYYYMMDD(datestart)"
-                @input="datestart = $event.target.valueAsDate">
-            <label for="dateend">To</label>
-            <input type="date" name="dateend" id="dateend" :value="dateToYYYYMMDD(dateend)"
-                @input="dateend = $event.target.valueAsDate">
+            <label for="dateStartFilter">From</label>
+            <input type="date" name="dateStartFilter" id="dateStartFilter" :value="dateToYYYYMMDD(dateStartFilter)"
+                @input="dateStartFilter = $event.target.valueAsDate">
+            <label for="dateEndFilter">To</label>
+            <input type="date" name="dateEndFilter" id="dateEndFilter" :value="dateToYYYYMMDD(dateEndFilter)"
+                @input="dateEndFilter = $event.target.valueAsDate">
 
         </form>
         <button @click="filterLogs">Filter</button>
 
         <!-- logs list -->
         <div v-for="log in flareView.data"
-            v-if="(log.level == level || level == 'all') &&
-                (log.plugin == plugin || plugin == 'all') &&
-                (log.title.includes(search) || search == '') &&
-                (new Date(`${log.year}-${log.month}-${log.day} ${log.hour}:${log.min}:${log.sec}`).getTime() >= datestart.getTime() && new Date(`${log.year}-${log.month}-${log.day} ${log.hour}:${log.min}`).getTime() < dateend.getTime())">
+            v-if="(log.level == levelFilter || levelFilter == 'all') &&
+            (log.plugin == pluginFilter || pluginFilter == 'all') &&
+            (log.title.includes(searchFilter) || searchFilter == '') &&
+            (new Date(`${log.year}-${log.month}-${log.day} ${log.hour}:${log.min}:${log.sec}`).getTime() >= dateStartFilter.getTime() && new Date(`${log.year}-${log.month}-${log.day} ${log.hour}:${log.min}`).getTime() < dateEndFilter.getTime())">
 
             <!-- datetime and file line-->
             <p>
                 <span>{{ log.year }}/{{ log.month }}/{{ log.day }} {{ log.hour }}:{{ log.min }}:{{ log.sec }}.{{
-                log.nano }} {{ log.file }}:{{ log.line }}</span>
+            log.nano }} {{ log.file }}:{{ log.line }}</span>
             </p>
 
             <p>
@@ -88,24 +92,25 @@ define(function () {
         props: ['flareView'],
         data: function () {
             return {
-                level: "all",
-                plugin: "all",
-                datestart: new Date(),
-                dateend: new Date(),
-                search: "",
+                levelFilter: "all",
+                pluginFilter: "all",
+                dateStartFilter: new Date(),
+                dateEndFilter: new Date(),
+                searchFilter: "",
+                plugins: ["all"],
             }
         },
         methods: {
-            searchLogs(){
-                this.search = this.$el.querySelector('#search').value;
-                console.log(this.search);
+            searchLogs: function() {
+                console.log(this.flareView.data);
+                this.searchFilter = this.$el.querySelector('#search').value;
             },
-            filterLogs() {
-                this.level = this.$el.querySelector('#levels').value;
-                this.plugin = this.$el.querySelector('#pluginselection').value;
+            filterLogs: function() {
+                this.levelFilter = this.$el.querySelector('#levels').value;
+                this.pluginFilter = this.$el.querySelector('#pluginselection').value;
 
-                this.datestart = new Date(this.$el.querySelector('#datestart').value);
-                this.dateend = new Date(this.$el.querySelector('#dateend').value);
+                this.dateStartFilter = new Date(this.$el.querySelector('#dateStartFilter').value);
+                this.dateEndFilter = new Date(this.$el.querySelector('#dateEndFilter').value);
 
                 this.setDatestartTimeToMidnight();
                 this.setDateendTimeBeforeMidnight();
@@ -118,44 +123,53 @@ define(function () {
 
                 return converted;
             },
-            setInitialDates() {
-                this.datestart = new Date();
-                this.datestart.setHours(0);
-                this.datestart.setMinutes(0);
-                this.datestart.setSeconds(0);
-                this.datestart.setMilliseconds(0);
+            setInitialDates: function() {
+                this.dateStartFilter = new Date();
+                this.dateStartFilter.setHours(0);
+                this.dateStartFilter.setMinutes(0);
+                this.dateStartFilter.setSeconds(0);
+                this.dateStartFilter.setMilliseconds(0);
 
-                this.dateend = new Date();
-                this.datestart = new Date();
-                this.datestart.setHours(0);
-                this.datestart.setMinutes(0);
-                this.datestart.setSeconds(0);
-                this.datestart.setMilliseconds(0);
-
-                this.dateend = new Date();
-                this.dateend.setHours(23);
-                this.dateend.setMinutes(59);
-                this.dateend.setSeconds(59);
-                this.dateend.setMilliseconds(999);
+                this.dateEndFilter = new Date();
+                this.dateEndFilter.setHours(23);
+                this.dateEndFilter.setMinutes(59);
+                this.dateEndFilter.setSeconds(59);
+                this.dateEndFilter.setMilliseconds(999);
             },
-            setDatestartTimeToMidnight() {
+            setDatestartTimeToMidnight: function() {
                 // set the time of the filter start date to 0:0:0
-                this.datestart.setHours(0);
-                this.datestart.setMinutes(0);
-                this.datestart.setSeconds(0);
-                this.datestart.setMilliseconds(0);
+                this.dateStartFilter.setHours(0);
+                this.dateStartFilter.setMinutes(0);
+                this.dateStartFilter.setSeconds(0);
+                this.dateStartFilter.setMilliseconds(0);
             },
-            setDateendTimeBeforeMidnight() {
+            setDateendTimeBeforeMidnight: function() {
                 // set the time of the filter end date to 23:59:59
-                this.dateend.setHours(23);
-                this.dateend.setMinutes(59);
-                this.dateend.setSeconds(59);
-                this.dateend.setMilliseconds(999);
+                this.dateEndFilter.setHours(23);
+                this.dateEndFilter.setMinutes(59);
+                this.dateEndFilter.setSeconds(59);
+                this.dateEndFilter.setMilliseconds(999);
+            },
+            setPlugins: function() {
+                console.log("setting plugins");
+                // for (const log in this.flareView.data) {
+                //     console.log("inside the loop");
+                //     let logPlugin = this.flareView.data[i].plugin;
+                //     console.log("log plugin", logPlugin);
+
+                //     this.plugins.push(logPlugin);
+                //     // if (!this.plugins.includes(logPlugin)) {
+                //     //     this.plugins.push(logPlugin);
+                //     // }
+                // }
             }
         },
-        beforeMount() {
+        beforeMount: function() {
+            console.log(this.flareView.data);
             this.setInitialDates();
-        }
+            this.setPlugins();
+            console.log(this.plugins);
+        },
     };
 });
 </script>

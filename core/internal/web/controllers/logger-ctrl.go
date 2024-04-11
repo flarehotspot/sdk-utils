@@ -12,7 +12,7 @@ func GetLogs(g *plugins.CoreGlobals) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		res := g.CoreAPI.HttpAPI.VueResponse()
 
-		logs, err := logger.ReadLogs()
+		logs, err := logger.ReadLogsReverse()
 		if err != nil {
 			log.Println(err)
 		}
