@@ -86,7 +86,7 @@ The time when the session was started. It is a pointer to a `time.Time` value. A
 
 ### ExpDays
 
-The number of days the session is valid from the time that it is started. It is a pointer to an unsigned integer value. A `nil` value indicates that the session does not expire.
+The number of days the session is valid from the time that it is started plus the [TimeSecs](#timesecs) value. It is a pointer to an unsigned integer value. A `nil` value indicates that the session does not expire.
 
 ### DownMbits
 

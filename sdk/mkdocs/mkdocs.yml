@@ -61,9 +61,11 @@ nav:
       - 'HttpResponse': api/http-response.md
       - 'SessionsMgrApi': api/sessions-mgr-api.md
       - 'SessionSource': api/session-source.md
+      - 'ThemesApi': api/themes-api.md
       - 'VueRouterApi': api/vue-router-api.md
       - 'VueResponse': api/vue-response.md
       - 'window.$flare': api/flare-variable.md
+      - 'plugin.json': api/plugin.json.md
   - Free Plugins:
       - 'Flare Hotspot Theme': 'plugins/com.flarego.default-theme.md'
 
