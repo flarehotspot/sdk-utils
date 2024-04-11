@@ -10,7 +10,8 @@ import "context"
 
 // ClientDevice represents a client device connected to the network.
 type ClientDevice interface {
-	// Returns the database id of the device.
+
+	// Returns the database id of the client device ID.
 	Id() int64
 
 	// Returns the hostname of the device.

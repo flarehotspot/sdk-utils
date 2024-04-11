@@ -13,11 +13,8 @@ import (
 
 // ClientSession represents a client's internet connection session.
 type ClientSession interface {
-	// Returns the session's id.
-	Id() int64
-
-	// Returns the session's device id.
-	DeviceId() int64
+	// REturns the provider of the session record.
+	Provider() string
 
 	// Returns the session type.
 	Type() uint8
@@ -34,8 +31,17 @@ type ClientSession interface {
 	// Returns the session's data consumption in megabytes.
 	DataConsumption() (mbytes float64)
 
+	// Returns the session's remaining time in seconds.
+	RemainingTime() (sec uint)
+
+	// Returns the session's remaining data in megabytes.
+	RemainingData() (mbytes float64)
+
 	// Returns the time when session was started.
 	StartedAt() *time.Time
+
+	// Returns the created at time.
+	CreatedAt() time.Time
 
 	// Returns the session's expiration time in days.
 	// If session has no expiration, it returns nil.
@@ -53,7 +59,15 @@ type ClientSession interface {
 	UpMbits() int
 
 	// Returns whether session uses global speed limits.
-	UseGlobal() bool
+	UseGlobalSpeed() bool
+
+	// Increases the session's time consumption in seconds.
+	// This value is not saved until Save() method is called.
+	IncTimeCons(sec uint)
+
+	// Increases the session's data consumption in megabytes.
+	// This value is not saved until Save() method is called.
+	IncDataCons(mbytes float64)
 
 	// Sets the session's available time in seconds.
 	// This value is not saved until Save() method is called.
@@ -89,15 +103,7 @@ type ClientSession interface {
 
 	// Sets whether session uses global speed limits.
 	// This value is not saved until Save() method is called.
-	SetUseGlobals(bool)
-
-	// Increases the session's time consumption in seconds.
-	// This value is not saved until Save() method is called.
-	IncTimeCons(sec uint)
-
-	// Increases the session's data consumption in megabytes.
-	// This value is not saved until Save() method is called.
-	IncDataCons(mbytes float64)
+	SetUseGlobalSpeed(bool)
 
 	// Saves the session's changes.
 	Save(ctx context.Context) error

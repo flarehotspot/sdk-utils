@@ -1,12 +1,12 @@
 <template lang="html">
     <div>
-        <h1>Admin Themes:</h1>
+        <h1><% .Helpers.Translate "label" "admin_themes" %>:</h1>
         <div v-for="theme in flareView.data.admin_themes" :key="theme.pkg">
             <input type="radio" :value="theme.pkg" v-model="flareView.data.themes_config.admin" />
             <label :for="theme.pkg">{{ theme.name }}</label>
         </div>
 
-        <h1>Portal Themes:</h1>
+        <h1><% .Helpers.Translate "label" "portal_themes" %>:</h1>
         <div v-for="theme in flareView.data.portal_themes" :key="theme.pkg">
             <input type="radio" :value="theme.pkg" v-model="flareView.data.themes_config.portal" />
             <label :for="theme.pkg">{{ theme.name }}</label>
@@ -15,11 +15,20 @@
         <button type="button" @click="changeTheme">Save Changes</button>
     </div>
 </template>
+
 <script>
 define(function () {
     return {
         template: template,
         props: ['flareView'],
+        data: function(){
+            return {
+                sample_data: 'sample data'
+            };
+        },
+        mounted: function(){
+            console.log('mounted');
+        },
         methods: {
             changeTheme: function () {
                 var data = this.flareView.data;

@@ -3,12 +3,14 @@ package plugins
 import (
 	"fmt"
 	"log"
+	"net/http"
 
 	"github.com/flarehotspot/core/internal/connmgr"
 	"github.com/flarehotspot/core/internal/db"
 	"github.com/flarehotspot/core/internal/web/middlewares"
 	"github.com/flarehotspot/core/internal/web/router"
 	sdkhttp "github.com/flarehotspot/sdk/api/http"
+	"github.com/gorilla/mux"
 )
 
 type HttpRouterApi struct {
@@ -36,6 +38,12 @@ func (self *HttpRouterApi) AdminRouter() sdkhttp.HttpRouterInstance {
 
 func (self *HttpRouterApi) PluginRouter() sdkhttp.HttpRouterInstance {
 	return self.pluginRouter
+}
+
+func (self *HttpRouterApi) UseMiddleware(middleware ...func(http.Handler) http.Handler) {
+	for _, mw := range middleware {
+		router.RootRouter.Use(mux.MiddlewareFunc(mw))
+	}
 }
 
 func (self *HttpRouterApi) MuxRouteName(name sdkhttp.PluginRouteName) sdkhttp.MuxRouteName {
