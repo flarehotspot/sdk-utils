@@ -119,7 +119,7 @@ func (ipsg *ipsegmt) baseIp() (ip string) {
 	return ip
 }
 
-func newIpsegt(ip string, netmask int) (*ipsegmt, error) {
+func newIpsegmt(ip string, netmask int) (*ipsegmt, error) {
 	addr, err := netip.ParseAddr(ip)
 	if err != nil {
 		return nil, err

@@ -1,5 +1,7 @@
 # Translations
 
+## 1. Basic Translations
+
 To translate texts, we will use the [Translate](../api/plugin-api.md#translate) method from [PluginApi](../api/plugin-api.md).
 
 The `Translate` method receives a message type and message key string and returns the translated text. The method will look for the translation in the `resources/translations/[lang]/[type]/[file].txt` file in your plugin.
@@ -16,3 +18,13 @@ saveText := api.Translate("label", "save")
 ```
 
 In this example, the `Translate` method will look for the file `resources/translations/en/label/save.txt`. The contents of the file will be used as the template for the translated text. For more advanced translations, see [PluginApi.Translate](../api/plugin-api.md#translate) method documentation.
+
+The translate method can also be called within views using the `<% .Helpers.Translate %>` helper method. For example:
+
+```html
+<h1><% .Helpers.Translate "label" "save" %></h1>
+```
+
+## 2. Trnaslation With Variables
+
+

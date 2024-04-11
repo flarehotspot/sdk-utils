@@ -10,7 +10,8 @@ import "context"
 
 // ClientDevice represents a client device connected to the network.
 type ClientDevice interface {
-	// Returns the database id of the device.
+
+	// Returns the database id of the client device ID.
 	Id() int64
 
 	// Returns the hostname of the device.
@@ -29,7 +30,12 @@ type ClientDevice interface {
 	// The event will be propagated to the client's browser via server-sent events.
 	Emit(event string, data any)
 
-	// Subscribes to a socket event.
-    // It returns a channel that will receive data when the event is emitted.
+	// Subscribes to events for this client device.
+	// It returns a channel that will receive data when the event is emitted.
+	// The data is a JSON encoded byte slice.
 	Subscribe(event string) <-chan []byte
+
+	// Unsubscribes from events for this client device.
+	// The channel argument comes from the Subscribe method.
+	Unsubscribe(event string, ch <-chan []byte)
 }

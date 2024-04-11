@@ -28,7 +28,6 @@ var (
 )
 
 func init() {
-	perms = sync.Map{}
 	perms.Store(PermAdmin, "Manage Users")
 }
 

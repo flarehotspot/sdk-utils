@@ -84,18 +84,18 @@ type MyPluginCfg struct {
     Field2 string `json:"field2"`
 }
 
-err := api.Config().Plugin("myplugin").Save(MyPluginCfg{
+err := api.Config().Plugin("some_key").Save(MyPluginCfg{
     Field1: "value1",
     Field2: "value2",
 })
 ```
 
-To get your plugin configuration, use the `Get` method.
+To get your plugin configuration for a specific key, use the `Get` method.
 
 ```go
 var myCfg MyPluginCfg
 
-err := api.Config().Plugin("myplugin").Get(&myCfg)
+err := api.Config().Plugin("some_key").Get(&myCfg)
 
 fmt.Printf("Field1: %s, Field2: %s", myCfg.Field1, myCfg.Field2)
 ```

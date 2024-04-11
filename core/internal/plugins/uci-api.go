@@ -2,7 +2,7 @@ package plugins
 
 import (
 	"github.com/flarehotspot/core/internal/utils/uci"
-	ucisdk "github.com/flarehotspot/sdk/api/uci"
+	"github.com/flarehotspot/sdk/api/uci"
 	gouci "github.com/flarehotspot/sdk/libs/go-uci"
 )
 
@@ -16,15 +16,15 @@ func NewUciApi() *UciApi {
 	return &UciApi{}
 }
 
-func (self *UciApi) Network() ucisdk.NetworkApi {
+func (self *UciApi) Network() sdkuci.NetworkApi {
 	return self.networkApi
 }
 
-func (self *UciApi) Dhcp() ucisdk.DhcpApi {
+func (self *UciApi) Dhcp() sdkuci.DhcpApi {
 	return self.dhcpApi
 }
 
-func (self *UciApi) Wireless() ucisdk.WirelessApi {
+func (self *UciApi) Wireless() sdkuci.WirelessApi {
 	return self.wirelessApi
 }
 

@@ -84,6 +84,11 @@ func (self *ClientDevice) Subscribe(event string) <-chan []byte {
 	return ch
 }
 
+func (self *ClientDevice) Unsubscribe(event string, ch <-chan []byte) {
+	channel := self.GetEventChannel(event)
+	events.Unsubscribe(channel, ch)
+}
+
 func (self *ClientDevice) GetEventChannel(event string) string {
 	return fmt.Sprintf("%s:%s", self.MacAddr(), event)
 }

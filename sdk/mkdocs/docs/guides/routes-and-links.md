@@ -78,10 +78,10 @@ See [Route Fields](#route-fields) for the definition of each fields used to defi
 Below is the brief definition of each fields used to define the [Portal Route](../api/vue-router-api.md#portalroute) and [Admin Route](../api/vue-router-api.md#adminroute).
 
 ### RouteName (required) {#routename}
-This field can be used to reference this route in case we want to link this page from another page using the [HttpHelpers.VueRoutePath](../api/http-helpers.md#vueroutepath) method. Learn more about [creating a link](./creating-a-link.md).
+This field can be used to reference this route in case we want to link this page from another page using the [HttpHelpers.VueRoutePath](../api/http-helpers.md#vueroutepath) method. Learn more about [creating a link](#creating-a-link).
 
 ### RoutePath (required) {#routepath}
-This field is used to match the URL in the browser which will trigger the portal route. Route params can be extracted using
+This field is used to match the URL in the browser to [portal](#portal-routes) or [admin](#admin-routes) route. Route params can be extracted using
 [HttpApi.MuxVars](../api/http-api.md#muxvars) method. For example, to get the `name` param from the route path `/welcome/:name`, you would do:
 
 ```go title="main.go"
@@ -153,14 +153,14 @@ adminRoute := sdkhttp.VueAdminRoute{
 A router link is a vue component that's part of the official [vue-router](https://github.com/vuejs/vue-router) package. We can create a link to a [portal route](./routes-and-links.md#portal-routes) or an [admin route](./routes-and-links.md#admin-routes) by using the [HttpHelpers.VueRoutePath](../api/http-helpers.md#vueroutepath) method.
 
 ```html title="AnotherPage.vue"
-<router-link :to='<% .Helpers.VueRoutePath "portal.welcome" "name" "Jhon" %>'>Go to welcome page</router-link>
+<router-link to='<% .Helpers.VueRoutePath "portal.welcome" "name" "Jhon" %>'>Go to welcome page</router-link>
 ```
 This creates a link to the portal route named `portal.welcome` with a param `name` of value `Jhon`.
 
 ### Route Params {#route-params}
 Route params can be passed to the [Helpers.VueRoutePath](../api/http-helpers.md#vueroutepath) as key-value pairs. For example, if you have a route path `/users/:user_id/posts/:post_id` and the [name](./routes-and-links.md#routename) of the route is `user.posts`, this is how you can create a link to that route with params:
 ```html
-<router-link :to='<% .Helpers.VueRoutePath "user.posts" "user_id" "1" "post_id" "2" %>'>
+<router-link to='<% .Helpers.VueRoutePath "user.posts" "user_id" "1" "post_id" "2" %>'>
     User posts
 </router-link>
 ```

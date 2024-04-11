@@ -26,7 +26,7 @@ The following are the available methods in `PluginApi`.
 
 ### Pkg
 
-It returns the `package` field defined in [plugin.json](../plugin-json/).
+It returns the `package` field defined in [plugin.json](./plugin.json.md).
 
 ```go
 pkg := api.Pkg()
@@ -35,7 +35,7 @@ fmt.Println(pkg) // "com.mydomain.myplugin"
 
 ### Name
 
-It returns the `name` field defined in `plugin.json`.
+It returns the `name` field defined in [plugin.json](./plugin.json.md).
 
 ```go
 name := api.Name()
@@ -44,7 +44,7 @@ fmt.Println(name) // "My Plugin"
 
 ### Version
 
-It returns the `version` field defined in [plugin.json](../plugin-json/).
+It returns the `version` field defined in [plugin.json](./plugin.json.md).
 
 ```go
 version := api.Version()
@@ -53,7 +53,7 @@ fmt.Println(version) // "1.0.0"
 
 ### Description
 
-It returns the `description` field defined in [plugin.json](../plugin-json/).
+It returns the `description` field defined in [plugin.json](./plugin.json.md).
 
 ```go
 description := api.Description()
@@ -133,7 +133,7 @@ fmt.Println(config) // ConfigApi
 
 ### Payments
 
-It return the [`PaymentsApi`](../payments-api/) object which is used to create payment options or create system transactions.
+It return the [`PaymentsApi`](./payments-api.md) object which is used to create payment options or create system transactions.
 
 ```go
 payments := api.Payments()
@@ -142,7 +142,7 @@ fmt.Println(payments) // PaymentsApi
 
 ### InAppPurchases
 
-It returns the [`InAppPurchasesApi`](../in-app-purchases-api/) object which is used to create and manage in-app purchases.
+It returns the [`InAppPurchasesApi`](./in-app-purchases-api.md) object which is used to create and manage in-app purchases.
 
 ```go
 inAppPurchases := api.InAppPurchases()
@@ -151,7 +151,7 @@ fmt.Println(inAppPurchases) // InAppPurchasesApi
 
 ### Ads
 
-It returns the [`AdsApi`](../ads-api/) object which is used to create and manage ads.
+It returns the [`AdsApi`](./ads-api.md) object which is used to create and manage ads.
 
 ```go
 ads := api.Ads()
@@ -160,7 +160,7 @@ fmt.Println(ads) // AdsApi
 
 ### PluginsMgr
 
-It returns the [`PluginsMgrApi`](../plugins-mgr-api/) object which is used to manage plugins.
+It returns the [`PluginsMgrApi`](./plugins-mgr-api.md) object which is used to manage plugins.
 
 ```go
 pluginsMgr := api.PluginsMgr()
@@ -196,7 +196,7 @@ fmt.Println(sessionsMgr) // SessionsMgrApi
 
 ### Uci
 
-It returns the [`UciApi`](../uci-api/) object which is a wrapper to [OpenWRT's UCI](https://openwrt.org/docs/guide-user/base-system/uci).
+It returns the [`UciApi`](./uci-api.md) object which is a wrapper to [OpenWRT's UCI](https://openwrt.org/docs/guide-user/base-system/uci).
 
 ```go
 uci := api.Uci()
@@ -205,9 +205,25 @@ fmt.Println(uci) // UciApi
 
 ### Themes
 
-It returns the [`ThemesApi`](../themes-api/) object which is used to manage system UI themes.
+It returns the [`ThemesApi`](./themes-api.md) object which is used to manage system UI themes.
 
 ```go
 themes := api.Themes()
 fmt.Println(themes) // ThemesApi
 ```
+
+### Features
+
+Returns the implement features of the plugin.
+```go
+features := api.Features()
+fmt.Println(features) // []string{"theme:admin", "theme:portal"}
+```
+
+Below are the available features and their descriptions:
+
+| Feature | Description |
+| --- | --- |
+| `theme:admin` | Plugin provides an admin theme
+| `theme:portal` | Plugin provides a portal theme
+

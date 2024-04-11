@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"path/filepath"
 
-	themes "github.com/flarehotspot/sdk/api/themes"
-	sdkfs "github.com/flarehotspot/sdk/utils/fs"
+	"github.com/flarehotspot/sdk/api/themes"
+	"github.com/flarehotspot/sdk/utils/fs"
 )
 
 func NewThemesApi(api *PluginApi) *ThemesApi {
@@ -14,8 +14,8 @@ func NewThemesApi(api *PluginApi) *ThemesApi {
 
 type ThemesApi struct {
 	api         *PluginApi
-	AdminTheme  *themes.AdminTheme
-	PortalTheme *themes.PortalTheme
+	AdminTheme  *sdkthemes.AdminTheme
+	PortalTheme *sdkthemes.PortalTheme
 
 	AdminLayoutRoute    *VueRouteComponent
 	AdminDashboardRoute *VueRouteComponent
@@ -25,12 +25,12 @@ type ThemesApi struct {
 	PortalIndexRoute  *VueRouteComponent
 }
 
-func (self *ThemesApi) NewAdminTheme(theme themes.AdminTheme) {
+func (self *ThemesApi) NewAdminTheme(theme sdkthemes.AdminTheme) {
 	adminRouter := self.api.HttpAPI.httpRouter.adminRouter.mux
 	compRouter := self.api.HttpAPI.httpRouter.pluginRouter.mux
 
 	layoutComp := NewVueRouteComponent(self.api, theme.LayoutComponent.RouteName, "/theme/layout", theme.LayoutComponent.HandlerFunc, theme.LayoutComponent.Component, nil, nil)
-	layoutComp.MountRoute(compRouter)
+	layoutComp.MountRoute(adminRouter)
 
 	loginComp := NewVueRouteComponent(self.api, theme.LoginComponent.RouteName, "/theme/login", theme.LoginComponent.HandlerFunc, theme.LoginComponent.Component, nil, nil)
 	loginComp.MountRoute(compRouter)
@@ -46,7 +46,7 @@ func (self *ThemesApi) NewAdminTheme(theme themes.AdminTheme) {
 	self.AdminTheme = &theme
 }
 
-func (self *ThemesApi) NewPortalTheme(theme themes.PortalTheme) {
+func (self *ThemesApi) NewPortalTheme(theme sdkthemes.PortalTheme) {
 	compRouter := self.api.HttpAPI.httpRouter.pluginRouter.mux.PathPrefix("/portal/vue/components").Subrouter()
 
 	layoutComp := NewVueRouteComponent(self.api, theme.LayoutComponent.RouteName, "/theme/layout", theme.LayoutComponent.HandlerFunc, theme.LayoutComponent.Component, nil, nil)
@@ -63,8 +63,8 @@ func (self *ThemesApi) NewPortalTheme(theme themes.PortalTheme) {
 	self.PortalTheme = &theme
 }
 
-func (self *ThemesApi) GetAdminThemeAssets() themes.ThemeAssets {
-	assets := themes.ThemeAssets{Scripts: []string{}, Styles: []string{}}
+func (self *ThemesApi) GetAdminThemeAssets() sdkthemes.ThemeAssets {
+	assets := sdkthemes.ThemeAssets{Scripts: []string{}, Styles: []string{}}
 	if self.AdminTheme.ThemeAssets != nil {
 		if self.AdminTheme.ThemeAssets.Scripts != nil {
 			assets.Scripts = self.AdminTheme.ThemeAssets.Scripts
@@ -76,8 +76,8 @@ func (self *ThemesApi) GetAdminThemeAssets() themes.ThemeAssets {
 	return assets
 }
 
-func (self *ThemesApi) GetPortalThemeAssets() themes.ThemeAssets {
-	assets := themes.ThemeAssets{Scripts: []string{}, Styles: []string{}}
+func (self *ThemesApi) GetPortalThemeAssets() sdkthemes.ThemeAssets {
+	assets := sdkthemes.ThemeAssets{Scripts: []string{}, Styles: []string{}}
 	if self.PortalTheme.ThemeAssets != nil {
 		if self.PortalTheme.ThemeAssets.Scripts != nil {
 			assets.Scripts = self.PortalTheme.ThemeAssets.Scripts

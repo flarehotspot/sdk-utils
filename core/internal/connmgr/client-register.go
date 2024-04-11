@@ -1,10 +1,9 @@
 package connmgr
 
 import (
-	"context"
 	"database/sql"
 	"errors"
-	"log"
+	"net/http"
 
 	"github.com/flarehotspot/core/internal/db"
 	"github.com/flarehotspot/core/internal/db/models"
@@ -12,78 +11,105 @@ import (
 	connmgr "github.com/flarehotspot/sdk/api/connmgr"
 )
 
-var regQue *jobque.JobQues = jobque.NewJobQues()
+const (
+	EVENT_CLIENT_CREATED = "client:created"
+	EVENT_CLIENT_CHANGED = "client:changed"
+)
 
-type ClientRegister struct {
-	db            *db.Database
-	mdls          *models.Models
-	mgr           *SessionsMgr
-	findHooks     []connmgr.ClientFindHookFn
-	createdHooks  []connmgr.ClientCreatedHookFn
-	changedHooks  []connmgr.ClientChangedHookFn
-	modifiedHooks []connmgr.ClientModifierHookFn
-}
+var (
+	regQue *jobque.JobQues = jobque.NewJobQues()
+)
 
 func NewClientRegister(dtb *db.Database, mdls *models.Models) *ClientRegister {
 	return &ClientRegister{
-		db:            dtb,
-		mdls:          mdls,
-		findHooks:     []connmgr.ClientFindHookFn{},
-		createdHooks:  []connmgr.ClientCreatedHookFn{},
-		changedHooks:  []connmgr.ClientChangedHookFn{},
-		modifiedHooks: []connmgr.ClientModifierHookFn{},
+		db:           dtb,
+		mdls:         mdls,
+		createdHooks: []connmgr.ClientCreatedHookFn{},
+		changedHooks: []connmgr.ClientChangedHookFn{},
 	}
 }
 
-func (reg *ClientRegister) ClientFindHook(fn connmgr.ClientFindHookFn) {
-	reg.findHooks = append(reg.findHooks, fn)
+type ClientRegister struct {
+	db           *db.Database
+	mdls         *models.Models
+	mgr          *SessionsMgr
+	createdHooks []connmgr.ClientCreatedHookFn
+	changedHooks []connmgr.ClientChangedHookFn
 }
 
-func (reg *ClientRegister) ClientCreatedHook(fn connmgr.ClientCreatedHookFn) {
-	reg.createdHooks = append(reg.createdHooks, fn)
+func (reg *ClientRegister) ClientCreatedHook(fn ...connmgr.ClientCreatedHookFn) {
+	reg.createdHooks = append(reg.createdHooks, fn...)
 }
 
-func (reg *ClientRegister) ClientChangedHook(fn connmgr.ClientChangedHookFn) {
-	reg.changedHooks = append(reg.changedHooks, fn)
+func (reg *ClientRegister) ClientChangedHook(fn ...connmgr.ClientChangedHookFn) {
+	reg.changedHooks = append(reg.changedHooks, fn...)
 }
 
-func (reg *ClientRegister) ClientModifierHook(fn connmgr.ClientModifierHookFn) {
-	reg.modifiedHooks = append(reg.modifiedHooks, fn)
-}
-
-func (reg *ClientRegister) Register(ctx context.Context, mac string, ip string, hostname string) (connmgr.ClientDevice, error) {
-	var (
-		clnt *ClientDevice
-		dev  *models.Device
-		err  error
-	)
-
-	dev, err = reg.mdls.Device().FindByMac(ctx, mac)
-	if err != nil && !errors.Is(err, sql.ErrNoRows) {
-		return nil, err
-	}
+func (reg *ClientRegister) Register(r *http.Request, mac string, ip string, hostname string) (connmgr.ClientDevice, error) {
+	ctx := r.Context()
+	dev, err := reg.mdls.Device().FindByMac(ctx, mac)
 
 	if errors.Is(err, sql.ErrNoRows) {
+		// create new device record
 		dev, err = reg.mdls.Device().Create(ctx, mac, ip, hostname)
 		if err != nil {
 			return nil, err
 		}
+
+		clnt := NewClientDevice(reg.db, reg.mdls, dev)
+
+		// call createdHooks functions
+		if len(reg.createdHooks) > 0 {
+			for _, hookFn := range reg.createdHooks {
+				if err := hookFn(ctx, clnt); err != nil {
+					return nil, err
+				}
+			}
+		}
+
+		return clnt, nil
 	}
 
+	if err != nil {
+		return nil, err
+	}
+
+	clnt := NewClientDevice(reg.db, reg.mdls, dev)
 	changed := ip != dev.IpAddress() || hostname != dev.Hostname()
 
 	// Update device details if need be
 	if changed {
+		connected := reg.mgr.IsConnected(clnt)
+		if connected {
+            // disconnect temporarily
+			err = reg.mgr.Disconnect(ctx, clnt, "Device details changed, reconnecting...")
+			if err != nil {
+				return nil, err
+			}
+		}
+
+		old := NewClientDevice(reg.db, reg.mdls, dev.Clone())
 		err := dev.Update(ctx, mac, ip, hostname)
 		if err != nil {
 			return nil, err
 		}
-	}
 
-	clnt = NewClientDevice(reg.db, reg.mdls, dev)
-	if changed && reg.mgr.IsConnected(clnt) {
-		log.Println("TODO: Update connection with new ip and mac.")
-		// TODO: Update connection with new mac and ip
+		// call changedHooks functions
+		if len(reg.changedHooks) > 0 {
+			for _, hookFn := range reg.changedHooks {
+				if err := hookFn(ctx, clnt, old); err != nil {
+					return nil, err
+				}
+			}
+		}
+
+		// reconnect client device
+		if connected {
+			err := reg.mgr.Connect(ctx, clnt, "Device details changed, reconnected successfully!")
+			if err != nil {
+				return nil, err
+			}
+		}
 	}
 
 	return clnt, nil

@@ -15,7 +15,9 @@ import (
 	sdkstr "github.com/flarehotspot/sdk/utils/strings"
 )
 
-const GOARCH = runtime.GOARCH
+const (
+	GOARCH = runtime.GOARCH
+)
 
 var (
 	coreInfo     = tools.CoreInfo()

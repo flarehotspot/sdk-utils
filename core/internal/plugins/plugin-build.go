@@ -9,8 +9,8 @@ import (
 	"path/filepath"
 
 	"github.com/flarehotspot/core/internal/config/plugincfg"
-	fs "github.com/flarehotspot/sdk/utils/fs"
-	paths "github.com/flarehotspot/sdk/utils/paths"
+	"github.com/flarehotspot/sdk/utils/fs"
+	"github.com/flarehotspot/sdk/utils/paths"
 )
 
 type InstPrgrs struct {
@@ -32,13 +32,13 @@ func Build(w io.Writer, pluginSrc string, buildOpts ...string) error {
 		return err
 	}
 
-	installPath := filepath.Join(paths.TmpDir, "build", pluginInfo.Package)
+	installPath := filepath.Join(sdkpaths.TmpDir, "build", pluginInfo.Package)
 	err = os.RemoveAll(installPath)
 	if err != nil {
 		return err
 	}
 
-	err = fs.MoveDir(pluginSrc, installPath)
+	err = sdkfs.MoveDir(pluginSrc, installPath)
 	if err != nil {
 		return err
 	}
@@ -52,7 +52,7 @@ use (
 )
 
 go 1.19
-    `, filepath.Join(paths.AppDir, "core"), installPath)
+    `, filepath.Join(sdkpaths.AppDir, "core"), installPath)
 
 	err = os.WriteFile(filepath.Join(installPath, "go.work"), []byte(gowork), 0644)
 	if err != nil {
@@ -77,13 +77,13 @@ go 1.19
 		return err
 	}
 
-	pluginPath := filepath.Join(paths.PluginsDir, pluginInfo.Package)
+	pluginPath := filepath.Join(sdkpaths.PluginsDir, pluginInfo.Package)
 	os.RemoveAll(filepath.Join(pluginPath, ".git"))
 	log.Println("Moving plugin files to", pluginPath)
 
 	w.Write([]byte(fmt.Sprintf("Cleaning up plugin %s...", pluginInfo.Name)))
 
-	err = fs.MoveDir(installPath, pluginPath)
+	err = sdkfs.MoveDir(installPath, pluginPath)
 	if err != nil {
 		return err
 	}
@@ -91,13 +91,13 @@ go 1.19
 	patterns := []string{"*.go", "*.mod", "*.work", "*.md"}
 	for _, pattern := range patterns {
 		log.Println("Removing pattern", pattern)
-		fs.RmPattern(pluginPath, pattern)
+		sdkfs.RmPattern(pluginPath, pattern)
 	}
 
-	err = fs.RmEmpty(pluginPath)
-  if err != nil {
-    return err
-  }
+	err = sdkfs.RmEmpty(pluginPath)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }

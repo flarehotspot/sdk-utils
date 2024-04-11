@@ -177,13 +177,32 @@ if err != nil {
 
 ### Emit
 
-Emit an [event](#events) to the user account. It returns an `error` object.
+Emit an [event](#events) to the user account. It returns an `error` object. It accepts an event name and a data object.
+```go
+data := map[string]any{"key": "value"} // or any object that can be marshalled into a json
+acct.Emit("some_event", data)
+```
+
+### Subscribe
+
+You can listen to events emitted to the account using the `Subscribe` method. It returns a channel of `<-chan []byte` that can be marshalled into a json.
 
 ```go
-evt := "some_event"
-data := map[string]any{"key": "value"}
-acct, _ := api.Acct().Find("admin")
-acct.Emit(evt, data)
+ch := acct.Subscribe("some_event")
+
+for b := range ch {
+    fmt.Println(string(b))
+}
+```
+
+### Unsubscribe
+
+You can stop listening to events emitted to the account using the `Unsubscribe` method. It accepts an event name and channel returned by the [Subscribe](#subscribe) method.
+
+```go
+ch := acct.Subscribe("some_event")
+// Do something with the channel
+acct.Unsubscribe("some_event", ch)
 ```
 
 ## 3. Permissions {#permissions-sec}

@@ -10,7 +10,7 @@ import (
 	"github.com/flarehotspot/core/internal/db/models"
 	"github.com/flarehotspot/core/internal/network"
 	"github.com/flarehotspot/core/internal/utils/migrate"
-	plugin "github.com/flarehotspot/sdk/api/plugin"
+	"github.com/flarehotspot/sdk/api/plugin"
 )
 
 func NewPluginMgr(d *db.Database, m *models.Models, paymgr *PaymentsMgr, clntReg *connmgr.ClientRegister, clntMgr *connmgr.SessionsMgr, trfkMgr *network.TrafficMgr) *PluginsMgr {
@@ -72,7 +72,7 @@ func (self *PluginsMgr) MigrateAll() {
 	}
 }
 
-func (self *PluginsMgr) FindByName(name string) (plugin.PluginApi, bool) {
+func (self *PluginsMgr) FindByName(name string) (sdkplugin.PluginApi, bool) {
 	for _, p := range self.plugins {
 		if p.Name() == name {
 			return p, true
@@ -81,7 +81,7 @@ func (self *PluginsMgr) FindByName(name string) (plugin.PluginApi, bool) {
 	return nil, false
 }
 
-func (self *PluginsMgr) FindByPkg(pkg string) (plugin.PluginApi, bool) {
+func (self *PluginsMgr) FindByPkg(pkg string) (sdkplugin.PluginApi, bool) {
 	for _, p := range self.plugins {
 		if p.Pkg() == pkg {
 			return p, true
@@ -90,16 +90,16 @@ func (self *PluginsMgr) FindByPkg(pkg string) (plugin.PluginApi, bool) {
 	return nil, false
 }
 
-func (self *PluginsMgr) All() []plugin.PluginApi {
-	plugins := []plugin.PluginApi{}
+func (self *PluginsMgr) All() []sdkplugin.PluginApi {
+	plugins := []sdkplugin.PluginApi{}
 	for _, p := range self.plugins {
 		plugins = append(plugins, p)
 	}
 	return plugins
 }
 
-func (self *PluginsMgr) PaymentMethods() []plugin.PluginApi {
-	methods := []plugin.PluginApi{}
+func (self *PluginsMgr) PaymentMethods() []sdkplugin.PluginApi {
+	methods := []sdkplugin.PluginApi{}
 	for _, p := range self.plugins {
 		pmnt := p.Payments().(*PaymentsApi)
 		if pmnt.paymentsMgr != nil {

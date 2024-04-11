@@ -2,21 +2,35 @@ package connmgr
 
 import (
 	"context"
-	"log"
 	"sync"
 	"time"
 
-	"github.com/flarehotspot/core/internal/db"
-	"github.com/flarehotspot/core/internal/db/models"
-	connmgr "github.com/flarehotspot/sdk/api/connmgr"
+	sdkconnmgr "github.com/flarehotspot/sdk/api/connmgr"
 )
+
+func NewClientSession(src sdkconnmgr.SessionSource) *ClientSession {
+	s := src.Data()
+	return &ClientSession{
+		provider:  s.Provider,
+		t:         s.Type,
+		timeSecs:  s.TimeSecs,
+		dataMb:    s.DataMb,
+		timeCons:  s.TimeCons,
+		dataCons:  s.DataCons,
+		startedAt: s.StartedAt,
+		expDays:   s.ExpDays,
+		downMbits: s.DownMbits,
+		upMbits:   s.UpMbits,
+		useGlobal: s.UseGlobalSpeed,
+		createdAt: s.CreatedAt,
+		save:      src.Save,
+		reload:    src.Reload,
+	}
+}
 
 type ClientSession struct {
 	mu        sync.RWMutex
-	db        *db.Database
-	mdls      *models.Models
-	id        int64
-	devId     int64
+	provider  string
 	t         uint8
 	timeSecs  uint
 	dataMb    float64
@@ -28,258 +42,217 @@ type ClientSession struct {
 	upMbits   int
 	useGlobal bool
 	createdAt time.Time
+	save      func(context.Context, sdkconnmgr.SessionData) error
+	reload    func(context.Context) (sdkconnmgr.SessionData, error)
 }
 
-func NewClientSession(dtb *db.Database, mdls *models.Models, s *models.Session) connmgr.ClientSession {
-	cs := &ClientSession{db: dtb, mdls: mdls}
-	cs.load(s)
-	return cs
+func (self *ClientSession) Provider() string {
+	self.mu.RLock()
+	defer self.mu.RUnlock()
+	return self.provider
 }
 
-func (cs *ClientSession) Id() int64 {
-	cs.mu.RLock()
-	defer cs.mu.RUnlock()
-	return cs.id
+func (self *ClientSession) Type() uint8 {
+	self.mu.RLock()
+	defer self.mu.RUnlock()
+	return self.t
 }
 
-func (cs *ClientSession) DeviceId() int64 {
-	cs.mu.RLock()
-	defer cs.mu.RUnlock()
-	return cs.devId
+func (self *ClientSession) TimeSecs() uint {
+	self.mu.RLock()
+	defer self.mu.RUnlock()
+	return self.timeSecs
 }
 
-func (cs *ClientSession) Type() uint8 {
-	cs.mu.RLock()
-	defer cs.mu.RUnlock()
-	return cs.t
+func (self *ClientSession) DataMb() float64 {
+	self.mu.RLock()
+	defer self.mu.RUnlock()
+	return self.dataMb
 }
 
-func (cs *ClientSession) TimeSecs() (sec uint) {
-	cs.mu.RLock()
-	defer cs.mu.RUnlock()
-	return cs.timeSecs
+func (self *ClientSession) TimeConsumption() uint {
+	self.mu.RLock()
+	defer self.mu.RUnlock()
+	return self.timeCons
 }
 
-func (cs *ClientSession) DataMb() (mbytes float64) {
-	cs.mu.RLock()
-	defer cs.mu.RUnlock()
-	return cs.dataMb
+func (self *ClientSession) DataConsumption() float64 {
+	self.mu.RLock()
+	defer self.mu.RUnlock()
+	return self.dataCons
 }
 
-func (cs *ClientSession) TimeConsumption() (sec uint) {
-	cs.mu.RLock()
-	defer cs.mu.RUnlock()
-	return cs.timeCons
+func (self *ClientSession) RemainingTime() uint {
+	self.mu.RLock()
+	defer self.mu.RUnlock()
+	return self.timeSecs - self.timeCons
 }
 
-func (cs *ClientSession) DataConsumption() (mbytes float64) {
-	cs.mu.RLock()
-	defer cs.mu.RUnlock()
-	return cs.dataCons
+func (self *ClientSession) RemainingData() float64 {
+	self.mu.RLock()
+	defer self.mu.RUnlock()
+	return self.dataMb - self.dataCons
 }
 
-func (cs *ClientSession) StartedAt() *time.Time {
-	cs.mu.RLock()
-	defer cs.mu.RUnlock()
-	return cs.startedAt
+func (self *ClientSession) StartedAt() *time.Time {
+	self.mu.RLock()
+	defer self.mu.RUnlock()
+	return self.startedAt
 }
 
-func (cs *ClientSession) ExpDays() *uint {
-	cs.mu.RLock()
-	defer cs.mu.RUnlock()
-	return cs.expDays
+func (self *ClientSession) ExpDays() *uint {
+	self.mu.RLock()
+	defer self.mu.RUnlock()
+	return self.expDays
 }
 
-func (cs *ClientSession) ExpiresAt() *time.Time {
-	cs.mu.RLock()
-	defer cs.mu.RUnlock()
-	return cs.expiresAt()
-}
+func (self *ClientSession) ExpiresAt() *time.Time {
+	self.mu.RLock()
+	defer self.mu.RUnlock()
 
-func (cs *ClientSession) DownMbits() int {
-	cs.mu.RLock()
-	defer cs.mu.RUnlock()
-	return cs.downMbits
-}
+	started := self.startedAt
+	exp := self.expDays
 
-func (cs *ClientSession) UpMbits() int {
-	cs.mu.RLock()
-	defer cs.mu.RUnlock()
-	return cs.upMbits
-}
-
-func (cs *ClientSession) UseGlobal() bool {
-	cs.mu.RLock()
-	defer cs.mu.RUnlock()
-	return cs.useGlobal
-}
-
-func (cs *ClientSession) SetTimeSecs(sec uint) {
-	cs.mu.Lock()
-	defer cs.mu.Unlock()
-	cs.timeSecs = sec
-}
-
-func (cs *ClientSession) SetDataMb(mbytes float64) {
-	cs.mu.Lock()
-	defer cs.mu.Unlock()
-	cs.dataMb = mbytes
-}
-
-func (cs *ClientSession) SetTimeCons(sec uint) {
-	cs.mu.Lock()
-	defer cs.mu.Unlock()
-	cs.timeCons = sec
-}
-
-func (cs *ClientSession) SetDataCons(mbytes float64) {
-	cs.mu.Lock()
-	defer cs.mu.Unlock()
-	cs.dataCons = mbytes
-}
-
-func (cs *ClientSession) SetStartedAt(started *time.Time) {
-	cs.mu.Lock()
-	defer cs.mu.Unlock()
-	cs.startedAt = started
-}
-
-func (cs *ClientSession) SetExpDays(exp *uint) {
-	cs.mu.Lock()
-	defer cs.mu.Unlock()
-	cs.expDays = exp
-}
-
-func (cs *ClientSession) SetDownMbits(mbits int) {
-	cs.mu.Lock()
-	defer cs.mu.Unlock()
-	cs.downMbits = mbits
-}
-
-func (cs *ClientSession) SetUpMbits(mbits int) {
-	cs.mu.Lock()
-	defer cs.mu.Unlock()
-	cs.upMbits = mbits
-}
-
-func (cs *ClientSession) SetUseGlobals(g bool) {
-	cs.mu.Lock()
-	defer cs.mu.Unlock()
-	cs.useGlobal = g
-}
-
-func (cs *ClientSession) IncTimeCons(sec uint) {
-	cs.mu.Lock()
-	defer cs.mu.Unlock()
-	cs.timeCons = cs.timeCons + sec
-}
-
-func (cs *ClientSession) IncDataCons(mbytes float64) {
-	cs.mu.Lock()
-	defer cs.mu.Unlock()
-	cs.dataCons = cs.dataCons + mbytes
-}
-
-func (cs *ClientSession) Update(timeSecs uint, dataMb float64, timeCons uint, dataCons float64, started *time.Time, exp *uint, downMbit int, upMbit int, g bool) error {
-	cs.mu.Lock()
-	defer cs.mu.Unlock()
-
-	err := cs.mdls.Session().Update(context.Background(), cs.id, cs.devId, cs.t, timeSecs, dataMb, timeCons, dataCons, started, exp, downMbit, upMbit, g)
-	if err != nil {
-		return err
-	}
-
-	cs.timeSecs = timeSecs
-	cs.dataMb = dataMb
-	cs.timeCons = timeCons
-	cs.dataCons = dataCons
-	cs.downMbits = downMbit
-	cs.upMbits = upMbit
-
-	return nil
-}
-
-func (cs *ClientSession) Save(ctx context.Context) error {
-	cs.mu.RLock()
-	defer cs.mu.RUnlock()
-
-	id := cs.id
-	devId := cs.devId
-	t := cs.t
-	timeSecs := cs.timeSecs
-	dataMb := cs.dataMb
-	timeCons := cs.timeCons
-	dataCons := cs.dataCons
-	started := cs.startedAt
-	exp := cs.expDays
-	d := cs.downMbits
-	u := cs.upMbits
-	g := cs.useGlobal
-
-	err := cs.mdls.Session().Update(ctx, id, devId, t, timeSecs, dataMb, timeCons, dataCons, started, exp, d, u, g)
-	if err != nil {
-		log.Println("Session save error: ", err)
-	}
-
-	return err
-}
-
-func (cs *ClientSession) SessionModel() *models.Session {
-	cs.mu.RLock()
-	defer cs.mu.RUnlock()
-	return models.BuildSession(
-		cs.id,
-		cs.devId,
-		cs.t,
-		cs.timeSecs,
-		cs.dataMb,
-		cs.timeCons,
-		cs.dataCons,
-		cs.startedAt,
-		cs.expDays,
-		cs.expiresAt(),
-		cs.downMbits,
-		cs.upMbits,
-		cs.useGlobal,
-	)
-}
-
-func (cs *ClientSession) Reload(ctx context.Context) error {
-	s, err := cs.mdls.Session().Find(ctx, cs.id)
-	if err != nil {
-		return err
-	}
-
-	cs.mu.Lock()
-	defer cs.mu.Unlock()
-	cs.load(s)
-
-	return nil
-}
-
-func (cs *ClientSession) expiresAt() *time.Time {
-	cs.mu.RLock()
-	defer cs.mu.RUnlock()
-	started := cs.startedAt
-	exp := cs.expDays
 	if started != nil && exp != nil {
-		exp := cs.startedAt.Add(time.Hour * 24 * time.Duration(*exp))
+		exp := started.Add(time.Hour * 24 * time.Duration(*exp))
 		return &exp
 	}
+
 	return nil
 }
 
-func (cs *ClientSession) load(s *models.Session) {
-	cs.id = s.Id()
-	cs.devId = s.DeviceId()
-	cs.t = s.SessionType()
-	cs.timeSecs = s.TimeSecs()
-	cs.dataMb = s.DataMbyte()
-	cs.timeCons = s.TimeConsumed()
-	cs.dataCons = s.DataConsumed()
-	cs.downMbits = s.DownMbits()
-	cs.upMbits = s.UpMbits()
-	cs.useGlobal = s.UseGlobal()
-	cs.expDays = s.ExpDays()
-	cs.startedAt = s.StartedAt()
+func (self *ClientSession) DownMbits() int {
+	self.mu.RLock()
+	defer self.mu.RUnlock()
+	return self.downMbits
+}
+
+func (self *ClientSession) UpMbits() int {
+	self.mu.RLock()
+	defer self.mu.RUnlock()
+	return self.upMbits
+}
+
+func (self *ClientSession) UseGlobalSpeed() bool {
+	self.mu.RLock()
+	defer self.mu.RUnlock()
+	return self.useGlobal
+}
+
+func (self *ClientSession) CreatedAt() time.Time {
+	self.mu.RLock()
+	defer self.mu.RUnlock()
+	return self.createdAt
+}
+
+func (self *ClientSession) IncTimeCons(sec uint) {
+	self.mu.Lock()
+	defer self.mu.Unlock()
+	self.timeCons += sec
+}
+
+func (self *ClientSession) IncDataCons(mbytes float64) {
+	self.mu.Lock()
+	defer self.mu.Unlock()
+	self.dataCons += mbytes
+}
+
+func (self *ClientSession) SetTimeSecs(sec uint) {
+	self.mu.Lock()
+	defer self.mu.Unlock()
+	self.timeSecs = sec
+}
+
+func (self *ClientSession) SetDataMb(mbytes float64) {
+	self.mu.Lock()
+	defer self.mu.Unlock()
+	self.dataMb = mbytes
+}
+
+func (self *ClientSession) SetTimeCons(sec uint) {
+	self.mu.Lock()
+	defer self.mu.Unlock()
+	self.timeCons = sec
+}
+
+func (self *ClientSession) SetDataCons(mbytes float64) {
+	self.mu.Lock()
+	defer self.mu.Unlock()
+	self.dataCons = mbytes
+}
+
+func (self *ClientSession) SetStartedAt(started *time.Time) {
+	self.mu.Lock()
+	defer self.mu.Unlock()
+	self.startedAt = started
+}
+
+func (self *ClientSession) SetExpDays(exp *uint) {
+	self.mu.Lock()
+	defer self.mu.Unlock()
+	self.expDays = exp
+}
+
+func (self *ClientSession) SetDownMbits(mbits int) {
+	self.mu.Lock()
+	defer self.mu.Unlock()
+	self.downMbits = mbits
+}
+
+func (self *ClientSession) SetUpMbits(mbits int) {
+	self.mu.Lock()
+	defer self.mu.Unlock()
+	self.upMbits = mbits
+}
+
+func (self *ClientSession) SetUseGlobalSpeed(useGlobal bool) {
+	self.mu.Lock()
+	defer self.mu.Unlock()
+	self.useGlobal = useGlobal
+}
+
+func (self *ClientSession) Save(ctx context.Context) error {
+	self.mu.RLock()
+	defer self.mu.RUnlock()
+
+	data := sdkconnmgr.SessionData{
+		Provider:       self.provider,
+		Type:           self.t,
+		TimeSecs:       self.timeSecs,
+		DataMb:         self.dataMb,
+		TimeCons:       self.timeCons,
+		DataCons:       self.dataCons,
+		StartedAt:      self.startedAt,
+		ExpDays:        self.expDays,
+		DownMbits:      self.downMbits,
+		UpMbits:        self.upMbits,
+		UseGlobalSpeed: self.useGlobal,
+		CreatedAt:      self.createdAt,
+	}
+
+	return self.save(ctx, data)
+}
+
+func (self *ClientSession) Reload(ctx context.Context) error {
+	self.mu.Lock()
+	defer self.mu.Unlock()
+
+	s, err := self.reload(ctx)
+	if err != nil {
+		return err
+	}
+
+	self.provider = s.Provider
+	self.t = s.Type
+	self.timeSecs = s.TimeSecs
+	self.dataMb = s.DataMb
+	self.timeCons = s.TimeCons
+	self.dataCons = s.DataCons
+	self.startedAt = s.StartedAt
+	self.expDays = s.ExpDays
+	self.downMbits = s.DownMbits
+	self.upMbits = s.UpMbits
+	self.useGlobal = s.UseGlobalSpeed
+
+	return nil
 }

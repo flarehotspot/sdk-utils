@@ -4,9 +4,9 @@ import (
 	"log"
 
 	"github.com/flarehotspot/core/internal/config"
-	sdkacct "github.com/flarehotspot/sdk/api/accounts"
-	sdkconnmgr "github.com/flarehotspot/sdk/api/connmgr"
-	sdkhttp "github.com/flarehotspot/sdk/api/http"
+	"github.com/flarehotspot/sdk/api/accounts"
+	"github.com/flarehotspot/sdk/api/connmgr"
+	"github.com/flarehotspot/sdk/api/http"
 )
 
 func NewPluginsMgrUtil(pmgr *PluginsMgr, coreApi *PluginApi) *PluginsMgrUtils {

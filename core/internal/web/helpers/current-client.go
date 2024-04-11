@@ -29,7 +29,7 @@ func CurrentClient(clntMgr *connmgr.ClientRegister, r *http.Request) (sdkconnmgr
 		return nil, err
 	}
 
-	clnt, err := clntMgr.Register(r.Context(), h.MacAddr, h.IpAddr, h.Hostname)
+	clnt, err := clntMgr.Register(r, h.MacAddr, h.IpAddr, h.Hostname)
 	if err != nil {
 		return nil, err
 	}
