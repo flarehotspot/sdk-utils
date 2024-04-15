@@ -42,7 +42,7 @@
         <!-- <p>{{ flareView.data.logs }}</p> -->
 
         <!-- logs list -->
-        <div style="overflow-y: scroll; height: 400px;">
+        <div style="overflow-y: scroll; height: 400px;" id="logsList">
 
             <div v-for="log in flareView.data.logs"
                 v-if="(log.level == levelFilter || levelFilter == 'all') &&
@@ -178,9 +178,13 @@ define(function () {
             this.setInitialDates();
             this.setPlugins();
         },
-        // mounted: function() {
-        //     console.log(this.flareView.data.logs);
-        // }
+        mounted: function() {
+        },
+        updated: function() {
+            console.log("Logging inside the updated function");
+            var logsList = this.$el.querySelector('#logsList');
+            logsList.scrollTop = logsList.scrollHeight;
+        }
     };
 });
 </script>

@@ -1,10 +1,9 @@
 package controllers
 
 import (
-	"encoding/json"
-	"io"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/flarehotspot/core/internal/plugins"
 	"github.com/flarehotspot/core/internal/utils/logger"
@@ -15,28 +14,19 @@ func GetLogs(g *plugins.CoreGlobals) http.HandlerFunc {
 		res := g.CoreAPI.HttpAPI.VueResponse()
 
 		var params struct {
-			Page  int `json:"page"`
-			Lines int `json:"lines"`
+			Page  int
+			Lines int
 		}
 
-		// read request body
-		reqBody, err := io.ReadAll(r.Body)
-		if err != nil {
-			log.Println("bad log viewer request body")
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
+		// new approach
+		rPage := r.URL.Query().Get("page")
+		rLines := r.URL.Query().Get("lines")
 
-		// check if request has body
-		if len(reqBody) != 0 {
+		// check if request page and lines are empty
+		if rPage != "" || rLines != "" {
 			g.CoreAPI.LoggerAPI.Info("Request has body", "body", r.Body)
-
-			err := json.NewDecoder(r.Body).Decode(&params)
-			if err != nil {
-				log.Println("bad log viewer request")
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
+			params.Page, _ = strconv.Atoi(rPage)
+			params.Lines, _ = strconv.Atoi(rLines)
 		} else {
 			params.Page = 1
 			params.Lines = 50
