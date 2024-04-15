@@ -8,10 +8,6 @@
         </form>
         <button @click="searchLogs">search</button>
 
-        <router-link to='<% .Helpers.VueRoutePath "logger" "page" "1" %>'>
-            view logs
-        </router-link>
-
         <!-- filter-->
         <form action="">
             <label for="levels">Select level: </label>
@@ -43,45 +39,67 @@
         </form>
         <button @click="filterLogs">Filter</button>
 
+        <!-- <p>{{ flareView.data.logs }}</p> -->
+
         <!-- logs list -->
-        <div v-for="log in flareView.data"
-            v-if="(log.level == levelFilter || levelFilter == 'all') &&
+        <div style="overflow-y: scroll; height: 400px;">
+
+            <div v-for="log in flareView.data.logs"
+                v-if="(log.level == levelFilter || levelFilter == 'all') &&
             (log.plugin == pluginFilter || pluginFilter == 'all') &&
-            (log.title.includes(searchFilter) || searchFilter == '') &&
+            (log.title.toLowerCase().includes(searchFilter) || searchFilter == '') &&
             (new Date(`${log.year}-${log.month}-${log.day} ${log.hour}:${log.min}:${log.sec}`).getTime() >= dateStartFilter.getTime() && new Date(`${log.year}-${log.month}-${log.day} ${log.hour}:${log.min}`).getTime() < dateEndFilter.getTime())">
 
-            <!-- datetime and file line-->
-            <p>
-                <span>{{ log.year }}/{{ log.month }}/{{ log.day }} {{ log.hour }}:{{ log.min }}:{{ log.sec }}.{{
-            log.nano }} {{ log.file }}:{{ log.line }}</span>
-            </p>
-
-            <p>
-                <span>{{ log.plugin }} </span>
-                <span>{{ log.filepluginpath }} </span>
-                <!-- <span>{{ log.filename }} </span> -->
-            </p>
-
-            <!-- level and title -->
-            <p>
-                <span v-if="log.level == '0'">INFO</span>
-                <span v-if="log.level == '1'">DEBUG</span>
-                <span v-if="log.level == '2'">ERROR</span>
-
-                <span>{{ log.title }}</span>
-            </p>
-
-            <!-- body -->
-            <div v-for="d, i in log.body">
+                <!-- datetime and file line-->
                 <p>
-                    <span v-if="i % 2 == 0">"{{ d }}": </span>
-                    <span v-else>"{{ d }}"</span>
+                    <span>{{ log.year }}/{{ log.month }}/{{ log.day }} {{ log.hour }}:{{ log.min }}:{{ log.sec }}.{{
+            log.nano }} {{ log.file }}:{{ log.line }}</span>
                 </p>
+
+                <p>
+                    <span>{{ log.plugin }} </span>
+                    <span>{{ log.filepluginpath }} </span>
+                    <!-- <span>{{ log.filename }} </span> -->
+                </p>
+
+                <!-- level and title -->
+                <p>
+                    <span v-if="log.level == '0'">INFO</span>
+                    <span v-if="log.level == '1'">DEBUG</span>
+                    <span v-if="log.level == '2'">ERROR</span>
+
+                    <span>{{ log.title }}</span>
+                </p>
+
+                <!-- body -->
+                <div v-for="d, i in log.body">
+                    <p>
+                        <span v-if="i % 2 == 0">"{{ d }}": </span>
+                        <span v-else>"{{ d }}"</span>
+                    </p>
+                </div>
             </div>
         </div>
 
         <!-- pagination -->
+        <p>pages:</p>
+        <!-- <div v-for="page in (flareView.data.logSize)/ 100">
+            <a href='<% .Helpers.VueRoutePath "log-viewer" "page" "{{ page }}" "lines" "50"%>'>{{ page }}</a>
+        </div> -->
 
+        <a href='<% .Helpers.VueRoutePath "log-viewer" "page" "1" "lines" "200" %>'> 1 </a>
+        <router-link to='<% .Helpers.VueRoutePath "log-viewer" "page" "1" "lines" "200"%>'>
+            view logs
+        </router-link>
+
+        <p>logs per page:</p>
+        <select name="linesSelection" id="linesId">
+            <option value="10">10</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+            <option value="200">200</option>
+            <option value="all">all</option>
+        </select>
     </div>
 </template>
 
@@ -97,15 +115,17 @@ define(function () {
                 dateStartFilter: new Date(),
                 dateEndFilter: new Date(),
                 searchFilter: "",
+                lines: 50,
                 plugins: ["all"],
             }
         },
         methods: {
-            searchLogs: function() {
+            searchLogs: function () {
                 console.log(this.flareView.data);
                 this.searchFilter = this.$el.querySelector('#search').value;
+                console.log(this.searchFilter);
             },
-            filterLogs: function() {
+            filterLogs: function () {
                 this.levelFilter = this.$el.querySelector('#levels').value;
                 this.pluginFilter = this.$el.querySelector('#pluginselection').value;
 
@@ -115,7 +135,7 @@ define(function () {
                 this.setDatestartTimeToMidnight();
                 this.setDateendTimeBeforeMidnight();
             },
-            dateToYYYYMMDD(d) {
+            dateToYYYYMMDD: function (d) {
                 var day = ("0" + d.getDate()).slice(-2);
                 var month = ("0" + (d.getMonth() + 1)).slice(-2);
                 var converted = d.getFullYear() + "-" + (month) + "-" + (day);
@@ -123,7 +143,7 @@ define(function () {
 
                 return converted;
             },
-            setInitialDates: function() {
+            setInitialDates: function () {
                 this.dateStartFilter = new Date();
                 this.dateStartFilter.setHours(0);
                 this.dateStartFilter.setMinutes(0);
@@ -136,40 +156,31 @@ define(function () {
                 this.dateEndFilter.setSeconds(59);
                 this.dateEndFilter.setMilliseconds(999);
             },
-            setDatestartTimeToMidnight: function() {
+            setDatestartTimeToMidnight: function () {
                 // set the time of the filter start date to 0:0:0
                 this.dateStartFilter.setHours(0);
                 this.dateStartFilter.setMinutes(0);
                 this.dateStartFilter.setSeconds(0);
                 this.dateStartFilter.setMilliseconds(0);
             },
-            setDateendTimeBeforeMidnight: function() {
+            setDateendTimeBeforeMidnight: function () {
                 // set the time of the filter end date to 23:59:59
                 this.dateEndFilter.setHours(23);
                 this.dateEndFilter.setMinutes(59);
                 this.dateEndFilter.setSeconds(59);
                 this.dateEndFilter.setMilliseconds(999);
             },
-            setPlugins: function() {
+            setPlugins: function () {
                 console.log("setting plugins");
-                // for (const log in this.flareView.data) {
-                //     console.log("inside the loop");
-                //     let logPlugin = this.flareView.data[i].plugin;
-                //     console.log("log plugin", logPlugin);
-
-                //     this.plugins.push(logPlugin);
-                //     // if (!this.plugins.includes(logPlugin)) {
-                //     //     this.plugins.push(logPlugin);
-                //     // }
-                // }
             }
         },
-        beforeMount: function() {
-            console.log(this.flareView.data);
+        beforeMount: function () {
             this.setInitialDates();
             this.setPlugins();
-            console.log(this.plugins);
         },
+        // mounted: function() {
+        //     console.log(this.flareView.data.logs);
+        // }
     };
 });
 </script>

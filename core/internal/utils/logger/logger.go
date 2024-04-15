@@ -120,6 +120,45 @@ func GetCallerFileLine(calldepth int) (file string, line int) {
 	return
 }
 
+func lineCounter(r io.Reader) (int, error) {
+	buf := make([]byte, 32*1024)
+	count := 0
+	lineSep := []byte{'\n'}
+
+	for {
+		c, err := r.Read(buf)
+		count += bytes.Count(buf[:c], lineSep)
+
+		switch {
+		case err == io.EOF:
+			return count, nil
+
+		case err != nil:
+			return count, err
+		}
+	}
+}
+
+func GetLogLines() int {
+	// get app logs file path
+	logdir := "/" + sdkpaths.TmpDir + "/logs"
+
+	// open logs
+	file, err := os.Open(logdir + "/" + LogFilename)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+
+	// get log's lines count
+	logLines, err := lineCounter(file)
+	if err != nil {
+		log.Fatal("error counting lines", err)
+	}
+
+	return logLines
+}
+
 // reverse file scanner
 type ReverseScanner struct {
 	r   io.ReaderAt
@@ -184,8 +223,6 @@ func dropCR(data []byte) []byte {
 	return data
 }
 
-// ----
-
 func ReadLogsReverse() ([]map[string]any, error) {
 	var logs []map[string]any
 
@@ -243,13 +280,16 @@ func ReadLogsReverse() ([]map[string]any, error) {
 	return logs, nil
 }
 
-func ReadLogs() ([]map[string]any, error) {
+// ----
+
+func ReadLogs(start int, end int) ([]map[string]any, error) {
 	var logs []map[string]any
 
+	// get app logs file path
 	logdir := "/" + sdkpaths.TmpDir + "/logs"
 
+	// open logs
 	file, err := os.Open(logdir + "/" + LogFilename)
-
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -257,13 +297,19 @@ func ReadLogs() ([]map[string]any, error) {
 
 	rd := bufio.NewReader(file)
 
+	currLine := 0
+
 	// TODO: make it concurrent
-	// TODO: read logs starting from the last line of the file instead of the first line
 	for {
 		l, err := rd.ReadString('\n')
 
+		if currLine < start {
+			currLine++
+			continue
+		}
+
+		// file has no content left
 		if err == io.EOF {
-			fmt.Println(l)
 			break
 		}
 
@@ -285,6 +331,12 @@ func ReadLogs() ([]map[string]any, error) {
 		}
 
 		logs = append(logs, parsedlog)
+
+		if currLine >= end {
+			break
+		}
+
+		currLine++
 	}
 
 	return logs, nil

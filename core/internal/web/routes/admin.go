@@ -28,8 +28,8 @@ func AdminRoutes(g *plugins.CoreGlobals) {
 			Component:   "admin/ThemePicker.vue",
 		},
 		{
-			RouteName:   "logger",
-			RoutePath:   "/logger",
+			RouteName:   "log-viewer",
+			RoutePath:   "/log-viewer",
 			HandlerFunc: controllers.GetLogs(g),
 			Component:   "admin/LogViewer.vue",
 		},
@@ -45,7 +45,7 @@ func AdminRoutes(g *plugins.CoreGlobals) {
 			{
 				Category:  sdkhttp.NavCategorySystem,
 				Label:     "View Logs",
-				RouteName: "logger",
+				RouteName: "log-viewer",
 			},
 		}
 	})
