@@ -81,21 +81,12 @@
             </div>
         </div>
 
-        <!-- pagination -->
-        <p>pages:</p>
-        <!-- <div v-for="page in (flareView.data.logSize)/ 100">
-            <a href='<% .Helpers.VueRoutePath "log-viewer" "page" "{{ page }}" "lines" "50"%>'>{{ page }}</a>
-        </div> -->
-
-        <a href='<% .Helpers.VueRoutePath "log-viewer" "page" "1" "lines" "200" %>'> 1 </a>
-        <router-link to='<% .Helpers.VueRoutePath "log-viewer" "page" "1" "lines" "200"%>'>
-            view logs
-        </router-link>
+        <b-pagination v-model="currentPage" :total-rows="rows" :per-page="perPage" @page-click="navigate"></b-pagination>
 
         <p>logs per page:</p>
-        <select name="linesSelection" id="linesId">
+        <select name="perPageSelection" id="perPageSelection">
             <option value="10">10</option>
-            <option value="50">50</option>
+            <option value="50" selected="selected">50</option>
             <option value="100">100</option>
             <option value="200">200</option>
             <option value="all">all</option>
@@ -117,6 +108,9 @@ define(function () {
                 searchFilter: "",
                 lines: 50,
                 plugins: ["all"],
+                currentPage: 1,
+                rows: 200,
+                perPage: 50,
             }
         },
         methods: {
@@ -172,18 +166,28 @@ define(function () {
             },
             setPlugins: function () {
                 console.log("setting plugins");
+            },
+            navigate: function (event, pageNumber) {
+                this.$router.push(
+                    { path: `<% .Helpers.VueRoutePath "log-viewer" "page" "${pageNumber}" "lines" "${this.perPage}" %>` }
+                ).then(() => { this.$router.go(0) });
             }
         },
         beforeMount: function () {
             this.setInitialDates();
             this.setPlugins();
         },
-        mounted: function() {
+        mounted: function () {
         },
-        updated: function() {
-            console.log("Logging inside the updated function");
+        updated: function () {
+            // set the scrollview of logs list to the bottom
             var logsList = this.$el.querySelector('#logsList');
             logsList.scrollTop = logsList.scrollHeight;
+
+            // set initial pagination values
+            this.perPage = this.$el.querySelector('#perPageSelection').value;
+            this.rows = this.flareView.data.rows;
+            this.currentPage = this.flareView.data.currentPage;
         }
     };
 });

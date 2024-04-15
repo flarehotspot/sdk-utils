@@ -18,6 +18,9 @@ func GetLogs(g *plugins.CoreGlobals) http.HandlerFunc {
 			Lines int
 		}
 
+		rows := logger.GetLogLines()
+		log.Println("log rows: ", rows)
+
 		// new approach
 		rPage := r.URL.Query().Get("page")
 		rLines := r.URL.Query().Get("lines")
@@ -28,24 +31,25 @@ func GetLogs(g *plugins.CoreGlobals) http.HandlerFunc {
 			params.Page, _ = strconv.Atoi(rPage)
 			params.Lines, _ = strconv.Atoi(rLines)
 		} else {
-			params.Page = 1
 			params.Lines = 50
+			params.Page = (rows + params.Lines - 1) / params.Lines
 		}
 
-		linesCount := logger.GetLogLines()
+		log.Println("params page: ", params.Page)
+		log.Println("params lines: ", params.Lines)
 
 		// set starting and end lines based on page and lines
-		starting := linesCount - (params.Page * params.Lines)
+		starting := (params.Lines * (params.Page - 1)) + 1
 		if starting < 0 {
 			starting = 0
 		}
 		end := starting + params.Lines
-		if end > linesCount {
-			end = linesCount
+		if end > rows {
+			end = rows
 		}
 
-		// TODO : remove test print starting and end
-		log.Println(starting, end)
+		log.Println("starting line: ", starting)
+		log.Println("end line: ", end)
 
 		logs, err := logger.ReadLogs(starting, end)
 		if err != nil {
@@ -53,8 +57,9 @@ func GetLogs(g *plugins.CoreGlobals) http.HandlerFunc {
 		}
 
 		data := map[string]any{
-			"logs":    logs,
-			"logSize": linesCount,
+			"logs":        logs,
+			"rows":        rows,
+			"currentPage": params.Page,
 		}
 
 		res.Json(w, data, http.StatusOK)
