@@ -34,11 +34,11 @@ func GetLogs(g *plugins.CoreGlobals) http.HandlerFunc {
 		}
 
 		// set starting and end lines based on page and lines
-		starting := (params.Lines * (params.Page - 1)) + 1
+		starting := (params.Lines * (params.Page - 1))
 		if starting < 0 {
 			starting = 0
 		}
-		end := starting + params.Lines
+		end := starting + params.Lines - 1
 		if end > rows {
 			end = rows
 		}
