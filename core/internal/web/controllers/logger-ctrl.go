@@ -27,6 +27,7 @@ func GetLogs(g *plugins.CoreGlobals) http.HandlerFunc {
 
 		// check if request page and lines are empty
 		if rPage != "" || rLines != "" {
+			// TODO : remove after development
 			g.CoreAPI.LoggerAPI.Info("Request has body", "body", r.Body)
 			params.Page, _ = strconv.Atoi(rPage)
 			params.Lines, _ = strconv.Atoi(rLines)

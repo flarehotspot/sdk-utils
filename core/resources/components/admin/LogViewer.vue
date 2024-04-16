@@ -4,17 +4,15 @@
 
         <!-- search  -->
         <form action="">
-            <input type="text" name="search" id="search">
-
-            <button @click="searchLogs">search</button>
+            <input type="text" name="search" id="search" v-model="searchFilter">
         </form>
+        <button @click="searchLogs">search</button>
 
         <!-- filter-->
         <form action="">
             <label for="levels">Select level: </label>
-
             <!-- view selector -->
-            <select name="levels" id="levels">
+            <select name="levels" id="levels" v-model="selectedLevel">
                 <option value="all">All</option>
                 <option value="0">INFO</option>
                 <option value="1">DEBUG</option>
@@ -34,9 +32,9 @@
             <input type="date" name="dateEndFilter" id="dateEndFilter" :value="dateToYYYYMMDD(dateEndFilter)"
                 @input="dateEndFilter = $event.target.valueAsDate">
 
-            <button @click="filterLogs">Filter</button>
 
         </form>
+        <button @click="filterLogs">Filter</button>
 
         <!-- logs list -->
         <div style="overflow-y: scroll; height: 400px;" id="logsList">
@@ -78,17 +76,16 @@
             </div>
         </div>
 
-        <b-pagination v-model="currentPage" :total-rows="rows" :per-page="perPage"
-            @page-click="navigate"></b-pagination>
-
         <p>logs per page:</p>
-        <select name="perPageSelection" id="perPageSelection">
+        <select name="perPageSelection" id="perPageSelection" v-model="perPage">
             <option value="10">10</option>
             <option value="50" selected="selected">50</option>
             <option value="100">100</option>
             <option value="200">200</option>
-            <option value="all">all</option>
         </select>
+
+        <b-pagination v-model="currentPage" :total-rows="rows" :per-page="perPage"
+            @page-click="navigate"></b-pagination>
     </div>
 </template>
 
@@ -118,14 +115,14 @@ define(function () {
                 console.log(this.searchFilter);
             },
             filterLogs: function () {
-                this.levelFilter = this.$el.querySelector('#levels').value;
-                this.pluginFilter = this.$el.querySelector('#pluginselection').value;
+                this.selectedLevel = this.$el.querySelector('#levels').value;
+                this.selectedPlugin = this.$el.querySelector('#pluginselection').value;
 
                 this.dateStartFilter = new Date(this.$el.querySelector('#dateStartFilter').value);
                 this.dateEndFilter = new Date(this.$el.querySelector('#dateEndFilter').value);
 
-                this.setDatestartTimeToMidnight();
-                this.setDateendTimeBeforeMidnight();
+                this.setDateToMidnight(this.dateStartFilter);
+                this.setDateToBeforeMidnight(this.dateEndFilter);
             },
             dateToYYYYMMDD: function (d) {
                 var day = ("0" + d.getDate()).slice(-2);
@@ -148,21 +145,22 @@ define(function () {
                 this.dateEndFilter.setSeconds(59);
                 this.dateEndFilter.setMilliseconds(999);
             },
-            setDatestartTimeToMidnight: function () {
+            setDateToMidnight: function (d) {
                 // set the time of the filter start date to 0:0:0
-                this.dateStartFilter.setHours(0);
-                this.dateStartFilter.setMinutes(0);
-                this.dateStartFilter.setSeconds(0);
-                this.dateStartFilter.setMilliseconds(0);
+                d.setHours(0);
+                d.setMinutes(0);
+                d.setSeconds(0);
+                d.setMilliseconds(0);
             },
-            setDateendTimeBeforeMidnight: function () {
+            setDateToBeforeMidnight: function (d) {
                 // set the time of the filter end date to 23:59:59
-                this.dateEndFilter.setHours(23);
-                this.dateEndFilter.setMinutes(59);
-                this.dateEndFilter.setSeconds(59);
-                this.dateEndFilter.setMilliseconds(999);
+                d.setHours(23);
+                d.setMinutes(59);
+                d.setSeconds(59);
+                d.setMilliseconds(999);
             },
             setPlugins: function () {
+                // TODO: remove
                 console.log("setting plugins");
 
                 this.plugins = [];
@@ -180,19 +178,27 @@ define(function () {
                 this.$router.push(
                     { path: `<% .Helpers.VueRoutePath "log-viewer" "page" "${pageNumber}" "lines" "${this.perPage}" %>` }
                 ).then(() => { this.$router.go(0) });
-            }
+            },
         },
         beforeMount: function () {
-            // this.setInitialDates();
         },
         mounted: function () {
-            // this.setPlugins();
         },
         beforeUpdate: function () {
             this.setPlugins();
+            this.filterLogs();
+
+            // set initial start and end date to first and last logs' date
+            var firstLog = this.flareView.data.logs[0];
+            var lastLog = this.flareView.data.logs[this.flareView.data.logs.length - 1];
+
+            this.dateStartFilter = new Date(`${firstLog.year}-${firstLog.month}-${firstLog.day}`);
+            this.dateEndFilter = new Date(`${lastLog.year}-${lastLog.month}-${lastLog.day}`);
+
+            this.setDateToMidnight(this.dateStartFilter);
+            this.setDateToBeforeMidnight(this.dateEndFilter);
         },
         updated: function () {
-
             // set the scrollview of logs list to the bottom
             var logsList = this.$el.querySelector('#logsList');
             logsList.scrollTop = logsList.scrollHeight;
