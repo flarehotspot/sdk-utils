@@ -17,7 +17,6 @@ import (
 	plugin "github.com/flarehotspot/sdk/api/plugin"
 )
 
-
 func NewHttpHelpers(api *PluginApi) sdkhttp.HttpHelpers {
 	return &HttpHelpers{api: api}
 }
@@ -26,8 +25,8 @@ type HttpHelpers struct {
 	api *PluginApi
 }
 
-func (self *HttpHelpers) Translate(msgtype string, msgk string) string {
-	return self.api.Utl.Translate(msgtype, msgk)
+func (self *HttpHelpers) Translate(msgtype string, msgk string, pairs ...string) string {
+	return self.api.Utl.Translate(msgtype, msgk, pairs)
 }
 
 func (self *HttpHelpers) AssetPath(p string) string {

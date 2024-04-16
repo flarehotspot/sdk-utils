@@ -103,45 +103,4 @@ func (w http.ResponseWriter, r *http.Request) {
 
 ### RegisterSessionProvider
 
-Used to register a new session provider function. The function accepts a `context.Contxt` and a [ClientDevice](./client-device.md) parameters and it session should return an instance of [SessionSource](./session-source.md) and an `error` if any.
-
-The example below provides a `time` [session type](./client-session.md#session-types) for every client device:
-
-```go
-type RemoteSession struct {
-    mu          sync.RWMutex
-    timeSeconds uint
-}
-
-func (rs *RemoteSession) Data() sdkconnmgr.SessionData {
-    return sdkconnmgr.SessionData{
-        Provider: "remote-session",
-        Type: 0,
-        TimeSecs: rs.timeSeconds,
-    }
-}
-
-func (rs *RemoteSession) Save(ctx context.Context, data sdkconnmgr.SessionData) error {
-    self.mu.Lock()
-    defer self.mu.Unlock()
-    // implemnt save logic here
-    rs.timeSeconds = data.TimeSecs
-    return nil
-}
-
-func (rs *RemoteSession) Reload(ctx context.Context) (sdkconnmgr.SessionData, error {
-    // implement reload logic here
-    return sdkconnmgr.SessionData{
-        Provider: "remote-session",
-        Type: 0,
-        TimeSecs: rs.timeSeconds,
-    }, nil
-}
-
-api.SessionsMgr().RegisterSessionProvider(func(ctx context.Context, clnt *sdkconnmgr.ClientDevice) (sdkconnmgr.SessionSource, error) {
-    // give every client device a 1 minute session
-    return &RemoteSession{
-        timeSeconds: 60,
-    }, nil
-})
-```
+Used to register a [session provider](./session-provider.md).

@@ -23,20 +23,20 @@ const (
 
 func NewSessionsMgr(dtb *db.Database, mdl *models.Models) *SessionsMgr {
 	return &SessionsMgr{
-		mu:       sync.RWMutex{},
-		db:       dtb,
-		mdl:      mdl,
-		sessions: []*RunningSession{},
-		finderFn: []sdkconnmgr.SessionProviderFn{},
+		mu:        sync.RWMutex{},
+		db:        dtb,
+		mdl:       mdl,
+		sessions:  []*RunningSession{},
+		providers: []sdkconnmgr.SessionProvider{},
 	}
 }
 
 type SessionsMgr struct {
-	mu       sync.RWMutex
-	db       *db.Database
-	mdl      *models.Models
-	sessions []*RunningSession
-	finderFn []sdkconnmgr.SessionProviderFn
+	mu        sync.RWMutex
+	db        *db.Database
+	mdl       *models.Models
+	sessions  []*RunningSession
+	providers []sdkconnmgr.SessionProvider
 }
 
 func (self *SessionsMgr) ListenTraffic(trfk *network.TrafficMgr) {
@@ -305,9 +305,9 @@ func (self *SessionsMgr) GetSession(ctx context.Context, clnt sdkconnmgr.ClientD
 	self.mu.RLock()
 	defer self.mu.RUnlock()
 
-	if len(self.finderFn) > 0 {
-		for _, hookFn := range self.finderFn {
-			if remoteSrc, ok := hookFn(ctx, clnt); remoteSrc != nil && ok {
+	if len(self.providers) > 0 {
+		for _, provider := range self.providers {
+			if remoteSrc, ok := provider.GetSession(ctx, clnt); remoteSrc != nil && ok {
 				return NewClientSession(remoteSrc), nil
 			}
 		}
@@ -326,8 +326,8 @@ func (self *SessionsMgr) GetSession(ctx context.Context, clnt sdkconnmgr.ClientD
 	return NewClientSession(localSrc), nil
 }
 
-func (self *SessionsMgr) RegisterSessionProvider(fn ...sdkconnmgr.SessionProviderFn) {
+func (self *SessionsMgr) RegisterSessionProvider(provider sdkconnmgr.SessionProvider) {
 	self.mu.Lock()
 	defer self.mu.Unlock()
-	self.finderFn = append(self.finderFn, fn...)
+	self.providers = append(self.providers, provider)
 }
