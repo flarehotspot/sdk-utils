@@ -22,12 +22,11 @@
 
             <!-- plugin selector if plugin view is selected -->
             <label for="pluginselection">Plugin</label>
-            <select name="pluginselection" id="pluginselection">
-                <option value="all">All</option>
-                <option value="core">Core</option>
-                <option value="defaultTheme">Default Theme</option>
-                <option value="themePicker">Theme Picker</option>
+            <div>
+            <select name="pluginselection" id="pluginselection" v-model="selectedPlugin">
+                <option v-for="plugin in plugins" v-bind:value="plugin">{{ plugin }}</option>
             </select>
+        </div>
 
             <label for="dateStartFilter">From</label>
             <input type="date" name="dateStartFilter" id="dateStartFilter" :value="dateToYYYYMMDD(dateStartFilter)"
@@ -39,14 +38,12 @@
         </form>
         <button @click="filterLogs">Filter</button>
 
-        <!-- <p>{{ flareView.data.logs }}</p> -->
-
         <!-- logs list -->
         <div style="overflow-y: scroll; height: 400px;" id="logsList">
 
             <div v-for="log in flareView.data.logs"
-                v-if="(log.level == levelFilter || levelFilter == 'all') &&
-            (log.plugin == pluginFilter || pluginFilter == 'all') &&
+                v-if="(log.level == selectedLevel || selectedLevel == 'all') &&
+            (log.plugin == selectedPlugin || selectedPlugin == 'all') &&
             (log.title.toLowerCase().includes(searchFilter) || searchFilter == '') &&
             (new Date(`${log.year}-${log.month}-${log.day} ${log.hour}:${log.min}:${log.sec}`).getTime() >= dateStartFilter.getTime() && new Date(`${log.year}-${log.month}-${log.day} ${log.hour}:${log.min}`).getTime() < dateEndFilter.getTime())">
 
@@ -101,8 +98,8 @@ define(function () {
         props: ['flareView'],
         data: function () {
             return {
-                levelFilter: "all",
-                pluginFilter: "all",
+                selectedLevel: "all",
+                selectedPlugin: "all",
                 dateStartFilter: new Date(),
                 dateEndFilter: new Date(),
                 searchFilter: "",
@@ -166,6 +163,17 @@ define(function () {
             },
             setPlugins: function () {
                 console.log("setting plugins");
+
+                this.plugins = [];
+                this.plugins.push("all");
+
+                this.flareView.data.logs.forEach((log) => {
+                    if (!this.plugins.includes(log.plugin)) {
+                        this.plugins.push(log.plugin);
+                    }
+                });
+
+                console.log("this.plugins: ", this.plugins);
             },
             navigate: function (event, pageNumber) {
                 this.$router.push(
@@ -174,12 +182,16 @@ define(function () {
             }
         },
         beforeMount: function () {
-            this.setInitialDates();
+            // this.setInitialDates();
+        },
+        mounted: function() {
+            // this.setPlugins();
+        },
+        beforeUpdate: function() {
             this.setPlugins();
         },
-        mounted: function () {
-        },
         updated: function () {
+            
             // set the scrollview of logs list to the bottom
             var logsList = this.$el.querySelector('#logsList');
             logsList.scrollTop = logsList.scrollHeight;
