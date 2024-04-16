@@ -50,7 +50,9 @@ nav:
   - API Reference:
       - 'PluginApi': api/plugin-api.md
       - 'AccountsApi': api/accounts-api.md
+      - 'AdsApi': api/ads-api.md
       - 'ClientDevice': 'api/client-device.md'
+      - 'ClientSession': 'api/client-session.md'
       - 'ConfigApi': api/config-api.md
       - 'HttpApi': api/http-api.md
       - 'HttpAuth': api/http-auth.md
@@ -58,9 +60,13 @@ nav:
       - 'HttpRouterApi': api/http-router-api.md
       - 'HttpResponse': api/http-response.md
       - 'SessionsMgrApi': api/sessions-mgr-api.md
+      - 'SessionProvider': api/session-provider.md
+      - 'SessionSource': api/session-source.md
+      - 'ThemesApi': api/themes-api.md
       - 'VueRouterApi': api/vue-router-api.md
       - 'VueResponse': api/vue-response.md
       - 'window.$flare': api/flare-variable.md
+      - 'plugin.json': api/plugin.json.md
   - Free Plugins:
       - 'Flare Hotspot Theme': 'plugins/com.flarego.default-theme.md'
 

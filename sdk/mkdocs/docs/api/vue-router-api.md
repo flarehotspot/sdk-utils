@@ -72,7 +72,7 @@ data := map[string]string{
 ```
 
 ```html
-<router-link :to="vueRoutePath">
+<router-link to="<% vueRoutePath %>">
 ```
 
 ### VuePkgRoutePath
@@ -86,7 +86,7 @@ data := map[string]string{
 ```
 
 ```html
-<router-link :to="vueRoutePath">
+<router-link to="<% vueRoutePath %>">
 ```
 
 ## 2. PortalRoute {#portalroute}

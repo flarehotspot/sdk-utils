@@ -6,21 +6,26 @@
 
 package sdkhttp
 
+import "net/http"
+
 type MuxRouteName string
 type PluginRouteName string
 
 type HttpRouterApi interface {
 
-    // Returns a plugin router with authentication middleware.
+	// Returns a plugin router with authentication middleware.
 	AdminRouter() HttpRouterInstance
 
-    // Returns a generic plugin router.
+	// Returns a generic plugin router.
 	PluginRouter() HttpRouterInstance
+
+	// Register global middleware.
+	UseMiddleware(middleware ...func(http.Handler) http.Handler)
 
 	// Returns the url for the given route name.
 	UrlForRoute(name PluginRouteName, pairs ...string) (url string)
 
-    // Returns the url for the route from third-party plugins.
-    // This is used create links to routes from other plugins.
-    UrlForPkgRoute(pkg string, name string, pairs ...string) (url string)
+	// Returns the url for the route from third-party plugins.
+	// This is used create links to routes from other plugins.
+	UrlForPkgRoute(pkg string, name string, pairs ...string) (url string)
 }

@@ -96,7 +96,6 @@ func (self *VueRouterApi) GetPortalItems(clnt sdkconnmgr.ClientDevice) []sdkhttp
 		for _, nav := range self.portalNavsFn(clnt) {
 			navs = append(navs, NewVuePortalItem(self.api, nav))
 		}
-
 		return navs
 	}
 

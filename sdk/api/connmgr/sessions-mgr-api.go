@@ -6,7 +6,9 @@
 
 package sdkconnmgr
 
-import "context"
+import (
+	"context"
+)
 
 // SessionsMgrApi is used to manage client devices.
 type SessionsMgrApi interface {
@@ -38,8 +40,8 @@ type SessionsMgrApi interface {
 	CurrSession(clnt ClientDevice) (cs ClientSession, ok bool)
 
 	// Returns unconsumed session (if any) for the client device.
-	GetSession(ctx context.Context, devId int64) (ClientSession, error)
+	GetSession(ctx context.Context, clnt ClientDevice) (ClientSession, error)
 
-	// Returns true if the client device has a valid session.
-	HasSession(ctx context.Context, devId int64) (ok bool)
+	// Register a hook to find a session for a client device.
+	RegisterSessionProvider(SessionProvider)
 }

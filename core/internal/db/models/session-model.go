@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"fmt"
 	"log"
 	"time"
 
@@ -107,18 +106,6 @@ func (self *SessionModel) SessionsForDevTx(tx *sql.Tx, ctx context.Context, devI
 	return sessions, rows.Err()
 }
 
-func (self *SessionModel) DevHasSessionTx(tx *sql.Tx, ctx context.Context, devId int64) (bool, error) {
-	query := fmt.Sprintf("SELECT EXISTS(\n%s\n)", SELECT_QUERY+" WHERE device_id = ? AND "+VALID_WHERE_QUERY)
-
-	var exists bool
-	row := tx.QueryRowContext(ctx, query, devId)
-	if err := row.Scan(&exists); err != nil {
-		return false, err
-	}
-
-	return exists, nil
-}
-
 func (self *SessionModel) UpdateAllBandwidthTx(tx *sql.Tx, ctx context.Context, downMbits int, upMbits int, useGlobal bool) error {
 	query := `UPDATE sessions SET down_mbits = ?, up_mbits = ?, use_global = ? WHERE ` + VALID_WHERE_QUERY
 	_, err := tx.ExecContext(ctx, query, downMbits, upMbits, useGlobal)
@@ -198,21 +185,6 @@ func (self *SessionModel) SessionsForDev(ctx context.Context, devId int64) ([]*S
 	}
 
 	return sessions, tx.Commit()
-}
-
-func (self *SessionModel) DevHasSession(ctx context.Context, devId int64) (bool, error) {
-	tx, err := self.db.SqlDB().BeginTx(ctx, nil)
-	if err != nil {
-		return false, err
-	}
-	defer tx.Rollback()
-
-	ok, err := self.DevHasSessionTx(tx, ctx, devId)
-	if err != nil {
-		return false, err
-	}
-
-	return ok, tx.Commit()
 }
 
 func (self *SessionModel) UpdateAllBandwidth(ctx context.Context, downMbit int, upMbit int, g bool) error {
