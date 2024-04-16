@@ -19,7 +19,6 @@ func GetLogs(g *plugins.CoreGlobals) http.HandlerFunc {
 		}
 
 		rows := logger.GetLogLines()
-		log.Println("log rows: ", rows)
 
 		// new approach
 		rPage := r.URL.Query().Get("page")
@@ -29,15 +28,13 @@ func GetLogs(g *plugins.CoreGlobals) http.HandlerFunc {
 		if rPage != "" || rLines != "" {
 			// TODO : remove after development
 			g.CoreAPI.LoggerAPI.Info("Request has body", "body", r.Body)
+
 			params.Page, _ = strconv.Atoi(rPage)
 			params.Lines, _ = strconv.Atoi(rLines)
 		} else {
 			params.Lines = 50
 			params.Page = (rows + params.Lines - 1) / params.Lines
 		}
-
-		log.Println("params page: ", params.Page)
-		log.Println("params lines: ", params.Lines)
 
 		// set starting and end lines based on page and lines
 		starting := (params.Lines * (params.Page - 1)) + 1
@@ -49,9 +46,6 @@ func GetLogs(g *plugins.CoreGlobals) http.HandlerFunc {
 			end = rows
 		}
 
-		log.Println("starting line: ", starting)
-		log.Println("end line: ", end)
-
 		logs, err := logger.ReadLogs(starting, end)
 		if err != nil {
 			log.Println(err)
@@ -61,6 +55,7 @@ func GetLogs(g *plugins.CoreGlobals) http.HandlerFunc {
 			"logs":        logs,
 			"rows":        rows,
 			"currentPage": params.Page,
+			"perPage":     params.Lines,
 		}
 
 		res.Json(w, data, http.StatusOK)

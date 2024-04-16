@@ -77,7 +77,7 @@
         </div>
 
         <p>logs per page:</p>
-        <select name="perPageSelection" id="perPageSelection" v-model="perPage">
+        <select name="perPageSelection" id="perPageSelection" v-model="perPage" @change="navigate($event, Math.ceil(this.rows / this.perPage))">
             <option value="10">10</option>
             <option value="50" selected="selected">50</option>
             <option value="100">100</option>
@@ -132,19 +132,6 @@ define(function () {
 
                 return converted;
             },
-            setInitialDates: function () {
-                this.dateStartFilter = new Date();
-                this.dateStartFilter.setHours(0);
-                this.dateStartFilter.setMinutes(0);
-                this.dateStartFilter.setSeconds(0);
-                this.dateStartFilter.setMilliseconds(0);
-
-                this.dateEndFilter = new Date();
-                this.dateEndFilter.setHours(23);
-                this.dateEndFilter.setMinutes(59);
-                this.dateEndFilter.setSeconds(59);
-                this.dateEndFilter.setMilliseconds(999);
-            },
             setDateToMidnight: function (d) {
                 // set the time of the filter start date to 0:0:0
                 d.setHours(0);
@@ -160,9 +147,6 @@ define(function () {
                 d.setMilliseconds(999);
             },
             setPlugins: function () {
-                // TODO: remove
-                console.log("setting plugins");
-
                 this.plugins = [];
                 this.plugins.push("all");
 
@@ -171,18 +155,16 @@ define(function () {
                         this.plugins.push(log.plugin);
                     }
                 });
-
-                console.log("this.plugins: ", this.plugins);
             },
-            navigate: function (event, pageNumber) {
+            navigate: function (event, currentPage) {
                 this.$router.push(
-                    { path: `<% .Helpers.VueRoutePath "log-viewer" "page" "${pageNumber}" "lines" "${this.perPage}" %>` }
+                    { path: `<% .Helpers.VueRoutePath "log-viewer" "page" "${currentPage}" "lines" "${this.perPage}" %>` }
                 ).then(() => { this.$router.go(0) });
             },
-        },
-        beforeMount: function () {
-        },
-        mounted: function () {
+            perPageChanged: function(event) {
+                console.log("per page changed", this.perPage);
+                console.log("new current page", this.currentPage);
+            }
         },
         beforeUpdate: function () {
             this.setPlugins();
@@ -204,10 +186,12 @@ define(function () {
             logsList.scrollTop = logsList.scrollHeight;
 
             // set initial pagination values
-            this.perPage = this.$el.querySelector('#perPageSelection').value;
+            this.perPage = this.flareView.data.perPage;
+            const perPageSelection = this.$el.querySelector('#perPageSelection');
+            perPageSelection.value = this.perPage;
             this.rows = this.flareView.data.rows;
             this.currentPage = this.flareView.data.currentPage;
-        }
+        },
     };
 });
 </script>
