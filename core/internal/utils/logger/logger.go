@@ -9,12 +9,14 @@ import (
 	"log"
 	"math"
 	"os"
+	"path/filepath"
 	"reflect"
 	"runtime"
 	"strconv"
 	"strings"
 	"time"
 
+	sdkfs "github.com/flarehotspot/sdk/utils/fs"
 	sdkpaths "github.com/flarehotspot/sdk/utils/paths"
 
 	"github.com/flarehotspot/sdk/utils/wsv"
@@ -36,6 +38,8 @@ const (
 	Errorprefix = "[ERROR] "
 )
 
+var logFilePath = filepath.Join(sdkpaths.TmpDir, "logs", LogFilename)
+
 const (
 	Info  = 0
 	Debug = 1
@@ -45,6 +49,13 @@ const (
 const (
 	FLARELOG_METADATA_COUNT = 10
 )
+
+func init() {
+	logdir := filepath.Dir(logFilePath)
+	if !sdkfs.Exists(logdir) {
+		os.MkdirAll(logdir, sdkfs.PermDir)
+	}
+}
 
 func itoa(i int, wid int) int {
 	num := i
@@ -86,17 +97,8 @@ func colorizeLevel(level int) string {
 }
 
 func openLogFile() (*os.File, error) {
-	logdir := "/" + sdkpaths.TmpDir + "/logs"
-
-	// ensure log file directory exists
-	err := os.MkdirAll(logdir, 0700)
-	if err != nil {
-		log.Println("Error creating log directory", "error", err)
-		return nil, err
-	}
-
 	// opening/creating log file
-	logFile, err := os.OpenFile(logdir+"/"+LogFilename, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0644)
+	logFile, err := os.OpenFile(logFilePath, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0644)
 	if err != nil {
 		log.Println("Error creating log file", "error", err)
 		return nil, err
@@ -140,11 +142,8 @@ func lineCounter(r io.Reader) (int, error) {
 }
 
 func GetLogLines() int {
-	// get app logs file path
-	logdir := "/" + sdkpaths.TmpDir + "/logs"
-
 	// open logs
-	file, err := os.Open(logdir + "/" + LogFilename)
+	file, err := os.Open(logFilePath)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -159,137 +158,11 @@ func GetLogLines() int {
 	return logLines
 }
 
-// reverse file scanner
-type ReverseScanner struct {
-	r   io.ReaderAt
-	pos int
-	err error
-	buf []byte
-}
-
-func NewReverseScanner(r io.ReaderAt, pos int) *ReverseScanner {
-	return &ReverseScanner{r: r, pos: pos}
-}
-
-func (s *ReverseScanner) readMore() {
-	if s.pos == 0 {
-		s.err = io.EOF
-		return
-	}
-	size := 1024
-	if size > s.pos {
-		size = s.pos
-	}
-	s.pos -= size
-	buf2 := make([]byte, size, size+len(s.buf))
-
-	// ReadAt attempts to read full buff!
-	_, s.err = s.r.ReadAt(buf2, int64(s.pos))
-	if s.err == nil {
-		s.buf = append(buf2, s.buf...)
-	}
-}
-
-func (s *ReverseScanner) Line() (line string, start int, err error) {
-	if s.err != nil {
-		return "", 0, s.err
-	}
-	for {
-		lineStart := bytes.LastIndexByte(s.buf, '\n')
-		if lineStart >= 0 {
-			// We have a complete line:
-			var line string
-			line, s.buf = string(dropCR(s.buf[lineStart+1:])), s.buf[:lineStart]
-			return line, s.pos + lineStart + 1, nil
-		}
-		// Need more data:
-		s.readMore()
-		if s.err != nil {
-			if s.err == io.EOF {
-				if len(s.buf) > 0 {
-					return string(dropCR(s.buf)), 0, nil
-				}
-			}
-			return "", 0, s.err
-		}
-	}
-}
-
-// dropCR drops a terminal \r from the data.
-func dropCR(data []byte) []byte {
-	if len(data) > 0 && data[len(data)-1] == '\r' {
-		return data[0 : len(data)-1]
-	}
-	return data
-}
-
-func ReadLogsReverse() ([]map[string]any, error) {
-	var logs []map[string]any
-
-	logdir := "/" + sdkpaths.TmpDir + "/logs"
-	file, err := os.Open(logdir + "/" + LogFilename)
-	if err != nil {
-		log.Fatal(err)
-	}
-	fi, err := file.Stat()
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer file.Close()
-
-	reverseScanner := NewReverseScanner(file, int(fi.Size()))
-
-	// read the empty log line
-	_, _, err = reverseScanner.Line()
-	if err != io.EOF {
-		log.Fatal(err)
-	}
-
-	for {
-		line, _, err := reverseScanner.Line()
-
-		// done reading the file
-		if err == io.EOF {
-			break
-		}
-
-		// if something goes wrong in reading
-		if err != nil {
-			log.Fatal("Error:", err)
-			break
-		}
-
-		// read of line successful
-		dataInLine, err := wsv.ParseLineAsArray(line)
-		if err != nil {
-			log.Println("error parsing raw log file to wsv: ", err)
-			return nil, err
-		}
-
-		fmt.Println("current data line", dataInLine)
-
-		parsedlog, err := parseLog(dataInLine)
-		if err != nil {
-			log.Println("error parsing log file to flarelog format: ", err)
-			return nil, err
-		}
-
-		logs = append(logs, parsedlog)
-	}
-
-	return logs, nil
-}
-
-// ----
-
 func ReadLogs(start int, end int) ([]map[string]any, error) {
 	var logs []map[string]any
 
-	// get app logs file path
-	logdir := "/" + sdkpaths.TmpDir + "/logs"
-
 	// open logs
-	file, err := os.Open(logdir + "/" + LogFilename)
+	file, err := os.Open(logFilePath)
 	if err != nil {
 		log.Fatal(err)
 	}
