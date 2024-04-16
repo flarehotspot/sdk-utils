@@ -5,8 +5,9 @@
         <!-- search  -->
         <form action="">
             <input type="text" name="search" id="search">
+
+            <button @click="searchLogs">search</button>
         </form>
-        <button @click="searchLogs">search</button>
 
         <!-- filter-->
         <form action="">
@@ -22,11 +23,9 @@
 
             <!-- plugin selector if plugin view is selected -->
             <label for="pluginselection">Plugin</label>
-            <div>
-            <select name="pluginselection" id="pluginselection" v-model="selectedPlugin">
-                <option v-for="plugin in plugins" v-bind:value="plugin">{{ plugin }}</option>
-            </select>
-        </div>
+                <select name="pluginselection" id="pluginselection" v-model="selectedPlugin">
+                    <option v-for="plugin in plugins" v-bind:value="plugin">{{ plugin }}</option>
+                </select>
 
             <label for="dateStartFilter">From</label>
             <input type="date" name="dateStartFilter" id="dateStartFilter" :value="dateToYYYYMMDD(dateStartFilter)"
@@ -35,8 +34,9 @@
             <input type="date" name="dateEndFilter" id="dateEndFilter" :value="dateToYYYYMMDD(dateEndFilter)"
                 @input="dateEndFilter = $event.target.valueAsDate">
 
+            <button @click="filterLogs">Filter</button>
+
         </form>
-        <button @click="filterLogs">Filter</button>
 
         <!-- logs list -->
         <div style="overflow-y: scroll; height: 400px;" id="logsList">
@@ -78,7 +78,8 @@
             </div>
         </div>
 
-        <b-pagination v-model="currentPage" :total-rows="rows" :per-page="perPage" @page-click="navigate"></b-pagination>
+        <b-pagination v-model="currentPage" :total-rows="rows" :per-page="perPage"
+            @page-click="navigate"></b-pagination>
 
         <p>logs per page:</p>
         <select name="perPageSelection" id="perPageSelection">
@@ -184,14 +185,14 @@ define(function () {
         beforeMount: function () {
             // this.setInitialDates();
         },
-        mounted: function() {
+        mounted: function () {
             // this.setPlugins();
         },
-        beforeUpdate: function() {
+        beforeUpdate: function () {
             this.setPlugins();
         },
         updated: function () {
-            
+
             // set the scrollview of logs list to the bottom
             var logsList = this.$el.querySelector('#logsList');
             logsList.scrollTop = logsList.scrollHeight;
