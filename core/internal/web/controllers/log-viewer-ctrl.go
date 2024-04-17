@@ -9,42 +9,46 @@ import (
 	"github.com/flarehotspot/core/internal/utils/logger"
 )
 
+// Gets the logs based on the requested current page and
+// per page queries
 func GetLogs(g *plugins.CoreGlobals) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		res := g.CoreAPI.HttpAPI.VueResponse()
 
 		var params struct {
-			Page  int
-			Lines int
+			CurrentPage int
+			PerPage     int
 		}
 
 		// get queries
-		rPage := r.URL.Query().Get("page")
-		rLines := r.URL.Query().Get("lines")
+		rCurrentPage := r.URL.Query().Get("currentPage")
+		rPerPage := r.URL.Query().Get("perPage")
 
 		rows := logger.GetLogLines()
 
-		// check if request page and lines are empty
-		if rPage != "" || rLines != "" {
-			params.Page, _ = strconv.Atoi(rPage)
-			params.Lines, _ = strconv.Atoi(rLines)
+		// check if the requested currentPage and perPage are empty
+		if rCurrentPage != "" || rPerPage != "" {
+			params.CurrentPage, _ = strconv.Atoi(rCurrentPage)
+			params.PerPage, _ = strconv.Atoi(rPerPage)
 		} else {
-			params.Lines = 50
-			params.Page = (rows + params.Lines - 1) / params.Lines
+			// set default values
+			params.PerPage = 50
+			params.CurrentPage = (rows + params.PerPage - 1) / params.PerPage // sets the current page to last page
 		}
 
-		// set starting and end lines based on page and lines
-		starting := (params.Lines * (params.Page - 1))
-		if starting < 0 {
-			starting = 0
+		// set start and end lines based on the
+		// currentPage and perPage query
+		start := (params.PerPage * (params.CurrentPage - 1))
+		if start < 0 {
+			start = 0
 		}
-		end := starting + params.Lines - 1
+		end := start + params.PerPage - 1
 		if end > rows {
 			end = rows
 		}
 
 		// read logs
-		logs, err := logger.ReadLogs(starting, end)
+		logs, err := logger.ReadLogs(start, end)
 		if err != nil {
 			log.Println(err)
 		}
@@ -52,8 +56,8 @@ func GetLogs(g *plugins.CoreGlobals) http.HandlerFunc {
 		data := map[string]any{
 			"logs":        logs,
 			"rows":        rows,
-			"currentPage": params.Page,
-			"perPage":     params.Lines,
+			"currentPage": params.CurrentPage,
+			"perPage":     params.PerPage,
 		}
 
 		res.Json(w, data, http.StatusOK)
