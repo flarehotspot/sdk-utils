@@ -29,26 +29,16 @@ const (
 	lightRed    = 91
 	lightYellow = 93
 	lightBlue   = 94
+
+	logFilename = "app.log"
+	infoPrefix  = "[INFO] "
+	debugPrefix = "[DEBUG] "
+	errorPrefix = "[ERROR] "
+
+	flarelogBaseMetadataCount = 10
 )
 
-const (
-	LogFilename = "app.log"
-	Infoprefix  = "[INFO] "
-	Debugprefix = "[DEBUG] "
-	Errorprefix = "[ERROR] "
-)
-
-var logFilePath = filepath.Join(sdkpaths.TmpDir, "logs", LogFilename)
-
-const (
-	Info  = 0
-	Debug = 1
-	Error = 2
-)
-
-const (
-	FLARELOG_METADATA_COUNT = 10
-)
+var logFilePath = filepath.Join(sdkpaths.TmpDir, "logs", logFilename)
 
 func init() {
 	logdir := filepath.Dir(logFilePath)
@@ -57,6 +47,8 @@ func init() {
 	}
 }
 
+// Helper function to cut an integer's digits to
+// desired length
 func itoa(i int, wid int) int {
 	num := i
 	d := 1
@@ -70,6 +62,7 @@ func itoa(i int, wid int) int {
 	return num / int(math.Pow10(d-wid))
 }
 
+// Returns the equivalent log level in string
 func getLevelAsStr(level int) string {
 	switch level {
 	case 0:
@@ -83,6 +76,12 @@ func getLevelAsStr(level int) string {
 	return "INFO"
 }
 
+// Returns a string with the desired color
+func colorize(colorCode int, v string) string {
+	return fmt.Sprintf("\033[%sm%s%s", strconv.Itoa(colorCode), v, reset)
+}
+
+// Returns the level in string with dedicated color
 func colorizeLevel(level int) string {
 	var color int
 	switch level {
@@ -96,6 +95,7 @@ func colorizeLevel(level int) string {
 	return colorize(color, getLevelAsStr(level))
 }
 
+// Returns the opened log file instance
 func openLogFile() (*os.File, error) {
 	// opening/creating log file
 	logFile, err := os.OpenFile(logFilePath, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0644)
@@ -107,10 +107,7 @@ func openLogFile() (*os.File, error) {
 	return logFile, nil
 }
 
-func colorize(colorCode int, v string) string {
-	return fmt.Sprintf("\033[%sm%s%s", strconv.Itoa(colorCode), v, reset)
-}
-
+// Returns the file path and line number of the caller function
 func GetCallerFileLine(calldepth int) (file string, line int) {
 	calldepth++
 
@@ -122,6 +119,7 @@ func GetCallerFileLine(calldepth int) (file string, line int) {
 	return
 }
 
+// Returns the total number of lines of the specified file
 func lineCounter(r io.Reader) (int, error) {
 	buf := make([]byte, 32*1024)
 	count := 0
@@ -141,6 +139,7 @@ func lineCounter(r io.Reader) (int, error) {
 	}
 }
 
+// Returns the total number of lines of the current log file
 func GetLogLines() int {
 	// open logs
 	file, err := os.Open(logFilePath)
@@ -158,6 +157,7 @@ func GetLogLines() int {
 	return logLines
 }
 
+// Returns a map of string : any formatted based on the log parser and an error
 func ReadLogs(start int, end int) ([]map[string]any, error) {
 	var logs []map[string]any
 
@@ -215,11 +215,28 @@ func ReadLogs(start int, end int) ([]map[string]any, error) {
 	return logs, nil
 }
 
+// Accepts a slice of string and parses as a flare log line
+// and returns the parsed string. Format:
+// "level":          logLine[0],
+// "title":          logLine[1],
+// "year":           logLine[2],
+// "month":          logLine[3],
+// "day":            logLine[4],
+// "hour":           logLine[5],
+// "min":            logLine[6],
+// "sec":            logLine[7],
+// "nano":           logLine[8],
+// "fullpath":       logLine[9],
+// "plugin":         plugin,
+// "filepluginpath": filepluginpath,
+// "filename":       filename,
+// "line":           logLine[10],
+// "body":           body,
 func parseLog(logLine []string) (map[string]any, error) {
 	logLength := len(logLine)
 
 	// check if valid flare log file
-	if logLength < FLARELOG_METADATA_COUNT {
+	if logLength < flarelogBaseMetadataCount {
 		return nil, errors.New("invalid flarelog format")
 	}
 
@@ -243,8 +260,8 @@ func parseLog(logLine []string) (map[string]any, error) {
 
 	var body any
 	// check if log has body
-	if logLength > FLARELOG_METADATA_COUNT {
-		body = logLine[FLARELOG_METADATA_COUNT+1:]
+	if logLength > flarelogBaseMetadataCount {
+		body = logLine[flarelogBaseMetadataCount+1:]
 	}
 
 	log := map[string]any{
@@ -268,6 +285,7 @@ func parseLog(logLine []string) (map[string]any, error) {
 	return log, nil
 }
 
+// Logs the log info to the console with colored texts
 func LogToConsole(file string, line int, level int, title string, body ...any) {
 	// date and time data
 	now := time.Now()
@@ -318,12 +336,8 @@ func LogToConsole(file string, line int, level int, title string, body ...any) {
 	fmt.Println(content)
 }
 
+// Logs the log info to the specified file path
 func LogToFile(file string, line int, level int, title string, body ...any) {
-	// log file format:
-	// level title YYYY M d H m s n file line
-	// "key" "value" // if any
-	// --
-
 	f, err := openLogFile()
 	if err != nil {
 		log.Println("Failed to create log file", "error", err)
