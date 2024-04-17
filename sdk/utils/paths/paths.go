@@ -1,5 +1,6 @@
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
+ :xa
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
@@ -12,14 +13,32 @@ import (
 	"strings"
 )
 
+const (
+	ROOTDIR = "flarehotspot"
+)
+
 func rootDir() string {
 	if dir := os.Getenv("APPDIR"); dir != "" {
 		return dir
 	}
+
+	wd, _ := os.Getwd()
+	for !strings.HasSuffix(wd, ROOTDIR) {
+		wd = filepath.Dir(wd)
+		if wd == "/" {
+			break
+		}
+	}
+
+	if wd != "/" {
+		return wd
+	}
+
 	dir, err := os.Getwd()
 	if err == nil {
 		return dir
 	}
+
 	dir = "."
 	return dir
 }
