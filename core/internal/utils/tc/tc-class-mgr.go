@@ -205,6 +205,8 @@ func (self *TcClassMgr) tcDel(klass *TcClass) error {
 		}
 	}
 
+	klass.ClassId.Restore()
+
 	return nil
 }
 
