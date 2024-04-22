@@ -24,7 +24,7 @@ func GetLogs(g *plugins.CoreGlobals) http.HandlerFunc {
 		rCurrentPage := r.URL.Query().Get("currentPage")
 		rPerPage := r.URL.Query().Get("perPage")
 
-		rows := logger.GetLogLines()
+		rows := int(logger.Lines.Load())
 
 		// check if the requested currentPage and perPage are empty
 		if rCurrentPage != "" || rPerPage != "" {
