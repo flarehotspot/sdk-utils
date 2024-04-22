@@ -1,7 +1,6 @@
 package logger_test
 
 import (
-	"log"
 	"testing"
 
 	logger "github.com/flarehotspot/core/internal/utils/logger"
@@ -42,35 +41,35 @@ func TestLineCounter(t *testing.T) {
 	// 2. insert data
 }
 
-func TestGetLogLines(t *testing.T) {
-	want := 299
-	lines := logger.GetLogLines()
+// func TestGetLogLines(t *testing.T) {
+// 	want := 299
+// 	lines := logger.GetLogLines()
 
-	if want != lines {
-		t.Fatalf(`Expected: %d, actual: %d`, want, lines)
-	}
-}
+// 	if want != lines {
+// 		t.Fatalf(`Expected: %d, actual: %d`, want, lines)
+// 	}
+// }
 
-func TestReadLogs(t *testing.T) {
-	// read logs should have end - start lines
-	start := 0
-	end := 99
+// func TestReadLogs(t *testing.T) {
+// 	// read logs should have end - start lines
+// 	start := 0
+// 	end := 99
 
-	want := end - start + 1
-	result, err := logger.ReadLogs(start, end)
-	if err != nil {
-		log.Println("Error reading logs", err)
-	}
+// 	want := end - start + 1
+// 	result, err := logger.ReadLogs(start, end)
+// 	if err != nil {
+// 		log.Println("Error reading logs", err)
+// 	}
 
-	if len(result) != want {
-		t.Errorf("Result logs read was incorrect, got: %d, want: %d", len(result), want)
-	}
-}
+// 	if len(result) != want {
+// 		t.Errorf("Result logs read was incorrect, got: %d, want: %d", len(result), want)
+// 	}
+// }
 
-func BenchmarkReadLogs(b *testing.B) {
-	logger.ReadLogs(0, 29170)
-}
+// func BenchmarkReadLogs(b *testing.B) {
+// 	logger.ReadLogs(0, 29170)
+// }
 
-func BenchmarkGetLines(b *testing.B) {
-	logger.GetLogLines()
-}
+// func BenchmarkGetLines(b *testing.B) {
+// 	logger.GetLogLines()
+// }

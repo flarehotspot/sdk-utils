@@ -55,7 +55,7 @@ func init() {
 	f, _ := openLogFile()
 	defer f.Close()
 
-	Lines.Store(uint64(GetLogLines()))
+	Lines.Store(uint64(GetLogLines(logFilename)))
 }
 
 // Helper function to cut an integer's digits to
@@ -151,9 +151,10 @@ func lineCounter(r io.Reader) (int, error) {
 }
 
 // Returns the total number of lines of the current log file
-func GetLogLines() int {
-	// open logs
-	file, err := os.Open(logFilePath)
+func GetLogLines(logFile string) int {
+	logFilePathToRead := filepath.Join(sdkpaths.TmpDir, "logs", logFile)
+
+	file, err := os.Open(logFilePathToRead)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -168,15 +169,36 @@ func GetLogLines() int {
 	return logLines
 }
 
+func GetLogFiles() []string {
+	logsDir := filepath.Join(sdkpaths.TmpDir, "logs")
+
+	files, err := os.ReadDir(logsDir)
+	if err != nil {
+		log.Fatal("error reading file logs ", err)
+	}
+
+	var fileNames []string
+
+	for _, file := range files {
+		log.Println(file.Name())
+		fileNames = append(fileNames, file.Name())
+	}
+
+	return fileNames
+}
+
 // Returns a map of string : any, formatted based on the log parser
 // and an error. Logs returned will be in the range of start to end,
 // inclusive. Starts at index 0.
-func ReadLogs(start int, end int) ([]map[string]any, error) {
+func ReadLogs(logFile string, start int, end int) ([]map[string]any, error) {
 	ret, err := que.Exec(func() (interface{}, error) {
 		var logs []map[string]any
 
+		logFilePathToRead := filepath.Join(sdkpaths.TmpDir, "logs", logFile)
+		log.Println("logFilePathToRead: ", logFilePathToRead)
+
 		// open logs
-		file, err := os.Open(logFilePath)
+		file, err := os.Open(logFilePathToRead)
 		if err != nil {
 			log.Fatal("error opening log file ", err)
 		}
@@ -422,8 +444,8 @@ func getLogDateAsStr(log map[string]any) string {
 // Rotates current log file. This simply renames the current log file
 // to format: "YYYYMdhmsn-YYYYMdhmsn.log"
 func rotate() {
-	firstLog, _ := ReadLogs(0, 0)
-	lastLog, _ := ReadLogs(int(Lines.Load()-1), int(Lines.Load()-1))
+	firstLog, _ := ReadLogs(logFilePath, 0, 0)
+	lastLog, _ := ReadLogs(logFilePath, int(Lines.Load()-1), int(Lines.Load()-1))
 
 	firstDate := getLogDateAsStr(firstLog[0])
 	lastDate := getLogDateAsStr(lastLog[0])

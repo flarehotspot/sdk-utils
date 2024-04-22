@@ -18,22 +18,39 @@ func GetLogs(g *plugins.CoreGlobals) http.HandlerFunc {
 		var params struct {
 			CurrentPage int
 			PerPage     int
+			LogFile     string
 		}
 
 		// get queries
 		rCurrentPage := r.URL.Query().Get("currentPage")
 		rPerPage := r.URL.Query().Get("perPage")
+		rLogFile := r.URL.Query().Get("logFile")
 
-		rows := int(logger.Lines.Load())
+		// get log files
+		logFiles := logger.GetLogFiles()
 
-		// check if the requested currentPage and perPage are empty
-		if rCurrentPage != "" || rPerPage != "" {
-			params.CurrentPage, _ = strconv.Atoi(rCurrentPage)
+		// check queries if empty
+		if rPerPage != "" {
 			params.PerPage, _ = strconv.Atoi(rPerPage)
 		} else {
-			// set default values
 			params.PerPage = 50
-			params.CurrentPage = (rows + params.PerPage - 1) / params.PerPage // sets the current page to last page
+		}
+
+		if rLogFile != "" {
+			params.LogFile = rLogFile
+		} else {
+			params.LogFile = "app.log"
+		}
+		// get log rows
+		rows := int(logger.Lines.Load())
+		if rLogFile != "app.log" {
+			rows = logger.GetLogLines(rLogFile)
+		}
+
+		if rCurrentPage != "" {
+			params.CurrentPage, _ = strconv.Atoi(rCurrentPage)
+		} else {
+			params.CurrentPage = (rows + params.PerPage - 1) / params.PerPage
 		}
 
 		// set start and end lines based on the
@@ -48,16 +65,18 @@ func GetLogs(g *plugins.CoreGlobals) http.HandlerFunc {
 		}
 
 		// read logs
-		logs, err := logger.ReadLogs(start, end)
+		logs, err := logger.ReadLogs(params.LogFile, start, end)
 		if err != nil {
 			log.Println(err)
 		}
 
 		data := map[string]any{
-			"logs":        logs,
-			"rows":        rows,
-			"currentPage": params.CurrentPage,
-			"perPage":     params.PerPage,
+			"logs":           logs,
+			"rows":           rows,
+			"currentPage":    params.CurrentPage,
+			"perPage":        params.PerPage,
+			"logFiles":       logFiles,
+			"currentLogFile": rLogFile,
 		}
 
 		res.Json(w, data, http.StatusOK)
