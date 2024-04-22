@@ -14,8 +14,10 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
+	"sync/atomic"
 	"time"
 
+	jobque "github.com/flarehotspot/core/internal/utils/job-que"
 	sdkfs "github.com/flarehotspot/sdk/utils/fs"
 	sdkpaths "github.com/flarehotspot/sdk/utils/paths"
 
@@ -36,15 +38,24 @@ const (
 	errorPrefix = "[ERROR] "
 
 	flarelogBaseMetadataCount = 10
+
+	maxLines = 5000
 )
 
 var logFilePath = filepath.Join(sdkpaths.TmpDir, "logs", logFilename)
+var que = jobque.NewJobQues()
+var Lines atomic.Uint64
 
 func init() {
 	logdir := filepath.Dir(logFilePath)
 	if !sdkfs.Exists(logdir) {
 		os.MkdirAll(logdir, sdkfs.PermDir)
 	}
+
+	f, _ := openLogFile()
+	defer f.Close()
+
+	Lines.Store(uint64(GetLogLines()))
 }
 
 // Helper function to cut an integer's digits to
@@ -157,81 +168,73 @@ func GetLogLines() int {
 	return logLines
 }
 
-// Returns a map of string : any formatted based on the log parser and an error
+// Returns a map of string : any, formatted based on the log parser
+// and an error. Logs returned will be in the range of start to end,
+// inclusive. Starts at index 0.
 func ReadLogs(start int, end int) ([]map[string]any, error) {
-	var logs []map[string]any
+	ret, err := que.Exec(func() (interface{}, error) {
+		var logs []map[string]any
 
-	// open logs
-	file, err := os.Open(logFilePath)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer file.Close()
+		// open logs
+		file, err := os.Open(logFilePath)
+		if err != nil {
+			log.Fatal("error opening log file ", err)
+		}
+		defer file.Close()
 
-	rd := bufio.NewReader(file)
+		rd := bufio.NewReader(file)
 
-	currLine := 0
+		currLine := 0
 
-	// TODO: make it concurrent
-	for {
-		l, err := rd.ReadString('\n')
+		for {
+			l, err := rd.ReadString('\n')
 
-		if currLine < start {
+			if currLine < start {
+				currLine++
+				continue
+			}
+
+			// file has no content left
+			if err == io.EOF {
+				break
+			}
+
+			if err != nil {
+				log.Fatal("error inside readlogs for loop ", err)
+			}
+
+			// read of line successful
+			dataInLine, err := wsv.ParseLineAsArray(l)
+			if err != nil {
+				log.Println("error parsing raw log file to wsv: ", err)
+				return nil, err
+			}
+
+			parsedlog, err := parseLog(dataInLine)
+			if err != nil {
+				log.Println("error parsing log file to flarelog format: ", err)
+				return nil, err
+			}
+
+			logs = append(logs, parsedlog)
+
+			if currLine >= end {
+				break
+			}
+
 			currLine++
-			continue
 		}
 
-		// file has no content left
-		if err == io.EOF {
-			break
-		}
+		return logs, nil
+	})
 
-		if err != nil {
-			log.Fatal(err)
-		}
+	m := ret.([]map[string]any)
 
-		// read of line successful
-		dataInLine, err := wsv.ParseLineAsArray(l)
-		if err != nil {
-			log.Println("error parsing raw log file to wsv: ", err)
-			return nil, err
-		}
-
-		parsedlog, err := parseLog(dataInLine)
-		if err != nil {
-			log.Println("error parsing log file to flarelog format: ", err)
-			return nil, err
-		}
-
-		logs = append(logs, parsedlog)
-
-		if currLine >= end {
-			break
-		}
-
-		currLine++
-	}
-
-	return logs, nil
+	return m, err
 }
 
 // Accepts a slice of string and parses as a flare log line
-// and returns the parsed string. Format:
-// "level":          logLine[0],
-// "title":          logLine[1],
-// "year":           logLine[2],
-// "month":          logLine[3],
-// "day":            logLine[4],
-// "hour":           logLine[5],
-// "min":            logLine[6],
-// "sec":            logLine[7],
-// "nano":           logLine[8],
-// "fullpath":       logLine[9],
-// "plugin":         plugin,
-// "filepluginpath": filepluginpath,
-// "filename":       filename,
-// "line":           logLine[10],
-// "body":           body,
+// and returns the parsed string.
 func parseLog(logLine []string) (map[string]any, error) {
 	logLength := len(logLine)
 
@@ -338,46 +341,102 @@ func LogToConsole(file string, line int, level int, title string, body ...any) {
 
 // Logs the log info to the specified file path
 func LogToFile(file string, line int, level int, title string, body ...any) {
-	f, err := openLogFile()
-	if err != nil {
-		log.Println("Failed to create log file", "error", err)
-		panic(err)
-	}
-	defer f.Close()
+	_, _ = que.Exec(func() (interface{}, error) {
+		logFile, err := openLogFile()
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer func() {
+			logFile.Close()
 
-	var content [][]string
+			if Lines.Load() >= maxLines {
+				rotate()
+			}
+		}()
 
-	// date and time data
-	now := time.Now()
-	hour, min, sec := now.Clock()
-	year, month, day := now.Date()
-	nano := itoa(now.Nanosecond(), 3)
+		var content [][]string
 
-	var logInfo []string
-	logInfo = append(logInfo, strconv.Itoa(level), title, strconv.Itoa(year), strconv.Itoa(int(month)), strconv.Itoa(day), strconv.Itoa(hour), strconv.Itoa(min), strconv.Itoa(sec), strconv.Itoa(nano), file, strconv.Itoa(line))
+		// date and time data
+		now := time.Now()
+		hour, min, sec := now.Clock()
+		year, month, day := now.Date()
+		nano := itoa(now.Nanosecond(), 3)
 
-	for _, arg := range body {
-		value := reflect.ValueOf(arg)
-		var str string
+		var logInfo []string
+		logInfo = append(logInfo, strconv.Itoa(level), title, strconv.Itoa(year), strconv.Itoa(int(month)), strconv.Itoa(day), strconv.Itoa(hour), strconv.Itoa(min), strconv.Itoa(sec), strconv.Itoa(nano), file, strconv.Itoa(line))
 
-		switch value.Kind() {
-		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-			str = fmt.Sprintf("%d", value.Int())
-		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-			str = fmt.Sprintf("%d", value.Uint())
-		case reflect.Float32, reflect.Float64:
-			str = fmt.Sprintf("%f", value.Float())
-		case reflect.String:
-			str = value.String()
-		// Add cases for other types as needed
-		default:
-			str = fmt.Sprintf("%v", arg)
+		// append body content
+		for _, arg := range body {
+			value := reflect.ValueOf(arg)
+			var str string
+
+			// body content string conversion
+			switch value.Kind() {
+			case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+				str = fmt.Sprintf("%d", value.Int())
+			case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+				str = fmt.Sprintf("%d", value.Uint())
+			case reflect.Float32, reflect.Float64:
+				str = fmt.Sprintf("%f", value.Float())
+			case reflect.String:
+				str = value.String()
+			// Add cases for other types as needed
+			default:
+				str = fmt.Sprintf("%v", arg)
+			}
+
+			logInfo = append(logInfo, str)
+		}
+		content = append(content, logInfo)
+
+		// serialize
+		serialized := wsv.Serialize(content)
+
+		// actual logging to file
+		_, err = logFile.WriteString(serialized + "\n")
+		if err != nil {
+			log.Fatal(err)
 		}
 
-		logInfo = append(logInfo, str)
+		// increment log file lines by 1
+		Lines.Add(1)
+
+		// nils for the job que
+		return nil, nil
+	})
+}
+
+// Returns a date string with format: YYYYMMdd
+func getLogDateAsStr(log map[string]any) string {
+	year := reflect.ValueOf(log["year"]).String()
+	month := reflect.ValueOf(log["month"]).String()
+	day := reflect.ValueOf(log["day"]).String()
+	hour := reflect.ValueOf(log["hour"]).String()
+	min := reflect.ValueOf(log["min"]).String()
+	sec := reflect.ValueOf(log["sec"]).String()
+	nano := reflect.ValueOf(log["nano"]).String()
+
+	return year + month + day + hour + min + sec + nano
+}
+
+// Rotates current log file. This simply renames the current log file
+// to format: "YYYYMdhmsn-YYYYMdhmsn.log"
+func rotate() {
+	firstLog, _ := ReadLogs(0, 0)
+	lastLog, _ := ReadLogs(int(Lines.Load()-1), int(Lines.Load()-1))
+
+	firstDate := getLogDateAsStr(firstLog[0])
+	lastDate := getLogDateAsStr(lastLog[0])
+
+	newLogFilename := firstDate + "-" + lastDate + ".log"
+
+	newName := filepath.Join(sdkpaths.TmpDir, "logs", newLogFilename)
+
+	err := os.Rename(logFilePath, newName)
+	if err != nil {
+		log.Fatal(err)
 	}
 
-	content = append(content, logInfo)
-
-	f.WriteString(wsv.Serialize(content) + "\n")
+	// reset log lines
+	Lines.Store(0)
 }

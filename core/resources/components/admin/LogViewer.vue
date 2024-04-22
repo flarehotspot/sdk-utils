@@ -158,7 +158,7 @@ define(function () {
             },
             navigate: function (event, currentPage) {
                 this.$router.push(
-                    { path: `<% .Helpers.VueRoutePath "log-viewer" "page" "${currentPage}" "lines" "${this.perPage}" %>` }
+                    { path: `<% .Helpers.VueRoutePath "log-viewer" "currentPage" "${currentPage}" "perPage" "${this.perPage}" %>` }
                 ).then(() => { this.$router.go(0) });
             },
             perPageChanged: function(event) {
