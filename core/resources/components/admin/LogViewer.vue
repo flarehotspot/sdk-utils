@@ -84,7 +84,7 @@
         </div>
 
         <p>logs per page:</p>
-        <select name="perPageSelection" id="perPageSelection" v-model="perPage" @change="navigate($event, Math.ceil(this.rows / this.perPage))">
+        <select name="perPageSelection" id="perPageSelection" v-model="perPage" @change="navigate($event, -1)">
             <option value="10">10</option>
             <option value="50" selected="selected">50</option>
             <option value="100">100</option>
@@ -177,15 +177,22 @@ define(function () {
                 this.$el.querySelector('#logFilesSelection').value = this.selectedLogFile;
             },
             navigate: function (event, currentPage) {
-                // TODO: remove after test
-                console.log(currentPage);
-
                 if (currentPage == 0) {
                     this.$router.push(
                         { path: `<% .Helpers.VueRoutePath "log-viewer" "logFile" "${this.selectedLogFile}" %>` }
                     ).then(() => { this.$router.go(0) });
                     return;
                 }
+
+                if (currentPage == -1) {
+                    currPage = Math.ceil(this.rows / this.perPage);
+
+                    this.$router.push(
+                        { path: `<% .Helpers.VueRoutePath "log-viewer" "logFile" "${this.selectedLogFile}" "currentPage" "${currPage}" "perPage" "${this.perPage}" %>` }
+                    ).then(() => { this.$router.go(0) });
+                    return;
+                }
+
 
                 this.$router.push(
                     { path: `<% .Helpers.VueRoutePath "log-viewer" "logFile" "${this.selectedLogFile}" "currentPage" "${currentPage}" "perPage" "${this.perPage}" %>` }
