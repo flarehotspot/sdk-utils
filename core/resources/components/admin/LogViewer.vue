@@ -8,6 +8,13 @@
         </form>
         <button @click="searchLogs">search</button>
 
+        <form action="">
+            <!-- log file selector -->
+            <select name="logFilesSelection" id="logFilesSelection" v-model="selectedLogFile" @change="navigate($event, 0)">
+                <option v-for="logFile in logFiles" v-bind:value="logFile">{{ logFile }}</option>
+            </select>
+        </form>
+
         <!-- filter-->
         <form action="">
             <label for="levels">Select level: </label>
@@ -21,9 +28,9 @@
 
             <!-- plugin selector if plugin view is selected -->
             <label for="pluginselection">Plugin</label>
-                <select name="pluginselection" id="pluginselection" v-model="selectedPlugin">
-                    <option v-for="plugin in plugins" v-bind:value="plugin">{{ plugin }}</option>
-                </select>
+            <select name="pluginselection" id="pluginselection" v-model="selectedPlugin">
+                <option v-for="plugin in plugins" v-bind:value="plugin">{{ plugin }}</option>
+            </select>
 
             <label for="dateStartFilter">From</label>
             <input type="date" name="dateStartFilter" id="dateStartFilter" :value="dateToYYYYMMDD(dateStartFilter)"
@@ -96,6 +103,7 @@ define(function () {
         props: ['flareView'],
         data: function () {
             return {
+                selectedLogFile: "app.log",
                 selectedLevel: "all",
                 selectedPlugin: "all",
                 dateStartFilter: new Date(),
@@ -103,6 +111,7 @@ define(function () {
                 searchFilter: "",
                 lines: 50,
                 plugins: ["all"],
+                logFiles: [],
                 currentPage: 1,
                 rows: 200,
                 perPage: 50,
@@ -156,19 +165,34 @@ define(function () {
                     }
                 });
             },
+            setLogFiles: function() {
+                this.logFiles = [];
+
+                this.flareView.data.logFiles.forEach((logFile) => {
+                    this.logFiles.push(logFile);
+                });
+
+                // set initial log file values
+                this.selectedLogFile = this.flareView.data.currentLogFile;
+                this.$el.querySelector('#logFilesSelection').value = this.selectedLogFile;
+            },
             navigate: function (event, currentPage) {
+                if (currentPage == 0) {
+                    this.$router.push(
+                        { path: `<% .Helpers.VueRoutePath "log-viewer" "logFile" "${this.selectedLogFile}" %>` }
+                    ).then(() => { this.$router.go(0) });
+                    return;
+                }
+
                 this.$router.push(
-                    { path: `<% .Helpers.VueRoutePath "log-viewer" "currentPage" "${currentPage}" "perPage" "${this.perPage}" %>` }
+                    { path: `<% .Helpers.VueRoutePath "log-viewer" "logFile" "${this.selectedLogFile}" "currentPage" "${currentPage}" "perPage" "${this.perPage}" %>` }
                 ).then(() => { this.$router.go(0) });
             },
-            perPageChanged: function(event) {
-                console.log("per page changed", this.perPage);
-                console.log("new current page", this.currentPage);
-            }
         },
         beforeUpdate: function () {
             this.setPlugins();
             this.filterLogs();
+            this.setLogFiles();
 
             // set initial start and end date to first and last logs' date
             var firstLog = this.flareView.data.logs[0];
