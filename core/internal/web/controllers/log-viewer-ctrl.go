@@ -43,8 +43,8 @@ func GetLogs(g *plugins.CoreGlobals) http.HandlerFunc {
 		}
 		// get log rows
 		rows := int(logger.Lines.Load())
-		if rLogFile != "app.log" {
-			rows = logger.GetLogLines(rLogFile)
+		if params.LogFile != "app.log" {
+			rows = logger.GetLogLines(params.LogFile)
 		}
 
 		if rCurrentPage != "" {
@@ -76,7 +76,7 @@ func GetLogs(g *plugins.CoreGlobals) http.HandlerFunc {
 			"currentPage":    params.CurrentPage,
 			"perPage":        params.PerPage,
 			"logFiles":       logFiles,
-			"currentLogFile": rLogFile,
+			"currentLogFile": params.LogFile,
 		}
 
 		res.Json(w, data, http.StatusOK)

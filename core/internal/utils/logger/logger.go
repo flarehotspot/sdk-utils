@@ -180,7 +180,6 @@ func GetLogFiles() []string {
 	var fileNames []string
 
 	for _, file := range files {
-		log.Println(file.Name())
 		fileNames = append(fileNames, file.Name())
 	}
 
