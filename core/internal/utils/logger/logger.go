@@ -293,7 +293,7 @@ func LogToConsole(file string, line int, level int, title string, body ...any) {
 	year, month, day := now.Date()
 	nano := itoa(now.Nanosecond(), 3)
 
-	metadata := fmt.Sprintf("[%s:%d %d/%d/%d %d:%d:%d.%d]", file, line, year, month, day, hour, min, sec, nano)
+	metadata := fmt.Sprintf("[%d/%d/%d %d:%d:%d.%d %s:%d]", year, month, day, hour, min, sec, nano, file, line)
 	content := colorize(darkGray, metadata)
 	content = fmt.Sprintf("%s\n%s %s", content, colorizeLevel(level), title)
 
