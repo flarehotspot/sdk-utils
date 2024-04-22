@@ -115,6 +115,7 @@ define(function () {
                 currentPage: 1,
                 rows: 200,
                 perPage: 50,
+                isInitialized: false,
             }
         },
         methods: {
@@ -136,7 +137,6 @@ define(function () {
             dateToYYYYMMDD: function (d) {
                 var day = ("0" + d.getDate()).slice(-2);
                 var month = ("0" + (d.getMonth() + 1)).slice(-2);
-                var converted = d.getFullYear() + "-" + (month) + "-" + (day);
                 var converted = d.getFullYear() + "-" + (month) + "-" + (day);
 
                 return converted;
@@ -200,19 +200,23 @@ define(function () {
             },
         },
         beforeUpdate: function () {
-            this.setPlugins();
-            this.filterLogs();
-            this.setLogFiles();
+            if (!this.isInitialized) {
+                this.setPlugins();
+                this.filterLogs();
+                this.setLogFiles();
 
-            // set initial start and end date to first and last logs' date
-            var firstLog = this.flareView.data.logs[0];
-            var lastLog = this.flareView.data.logs[this.flareView.data.logs.length - 1];
+                // set initial start and end date to first and last logs' date
+                var firstLog = this.flareView.data.logs[0];
+                var lastLog = this.flareView.data.logs[this.flareView.data.logs.length - 1];
 
-            this.dateStartFilter = new Date(`${firstLog.year}-${firstLog.month}-${firstLog.day}`);
-            this.dateEndFilter = new Date(`${lastLog.year}-${lastLog.month}-${lastLog.day}`);
+                this.dateStartFilter = new Date(`${firstLog.year}-${firstLog.month}-${firstLog.day}`);
+                this.dateEndFilter = new Date(`${lastLog.year}-${lastLog.month}-${lastLog.day}`);
 
-            this.setDateToMidnight(this.dateStartFilter);
-            this.setDateToBeforeMidnight(this.dateEndFilter);
+                this.setDateToMidnight(this.dateStartFilter);
+                this.setDateToBeforeMidnight(this.dateEndFilter);
+
+                this.isInitialized = true;
+            }
         },
         updated: function () {
             // set the scrollview of logs list to the bottom

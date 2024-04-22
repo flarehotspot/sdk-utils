@@ -194,7 +194,6 @@ func ReadLogs(logFile string, start int, end int) ([]map[string]any, error) {
 		var logs []map[string]any
 
 		logFilePathToRead := filepath.Join(sdkpaths.TmpDir, "logs", logFile)
-		log.Println("logFilePathToRead: ", logFilePathToRead)
 
 		// open logs
 		file, err := os.Open(logFilePathToRead)
