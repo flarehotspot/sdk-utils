@@ -32,28 +32,28 @@ func (self TcClassId) Uint() uint {
 
 func (self TcClassId) Cancel() {
 	q.Exec(func() (interface{}, error) {
-		removeClassId(tmpClassIds, self)
+		tmpClassIds = removeClassId(tmpClassIds, self)
 		return nil, nil
 	})
 }
 
 func (self TcClassId) Commit() {
 	q.Exec(func() (interface{}, error) {
-		removeClassId(tmpClassIds, self)
+		tmpClassIds = removeClassId(tmpClassIds, self)
 		usedClassIds = append(usedClassIds, self)
 		return nil, nil
 	})
 }
 
-func (self TcClassId) Return() {
+func (self TcClassId) Restore() {
 	q.Exec(func() (interface{}, error) {
-		removeClassId(usedClassIds, self)
+		usedClassIds = removeClassId(usedClassIds, self)
 		return nil, nil
 	})
 }
 
 func GetAvailableId() TcClassId {
-	sym, _ := q.Exec(func() (interface{}, error) {
+	result, _ := q.Exec(func() (interface{}, error) {
 		classids := orderedIds()
 
 		for i := 0; i < len(classids); i++ {
@@ -63,22 +63,22 @@ func GetAvailableId() TcClassId {
 			}
 		}
 
-		return TcClassId((len(classids) * 2) + int(startId)), nil
+		classid := TcClassId((len(classids) * 2) + int(startId))
+		tmpClassIds = append(tmpClassIds, classid)
+		return classid, nil
 	})
 
-	classid := sym.(TcClassId)
-	tmpClassIds = append(tmpClassIds, classid)
-
-	return classid
+	return result.(TcClassId)
 }
 
-func removeClassId(classids []TcClassId, id TcClassId) {
+func removeClassId(classids []TcClassId, id TcClassId) []TcClassId {
 	for i, curr := range classids {
 		if id == curr {
 			classids = append(classids[:i], classids[i+1:]...)
 			break
 		}
 	}
+	return classids
 }
 
 func orderedIds() []TcClassId {

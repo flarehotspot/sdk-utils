@@ -19,19 +19,41 @@ func Exec(command string) error {
 
 	log.Println(bin, strings.Join(args, " "))
 
+	var (
+		errBuilder strings.Builder
+		outBuilder strings.Builder
+	)
+
 	cmd := exec.Command(bin, args...)
+	cmd.Stderr = &errBuilder
+	cmd.Stdout = &outBuilder
+
 	err := cmd.Run()
-	return err
+	if err != nil {
+		var msg string
+
+		if errBuilder.Len() > 0 {
+			msg = errBuilder.String()
+		} else if outBuilder.Len() > 0 {
+			msg = outBuilder.String()
+		} else {
+			msg = err.Error()
+		}
+
+		log.Printf("\nError executing command: %v\n\t%s\n\n", command, msg)
+		return errors.New(msg)
+	}
+	return nil
 }
 
 func ExecAll(commands []string) error {
-  for _, c := range commands {
-    err := Exec(c)
-    if err != nil {
-      return err
-    }
-  }
-  return nil
+	for _, c := range commands {
+		err := Exec(c)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func ExecOutput(command string, out io.Writer) (err error) {
