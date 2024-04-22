@@ -7,12 +7,6 @@ import (
 type LoggerApi struct{}
 
 func NewLoggerApi() *LoggerApi {
-	// TODO: create log rotation
-	// run a go routine for log rotation
-
-	// TODO: create log retention
-	// run a go routine for log retention
-
 	return &LoggerApi{}
 }
 
