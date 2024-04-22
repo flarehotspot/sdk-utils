@@ -177,6 +177,9 @@ define(function () {
                 this.$el.querySelector('#logFilesSelection').value = this.selectedLogFile;
             },
             navigate: function (event, currentPage) {
+                // TODO: remove after test
+                console.log(currentPage);
+
                 if (currentPage == 0) {
                     this.$router.push(
                         { path: `<% .Helpers.VueRoutePath "log-viewer" "logFile" "${this.selectedLogFile}" %>` }
