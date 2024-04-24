@@ -10,7 +10,7 @@ func NewLoggerApi() *LoggerApi {
 	return &LoggerApi{}
 }
 
-func (l *LoggerApi) Info(title string, body ...any) error {
+func (l *LoggerApi) Info(title string, body ...any) {
 	calldepth := 1
 	level := 0
 
@@ -18,11 +18,9 @@ func (l *LoggerApi) Info(title string, body ...any) error {
 
 	logger.LogToConsole(file, line, level, title, body...)
 	logger.LogToFile(file, line, level, title, body...)
-
-	return nil
 }
 
-func (l *LoggerApi) Debug(title string, body ...any) error {
+func (l *LoggerApi) Debug(title string, body ...any) {
 	calldepth := 1
 	level := 1
 
@@ -30,11 +28,9 @@ func (l *LoggerApi) Debug(title string, body ...any) error {
 
 	logger.LogToConsole(file, line, level, title, body...)
 	logger.LogToFile(file, line, level, title, body...)
-
-	return nil
 }
 
-func (l *LoggerApi) Error(title string, body ...any) error {
+func (l *LoggerApi) Error(title string, body ...any) {
 	calldepth := 1
 	level := 2
 
@@ -42,6 +38,4 @@ func (l *LoggerApi) Error(title string, body ...any) error {
 
 	logger.LogToConsole(file, line, level, title, body...)
 	logger.LogToFile(file, line, level, title, body...)
-
-	return nil
 }
