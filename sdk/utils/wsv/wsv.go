@@ -74,7 +74,6 @@ func ParseAsJaggedArray(content string) ([][]string, error) {
 }
 
 func ParseDocument(content string) ([][]string, error) {
-
 	var lines = strings.Split(content, "\n")
 
 	var result [][]string
