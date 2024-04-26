@@ -34,7 +34,7 @@ func (self *PluginsMgrUtils) GetAdminRoutes() []map[string]interface{} {
 		children = append(children, map[string]interface{}{
 			"path":      r.VueRoutePath,
 			"name":      r.VueRouteName,
-			"component": r.HttpWrapperFullPath,
+			"component": r.HttpComponentPath,
 		})
 	}
 
@@ -58,7 +58,7 @@ func (self *PluginsMgrUtils) GetAdminRoutes() []map[string]interface{} {
 		{
 			"path":      "/",
 			"name":      themesApi.AdminLayoutRoute.VueRouteName,
-			"component": themesApi.AdminLayoutRoute.HttpWrapperFullPath,
+			"component": themesApi.AdminLayoutRoute.HttpComponentPath,
 			"children":  children,
 			"meta": map[string]any{
 				"requireAuth": true,
@@ -67,7 +67,7 @@ func (self *PluginsMgrUtils) GetAdminRoutes() []map[string]interface{} {
 		{
 			"path":      themesApi.AdminLoginRoute.VueRoutePath,
 			"name":      themesApi.AdminLoginRoute.VueRouteName,
-			"component": themesApi.AdminLoginRoute.HttpWrapperFullPath,
+			"component": themesApi.AdminLoginRoute.HttpComponentPath,
 			"meta": map[string]any{
 				"requireNoAuth": true,
 			},
@@ -90,7 +90,7 @@ func (self *PluginsMgrUtils) GetPortalRoutes() []map[string]any {
 		children = append(children, map[string]any{
 			"path":      r.VueRoutePath,
 			"name":      r.VueRouteName,
-			"component": r.HttpWrapperFullPath,
+			"component": r.HttpComponentPath,
 		})
 	}
 
@@ -114,7 +114,7 @@ func (self *PluginsMgrUtils) GetPortalRoutes() []map[string]any {
 		{
 			"path":      "/",
 			"name":      themesApi.PortalLayoutRoute.VueRouteName,
-			"component": themesApi.PortalLayoutRoute.HttpWrapperFullPath,
+			"component": themesApi.PortalLayoutRoute.HttpComponentPath,
 			"children":  children,
 		},
 	}

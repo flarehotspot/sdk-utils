@@ -41,29 +41,25 @@ func (self *VueRouterApi) SetLoginRoute(route *VueRouteComponent) {
 }
 
 func (self *VueRouterApi) RegisterAdminRoutes(routes ...sdkhttp.VueAdminRoute) {
-	dataRouter := self.api.HttpAPI.httpRouter.adminRouter.mux
 	for _, r := range routes {
-		route := NewVueRouteComponent(self.api, r.RouteName, r.RoutePath, r.HandlerFunc, r.Component, nil, nil)
+		route := NewVueRouteComponent(self.api, r.RouteName, r.RoutePath, r.Component, nil, nil)
 
 		if _, ok := self.FindVueRoute(route.VueRouteName); ok {
 			log.Println("Warning: Admin route name \"" + r.RouteName + "\" already exists in admin routes ")
 		}
 
-		route.MountRoute(dataRouter, r.Middlewares...)
 		self.AddAdminRoutes(route)
 	}
 }
 
 func (self *VueRouterApi) RegisterPortalRoutes(routes ...sdkhttp.VuePortalRoute) {
-	dataRouter := self.api.HttpAPI.httpRouter.pluginRouter.mux.PathPrefix("/vue/portal").Subrouter()
 	for _, r := range routes {
-		route := NewVueRouteComponent(self.api, r.RouteName, r.RoutePath, r.HandlerFunc, r.Component, nil, nil)
+		route := NewVueRouteComponent(self.api, r.RouteName, r.RoutePath, r.Component, nil, nil)
 
 		if _, ok := self.FindVueRoute(route.VueRouteName); ok {
 			log.Println("Warning: Admin route name \"" + r.RouteName + "\" already exists in admin routes ")
 		}
 
-		route.MountRoute(dataRouter, r.Middlewares...)
 		self.AddPortalRoutes(route)
 	}
 }

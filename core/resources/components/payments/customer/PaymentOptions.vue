@@ -18,8 +18,19 @@ file, You can obtain one at https://mozilla.org/MPL/2.0/.
 (function () {
     define(function () {
         return {
-            props: ['flareView'],
-            template: template
+            template: template,
+            data: function () {
+                return {
+                    options: []
+                };
+            },
+            mounted: function () {
+                $flare.http
+                    .get('<% .Helpers.UrlForRoute "portal.payments.options" %>')
+                    .then(function (data) {
+                        console.log(data);
+                    });
+            }
         };
     });
 })();

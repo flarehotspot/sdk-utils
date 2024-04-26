@@ -17,5 +17,5 @@ func PortalRoutes(g *plugins.CoreGlobals) {
 
 	rootR.Handle("/", portalIndexCtrl).Methods("GET").Name(routenames.RoutePortalIndex)
 	portalR.Get("/events", portalSseCtrl).Name(routenames.RoutePortalSse)
-	portalR.Get("/nav/items", portalItemsCtrl).Name(routenames.PortalItems)
+	portalR.Get("/nav/items", portalItemsCtrl).Name(routenames.RoutePortalItems)
 }

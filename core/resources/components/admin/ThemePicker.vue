@@ -1,13 +1,17 @@
 <template lang="html">
     <div>
-        <h1><% .Helpers.Translate "label" "admin_themes" %>:</h1>
-        <div v-for="theme in flareView.data.admin_themes" :key="theme.pkg">
+        <h1>
+            <% .Helpers.Translate "label" "admin_themes" %>:
+        </h1>
+        <div v-for="theme in adminThemes" :key="theme.pkg">
             <input type="radio" :value="theme.pkg" v-model="flareView.data.themes_config.admin" />
             <label :for="theme.pkg">{{ theme.name }}</label>
         </div>
 
-        <h1><% .Helpers.Translate "label" "portal_themes" %>:</h1>
-        <div v-for="theme in flareView.data.portal_themes" :key="theme.pkg">
+        <h1>
+            <% .Helpers.Translate "label" "portal_themes" %>:
+        </h1>
+        <div v-for="theme in portalThemes" :key="theme.pkg">
             <input type="radio" :value="theme.pkg" v-model="flareView.data.themes_config.portal" />
             <label :for="theme.pkg">{{ theme.name }}</label>
         </div>
@@ -20,14 +24,26 @@
 define(function () {
     return {
         template: template,
-        props: ['flareView'],
-        data: function(){
+        data: function () {
             return {
-                sample_data: 'sample data'
+                adminThemes: [],
+                portalThemes: [],
+                config: {
+                    admin: '',
+                    portal: ''
+                }
             };
         },
-        mounted: function(){
-            console.log('mounted');
+        mounted: function () {
+            var self = this;
+            $flare.http
+                .get('<% .Helpers.UrlForRoute "admin.themes.index" %>')
+                .then(function (data) {
+                    console.log(data)
+                    self.adminThemes = data.admin_themes;
+                    self.portalThemes = data.portal_themes;
+                    self.config = data.themes_config;
+                });
         },
         methods: {
             changeTheme: function () {

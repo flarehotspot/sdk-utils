@@ -3,6 +3,7 @@ package routes
 import (
 	"github.com/flarehotspot/core/internal/plugins"
 	"github.com/flarehotspot/core/internal/web/controllers"
+	"github.com/flarehotspot/core/internal/web/controllers/adminctrl"
 	"github.com/flarehotspot/core/internal/web/router"
 	routenames "github.com/flarehotspot/core/internal/web/routes/names"
 	sdkacct "github.com/flarehotspot/sdk/api/accounts"
@@ -18,22 +19,26 @@ func AdminRoutes(g *plugins.CoreGlobals) {
 
 	rootR.Handle("/admin", adminIndexCtrl).Methods("GET").Name(routenames.RouteAdminIndex)
 	adminR.Get("/events", adminSseCtrl).Name(routenames.RouteAdminSse)
-	adminR.Post("/themes", controllers.SaveThemeSettings(g)).Name(routenames.RouteAdminThemes)
 
-    adminR.Get("/logs", controllers.GetLogs(g)).Name(routenames.RouteAdminLogs)
+	adminR.Group("/themes", func(subrouter sdkhttp.HttpRouterInstance) {
+		subrouter.Get("/index", adminctrl.GetAvailableThemes(g))
+		subrouter.Post("/save", adminctrl.SaveThemeSettings(g)).Name(routenames.RouteAdminThemesSave)
+	})
+
+	adminR.Group("/logs", func(subrouter sdkhttp.HttpRouterInstance) {
+		subrouter.Get("/index", adminctrl.GetLogs(g)).Name(routenames.RouteAdminLogsIndex)
+	})
 
 	g.CoreAPI.HttpAPI.VueRouter().RegisterAdminRoutes([]sdkhttp.VueAdminRoute{
 		{
-			RouteName:   "theme-picker",
-			RoutePath:   "/theme-picker",
-			HandlerFunc: controllers.GetAvailableThemes(g),
-			Component:   "admin/ThemePicker.vue",
+			RouteName: "theme-picker",
+			RoutePath: "/theme-picker",
+			Component: "admin/ThemePicker.vue",
 		},
 		{
-			RouteName:   "log-viewer",
-			RoutePath:   "/log-viewer",
-			HandlerFunc: controllers.GetLogs(g),
-			Component:   "admin/LogViewer.vue",
+			RouteName: "log-viewer",
+			RoutePath: "/log-viewer",
+			Component: "admin/LogViewer.vue",
 		},
 	}...)
 

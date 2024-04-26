@@ -2,7 +2,6 @@ package plugins
 
 import (
 	"net/http"
-	"path/filepath"
 
 	"github.com/flarehotspot/sdk/api/themes"
 	"github.com/flarehotspot/sdk/utils/fs"
@@ -26,17 +25,11 @@ type ThemesApi struct {
 }
 
 func (self *ThemesApi) NewAdminTheme(theme sdkthemes.AdminTheme) {
-	adminRouter := self.api.HttpAPI.httpRouter.adminRouter.mux
-	compRouter := self.api.HttpAPI.httpRouter.pluginRouter.mux
+	layoutComp := NewVueRouteComponent(self.api, theme.LayoutComponent.RouteName, "/theme/layout", theme.LayoutComponent.Component, nil, nil)
 
-	layoutComp := NewVueRouteComponent(self.api, theme.LayoutComponent.RouteName, "/theme/layout", theme.LayoutComponent.HandlerFunc, theme.LayoutComponent.Component, nil, nil)
-	layoutComp.MountRoute(adminRouter)
+	loginComp := NewVueRouteComponent(self.api, theme.LoginComponent.RouteName, "/theme/login", theme.LoginComponent.Component, nil, nil)
 
-	loginComp := NewVueRouteComponent(self.api, theme.LoginComponent.RouteName, "/theme/login", theme.LoginComponent.HandlerFunc, theme.LoginComponent.Component, nil, nil)
-	loginComp.MountRoute(compRouter)
-
-	dashComp := NewVueRouteComponent(self.api, theme.DashboardComponent.RouteName, "/theme/dashboard", theme.DashboardComponent.HandlerFunc, theme.DashboardComponent.Component, nil, nil)
-	dashComp.MountRoute(adminRouter)
+	dashComp := NewVueRouteComponent(self.api, theme.DashboardComponent.RouteName, "/theme/dashboard", theme.DashboardComponent.Component, nil, nil)
 
 	self.AdminLayoutRoute = layoutComp
 	self.AdminDashboardRoute = dashComp
@@ -47,15 +40,9 @@ func (self *ThemesApi) NewAdminTheme(theme sdkthemes.AdminTheme) {
 }
 
 func (self *ThemesApi) NewPortalTheme(theme sdkthemes.PortalTheme) {
-	compRouter := self.api.HttpAPI.httpRouter.pluginRouter.mux.PathPrefix("/portal/vue/components").Subrouter()
+	layoutComp := NewVueRouteComponent(self.api, theme.LayoutComponent.RouteName, "/theme/layout", theme.LayoutComponent.Component, nil, nil)
 
-	layoutComp := NewVueRouteComponent(self.api, theme.LayoutComponent.RouteName, "/theme/layout", theme.LayoutComponent.HandlerFunc, theme.LayoutComponent.Component, nil, nil)
-	layoutComp.MountRoute(compRouter)
-
-	purMw := self.api.HttpAPI.middlewares.PendingPurchaseMw()
-	indexComp := NewVueRouteComponent(self.api, theme.IndexComponent.RouteName, "/theme/index", theme.IndexComponent.HandlerFunc, theme.IndexComponent.Component, nil, nil)
-	indexComp.WrapperFile = self.api.CoreAPI.Resource(filepath.Join("components", "portal", "IndexWrapper.vue"))
-	indexComp.MountRoute(compRouter, purMw)
+	indexComp := NewVueRouteComponent(self.api, theme.IndexComponent.RouteName, "/theme/index", theme.IndexComponent.Component, nil, nil)
 
 	self.PortalLayoutRoute = layoutComp
 	self.PortalIndexRoute = indexComp

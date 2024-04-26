@@ -1,33 +1,24 @@
 package routes
 
 import (
-	"net/http"
-
 	"github.com/flarehotspot/core/internal/plugins"
-	"github.com/flarehotspot/core/internal/web/helpers"
+	"github.com/flarehotspot/core/internal/web/controllers"
 	routenames "github.com/flarehotspot/core/internal/web/routes/names"
 	sdkhttp "github.com/flarehotspot/sdk/api/http"
 )
 
 func PaymentRoutes(g *plugins.CoreGlobals) {
-	g.CoreAPI.HttpAPI.VueRouter().RegisterPortalRoutes(sdkhttp.VuePortalRoute{
+
+	portalR := g.CoreAPI.HttpAPI.HttpRouter().PluginRouter()
+	vueR := g.CoreAPI.HttpAPI.VueRouter()
+
+	portalR.Group("/payments", func(subrouter sdkhttp.HttpRouterInstance) {
+		subrouter.Get("/options", controllers.PaymentOptionsCtrl(g)).Name(routenames.RoutePortalPaymentOptions)
+	})
+
+	vueR.RegisterPortalRoutes(sdkhttp.VuePortalRoute{
 		RouteName: routenames.RoutePaymentOptions,
 		RoutePath: "/payments/options",
 		Component: "payments/customer/PaymentOptions.vue",
-		HandlerFunc: func(w http.ResponseWriter, r *http.Request) {
-			res := g.CoreAPI.HttpAPI.VueResponse()
-			clnt, err := helpers.CurrentClient(g.ClientRegister, r)
-			if err != nil {
-				res.SendFlashMsg(w, "error", err.Error(), http.StatusInternalServerError)
-				return
-			}
-
-			methods := map[string]string{}
-			for _, opt := range g.PaymentsMgr.Options(clnt) {
-				methods[opt.Opt.OptName] = opt.VueRoutePath
-			}
-
-			res.Json(w, methods, http.StatusOK)
-		},
 	})
 }
