@@ -2,8 +2,8 @@ default:
 	go run ./core/devkit/cli/flare.go install-go ./go
 	docker compose up --build
 
-server:
-	go run ./core/internal/cli/flare-internal.go server
+server-dev:
+	./run-dev.sh
 
 openwrt:
 	go build -tags="mono staging" -o ./bin/debug-server ./main/main.go

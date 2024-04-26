@@ -52,14 +52,28 @@
 
     <!-- logs list -->
     <div style="overflow-y: scroll; height: 400px" id="logsList">
-      <div v-for="log in flareView.data.logs">
+      <div
+        v-for="log in flareView.data.logs"
+        v-if="
+          (log.level == selectedLevel || selectedLevel == 'all') &&
+          (log.plugin == selectedPlugin || selectedPlugin == 'all') &&
+          (log.title.toLowerCase().includes(searchFilter) ||
+            searchFilter == '') &&
+          new Date(
+            `${log.year}-${log.month}-${log.day} ${log.hour}:${log.min}:${log.sec}`
+          ).getTime() >= dateStartFilter.getTime() &&
+          new Date(
+            `${log.year}-${log.month}-${log.day} ${log.hour}:${log.min}`
+          ).getTime() < dateEndFilter.getTime()
+        "
+      >
         <!-- datetime and file line-->
         <p>
-          <span>
-            {{ log.month }}/{{ log.day }}/{{ log.year }} {{ log.hour }}:{{
+          <span
+            >{{ log.year }}/{{ log.month }}/{{ log.day }} {{ log.hour }}:{{
               log.min
-            }}:{{ log.sec }}.{{ log.nano }} {{ log.file }}:{{ log.line }}
-          </span>
+            }}:{{ log.sec }}.{{ log.nano }} {{ log.file }}:{{ log.line }}</span
+          >
         </p>
 
         <p>
@@ -92,7 +106,7 @@
       name="perPageSelection"
       id="perPageSelection"
       v-model="perPage"
-      @change="navigate"
+      @change="navigate($event, -1)"
     >
       <option value="10">10</option>
       <option value="50" selected="selected">50</option>
@@ -102,8 +116,8 @@
 
     <b-pagination
       v-model="currentPage"
+      :total-rows="rows"
       :per-page="perPage"
-      :total-rows="flareView.data.rows"
       @page-click="navigate"
     ></b-pagination>
   </div>
@@ -116,25 +130,24 @@ define(function () {
     props: ['flareView'],
     data: function () {
       var self = this;
+
       return {
         selectedLevel: 'all',
         selectedPlugin: 'all',
+        dateStartFilter: new Date(),
+        dateEndFilter: new Date(),
+        searchFilter: '',
+        lines: 50,
         plugins: ['all'],
-        dateStartFilter: self.$route.query.dateStart || new Date(),
-        dateEndFilter: self.$route.query.dateEnd || new Date(),
-        searchFilter: self.$route.query.search || '',
-        lines: parseInt(self.$route.query.lines || 50),
-        currentPage: parseInt(self.$route.query.currentPage || 1),
-        perPage: parseInt(self.$route.query.perPage || 50),
+        logFiles: [],
+        currentPage: 1,
         rows: 0,
+        perPage: 50,
         isInitialized: false
       };
     },
     mounted: function () {
-      var self = this;
-      console.log(self.flareView)
-      // self.rows = self.flareView.data.rows;
-      // console.log('rows:', rows)
+      console.log('Router:', this.$route);
     },
     methods: {
       searchLogs: function () {
@@ -200,23 +213,73 @@ define(function () {
           this.selectedLogFile;
       },
       navigate: function (event, currentPage) {
-        var self = this;
-        var params = {
-          currentPage: currentPage,
-          perPage: self.perPage
-        };
+        if (currentPage == 0) {
+          this.$router
+            .push({
+              path: `<% .Helpers.VueRoutePath "log-viewer" "logFile" "${this.selectedLogFile}" %>`
+            })
+            .then(() => {
+              this.$router.go(0);
+            });
+          return;
+        }
 
-        this.$router.push({
-          name: '<% .Helpers.VueRouteName "log-viewer" %>',
-          query: params
-        });
+        if (currentPage == -1) {
+          currPage = Math.ceil(this.rows / this.perPage);
 
-        $flare.http
-          .get('<% .Helpers.UrlForRoute "admin.logs.index" %>', params)
-          .then(function (res) {
-            console.log(res);
+          this.$router
+            .push({
+              path: `<% .Helpers.VueRoutePath "log-viewer" "logFile" "${this.selectedLogFile}" "currentPage" "${currPage}" "perPage" "${this.perPage}" %>`
+            })
+            .then(() => {
+              this.$router.go(0);
+            });
+          return;
+        }
+
+        this.$router
+          .push({
+            path: `<% .Helpers.VueRoutePath "log-viewer" "logFile" "${this.selectedLogFile}" "currentPage" "${currentPage}" "perPage" "${this.perPage}" %>`
+          })
+          .then(() => {
+            this.$router.go(0);
           });
       }
+    },
+    beforeUpdate: function () {
+      if (!this.isInitialized) {
+        this.setPlugins();
+        this.filterLogs();
+
+        // set initial start and end date to first and last logs' date
+        var firstLog = this.flareView.data.logs[0];
+        var lastLog =
+          this.flareView.data.logs[this.flareView.data.logs.length - 1];
+
+        this.dateStartFilter = new Date(
+          `${firstLog.year}-${firstLog.month}-${firstLog.day}`
+        );
+        this.dateEndFilter = new Date(
+          `${lastLog.year}-${lastLog.month}-${lastLog.day}`
+        );
+
+        this.setDateToMidnight(this.dateStartFilter);
+        this.setDateToBeforeMidnight(this.dateEndFilter);
+
+        this.isInitialized = true;
+      }
+    },
+    updated: function () {
+      // set the scrollview of logs list to the bottom
+      var logsList = this.$el.querySelector('#logsList');
+      logsList.scrollTop = logsList.scrollHeight;
+
+      // set initial pagination values
+      this.perPage = this.flareView.data.perPage;
+      const perPageSelection = this.$el.querySelector('#perPageSelection');
+      perPageSelection.value = this.perPage;
+      this.rows = this.flareView.data.rows;
+      this.currentPage = this.flareView.data.currentPage;
     }
   };
 });

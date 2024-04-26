@@ -38,13 +38,13 @@ const (
 	errorPrefix = "[ERROR] "
 
 	flarelogBaseMetadataCount = 10
-
-	maxLines = 5000
 )
 
-var logFilePath = filepath.Join(sdkpaths.TmpDir, "logs", logFilename)
-var que = jobque.NewJobQues()
-var Lines atomic.Uint64
+var (
+	CurrLines   atomic.Uint64
+	logFilePath = filepath.Join(sdkpaths.TmpDir, "logs", logFilename)
+	que         = jobque.NewJobQues()
+)
 
 func init() {
 	logdir := filepath.Dir(logFilePath)
@@ -52,70 +52,11 @@ func init() {
 		os.MkdirAll(logdir, sdkfs.PermDir)
 	}
 
-	f, _ := openLogFile()
-	defer f.Close()
-
-	Lines.Store(uint64(GetLogLines(logFilename)))
-}
-
-// Helper function to cut an integer's digits to
-// desired length
-func itoa(i int, wid int) int {
-	num := i
-	d := 1
-
-	for i >= 10 {
-		q := i / 10
-		i = q
-		d++
+	if !sdkfs.Exists(logFilePath) {
+		os.Create(logFilePath)
 	}
 
-	return num / int(math.Pow10(d-wid))
-}
-
-// Returns the equivalent log level in string
-func getLevelAsStr(level int) string {
-	switch level {
-	case 0:
-		return "INFO"
-	case 1:
-		return "DEBUG"
-	case 2:
-		return "ERROR"
-	}
-
-	return "INFO"
-}
-
-// Returns a string with the desired color
-func colorize(colorCode int, v string) string {
-	return fmt.Sprintf("\033[%sm%s%s", strconv.Itoa(colorCode), v, reset)
-}
-
-// Returns the level in string with dedicated color
-func colorizeLevel(level int) string {
-	var color int
-	switch level {
-	case 0:
-		color = lightBlue
-	case 1:
-		color = lightYellow
-	case 2:
-		color = lightRed
-	}
-	return colorize(color, getLevelAsStr(level))
-}
-
-// Returns the opened log file instance
-func openLogFile() (*os.File, error) {
-	// opening/creating log file
-	logFile, err := os.OpenFile(logFilePath, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0644)
-	if err != nil {
-		log.Println("Error creating log file", "error", err)
-		return nil, err
-	}
-
-	return logFile, nil
+	CurrLines.Store(uint64(GetLogLines(logFilename)))
 }
 
 // Returns the file path and line number of the caller function
@@ -130,60 +71,33 @@ func GetCallerFileLine(calldepth int) (file string, line int) {
 	return
 }
 
-// Returns the total number of lines of the specified file
-func lineCounter(r io.Reader) (int, error) {
-	buf := make([]byte, 32*1024)
-	count := 0
-	lineSep := []byte{'\n'}
-
-	for {
-		c, err := r.Read(buf)
-		count += bytes.Count(buf[:c], lineSep)
-
-		switch {
-		case err == io.EOF:
-			return count, nil
-
-		case err != nil:
-			return count, err
-		}
-	}
-}
-
 // Returns the total number of lines of the current log file
 func GetLogLines(logFile string) int {
-	logFilePathToRead := filepath.Join(sdkpaths.TmpDir, "logs", logFile)
+	lines, err := que.Exec(func() (interface{}, error) {
+		logFilePathToRead := filepath.Join(sdkpaths.TmpDir, "logs", logFile)
 
-	file, err := os.Open(logFilePathToRead)
+		file, err := os.Open(logFilePathToRead)
+		if err != nil {
+			log.Println(err)
+			return nil, err
+		}
+		defer file.Close()
+
+		// get log's lines count
+		logLines, err := lineCounter(file)
+		if err != nil {
+			log.Println(err)
+			return nil, err
+		}
+
+		return logLines, nil
+	})
+
 	if err != nil {
-		log.Fatal(err)
-	}
-	defer file.Close()
-
-	// get log's lines count
-	logLines, err := lineCounter(file)
-	if err != nil {
-		log.Fatal("error counting lines", err)
+		return 0
 	}
 
-	return logLines
-}
-
-func GetLogFiles() []string {
-	logsDir := filepath.Join(sdkpaths.TmpDir, "logs")
-
-	files, err := os.ReadDir(logsDir)
-	if err != nil {
-		log.Fatal("error reading file logs ", err)
-	}
-
-	var fileNames []string
-
-	for _, file := range files {
-		fileNames = append(fileNames, file.Name())
-	}
-
-	return fileNames
+	return lines.(int)
 }
 
 // Returns a map of string : any, formatted based on the log parser
@@ -191,15 +105,16 @@ func GetLogFiles() []string {
 // inclusive. Starts at index 0.
 func ReadLogs(logFile string, start int, end int) ([]map[string]any, error) {
 	ret, err := que.Exec(func() (interface{}, error) {
-		var logs []map[string]any
+		logs := []map[string]any{}
 
 		logFilePathToRead := filepath.Join(sdkpaths.TmpDir, "logs", logFile)
 
 		// open logs
 		file, err := os.Open(logFilePathToRead)
 		if err != nil {
-			log.Fatal("error opening log file ", err)
+			return nil, err
 		}
+
 		defer file.Close()
 
 		rd := bufio.NewReader(file)
@@ -220,7 +135,8 @@ func ReadLogs(logFile string, start int, end int) ([]map[string]any, error) {
 			}
 
 			if err != nil {
-				log.Fatal("error inside readlogs for loop ", err)
+				log.Println("error inside readlogs for loop ", err)
+				return nil, err
 			}
 
 			// read of line successful
@@ -248,14 +164,37 @@ func ReadLogs(logFile string, start int, end int) ([]map[string]any, error) {
 		return logs, nil
 	})
 
-	m := ret.([]map[string]any)
+	if err != nil {
+		return nil, err
+	}
 
-	return m, err
+	return ret.([]map[string]any), nil
+}
+
+// Returns the total number of lines of the specified file
+func lineCounter(r io.Reader) (int, error) {
+	buf := make([]byte, 32*1024)
+	count := 0
+	lineSep := []byte{'\n'}
+
+	for {
+		c, err := r.Read(buf)
+		count += bytes.Count(buf[:c], lineSep)
+
+		switch {
+		case err == io.EOF:
+			return count, nil
+
+		case err != nil:
+			return count, err
+		}
+	}
 }
 
 // Accepts a slice of string and parses as a flare log line
 // and returns the parsed string.
 func parseLog(logLine []string) (map[string]any, error) {
+	// log.Println("Logline: ", logLine)
 	logLength := len(logLine)
 
 	// check if valid flare log file
@@ -267,19 +206,20 @@ func parseLog(logLine []string) (map[string]any, error) {
 	var pkgs []string
 
 	pathRaw := logLine[9] // raw file path
+	relativePath := sdkpaths.StripRoot(pathRaw)
 	j := 0
-	for i := 0; i < len(pathRaw); i++ {
-		if pathRaw[i] == '/' {
-			pkgs = append(pkgs, pathRaw[j:i])
+	for i := 0; i < len(relativePath); i++ {
+		if relativePath[i] == '/' {
+			pkgs = append(pkgs, relativePath[j:i])
 			j = i + 1
 			continue
 		}
 	}
-	pkgs = append(pkgs, pathRaw[j:])
+	pkgs = append(pkgs, relativePath[j:])
 
-	plugin := pkgs[2]
+	plugin := pkgs[1]
 	filename := pkgs[len(pkgs)-1]
-	filepluginpath := strings.Join(pkgs[3:], "/")
+	filepluginpath := strings.Join(pkgs[2:], "/")
 
 	var body any
 	// check if log has body
@@ -364,15 +304,11 @@ func LogToFile(file string, line int, level int, title string, body ...any) {
 	_, _ = que.Exec(func() (interface{}, error) {
 		logFile, err := openLogFile()
 		if err != nil {
-			log.Fatal(err)
+			log.Println(err)
+			return nil, err
 		}
-		defer func() {
-			logFile.Close()
 
-			if Lines.Load() >= maxLines {
-				rotate()
-			}
-		}()
+		defer logFile.Close()
 
 		var content [][]string
 
@@ -415,11 +351,11 @@ func LogToFile(file string, line int, level int, title string, body ...any) {
 		// actual logging to file
 		_, err = logFile.WriteString(serialized + "\n")
 		if err != nil {
-			log.Fatal(err)
+			return nil, err
 		}
 
 		// increment log file lines by 1
-		Lines.Add(1)
+		CurrLines.Add(1)
 
 		// nils for the job que
 		return nil, nil
@@ -439,24 +375,62 @@ func getLogDateAsStr(log map[string]any) string {
 	return year + month + day + hour + min + sec + nano
 }
 
-// Rotates current log file. This simply renames the current log file
-// to format: "YYYYMdhmsn-YYYYMdhmsn.log"
-func rotate() {
-	firstLog, _ := ReadLogs(logFilePath, 0, 0)
-	lastLog, _ := ReadLogs(logFilePath, int(Lines.Load()-1), int(Lines.Load()-1))
+// Helper function to cut an integer's digits to
+// desired length
+func itoa(i int, wid int) int {
+	num := i
+	d := 1
 
-	firstDate := getLogDateAsStr(firstLog[0])
-	lastDate := getLogDateAsStr(lastLog[0])
-
-	newLogFilename := firstDate + "-" + lastDate + ".log"
-
-	newName := filepath.Join(sdkpaths.TmpDir, "logs", newLogFilename)
-
-	err := os.Rename(logFilePath, newName)
-	if err != nil {
-		log.Fatal(err)
+	for i >= 10 {
+		q := i / 10
+		i = q
+		d++
 	}
 
-	// reset log lines
-	Lines.Store(0)
+	return num / int(math.Pow10(d-wid))
+}
+
+// Returns the equivalent log level in string
+func getLevelAsStr(level int) string {
+	switch level {
+	case 0:
+		return "INFO"
+	case 1:
+		return "DEBUG"
+	case 2:
+		return "ERROR"
+	}
+
+	return "INFO"
+}
+
+// Returns a string with the desired color
+func colorize(colorCode int, v string) string {
+	return fmt.Sprintf("\033[%sm%s%s", strconv.Itoa(colorCode), v, reset)
+}
+
+// Returns the level in string with dedicated color
+func colorizeLevel(level int) string {
+	var color int
+	switch level {
+	case 0:
+		color = lightBlue
+	case 1:
+		color = lightYellow
+	case 2:
+		color = lightRed
+	}
+	return colorize(color, getLevelAsStr(level))
+}
+
+// Returns the opened log file instance
+func openLogFile() (*os.File, error) {
+	// opening/creating log file
+	logFile, err := os.OpenFile(logFilePath, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0644)
+	if err != nil {
+		log.Println("Error creating log file", "error", err)
+		return nil, err
+	}
+
+	return logFile, nil
 }

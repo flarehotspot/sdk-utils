@@ -20,6 +20,8 @@ func AdminRoutes(g *plugins.CoreGlobals) {
 	adminR.Get("/events", adminSseCtrl).Name(routenames.RouteAdminSse)
 	adminR.Post("/themes", controllers.SaveThemeSettings(g)).Name(routenames.RouteAdminThemes)
 
+    adminR.Get("/logs", controllers.GetLogs(g)).Name(routenames.RouteAdminLogs)
+
 	g.CoreAPI.HttpAPI.VueRouter().RegisterAdminRoutes([]sdkhttp.VueAdminRoute{
 		{
 			RouteName:   "theme-picker",

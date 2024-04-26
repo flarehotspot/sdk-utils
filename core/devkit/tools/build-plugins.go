@@ -26,7 +26,7 @@ func BuildPlugin(dir string) error {
 	mainFile := filepath.Join(dir, "main.go")
 	pluginSo := filepath.Join(dir, "plugin.so")
 	if !sdkfs.Exists(mainFile) && sdkfs.Exists(pluginSo) {
-		fmt.Println("Plugin already built: " + sdkpaths.Strip(dir) + "/plugin.so")
+		fmt.Println("Plugin already built: " + sdkpaths.StripRoot(dir) + "/plugin.so")
 		return nil
 	}
 
@@ -43,7 +43,7 @@ func BuildGoModule(gofile string, outfile string, params *GoBuildArgs) error {
 		params = &GoBuildArgs{}
 	}
 
-	fmt.Println("Building go module: " + sdkpaths.Strip(filepath.Join(params.WorkDir, gofile)))
+	fmt.Println("Building go module: " + sdkpaths.StripRoot(filepath.Join(params.WorkDir, gofile)))
 
 	goBin := GoBin()
 	buildArgs := BuildArgs()
@@ -62,11 +62,11 @@ func BuildGoModule(gofile string, outfile string, params *GoBuildArgs) error {
 	fmt.Printf("Executing: %s %s\n", goBin, strings.Join(buildCmd, " "))
 	err := cmd.Run()
 	if err != nil {
-		fmt.Println("Error building go module " + sdkpaths.Strip(params.WorkDir) + ":" + err.Error())
+		fmt.Println("Error building go module " + sdkpaths.StripRoot(params.WorkDir) + ":" + err.Error())
 		return err
 	}
 
-	fmt.Println("Module built successfully: " + sdkpaths.Strip(filepath.Join(params.WorkDir, outfile)))
+	fmt.Println("Module built successfully: " + sdkpaths.StripRoot(filepath.Join(params.WorkDir, outfile)))
 	return nil
 }
 

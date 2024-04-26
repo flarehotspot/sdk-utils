@@ -24,10 +24,9 @@ func GetLogs(g *plugins.CoreGlobals) http.HandlerFunc {
 		// get queries
 		rCurrentPage := r.URL.Query().Get("currentPage")
 		rPerPage := r.URL.Query().Get("perPage")
-		rLogFile := r.URL.Query().Get("logFile")
 
 		// get log files
-		logFiles := logger.GetLogFiles()
+		// logFiles := logger.GetLogFiles()
 
 		// check queries if empty
 		if rPerPage != "" {
@@ -36,13 +35,10 @@ func GetLogs(g *plugins.CoreGlobals) http.HandlerFunc {
 			params.PerPage = 50
 		}
 
-		if rLogFile != "" {
-			params.LogFile = rLogFile
-		} else {
-			params.LogFile = "app.log"
-		}
+		params.LogFile = "app.log"
+
 		// get log rows
-		rows := int(logger.Lines.Load())
+		rows := int(logger.CurrLines.Load())
 		if params.LogFile != "app.log" {
 			rows = logger.GetLogLines(params.LogFile)
 		}
@@ -68,6 +64,8 @@ func GetLogs(g *plugins.CoreGlobals) http.HandlerFunc {
 		logs, err := logger.ReadLogs(params.LogFile, start, end)
 		if err != nil {
 			log.Println(err)
+			res.Error(w, err.Error(), 500)
+			return
 		}
 
 		data := map[string]any{
@@ -75,7 +73,6 @@ func GetLogs(g *plugins.CoreGlobals) http.HandlerFunc {
 			"rows":           rows,
 			"currentPage":    params.CurrentPage,
 			"perPage":        params.PerPage,
-			"logFiles":       logFiles,
 			"currentLogFile": params.LogFile,
 		}
 

@@ -50,7 +50,7 @@ func FindPluginSrc(dir string) (string, error) {
 		}
 	}
 
-	return "", errors.New("Can't find plugin.json in " + paths.Strip(dir))
+	return "", errors.New("Can't find plugin.json in " + paths.StripRoot(dir))
 }
 
 func GetInstallInfo(pkg string) (*sdkplugin.PluginInfo, error) {

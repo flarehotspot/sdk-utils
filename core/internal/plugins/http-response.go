@@ -15,7 +15,7 @@ type HttpResponse struct {
 }
 
 func NewHttpResponse(api *PluginApi) *HttpResponse {
-	viewroot := paths.Strip(api.Utl.Resource("views"))
+	viewroot := paths.StripRoot(api.Utl.Resource("views"))
 	return &HttpResponse{api, viewroot}
 }
 

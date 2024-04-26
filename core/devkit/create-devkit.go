@@ -67,14 +67,14 @@ func CreateApplicationConfig() {
 		panic(err)
 	}
 
-	fmt.Println("Application config created: ", sdkpaths.Strip(cfgPath))
+	fmt.Println("Application config created: ", sdkpaths.StripRoot(cfgPath))
 }
 
 func CopyDevkitFiles() {
 	for _, entry := range DEVKIT_FILES {
 		srcPath := filepath.Join(sdkpaths.AppDir, entry)
 		destPath := filepath.Join(RELEASE_DIR, entry)
-		fmt.Println("Copying: ", sdkpaths.Strip(srcPath), " -> ", sdkpaths.Strip(destPath))
+		fmt.Println("Copying: ", sdkpaths.StripRoot(srcPath), " -> ", sdkpaths.StripRoot(destPath))
 
 		if sdkfs.IsFile(srcPath) {
 			err := sdkfs.CopyFile(srcPath, destPath)
@@ -95,7 +95,7 @@ func CopyDevkitFiles() {
 
 func CopyDevkitExtras() {
 	extrasPath := filepath.Join(sdkpaths.AppDir, "build/devkit/extras")
-	fmt.Printf("Copying:  %s -> %s\n", sdkpaths.Strip(extrasPath), sdkpaths.Strip(RELEASE_DIR))
+	fmt.Printf("Copying:  %s -> %s\n", sdkpaths.StripRoot(extrasPath), sdkpaths.StripRoot(RELEASE_DIR))
 	err := sdkfs.CopyDir(extrasPath, RELEASE_DIR, nil)
 	if err != nil {
 		panic(err)
@@ -105,7 +105,7 @@ func CopyDevkitExtras() {
 func CopyDefaultWorksapce() {
 	dst := filepath.Join(RELEASE_DIR, "go.work")
 	def := "go.work.default"
-	fmt.Println("Copying: ", sdkpaths.Strip(def), " -> ", sdkpaths.Strip(dst))
+	fmt.Println("Copying: ", sdkpaths.StripRoot(def), " -> ", sdkpaths.StripRoot(dst))
 	sdkfs.CopyFile(def, dst)
 }
 
@@ -118,7 +118,7 @@ func ZipDevkitRelease() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("Devkit created: ", sdkpaths.Strip(zipFile))
+	fmt.Println("Devkit created: ", sdkpaths.StripRoot(zipFile))
 }
 
 func PrepareCleanup() {
@@ -134,6 +134,6 @@ func PrepareCleanup() {
 }
 
 func CleanUpRelease() {
-	fmt.Printf("Cleaning up release directory: %s\n", sdkpaths.Strip(RELEASE_DIR))
+	fmt.Printf("Cleaning up release directory: %s\n", sdkpaths.StripRoot(RELEASE_DIR))
 	os.RemoveAll(RELEASE_DIR)
 }
