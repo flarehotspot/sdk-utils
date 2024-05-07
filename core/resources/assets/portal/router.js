@@ -13,31 +13,77 @@
  */
 (function ($flare) {
   var VueRouter = window.VueRouter;
-  var childRoutes = JSON.parse('<% .Data.ChildRoutes %>');
-  // routes = transformRoutes(routes);
-
-  var portalThemeComponent = {
-    template: '<theme-layout></theme-layout>',
+  var routesData = JSON.parse('<% .Data %>');
+  var childRoutes = routesData.child_routes;
+  var reloadListener = null;
+  var portalIndexComponent = {
+    template: '<theme-index :data="data"></theme-layout>',
     components: {
-      'theme-layout': $flare.vueLazyLoad('<% .Data.ThemeComponent.Component %>')
+      'theme-index': $flare.vueLazyLoad(routesData.index_component.component)
+    },
+    data: function () {
+      return {
+        data: {
+          loading: true,
+          portalItems: []
+        }
+      };
     },
     mounted: function () {
-      $flare.http
-        .get('<% .Helpers.UrlForRoute "portal.items" %>')
-        .then(function (data) {
-          console.log('nav items', data);
-        });
+      var self = this;
+      self.load();
+
+      reloadListener = $flare.events.on(
+        'portal:items:reload',
+        function (items) {
+          self.items = items;
+        }
+      );
+    },
+    beforeDestroy: function () {
+      if (reloadListener) {
+        $flare.events.off('portal:items:reload', reloadListener);
+      }
+    },
+    methods: {
+      load: function () {
+        var self = this;
+        $flare.http
+          .get('<% .Helpers.UrlForRoute "portal.items" %>')
+          .then(function (data) {
+            console.log('nav items', data);
+            self.data.portalItems = data;
+          })
+          .finally(function () {
+            self.data.loading = false;
+            console.log(self.data);
+          });
+      }
     }
   };
 
+  childRoutes.push({
+    path: routesData.index_component.path,
+    name: routesData.index_component.name,
+    component: portalIndexComponent
+  });
+
   var routes = [
     {
-      path: '<% .Data.ThemeComponent.Path %>',
-      name: '<% .Data.ThemeComponent.Name %>',
-      component: portalThemeComponent,
+      path: routesData.layout_component.path,
+      name: routesData.layout_component.name,
+      component: $flare.vueLazyLoad(routesData.layout_component.component),
       children: transformRoutes(childRoutes)
+    },
+    {
+      path: '*',
+      redirect: {
+        name: routesData.index_component.name
+      }
     }
   ];
+
+  console.log('Routes:', routes);
 
   var router = new VueRouter({ routes: routes });
   $flare.router = router;
@@ -67,7 +113,10 @@
         route = {
           name: r.name,
           path: r.path,
-          component: $flare.vueLazyLoad(r.component),
+          component:
+            typeof r.component === 'string'
+              ? $flare.vueLazyLoad(r.component)
+              : r.component,
           meta: r.meta
         };
 

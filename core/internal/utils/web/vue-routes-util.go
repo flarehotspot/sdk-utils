@@ -8,13 +8,16 @@ import (
 	"github.com/flarehotspot/core/internal/plugins"
 )
 
+type RouteMeta struct {
+	RequireAuth bool `json:"requireAuth"`
+}
+
 type ChildRoutes struct {
-	Path      string `json:"path"`
-	Name      string `json:"name"`
-	Component string `json:"component"`
-	Meta      struct {
-		AuthRequired bool `json:"auth_required"`
-	} `json:"meta"`
+	Path      string    `json:"path"`
+	Name      string    `json:"name"`
+	Component string    `json:"component"`
+	RouteMeta RouteMeta `json:"meta"`
+	Redirect  string    `json:"redirect"`
 }
 
 type ThemeComponent struct {
@@ -24,8 +27,9 @@ type ThemeComponent struct {
 }
 
 type portalRoutesData struct {
-	ThemeComponent `json:"theme_component"`
-	ChildRoutes    []ChildRoutes `json:"child_routes"`
+	LayoutComponent ThemeComponent `json:"layout_component"`
+	IndexComponent  ThemeComponent `json:"index_component"`
+	ChildRoutes     []ChildRoutes  `json:"child_routes"`
 }
 
 func GetPortalRoutesData(g *plugins.CoreGlobals) (portalRoutesData, error) {
@@ -43,13 +47,16 @@ func GetPortalRoutesData(g *plugins.CoreGlobals) (portalRoutesData, error) {
 			Path:      string(r.VueRoutePath),
 			Name:      r.VueRouteName,
 			Component: r.HttpComponentPath,
+			RouteMeta: RouteMeta{
+				RequireAuth: true,
+			},
 		})
 	}
 
 	themecfg, err := config.ReadThemesConfig()
 	if err != nil {
 		log.Println("Error reading themes config: ", err)
-        return data, err
+		return data, err
 	}
 
 	themePkg, ok := g.PluginMgr.FindByPkg(themecfg.Portal)
@@ -59,6 +66,18 @@ func GetPortalRoutesData(g *plugins.CoreGlobals) (portalRoutesData, error) {
 	}
 
 	themeApi := themePkg.Themes().(*plugins.ThemesApi)
+
+	data.LayoutComponent = ThemeComponent{
+		Path:      themeApi.PortalLayoutRoute.Path,
+		Name:      themeApi.PortalLayoutRoute.Name,
+		Component: themeApi.PortalLayoutRoute.HttpComponentPath,
+	}
+
+	data.IndexComponent = ThemeComponent{
+		Path:      themeApi.PortalIndexRoute.Path,
+		Name:      themeApi.PortalIndexRoute.Name,
+		Component: themeApi.PortalIndexRoute.HttpComponentPath,
+	}
 
 	return data, nil
 }
