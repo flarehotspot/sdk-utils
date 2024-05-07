@@ -25,7 +25,7 @@ func (self *PluginsMgrUtils) GetAdminRoutes() []map[string]interface{} {
 	routes := []*VueRouteComponent{}
 	for _, p := range self.pmgr.All() {
 		vueR := p.Http().VueRouter().(*VueRouterApi)
-		adminRoutes := vueR.adminRoutes
+		adminRoutes := vueR.AdminRoutes
 		routes = append(routes, adminRoutes...)
 	}
 
@@ -81,7 +81,7 @@ func (self *PluginsMgrUtils) GetPortalRoutes() []map[string]any {
 	routes := []*VueRouteComponent{}
 	for _, p := range self.pmgr.All() {
 		vueR := p.Http().VueRouter().(*VueRouterApi)
-		portalRoutes := vueR.portalRoutes
+		portalRoutes := vueR.PortalRoutes
 		routes = append(routes, portalRoutes...)
 	}
 

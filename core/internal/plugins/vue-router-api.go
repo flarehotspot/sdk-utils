@@ -14,30 +14,30 @@ import (
 func NewVueRouterApi(api *PluginApi) *VueRouterApi {
 	return &VueRouterApi{
 		api:          api,
-		adminRoutes:  []*VueRouteComponent{},
-		portalRoutes: []*VueRouteComponent{},
+		AdminRoutes:  []*VueRouteComponent{},
+		PortalRoutes: []*VueRouteComponent{},
 	}
 }
 
 type VueRouterApi struct {
 	api          *PluginApi
-	adminRoutes  []*VueRouteComponent
-	portalRoutes []*VueRouteComponent
-	loginRoute   *VueRouteComponent
-	adminNavsFn  sdkhttp.VueAdminNavsFunc
-	portalNavsFn sdkhttp.VuePortalItemsFunc
+	AdminRoutes  []*VueRouteComponent
+	PortalRoutes []*VueRouteComponent
+	LoginRoute   *VueRouteComponent
+	AdminNavsFn  sdkhttp.VueAdminNavsFunc
+	PortalNavsFn sdkhttp.VuePortalItemsFunc
 }
 
 func (self *VueRouterApi) AddAdminRoutes(route ...*VueRouteComponent) {
-	self.adminRoutes = append(self.adminRoutes, route...)
+	self.AdminRoutes = append(self.AdminRoutes, route...)
 }
 
 func (self *VueRouterApi) AddPortalRoutes(route ...*VueRouteComponent) {
-	self.portalRoutes = append(self.portalRoutes, route...)
+	self.PortalRoutes = append(self.PortalRoutes, route...)
 }
 
 func (self *VueRouterApi) SetLoginRoute(route *VueRouteComponent) {
-	self.loginRoute = route
+	self.LoginRoute = route
 }
 
 func (self *VueRouterApi) RegisterAdminRoutes(routes ...sdkhttp.VueAdminRoute) {
@@ -65,13 +65,13 @@ func (self *VueRouterApi) RegisterPortalRoutes(routes ...sdkhttp.VuePortalRoute)
 }
 
 func (self *VueRouterApi) AdminNavsFunc(fn sdkhttp.VueAdminNavsFunc) {
-	self.adminNavsFn = fn
+	self.AdminNavsFn = fn
 }
 
 func (self *VueRouterApi) GetAdminNavs(acct sdkacct.Account) []sdkhttp.AdminNavItem {
 	navs := []sdkhttp.AdminNavItem{}
-	if self.adminNavsFn != nil {
-		for _, nav := range self.adminNavsFn(acct) {
+	if self.AdminNavsFn != nil {
+		for _, nav := range self.AdminNavsFn(acct) {
 			adminNav, ok := NewVueAdminNav(self.api, acct, nav)
 			if ok {
 				navs = append(navs, adminNav)
@@ -82,14 +82,14 @@ func (self *VueRouterApi) GetAdminNavs(acct sdkacct.Account) []sdkhttp.AdminNavI
 }
 
 func (self *VueRouterApi) PortalItemsFunc(fn sdkhttp.VuePortalItemsFunc) {
-	self.portalNavsFn = fn
+	self.PortalNavsFn = fn
 }
 
 func (self *VueRouterApi) GetPortalItems(clnt sdkconnmgr.ClientDevice) []sdkhttp.PortalItem {
 	navs := []sdkhttp.PortalItem{}
 
-	if self.portalNavsFn != nil {
-		for _, nav := range self.portalNavsFn(clnt) {
+	if self.PortalNavsFn != nil {
+		for _, nav := range self.PortalNavsFn(clnt) {
 			navs = append(navs, NewVuePortalItem(self.api, nav))
 		}
 		return navs
@@ -100,20 +100,20 @@ func (self *VueRouterApi) GetPortalItems(clnt sdkconnmgr.ClientDevice) []sdkhttp
 
 func (self *VueRouterApi) FindVueRoute(name string) (*VueRouteComponent, bool) {
 	routeName := self.MakeVueRouteName(name)
-	for _, route := range self.adminRoutes {
+	for _, route := range self.AdminRoutes {
 		if route.VueRouteName == routeName {
 			return route, true
 		}
 	}
 
-	for _, route := range self.portalRoutes {
+	for _, route := range self.PortalRoutes {
 		if route.VueRouteName == routeName {
 			return route, true
 		}
 	}
 
-	if self.loginRoute != nil && self.loginRoute.VueRouteName == self.MakeVueRouteName(name) {
-		return self.loginRoute, true
+	if self.LoginRoute != nil && self.LoginRoute.VueRouteName == self.MakeVueRouteName(name) {
+		return self.LoginRoute, true
 	}
 
 	return nil, false

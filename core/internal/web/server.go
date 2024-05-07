@@ -9,14 +9,15 @@ import (
 )
 
 func SetupBootRoutes(g *plugins.CoreGlobals) {
+	routes.AssetsRoutes(g)
 	routes.BootRoutes(g)
 	routes.CoreAssets(g)
 }
 
 func SetupAllRoutes(g *plugins.CoreGlobals) {
+	routes.AssetsRoutes(g)
 	routes.PortalRoutes(g)
 	routes.AdminRoutes(g)
-	routes.AssetsRoutes(g)
 	routes.PaymentRoutes(g)
 
 	router.RootRouter.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

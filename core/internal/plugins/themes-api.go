@@ -26,9 +26,7 @@ type ThemesApi struct {
 
 func (self *ThemesApi) NewAdminTheme(theme sdkthemes.AdminTheme) {
 	layoutComp := NewVueRouteComponent(self.api, theme.LayoutComponent.RouteName, "/theme/layout", theme.LayoutComponent.Component, nil, nil)
-
 	loginComp := NewVueRouteComponent(self.api, theme.LoginComponent.RouteName, "/theme/login", theme.LoginComponent.Component, nil, nil)
-
 	dashComp := NewVueRouteComponent(self.api, theme.DashboardComponent.RouteName, "/theme/dashboard", theme.DashboardComponent.Component, nil, nil)
 
 	self.AdminLayoutRoute = layoutComp
@@ -41,7 +39,6 @@ func (self *ThemesApi) NewAdminTheme(theme sdkthemes.AdminTheme) {
 
 func (self *ThemesApi) NewPortalTheme(theme sdkthemes.PortalTheme) {
 	layoutComp := NewVueRouteComponent(self.api, theme.LayoutComponent.RouteName, "/theme/layout", theme.LayoutComponent.Component, nil, nil)
-
 	indexComp := NewVueRouteComponent(self.api, theme.IndexComponent.RouteName, "/theme/index", theme.IndexComponent.Component, nil, nil)
 
 	self.PortalLayoutRoute = layoutComp

@@ -60,12 +60,12 @@ func PortalIndexPage(g *plugins.CoreGlobals) http.Handler {
 
 			// app
 			{File: g.CoreAPI.Utl.Resource("assets/services/require-config.js")},
-			{File: g.CoreAPI.Utl.Resource("assets/services/vue-lazy-load.js")},
 			{File: g.CoreAPI.Utl.Resource("assets/services/basic-http.js")},
-			{File: g.CoreAPI.Utl.Resource("assets/services/utils.js")},
-			{File: g.CoreAPI.Utl.Resource("assets/services/events.js"), Data: ssePath},
-			{File: g.CoreAPI.Utl.Resource("assets/services/vue-http.js")},
-			{File: g.CoreAPI.Utl.Resource("assets/services/notify.js")},
+			{File: g.CoreAPI.Utl.Resource("assets/services/flare.vueLazyLoad.js")},
+			{File: g.CoreAPI.Utl.Resource("assets/services/flare.utils.js")},
+			{File: g.CoreAPI.Utl.Resource("assets/services/flare.events.js"), Data: ssePath},
+			{File: g.CoreAPI.Utl.Resource("assets/services/flare.http.js")},
+			{File: g.CoreAPI.Utl.Resource("assets/services/flare.notify.js")},
 			{File: g.CoreAPI.Utl.Resource("assets/portal/router.js"), Data: routesData},
 		}
 

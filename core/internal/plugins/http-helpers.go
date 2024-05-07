@@ -34,11 +34,11 @@ func (self *HttpHelpers) AssetPath(p string) string {
 }
 
 func (self *HttpHelpers) AssetWithHelpersPath(path string) string {
-	r := router.AssetsRouter.Get(rnames.AssetWithHelpers)
+	assetsR := router.AssetsRouter.Get(rnames.AssetWithHelpers)
 	pluginApi := self.api
-	url, err := r.URL("pkg", pluginApi.Pkg(), "version", pluginApi.Version(), "path", path)
+	url, err := assetsR.URL("pkg", pluginApi.Pkg(), "version", pluginApi.Version(), "path", path)
 	if err != nil {
-		log.Println("Error: ", err.Error())
+		log.Println("Error generating URL: ", err.Error())
 		return ""
 	}
 
@@ -46,11 +46,16 @@ func (self *HttpHelpers) AssetWithHelpersPath(path string) string {
 }
 
 func (self *HttpHelpers) VueComponentPath(path string) string {
-	r := router.AssetsRouter.Get(rnames.AssetVueComponent)
+	assetsR := router.AssetsRouter.Get(rnames.AssetVueComponent)
+	if assetsR == nil {
+		log.Println("Route not found: ", rnames.AssetVueComponent)
+		return ""
+	}
+
 	pluginApi := self.api
-	url, err := r.URL("pkg", pluginApi.Pkg(), "version", pluginApi.Version(), "path", path)
+	url, err := assetsR.URL("pkg", pluginApi.Pkg(), "version", pluginApi.Version(), "path", path)
 	if err != nil {
-		log.Println("Error: ", err.Error())
+		log.Println("Error generating URL: ", err.Error())
 		return ""
 	}
 
@@ -72,7 +77,11 @@ func (self *HttpHelpers) EmbedJs(path string, data interface{}) template.JS {
 		ViewHelpers: self,
 	}
 
-	jstmpl.Execute(&output, vdata)
+	err = jstmpl.Execute(&output, vdata)
+	if err != nil {
+		log.Println("Error executing template: ", err.Error())
+		return template.JS(fmt.Sprintf("console.error('%s: %s')", jspath, err.Error()))
+	}
 
 	return template.JS(output.String())
 }
@@ -92,7 +101,11 @@ func (self *HttpHelpers) EmbedCss(path string, data interface{}) template.CSS {
 		ViewHelpers: self,
 	}
 
-	csstmpl.Execute(&output, vdata)
+	err = csstmpl.Execute(&output, vdata)
+	if err != nil {
+		log.Println("Error executing template: ", err.Error())
+		return template.CSS(fmt.Sprintf("/* %s: %s */", csspath, err.Error()))
+	}
 
 	return template.CSS(output.String())
 }

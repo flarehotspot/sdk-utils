@@ -13,9 +13,32 @@
  */
 (function ($flare) {
   var VueRouter = window.VueRouter;
-  var routes = JSON.parse('<% .Data.Routes %>');
-  console.log(routes);
-  routes = transformRoutes(routes);
+  var childRoutes = JSON.parse('<% .Data.ChildRoutes %>');
+  // routes = transformRoutes(routes);
+
+  var portalThemeComponent = {
+    template: '<theme-layout></theme-layout>',
+    components: {
+      'theme-layout': $flare.vueLazyLoad('<% .Data.ThemeComponent.Component %>')
+    },
+    mounted: function () {
+      $flare.http
+        .get('<% .Helpers.UrlForRoute "portal.items" %>')
+        .then(function (data) {
+          console.log('nav items', data);
+        });
+    }
+  };
+
+  var routes = [
+    {
+      path: '<% .Data.ThemeComponent.Path %>',
+      name: '<% .Data.ThemeComponent.Name %>',
+      component: portalThemeComponent,
+      children: transformRoutes(childRoutes)
+    }
+  ];
+
   var router = new VueRouter({ routes: routes });
   $flare.router = router;
 
