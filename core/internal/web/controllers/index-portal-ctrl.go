@@ -29,7 +29,7 @@ func PortalIndexPage(g *plugins.CoreGlobals) http.Handler {
 			return
 		}
 
-		themesApi := themePlugin.Themes().(*plugins.ThemesApi)
+		themeApi := themePlugin.Themes().(*plugins.ThemesApi)
 
 		appcfg, err := config.ReadApplicationConfig()
 		if err != nil {
@@ -37,7 +37,7 @@ func PortalIndexPage(g *plugins.CoreGlobals) http.Handler {
 			return
 		}
 
-		routesData, err := webutil.GetPortalRoutesData(g)
+		routesData, err := webutil.GetPortalRoutesData(g, themeApi)
 		if err != nil {
 			response.ErrorHtml(w, err.Error())
 			return
@@ -71,7 +71,7 @@ func PortalIndexPage(g *plugins.CoreGlobals) http.Handler {
 			{File: g.CoreAPI.Utl.Resource("assets/portal/router.js"), Data: string(routesJson)},
 		}
 
-		portalAssets := themesApi.GetPortalThemeAssets()
+		portalAssets := themeApi.GetPortalThemeAssets()
 		for _, path := range portalAssets.Scripts {
 			file := themePlugin.Resource(filepath.Join("assets", path))
 			jsFiles = append(jsFiles, assets.AssetWithData{File: file})
@@ -101,7 +101,7 @@ func PortalIndexPage(g *plugins.CoreGlobals) http.Handler {
 
 		vdata := map[string]any{
 			"Lang":          appcfg.Lang,
-			"ThemesApi":     themesApi,
+			"ThemesApi":     themeApi,
 			"VendorScripts": jsBundle.PublicPath,
 			"VendorStyles":  cssBundle.PublicPath,
 		}

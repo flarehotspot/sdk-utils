@@ -1,10 +1,6 @@
 package webutil
 
 import (
-	"errors"
-	"log"
-
-	"github.com/flarehotspot/core/internal/config"
 	"github.com/flarehotspot/core/internal/plugins"
 )
 
@@ -32,7 +28,14 @@ type portalRoutesData struct {
 	ChildRoutes     []ChildRoutes  `json:"child_routes"`
 }
 
-func GetPortalRoutesData(g *plugins.CoreGlobals) (portalRoutesData, error) {
+type adminRoutesData struct {
+	LayoutComponent    ThemeComponent `json:"layout_component"`
+	DashboardComponent ThemeComponent `json:"dashboard_component"`
+	LoginComponent     ThemeComponent `json:"login_component"`
+	ChildRoutes        []ChildRoutes  `json:"child_routes"`
+}
+
+func GetPortalRoutesData(g *plugins.CoreGlobals, themeApi *plugins.ThemesApi) (portalRoutesData, error) {
 	var data portalRoutesData
 
 	routes := []*plugins.VueRouteComponent{}
@@ -50,20 +53,6 @@ func GetPortalRoutesData(g *plugins.CoreGlobals) (portalRoutesData, error) {
 		})
 	}
 
-	themecfg, err := config.ReadThemesConfig()
-	if err != nil {
-		log.Println("Error reading themes config: ", err)
-		return data, err
-	}
-
-	themePkg, ok := g.PluginMgr.FindByPkg(themecfg.Portal)
-	if !ok {
-		log.Println("Invalid portal theme: ", themecfg.Portal)
-		return data, errors.New("Invalid portal theme")
-	}
-
-	themeApi := themePkg.Themes().(*plugins.ThemesApi)
-
 	data.LayoutComponent = ThemeComponent{
 		Path:      themeApi.PortalLayoutRoute.Path,
 		Name:      themeApi.PortalLayoutRoute.Name,
@@ -79,8 +68,8 @@ func GetPortalRoutesData(g *plugins.CoreGlobals) (portalRoutesData, error) {
 	return data, nil
 }
 
-func GetAdminRoutesData(g *plugins.CoreGlobals) (portalRoutesData, error) {
-	var data portalRoutesData
+func GetAdminRoutesData(g *plugins.CoreGlobals, themeApi *plugins.ThemesApi) (adminRoutesData, error) {
+	var data adminRoutesData
 
 	routes := []*plugins.VueRouteComponent{}
 	for _, p := range g.PluginMgr.All() {
@@ -100,30 +89,22 @@ func GetAdminRoutesData(g *plugins.CoreGlobals) (portalRoutesData, error) {
 		})
 	}
 
-	themecfg, err := config.ReadThemesConfig()
-	if err != nil {
-		log.Println("Error reading themes config: ", err)
-		return data, err
-	}
-
-	themePkg, ok := g.PluginMgr.FindByPkg(themecfg.Admin)
-	if !ok {
-		log.Println("Invalid admin theme: ", themecfg.Admin)
-		return data, errors.New("Invalid admin theme")
-	}
-
-	themeApi := themePkg.Themes().(*plugins.ThemesApi)
-
 	data.LayoutComponent = ThemeComponent{
 		Path:      themeApi.AdminLayoutRoute.Path,
 		Name:      themeApi.AdminLayoutRoute.Name,
 		Component: themeApi.AdminLayoutRoute.HttpComponentPath,
 	}
 
-	data.IndexComponent = ThemeComponent{
+	data.DashboardComponent = ThemeComponent{
 		Path:      themeApi.AdminDashboardRoute.Path,
 		Name:      themeApi.AdminDashboardRoute.Name,
 		Component: themeApi.AdminDashboardRoute.HttpComponentPath,
+	}
+
+	data.LoginComponent = ThemeComponent{
+		Path:      themeApi.AdminLoginRoute.Path,
+		Name:      themeApi.AdminLoginRoute.Name,
+		Component: themeApi.AdminLoginRoute.HttpComponentPath,
 	}
 
 	return data, nil

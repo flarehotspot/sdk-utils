@@ -2,7 +2,7 @@
  * @file             : router.js
  * @author           : Adones Pitogo <adones.pitogo@adopisoft.com>
  * Date              : Jan 19, 2024
- * Last Modified Date: May 07, 2024
+ * Last Modified Date: May 08, 2024
  * Copyright 2021-2024 Flarego Technologies Corp. <business@flarego.ph>
  */
 
@@ -11,61 +11,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
-(function ($flare) {
+(function () {
   var VueRouter = window.VueRouter;
   var routesData = JSON.parse('<% .Data %>');
   var childRoutes = routesData.child_routes;
-  var reloadListener = null;
-  var adminIndexComponent = {
-    template: '<theme-index :data="data"></theme-layout>',
-    components: {
-      'theme-index': $flare.vueLazyLoad(routesData.index_component.component)
-    },
-    data: function () {
-      return {
-        data: {
-          loading: true,
-          portalItems: []
-        }
-      };
-    },
-    mounted: function () {
-      var self = this;
-      self.load();
-
-      reloadListener = $flare.events.on(
-        'portal:items:reload',
-        function (items) {
-          self.items = items;
-        }
-      );
-    },
-    beforeDestroy: function () {
-      if (reloadListener) {
-        $flare.events.off('portal:items:reload', reloadListener);
-      }
-    },
-    methods: {
-      load: function () {
-        var self = this;
-        $flare.http
-          .get('<% .Helpers.UrlForRoute "portal.items" %>')
-          .then(function (data) {
-            console.log('nav items', data);
-            self.data.portalItems = data;
-          })
-          .finally(function () {
-            self.data.loading = false;
-            console.log(self.data);
-          });
-      }
-    }
-  };
 
   childRoutes.push({
-    path: routesData.index_component.path,
-    name: routesData.index_component.name,
-    component: adminIndexComponent
+    path: routesData.dashboard_component.path,
+    name: routesData.dashboard_component.name,
+    component: $flare.vueLazyLoad(routesData.dashboard_component.component)
   });
 
   var routes = [
@@ -76,17 +30,33 @@
       children: transformRoutes(childRoutes)
     },
     {
+      path: routesData.login_component.path,
+      name: routesData.login_component.name,
+      component: $flare.vueLazyLoad(routesData.login_component.component)
+    },
+    {
       path: '*',
       redirect: {
-        name: routesData.index_component.name
+        name: routesData.dashboard_component.name
       }
     }
   ];
 
-  console.log('Routes:', routes);
-
   var router = new VueRouter({ routes: routes });
   $flare.router = router;
+
+  router.beforeEach(function (to, _, next) {
+    var hastoken = hasAuthToken();
+    if (
+      to.matched.some(function (route) {
+        return route.meta.requireAuth;
+      })
+    ) {
+      hastoken ? next() : next({ name: routesData.login_component.name });
+    } else {
+      next();
+    }
+  });
 
   // progress bar
   router.beforeResolve(function (_, to, next) {
@@ -131,4 +101,22 @@
     }
     return newRoutes;
   }
-})(window.$flare);
+
+  function hasAuthToken() {
+    var segmnts = document.cookie.split(';');
+    var hastoken = false;
+    for (var i = 0; i < segmnts.length; i++) {
+      var seg = segmnts[i].split('=');
+      if (seg[0].trim() === 'auth-token' && seg[1].length > 0) {
+        hastoken = true;
+        break;
+      }
+    }
+    return hastoken;
+  }
+
+  window.BasicHttp.onUnauthorized = function () {
+    console.log('error onUnauthorized');
+    router.push({ name: routesData.login_component.name });
+  };
+})();
