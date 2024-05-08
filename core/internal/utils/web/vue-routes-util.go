@@ -47,9 +47,6 @@ func GetPortalRoutesData(g *plugins.CoreGlobals) (portalRoutesData, error) {
 			Path:      string(r.VueRoutePath),
 			Name:      r.VueRouteName,
 			Component: r.HttpComponentPath,
-			RouteMeta: RouteMeta{
-				RequireAuth: true,
-			},
 		})
 	}
 
@@ -77,6 +74,56 @@ func GetPortalRoutesData(g *plugins.CoreGlobals) (portalRoutesData, error) {
 		Path:      themeApi.PortalIndexRoute.Path,
 		Name:      themeApi.PortalIndexRoute.Name,
 		Component: themeApi.PortalIndexRoute.HttpComponentPath,
+	}
+
+	return data, nil
+}
+
+func GetAdminRoutesData(g *plugins.CoreGlobals) (portalRoutesData, error) {
+	var data portalRoutesData
+
+	routes := []*plugins.VueRouteComponent{}
+	for _, p := range g.PluginMgr.All() {
+		vueR := p.Http().VueRouter().(*plugins.VueRouterApi)
+		adminRoutes := vueR.AdminRoutes
+		routes = append(routes, adminRoutes...)
+	}
+
+	for _, r := range routes {
+		data.ChildRoutes = append(data.ChildRoutes, ChildRoutes{
+			Path:      string(r.VueRoutePath),
+			Name:      r.VueRouteName,
+			Component: r.HttpComponentPath,
+			RouteMeta: RouteMeta{
+				RequireAuth: true,
+			},
+		})
+	}
+
+	themecfg, err := config.ReadThemesConfig()
+	if err != nil {
+		log.Println("Error reading themes config: ", err)
+		return data, err
+	}
+
+	themePkg, ok := g.PluginMgr.FindByPkg(themecfg.Admin)
+	if !ok {
+		log.Println("Invalid admin theme: ", themecfg.Admin)
+		return data, errors.New("Invalid admin theme")
+	}
+
+	themeApi := themePkg.Themes().(*plugins.ThemesApi)
+
+	data.LayoutComponent = ThemeComponent{
+		Path:      themeApi.AdminLayoutRoute.Path,
+		Name:      themeApi.AdminLayoutRoute.Name,
+		Component: themeApi.AdminLayoutRoute.HttpComponentPath,
+	}
+
+	data.IndexComponent = ThemeComponent{
+		Path:      themeApi.AdminDashboardRoute.Path,
+		Name:      themeApi.AdminDashboardRoute.Name,
+		Component: themeApi.AdminDashboardRoute.HttpComponentPath,
 	}
 
 	return data, nil
