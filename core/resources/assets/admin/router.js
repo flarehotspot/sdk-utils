@@ -42,6 +42,8 @@
     }
   ];
 
+  console.log('Routes: ', routes);
+
   var router = new VueRouter({ routes: routes });
   $flare.router = router;
 
@@ -116,7 +118,8 @@
   }
 
   window.BasicHttp.onUnauthorized = function () {
-    console.log('error onUnauthorized');
-    router.push({ name: routesData.login_component.name });
+    if ($flare.router.history.current !== routesData.login_component.name) {
+      router.push({ name: routesData.login_component.name });
+    }
   };
 })();

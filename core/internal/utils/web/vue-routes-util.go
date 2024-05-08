@@ -47,21 +47,21 @@ func GetPortalRoutesData(g *plugins.CoreGlobals, themeApi *plugins.ThemesApi) (p
 
 	for _, r := range routes {
 		data.ChildRoutes = append(data.ChildRoutes, ChildRoutes{
-			Path:      string(r.VueRoutePath),
+			Path:      r.VueRoutePath.URL(),
 			Name:      r.VueRouteName,
 			Component: r.HttpComponentPath,
 		})
 	}
 
 	data.LayoutComponent = ThemeComponent{
-		Path:      themeApi.PortalLayoutRoute.Path,
-		Name:      themeApi.PortalLayoutRoute.Name,
+		Path:      themeApi.PortalLayoutRoute.VueRoutePath.URL(),
+		Name:      themeApi.PortalLayoutRoute.VueRouteName,
 		Component: themeApi.PortalLayoutRoute.HttpComponentPath,
 	}
 
 	data.IndexComponent = ThemeComponent{
-		Path:      themeApi.PortalIndexRoute.Path,
-		Name:      themeApi.PortalIndexRoute.Name,
+		Path:      themeApi.PortalIndexRoute.VueRoutePath.URL(),
+		Name:      themeApi.PortalIndexRoute.VueRouteName,
 		Component: themeApi.PortalIndexRoute.HttpComponentPath,
 	}
 
@@ -80,7 +80,7 @@ func GetAdminRoutesData(g *plugins.CoreGlobals, themeApi *plugins.ThemesApi) (ad
 
 	for _, r := range routes {
 		data.ChildRoutes = append(data.ChildRoutes, ChildRoutes{
-			Path:      string(r.VueRoutePath),
+			Path:      r.VueRoutePath.URL(),
 			Name:      r.VueRouteName,
 			Component: r.HttpComponentPath,
 			RouteMeta: RouteMeta{
@@ -90,20 +90,20 @@ func GetAdminRoutesData(g *plugins.CoreGlobals, themeApi *plugins.ThemesApi) (ad
 	}
 
 	data.LayoutComponent = ThemeComponent{
-		Path:      themeApi.AdminLayoutRoute.Path,
-		Name:      themeApi.AdminLayoutRoute.Name,
+		Path:      themeApi.AdminLayoutRoute.VueRoutePath.URL(),
+		Name:      themeApi.AdminLayoutRoute.VueRouteName,
 		Component: themeApi.AdminLayoutRoute.HttpComponentPath,
 	}
 
 	data.DashboardComponent = ThemeComponent{
-		Path:      themeApi.AdminDashboardRoute.Path,
-		Name:      themeApi.AdminDashboardRoute.Name,
+		Path:      themeApi.AdminDashboardRoute.VueRoutePath.URL(),
+		Name:      themeApi.AdminDashboardRoute.VueRouteName,
 		Component: themeApi.AdminDashboardRoute.HttpComponentPath,
 	}
 
 	data.LoginComponent = ThemeComponent{
-		Path:      themeApi.AdminLoginRoute.Path,
-		Name:      themeApi.AdminLoginRoute.Name,
+		Path:      themeApi.AdminLoginRoute.VueRoutePath.URL(),
+		Name:      themeApi.AdminLoginRoute.VueRouteName,
 		Component: themeApi.AdminLoginRoute.HttpComponentPath,
 	}
 
