@@ -30,7 +30,7 @@ type HttpHelpers interface {
 	//  <% .Helpers.Translate "error" "some-key" %>
 	// will look for the file "/resources/translations/en/error/some-key.txt" under the plugin root directory
 	// and displays the text inside that file.
-	Translate(msgtype string, msgk string, pairs ...string) string
+	Translate(msgtype string, msgk string, pairs ...interface{}) string
 
 	// Returns the url for the route.
 	UrlForRoute(name string, pairs ...string) (uri string)

@@ -21,8 +21,8 @@ func AdminRoutes(g *plugins.CoreGlobals) {
 	adminR.Get("/events", adminSseCtrl).Name(routenames.RouteAdminSse)
 
 	adminR.Group("/themes", func(subrouter sdkhttp.HttpRouterInstance) {
-		subrouter.Get("/index", adminctrl.GetAvailableThemes(g))
-		subrouter.Post("/save", adminctrl.SaveThemeSettings(g)).Name(routenames.RouteAdminThemesSave)
+		subrouter.Get("/index", adminctrl.GetAvailableThemes(g)).Name("admin:themes:list")
+		subrouter.Post("/save", adminctrl.SaveThemeSettings(g)).Name("admin:themes:save")
 	})
 
 	adminR.Group("/logs", func(subrouter sdkhttp.HttpRouterInstance) {

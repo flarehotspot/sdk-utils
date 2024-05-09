@@ -25,8 +25,8 @@ type HttpHelpers struct {
 	api *PluginApi
 }
 
-func (self *HttpHelpers) Translate(msgtype string, msgk string, pairs ...string) string {
-	return self.api.Utl.Translate(msgtype, msgk, pairs)
+func (self *HttpHelpers) Translate(msgtype string, msgk string, pairs ...interface{}) string {
+	return self.api.Utl.Translate(msgtype, msgk, pairs...)
 }
 
 func (self *HttpHelpers) AssetPath(p string) string {
