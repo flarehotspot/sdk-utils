@@ -16,12 +16,6 @@
   var routesData = JSON.parse('<% .Data %>');
   var childRoutes = routesData.child_routes;
 
-  childRoutes.push({
-    path: routesData.dashboard_component.path,
-    name: routesData.dashboard_component.name,
-    component: $flare.vueLazyLoad(routesData.dashboard_component.component)
-  });
-
   var routes = [
     {
       path: routesData.layout_component.path,

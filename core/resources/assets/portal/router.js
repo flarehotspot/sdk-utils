@@ -15,9 +15,9 @@
   var VueRouter = window.VueRouter;
   var routesData = JSON.parse('<% .Data %>');
   var childRoutes = routesData.child_routes;
-  var reloadListener = null;
+  var reloadListener;
   var portalIndexComponent = {
-    template: '<theme-index :data="data"></theme-layout>',
+    template: '<theme-index :data="data"></theme-index>',
     components: {
       'theme-index': $flare.vueLazyLoad(routesData.index_component.component)
     },
@@ -32,6 +32,7 @@
     mounted: function () {
       var self = this;
       self.load();
+      console.log('heyyy');
 
       reloadListener = $flare.events.on(
         'portal:items:reload',

@@ -33,7 +33,6 @@ func (self *ThemesApi) NewAdminTheme(theme sdkthemes.AdminTheme) {
 	self.AdminDashboardRoute = dashComp
 	self.AdminLoginRoute = loginComp
 	self.api.HttpAPI.vueRouter.AddAdminRoutes(dashComp)
-	self.api.HttpAPI.vueRouter.SetLoginRoute(loginComp)
 	self.AdminTheme = &theme
 }
 
@@ -43,7 +42,6 @@ func (self *ThemesApi) NewPortalTheme(theme sdkthemes.PortalTheme) {
 
 	self.PortalLayoutRoute = layoutComp
 	self.PortalIndexRoute = indexComp
-	self.api.HttpAPI.vueRouter.AddPortalRoutes(indexComp)
 	self.PortalTheme = &theme
 }
 
