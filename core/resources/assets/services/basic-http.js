@@ -16,6 +16,26 @@ var BasicHttp = (function () {
       : new window.XMLHttpRequest();
   }
 
+  function setHeaders(client, headers) {
+    client.setRequestHeader('Accept', 'application/json');
+    if (!headers) return;
+
+    for (var key in headers) {
+      if (Object.prototype.hasOwnProperty.call(headers, key)) {
+        client.setRequestHeader(key, headers[key]);
+      }
+    }
+  }
+
+  function combineOpts(opts1, opts2) {
+    for (var key in opts2) {
+      if (Object.prototype.hasOwnProperty.call(opts2, key)) {
+        opts1[key] = opts2[key];
+      }
+    }
+    return opts1;
+  }
+
   function isDataValid(data) {
     if (!data) return false;
     try {
@@ -65,6 +85,7 @@ var BasicHttp = (function () {
       console.warn('http callback not defined');
     };
 
+    var headers = opts.headers || {};
     var method = (opts.method || 'GET').toUpperCase();
     var url = opts.url;
     var data = opts.data;
@@ -96,7 +117,7 @@ var BasicHttp = (function () {
           url += serialize(data);
         }
         client.open(method, url, true);
-        client.setRequestHeader('Accept', 'application/json');
+        setHeaders(client, headers);
         client.send();
       } catch (e) {
         handleError(errorCb, client);
@@ -105,7 +126,7 @@ var BasicHttp = (function () {
       try {
         data = data || {};
         client.open(method, url, true);
-        client.setRequestHeader('Content-Type', 'application/json');
+        setHeaders(client, headers);
         var params = JSON.stringify(data);
         client.send(params);
       } catch (e) {
@@ -118,15 +139,18 @@ var BasicHttp = (function () {
 
   var http = {};
 
-  http.GetJson = function (url, data) {
+  http.GetJson = function (url, data, opts) {
+    opts = opts || {};
     return new Promise(function (resolve, reject) {
       try {
-        Ajax({
-          url: url,
-          data: data,
-          success: resolve,
-          error: reject
-        });
+        Ajax(
+          combineOpts(opts, {
+            url: url,
+            data: data,
+            success: resolve,
+            error: reject
+          })
+        );
       } catch (e) {
         console.error(e);
         cb(e);
@@ -134,20 +158,23 @@ var BasicHttp = (function () {
     });
   };
 
-  http.PostJson = function (url, data) {
+  http.PostJson = function (url, data, opts) {
+    opts = opts || {};
     return new Promise(function (resolve, reject) {
       try {
-        Ajax({
-          method: 'POST',
-          url: url,
-          data: data,
-          success: function (data) {
-            resolve(data);
-          },
-          error: function (e) {
-            reject(e);
-          }
-        });
+        Ajax(
+          combineOpts(opts, {
+            method: 'POST',
+            url: url,
+            data: data,
+            success: function (data) {
+              resolve(data);
+            },
+            error: function (e) {
+              reject(e);
+            }
+          })
+        );
       } catch (e) {
         callback(e);
       }

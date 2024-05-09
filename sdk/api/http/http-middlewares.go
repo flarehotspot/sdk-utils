@@ -13,6 +13,9 @@ type Middlewares interface {
 	// Returns the middleware for admin authentication.
 	AdminAuth() func(next http.Handler) http.Handler
 
-    // Returns middleware for caching the response. It forces browsers to cache the response for n number of days.
+	// Returns the middleware for caching the response. It forces browsers to cache the response for n number of days.
 	CacheResponse(days int) func(next http.Handler) http.Handler
+
+	// Returns the middleware that checks pending purchases
+	PendingPurchase() func(next http.Handler) http.Handler
 }

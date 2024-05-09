@@ -13,11 +13,14 @@
   var basicHttp = window.BasicHttp;
   var http = {};
   var rootres = '$vue_response';
-  $flare.http = http;
 
   http.get = function (url, params) {
+    var opts = {
+      headers: { Accept: 'application/json' }
+    };
+
     return basicHttp
-      .GetJson(url, params)
+      .GetJson(url, params, opts)
       .then(function (data) {
         return parseRespones(data);
       })
@@ -27,8 +30,12 @@
   };
 
   http.post = function (url, params) {
+    var opts = {
+      headers: { 'Content-Type': 'application/json' }
+    };
+
     return basicHttp
-      .PostJson(url, params)
+      .PostJson(url, params, opts)
       .then(function (data) {
         return parseRespones(data);
       })
@@ -73,4 +80,6 @@
       return res;
     }
   }
+
+  $flare.http = http;
 })(window.$flare);

@@ -22,6 +22,9 @@ type HttpApi interface {
 	// Returns helper methods for views and handlers.
 	Helpers() HttpHelpers
 
+    // Returns the built in http middlewares
+    Middlewares() Middlewares
+
 	// Returns the router API.
 	HttpRouter() HttpRouterApi
 
