@@ -8,12 +8,13 @@ package sdkhttp
 
 import "net/http"
 
-// Middlewares contains http middlewares for admin authentication, mobile device details, etc.
-type Middlewares interface {
+// HttpMiddlewares contains http middlewares for admin authentication, mobile device details, etc.
+type HttpMiddlewares interface {
 	// Returns the middleware for admin authentication.
 	AdminAuth() func(next http.Handler) http.Handler
 
-	// Returns the middleware for caching the response. It forces browsers to cache the response for n number of days.
+	// Returns the middleware for caching the response.
+    // It forces browsers to cache the response for n number of days.
 	CacheResponse(days int) func(next http.Handler) http.Handler
 
 	// Returns the middleware that checks pending purchases

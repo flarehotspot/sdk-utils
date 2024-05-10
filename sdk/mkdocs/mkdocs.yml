@@ -59,6 +59,7 @@ nav:
       - 'HttpAuth': api/http-auth.md
       - 'HttpHelpers': api/http-helpers.md
       - 'HttpRouterApi': api/http-router-api.md
+      - 'HttpMiddlewares': api/http-middlewares.md
       - 'HttpResponse': api/http-response.md
       - 'SessionsMgrApi': api/sessions-mgr-api.md
       - 'SessionProvider': api/session-provider.md
