@@ -10,9 +10,9 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 (function (Vue, $flare) {
-  var form = '<% .Data.ThemesApi.GetFormFieldPath "Form.vue" %>';
-  var input = '<% .Data.ThemesApi.GetFormFieldPath "InputField.vue" %>';
-  var button = '<% .Data.ThemesApi.GetFormFieldPath "Button.vue" %>';
+  var form = '<% .Data.GetFormFieldPath "Form.vue" %>';
+  var input = '<% .Data.GetFormFieldPath "InputField.vue" %>';
+  var button = '<% .Data.GetFormFieldPath "Button.vue" %>';
 
   Vue.component('flare-form', $flare.vueLazyLoad(form));
   Vue.component('flare-input-field', $flare.vueLazyLoad(input));

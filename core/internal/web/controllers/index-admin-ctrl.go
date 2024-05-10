@@ -70,6 +70,7 @@ func AdminIndexPage(g *plugins.CoreGlobals) http.Handler {
 			{File: g.CoreAPI.Utl.Resource("assets/services/flare.utils.js")},
 			{File: g.CoreAPI.Utl.Resource("assets/services/flare.http.js")},
 			{File: g.CoreAPI.Utl.Resource("assets/services/flare.notify.js")},
+			{File: g.CoreAPI.Utl.Resource("assets/services/flare.forms.js"), Data: themeApi},
 			{File: g.CoreAPI.Utl.Resource("assets/admin/router.js"), Data: string(routesJson)},
 		}
 

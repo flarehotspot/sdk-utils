@@ -68,6 +68,7 @@ func PortalIndexPage(g *plugins.CoreGlobals) http.Handler {
 			{File: g.CoreAPI.Utl.Resource("assets/services/flare.events.js"), Data: ssePath},
 			{File: g.CoreAPI.Utl.Resource("assets/services/flare.http.js")},
 			{File: g.CoreAPI.Utl.Resource("assets/services/flare.notify.js")},
+			{File: g.CoreAPI.Utl.Resource("assets/services/flare.forms.js"), Data: themeApi},
 			{File: g.CoreAPI.Utl.Resource("assets/portal/router.js"), Data: string(routesJson)},
 		}
 
