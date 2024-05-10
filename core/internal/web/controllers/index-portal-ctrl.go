@@ -9,6 +9,7 @@ import (
 	"github.com/flarehotspot/core/internal/plugins"
 	"github.com/flarehotspot/core/internal/utils/assets"
 	sse "github.com/flarehotspot/core/internal/utils/sse"
+	webutil "github.com/flarehotspot/core/internal/utils/web"
 	"github.com/flarehotspot/core/internal/web/response"
 	routenames "github.com/flarehotspot/core/internal/web/routes/names"
 )
@@ -28,8 +29,7 @@ func PortalIndexPage(g *plugins.CoreGlobals) http.Handler {
 			return
 		}
 
-		themesApi := themePlugin.Themes().(*plugins.ThemesApi)
-		routes := g.PluginMgr.Utils().GetPortalRoutes()
+		themeApi := themePlugin.Themes().(*plugins.ThemesApi)
 
 		appcfg, err := config.ReadApplicationConfig()
 		if err != nil {
@@ -37,14 +37,16 @@ func PortalIndexPage(g *plugins.CoreGlobals) http.Handler {
 			return
 		}
 
-		routesJson, err := json.Marshal(routes)
+		routesData, err := webutil.GetPortalRoutesData(g, themeApi)
 		if err != nil {
 			response.ErrorHtml(w, err.Error())
 			return
 		}
 
-		routesData := map[string]any{
-			"Routes": string(routesJson),
+		routesJson, err := json.Marshal(routesData)
+		if err != nil {
+			response.ErrorHtml(w, err.Error())
+			return
 		}
 
 		ssePath := g.CoreAPI.HttpAPI.Helpers().UrlForRoute(routenames.RoutePortalSse)
@@ -60,16 +62,17 @@ func PortalIndexPage(g *plugins.CoreGlobals) http.Handler {
 
 			// app
 			{File: g.CoreAPI.Utl.Resource("assets/services/require-config.js")},
-			{File: g.CoreAPI.Utl.Resource("assets/services/vue-lazy-load.js")},
 			{File: g.CoreAPI.Utl.Resource("assets/services/basic-http.js")},
-			{File: g.CoreAPI.Utl.Resource("assets/services/utils.js")},
-			{File: g.CoreAPI.Utl.Resource("assets/services/events.js"), Data: ssePath},
-			{File: g.CoreAPI.Utl.Resource("assets/services/vue-http.js")},
-			{File: g.CoreAPI.Utl.Resource("assets/services/notify.js")},
-			{File: g.CoreAPI.Utl.Resource("assets/portal/router.js"), Data: routesData},
+			{File: g.CoreAPI.Utl.Resource("assets/services/flare.vueLazyLoad.js")},
+			{File: g.CoreAPI.Utl.Resource("assets/services/flare.utils.js")},
+			{File: g.CoreAPI.Utl.Resource("assets/services/flare.events.js"), Data: ssePath},
+			{File: g.CoreAPI.Utl.Resource("assets/services/flare.http.js")},
+			{File: g.CoreAPI.Utl.Resource("assets/services/flare.notify.js")},
+			{File: g.CoreAPI.Utl.Resource("assets/services/flare.forms.js"), Data: themeApi},
+			{File: g.CoreAPI.Utl.Resource("assets/portal/router.js"), Data: string(routesJson)},
 		}
 
-		portalAssets := themesApi.GetPortalThemeAssets()
+		portalAssets := themeApi.GetPortalThemeAssets()
 		for _, path := range portalAssets.Scripts {
 			file := themePlugin.Resource(filepath.Join("assets", path))
 			jsFiles = append(jsFiles, assets.AssetWithData{File: file})
@@ -99,7 +102,7 @@ func PortalIndexPage(g *plugins.CoreGlobals) http.Handler {
 
 		vdata := map[string]any{
 			"Lang":          appcfg.Lang,
-			"ThemesApi":     themesApi,
+			"ThemesApi":     themeApi,
 			"VendorScripts": jsBundle.PublicPath,
 			"VendorStyles":  cssBundle.PublicPath,
 		}

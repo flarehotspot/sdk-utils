@@ -2,7 +2,7 @@
  * @file             : router.js
  * @author           : Adones Pitogo <adones.pitogo@adopisoft.com>
  * Date              : Jan 19, 2024
- * Last Modified Date: Feb 27, 2024
+ * Last Modified Date: May 08, 2024
  * Copyright 2021-2024 Flarego Technologies Corp. <business@flarego.ph>
  */
 
@@ -11,14 +11,35 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
-
-(function (window) {
-  var $flare = window.$flare;
+(function () {
   var VueRouter = window.VueRouter;
-  var routes = JSON.parse('<% .Data.Routes %>');
-  // console.log(routes);
-  routes = transformRoutes(routes);
+  var routesData = JSON.parse('<% .Data %>');
+  var childRoutes = routesData.child_routes;
+
+  var routes = [
+    {
+      path: routesData.layout_component.path,
+      name: routesData.layout_component.name,
+      component: $flare.vueLazyLoad(routesData.layout_component.component),
+      children: transformRoutes(childRoutes)
+    },
+    {
+      path: routesData.login_component.path,
+      name: routesData.login_component.name,
+      component: $flare.vueLazyLoad(routesData.login_component.component)
+    },
+    {
+      path: '*',
+      redirect: {
+        name: routesData.dashboard_component.name
+      }
+    }
+  ];
+
+  console.log('Routes: ', routes);
+
   var router = new VueRouter({ routes: routes });
+  $flare.router = router;
 
   router.beforeEach(function (to, _, next) {
     var hastoken = hasAuthToken();
@@ -27,7 +48,7 @@
         return route.meta.requireAuth;
       })
     ) {
-      hastoken ? next() : next({ name: '<% .Data.LoginRouteName %>' });
+      hastoken ? next() : next({ name: routesData.login_component.name });
     } else {
       next();
     }
@@ -58,7 +79,10 @@
         route = {
           name: r.name,
           path: r.path,
-          component: $flare.vueLazyLoad(r.component),
+          component:
+            typeof r.component === 'string'
+              ? $flare.vueLazyLoad(r.component)
+              : r.component,
           meta: r.meta
         };
 
@@ -88,8 +112,8 @@
   }
 
   window.BasicHttp.onUnauthorized = function () {
-    router.push({ name: '<% .Data.LoginRouteName %>' });
+    if ($flare.router.history.current !== routesData.login_component.name) {
+      router.push({ name: routesData.login_component.name });
+    }
   };
-
-  $flare.router = router;
-})(window);
+})();

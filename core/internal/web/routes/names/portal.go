@@ -1,5 +1,6 @@
 package routenames
 
 const (
-	PortalItems = "portal.items"
+	RoutePortalItems          = "portal.items"
+	RoutePortalPaymentOptions = "portal.payments.options"
 )

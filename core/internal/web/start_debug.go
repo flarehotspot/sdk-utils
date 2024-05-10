@@ -13,6 +13,10 @@ import (
 	"github.com/gorilla/mux"
 )
 
+func init() {
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
+}
+
 func StartServer(r *mux.Router, forever bool) *http.Server {
 	r.PathPrefix("/debug/pprof/").Handler(http.DefaultServeMux)
 

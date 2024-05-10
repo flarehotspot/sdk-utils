@@ -5,9 +5,9 @@ import (
 	"log"
 	"net/http"
 
-	sdkpayments "github.com/flarehotspot/sdk/api/payments"
 	"github.com/flarehotspot/core/internal/web/helpers"
 	routenames "github.com/flarehotspot/core/internal/web/routes/names"
+	sdkpayments "github.com/flarehotspot/sdk/api/payments"
 )
 
 func NewPaymentsApi(plugin *PluginApi, pmgr *PaymentsMgr) *PaymentsApi {
@@ -57,7 +57,7 @@ func (self *PaymentsApi) Checkout(w http.ResponseWriter, r *http.Request, p sdkp
 		coreApi.HttpAPI.VueResponse().Redirect(w, routenames.RoutePaymentOptions)
 	}
 
-	purMw := self.api.HttpAPI.middlewares.PendingPurchaseMw()
+	purMw := self.api.HttpAPI.middlewares.PendingPurchase()
 	purMw(http.HandlerFunc(handler)).ServeHTTP(w, r)
 }
 

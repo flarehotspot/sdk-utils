@@ -36,6 +36,7 @@ nav:
       - 'Getting Started': guides/getting-started.md
       - 'Creating a plugin': guides/creating-a-plugin.md
       - 'Routes and Links': guides/routes-and-links.md
+      - 'Ajax Requests': guides/ajax-requests.md
       - 'Vue Components': guides/vue-components.md
       - 'Portal Items': guides/portal-items.md
       - 'Admin Navs': guides/admin-navs.md
@@ -58,6 +59,7 @@ nav:
       - 'HttpAuth': api/http-auth.md
       - 'HttpHelpers': api/http-helpers.md
       - 'HttpRouterApi': api/http-router-api.md
+      - 'HttpMiddlewares': api/http-middlewares.md
       - 'HttpResponse': api/http-response.md
       - 'SessionsMgrApi': api/sessions-mgr-api.md
       - 'SessionProvider': api/session-provider.md

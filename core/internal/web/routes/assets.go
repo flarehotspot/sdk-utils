@@ -18,7 +18,7 @@ func AssetsRoutes(g *plugins.CoreGlobals) {
 
 	router.RootRouter.Handle("/favicon.ico", cacheMw(http.HandlerFunc(assetsCtrl.GetFavicon)))
 
-	vueR := router.RootRouter.PathPrefix("/vue-dynamic-components").Subrouter()
+	vueR := router.AssetsRouter.PathPrefix("/vue-dynamic-components").Subrouter()
 	vueR.Use(cacheMw)
 
 	vueR.HandleFunc("/with-helper/{pkg}/{version}/{path:.*}", assetsCtrl.AssetWithHelpers).
@@ -38,6 +38,7 @@ func AssetsRoutes(g *plugins.CoreGlobals) {
 		router.RootRouter.PathPrefix(prefix).Handler(fileserver)
 	}
 
+    // set public static files
 	assetPathMw := middlewares.AssetPath
 	publicDir := paths.PublicDir
 	fs := http.FileServer(http.Dir(publicDir))

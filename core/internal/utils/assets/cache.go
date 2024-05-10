@@ -120,7 +120,7 @@ func writeCache(concat string, files []string) (data CacheData, err error) {
 func filePathComment(f string) string {
 	stat, _ := os.Stat(f)
 	size := sdkfs.PrettyByteSize(int(stat.Size()))
-	return fmt.Sprintf("\n/%s\nFile: %s(%s)\n%s/\n", stars, paths.Strip(f), size, stars)
+	return fmt.Sprintf("\n/%s\nFile: %s(%s)\n%s/\n", stars, paths.StripRoot(f), size, stars)
 }
 
 func filesComment(files ...string) string {
@@ -130,7 +130,7 @@ func filesComment(files ...string) string {
 	for _, f := range files {
 		stat, _ := os.Stat(f)
 		size := sdkfs.PrettyByteSize(int(stat.Size()))
-		comment += fmt.Sprintf("%s\t\t%s\n", size, paths.Strip(f))
+		comment += fmt.Sprintf("%s\t\t%s\n", size, paths.StripRoot(f))
 	}
 	comment += stars + "/\n"
 	return comment

@@ -1,9 +1,6 @@
 package plugins
 
 import (
-	"log"
-
-	"github.com/flarehotspot/core/internal/config"
 	"github.com/flarehotspot/sdk/api/accounts"
 	"github.com/flarehotspot/sdk/api/connmgr"
 	"github.com/flarehotspot/sdk/api/http"
@@ -19,107 +16,6 @@ func NewPluginsMgrUtil(pmgr *PluginsMgr, coreApi *PluginApi) *PluginsMgrUtils {
 type PluginsMgrUtils struct {
 	pmgr    *PluginsMgr
 	coreApi *PluginApi
-}
-
-func (self *PluginsMgrUtils) GetAdminRoutes() []map[string]interface{} {
-	routes := []*VueRouteComponent{}
-	for _, p := range self.pmgr.All() {
-		vueR := p.Http().VueRouter().(*VueRouterApi)
-		adminRoutes := vueR.adminRoutes
-		routes = append(routes, adminRoutes...)
-	}
-
-	children := []map[string]interface{}{}
-	for _, r := range routes {
-		children = append(children, map[string]interface{}{
-			"path":      r.VueRoutePath,
-			"name":      r.VueRouteName,
-			"component": r.HttpWrapperFullPath,
-		})
-	}
-
-	themecfg, err := config.ReadThemesConfig()
-	if err != nil {
-		log.Println("Error reading themes config: ", err)
-	}
-
-	themesPlugin, ok := self.pmgr.FindByPkg(themecfg.Admin)
-	if !ok {
-		log.Println("Invalid admin theme: ", themecfg.Admin)
-	}
-
-	themesApi := themesPlugin.Themes().(*ThemesApi)
-	children = append(children, map[string]interface{}{
-		"path":     "*",
-		"redirect": themesApi.AdminDashboardRoute.VueRoutePath,
-	})
-
-	routesMap := []map[string]interface{}{
-		{
-			"path":      "/",
-			"name":      themesApi.AdminLayoutRoute.VueRouteName,
-			"component": themesApi.AdminLayoutRoute.HttpWrapperFullPath,
-			"children":  children,
-			"meta": map[string]any{
-				"requireAuth": true,
-			},
-		},
-		{
-			"path":      themesApi.AdminLoginRoute.VueRoutePath,
-			"name":      themesApi.AdminLoginRoute.VueRouteName,
-			"component": themesApi.AdminLoginRoute.HttpWrapperFullPath,
-			"meta": map[string]any{
-				"requireNoAuth": true,
-			},
-		},
-	}
-
-	return routesMap
-}
-
-func (self *PluginsMgrUtils) GetPortalRoutes() []map[string]any {
-	routes := []*VueRouteComponent{}
-	for _, p := range self.pmgr.All() {
-		vueR := p.Http().VueRouter().(*VueRouterApi)
-		portalRoutes := vueR.portalRoutes
-		routes = append(routes, portalRoutes...)
-	}
-
-	children := []map[string]any{}
-	for _, r := range routes {
-		children = append(children, map[string]any{
-			"path":      r.VueRoutePath,
-			"name":      r.VueRouteName,
-			"component": r.HttpWrapperFullPath,
-		})
-	}
-
-	themecfg, err := config.ReadThemesConfig()
-	if err != nil {
-		log.Println("Error reading themes config: ", err)
-	}
-
-	themesPlugin, ok := self.pmgr.FindByPkg(themecfg.Portal)
-	if !ok {
-		log.Println("Invalid portal theme: ", themecfg.Portal)
-	}
-
-	themesApi := themesPlugin.Themes().(*ThemesApi)
-	children = append(children, map[string]any{
-		"path":     "*",
-		"redirect": themesApi.PortalIndexRoute.VueRoutePath,
-	})
-
-	routesMap := []map[string]any{
-		{
-			"path":      "/",
-			"name":      themesApi.PortalLayoutRoute.VueRouteName,
-			"component": themesApi.PortalLayoutRoute.HttpWrapperFullPath,
-			"children":  children,
-		},
-	}
-
-	return routesMap
 }
 
 func (self *PluginsMgrUtils) GetAdminNavs(acct sdkacct.Account) []sdkhttp.AdminNavList {

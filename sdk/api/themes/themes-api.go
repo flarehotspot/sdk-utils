@@ -6,10 +6,6 @@
 
 package sdkthemes
 
-import (
-	"net/http"
-)
-
 const (
 	CssLibBootstrap4 CssLib = "bootstrap4"
 )
@@ -35,9 +31,8 @@ type PortalTheme struct {
 }
 
 type ThemeComponent struct {
-	RouteName   string
-	HandlerFunc http.HandlerFunc
-	Component   string
+	RouteName string
+	Component string
 }
 
 type ThemeAssets struct {

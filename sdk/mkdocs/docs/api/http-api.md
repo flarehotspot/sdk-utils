@@ -26,6 +26,14 @@ It returns an instance of the [HttpAuth](./http-auth.md).
 auth := api.Http().Auth()
 ```
 
+### Middlewares
+
+It returns an instance of [HttpMiddlewares](./http-middlewares.md) that contains the built-in middlewares.
+
+```go
+middlewares := api.Http().Middlewares()
+```
+
 ### Helpers
 
 It returns an instance of the [HttpHelpers](./http-helpers.md).

@@ -7,6 +7,7 @@ import (
 	"github.com/flarehotspot/core/internal/plugins"
 )
 
+
 func main() {}
 
 func Init() {

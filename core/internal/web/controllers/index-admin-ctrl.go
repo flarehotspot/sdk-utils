@@ -9,6 +9,7 @@ import (
 	"github.com/flarehotspot/core/internal/plugins"
 	"github.com/flarehotspot/core/internal/utils/assets"
 	sse "github.com/flarehotspot/core/internal/utils/sse"
+	webutil "github.com/flarehotspot/core/internal/utils/web"
 	"github.com/flarehotspot/core/internal/web/response"
 	routenames "github.com/flarehotspot/core/internal/web/routes/names"
 )
@@ -28,8 +29,12 @@ func AdminIndexPage(g *plugins.CoreGlobals) http.Handler {
 			return
 		}
 
-		themesApi := themePlugin.Themes().(*plugins.ThemesApi)
-		routes := g.PluginMgr.Utils().GetAdminRoutes()
+		themeApi := themePlugin.Themes().(*plugins.ThemesApi)
+		routes, err := webutil.GetAdminRoutesData(g, themeApi)
+		if err != nil {
+			response.ErrorHtml(w, err.Error())
+			return
+		}
 
 		appcfg, err := config.ReadApplicationConfig()
 		if err != nil {
@@ -41,12 +46,6 @@ func AdminIndexPage(g *plugins.CoreGlobals) http.Handler {
 		if err != nil {
 			response.ErrorHtml(w, err.Error())
 			return
-		}
-
-		loginVueName := themesApi.AdminLoginRoute.VueRouteName
-		routesData := map[string]any{
-			"Routes":         string(routesJson),
-			"LoginRouteName": loginVueName,
 		}
 
 		ssePath := g.CoreAPI.HttpAPI.Helpers().UrlForRoute(routenames.RouteAdminSse)
@@ -65,16 +64,17 @@ func AdminIndexPage(g *plugins.CoreGlobals) http.Handler {
 
 			// app
 			{File: g.CoreAPI.Utl.Resource("assets/services/require-config.js")},
-			{File: g.CoreAPI.Utl.Resource("assets/services/vue-lazy-load.js")},
 			{File: g.CoreAPI.Utl.Resource("assets/services/basic-http.js")},
-            {File: g.CoreAPI.Utl.Resource("assets/services/events.js"), Data: ssePath},
-			{File: g.CoreAPI.Utl.Resource("assets/services/utils.js")},
-			{File: g.CoreAPI.Utl.Resource("assets/services/vue-http.js")},
-			{File: g.CoreAPI.Utl.Resource("assets/services/notify.js")},
-			{File: g.CoreAPI.Utl.Resource("assets/admin/router.js"), Data: routesData},
+			{File: g.CoreAPI.Utl.Resource("assets/services/flare.vueLazyLoad.js")},
+			{File: g.CoreAPI.Utl.Resource("assets/services/flare.events.js"), Data: ssePath},
+			{File: g.CoreAPI.Utl.Resource("assets/services/flare.utils.js")},
+			{File: g.CoreAPI.Utl.Resource("assets/services/flare.http.js")},
+			{File: g.CoreAPI.Utl.Resource("assets/services/flare.notify.js")},
+			{File: g.CoreAPI.Utl.Resource("assets/services/flare.forms.js"), Data: themeApi},
+			{File: g.CoreAPI.Utl.Resource("assets/admin/router.js"), Data: string(routesJson)},
 		}
 
-		adminAssets := themesApi.GetAdminThemeAssets()
+		adminAssets := themeApi.GetAdminThemeAssets()
 		for _, path := range adminAssets.Scripts {
 			file := themePlugin.Resource(filepath.Join("assets", path))
 			jsFiles = append(jsFiles, assets.AssetWithData{File: file})
@@ -104,7 +104,7 @@ func AdminIndexPage(g *plugins.CoreGlobals) http.Handler {
 
 		vdata := map[string]any{
 			"Lang":          appcfg.Lang,
-			"ThemesApi":     themesApi,
+			"ThemesApi":     themeApi,
 			"VendorScripts": jsBundle.PublicPath,
 			"VendorStyles":  cssBundle.PublicPath,
 		}

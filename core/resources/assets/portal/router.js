@@ -2,7 +2,7 @@
  * @file             : router.js
  * @author           : Adones Pitogo <adones.pitogo@adopisoft.com>
  * Date              : Jan 19, 2024
- * Last Modified Date: Feb 27, 2024
+ * Last Modified Date: May 07, 2024
  * Copyright 2021-2024 Flarego Technologies Corp. <business@flarego.ph>
  */
 
@@ -13,9 +13,79 @@
  */
 (function ($flare) {
   var VueRouter = window.VueRouter;
-  var routes = JSON.parse('<% .Data.Routes %>');
-  console.log(routes);
-  routes = transformRoutes(routes);
+  var routesData = JSON.parse('<% .Data %>');
+  var childRoutes = routesData.child_routes;
+  var reloadListener;
+  var portalIndexComponent = {
+    template: '<theme-index :data="data"></theme-index>',
+    components: {
+      'theme-index': $flare.vueLazyLoad(routesData.index_component.component)
+    },
+    data: function () {
+      return {
+        data: {
+          loading: true,
+          portalItems: []
+        }
+      };
+    },
+    mounted: function () {
+      var self = this;
+      self.load();
+      console.log('heyyy');
+
+      reloadListener = $flare.events.on(
+        'portal:items:reload',
+        function (items) {
+          self.items = items;
+        }
+      );
+    },
+    beforeDestroy: function () {
+      if (reloadListener) {
+        $flare.events.off('portal:items:reload', reloadListener);
+      }
+    },
+    methods: {
+      load: function () {
+        var self = this;
+        $flare.http
+          .get('<% .Helpers.UrlForRoute "portal.items" %>')
+          .then(function (data) {
+            console.log('nav items', data);
+            self.data.portalItems = data;
+          })
+          .finally(function () {
+            self.data.loading = false;
+            console.log(self.data);
+          });
+      }
+    }
+  };
+
+  childRoutes.push({
+    path: routesData.index_component.path,
+    name: routesData.index_component.name,
+    component: portalIndexComponent
+  });
+
+  var routes = [
+    {
+      path: routesData.layout_component.path,
+      name: routesData.layout_component.name,
+      component: $flare.vueLazyLoad(routesData.layout_component.component),
+      children: transformRoutes(childRoutes)
+    },
+    {
+      path: '*',
+      redirect: {
+        name: routesData.index_component.name
+      }
+    }
+  ];
+
+  console.log('Routes:', routes);
+
   var router = new VueRouter({ routes: routes });
   $flare.router = router;
 
@@ -44,7 +114,10 @@
         route = {
           name: r.name,
           path: r.path,
-          component: $flare.vueLazyLoad(r.component),
+          component:
+            typeof r.component === 'string'
+              ? $flare.vueLazyLoad(r.component)
+              : r.component,
           meta: r.meta
         };
 

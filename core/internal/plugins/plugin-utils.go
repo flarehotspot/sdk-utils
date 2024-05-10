@@ -22,6 +22,7 @@ type PluginUtils struct {
 
 func (self *PluginUtils) Translate(msgtype string, msgk string, pairs ...interface{}) string {
 	if len(pairs)%2 != 0 {
+		log.Printf("Translate pairs: %+v", pairs)
 		return "Invalid number of translation params."
 	}
 

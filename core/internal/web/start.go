@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	// "time"
 
 	"github.com/flarehotspot/core/env"
 	"github.com/gorilla/mux"

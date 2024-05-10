@@ -25,6 +25,20 @@ The translate method can also be called within views using the `<% .Helpers.Tran
 <h1><% .Helpers.Translate "label" "save" %></h1>
 ```
 
-## 2. Trnaslation With Variables
+## 2. Translations With Variables
 
+Let's say you want to display an amount in a label. You can use the `Translate` method with variables to achieve this. For example, if you have the following translation text with a vairable `amount`:
 
+``` title="resources/translations/en/label/paid_amount.txt"
+You paid <% .amount %>
+```
+
+Then you can substitue the variable `amount` with the actual value like this:
+```go
+txt := api.Translate("label", "paid_amount", "amount", 100)
+```
+
+Likewise, you can use the `<% .Helpers.Translate %>` helper method in views to achieve the same result:
+```html
+<p><% .Helpers.Translate "label" "paid_amount" "amount" 100 %></p>
+```

@@ -1,5 +1,4 @@
 # HttpRouterApi
-
 The `HttpRouterApi` is the backend for http routing in Flare Hotspot. The [VueRouterApi](./vue-router-api.md) uses the `HttpRouterApi` to generate the routes for the frontend. Each plugin are provided with a `HttpRouterApi` instance to generate their own routes.
 
 ## 1. HttpRouterApi Methods {#httprouterapi-methods}
@@ -7,7 +6,6 @@ The `HttpRouterApi` is the backend for http routing in Flare Hotspot. The [VueRo
 Below are the available methods in `HttpRouterApi`:
 
 ### AdminRouter
-
 This method returns the [admin router instance](#router-instance) for the admin routes. Routes generated from the admin router are prefixed with `/admin` and are only accessible to authenticated user [accounts](./accounts-api.md#account-instance). To get the admin router instance, you can use the following code:
 
 ```go
@@ -15,9 +13,6 @@ router := api.Http().HttpRouter().AdminRouter()
 ```
 
 ### PluginRouter
-
-
-
 This method returns the [plugin router instance](#router-instance) for the plugin routes. Routes generated from the plugin router are accessible to all users. To get the pugin router instance, you can use the following code:
 
 ```go
