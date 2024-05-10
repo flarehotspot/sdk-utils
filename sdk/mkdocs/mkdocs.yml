@@ -36,6 +36,7 @@ nav:
       - 'Getting Started': guides/getting-started.md
       - 'Creating a plugin': guides/creating-a-plugin.md
       - 'Routes and Links': guides/routes-and-links.md
+      - 'Ajax Requests': guides/ajax-requests.md
       - 'Vue Components': guides/vue-components.md
       - 'Portal Items': guides/portal-items.md
       - 'Admin Navs': guides/admin-navs.md

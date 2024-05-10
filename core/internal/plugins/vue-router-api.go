@@ -156,6 +156,7 @@ func (self *VueRouterApi) MakeVueRoutePath(p string) VueRoutePath {
 	return VueRoutePath(strings.TrimSuffix(p, "/"))
 }
 
+// Converts vue path variables to mux variables, e.g "/path/:var" to "/path/{var}"
 func (self *VueRouterApi) VuePathToMuxPath(path string) string {
 	if !strings.HasPrefix(path, "/") {
 		path = "/" + path

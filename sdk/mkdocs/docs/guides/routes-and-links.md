@@ -1,5 +1,5 @@
 # Routes and Links
-Routes are used to handle user navigation by matching the requested URL to a [RoutePath](#routepath). A [link](#creating-a-link) is a form of clickable element in the web page that redirects a user to a certain URL and eventually triggering the matched route.
+Routes are used to handle user navigation by matching the requested URL from the browser to a [RoutePath](#routepath) in your application. A [link](#creating-a-link) is a form of clickable element in the web page that redirects a user to a certain URL and eventually triggering the matched route.
 
 ## 1. Registering Routes {#registering-routes}
 The vue routes are divided into two types: [portal routes](#portal-routes) and [admin routes](#admin-routes). Portal routes are accessible to all users, while admin routes are only accessible to authenticated user accounts.
@@ -25,16 +25,6 @@ func Init(api sdkplugin.PluginApi) {
 		RouteName: "portal.welcome",
 		RoutePath: "/welcome/:name",
 		Component: "portal/Welcome.vue",
-		HandlerFunc: func(w http.ResponseWriter, r *http.Request) {
-			params := api.Http().MuxVars(r)
-			name := params["name"]
-
-			data := map[string]interface{}{
-				"name": name,
-			}
-
-			api.Http().VueResponse().Json(w, data, 200)
-		},
         Middlewares: []func(http.Handler) http.Handler{},
 	}
 	// register portal route
@@ -53,14 +43,6 @@ adminRoute := sdkhttp.VueAdminRoute{
     RouteName: "admin.welcome",
     RoutePath: "/welcome/:name",
     Component: "admin/Welcome.vue",
-    HandlerFunc: func(w http.ResponseWriter, r *http.Request) {
-        params := api.Http().MuxVars(r)
-        name := params["name"]
-        data := map[string]interface{}{
-            "name": name,
-        }
-        api.Http().VueResponse().Json(w, data, 200)
-    },
     Middlewares: []func(http.Handler) http.Handler{},
     PermitFn: func(perms []string) bool {
         // check if the user has the required permissions
@@ -95,19 +77,6 @@ func (w http.ResponseWriter, r *http.Request) {
 
 ### Component (required) {#component}
 This field defines the location of the [Vue Component](./vue-components.md) file to be displayed in the web page. Vue components are loaded from the `resources/components` directory of your plugin.
-
-### HandlerFunc (optional) {#handlerfunc}
-This field is used to define the handler function for the [Vue Component](./vue-components.md). The returned response from [VueResponse.Json](../api/vue-response.md#json) will be available in the Vue component in `flareView` [prop](https://v2.vuejs.org/v2/guide/components-props). A handler function is a function that accepts `http.ResponseWriter` and `*http.Request` arguments:
-
-```go title="main.go"
-func (w http.ResponseWriter, r *http.Request) {
-    // send data to the vue component
-    api.Http().VueResponse().Json(w, map[string]interface{}{"name": "Jhon"}, 200)
-}
-```
-
-!!! note
-    If the handler function is not defined, the server will just return `null` json data.
 
 ### Middlewares (optional) {#middlewares}
 [Middlewares](../api/http-router-api.md#middlewares) are used to perform operations before the handler function is executed. Middlewares are functions that accept `http.Handler` and return `http.Handler`. Below is an example of how to define a middleware:
