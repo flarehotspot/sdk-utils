@@ -126,3 +126,33 @@ define(function(){
 Since we are not using standard build tools like webpack or vite, it is recommended to use basic form of javascript and css to ensure compatibility with older browsers.
 For example, use `var` instead of `let` or `const` and use `function` instead of arrow functions.
 Array `map`, `filter`, `reduce`, etc. should also be avoided.
+
+It's important to note that when working with legacy Javascript codes, the context of `this` keyword may not be the same as in the standard Vue.js components. Hence, it is recommended to use `var self = this` to store the context of `this` keyword.
+
+```html title="SampleComponent.vue"
+<template>
+  <!-- Rest of the template... -->
+</template>
+<script>
+describe(function(){
+    return {
+        template: template,
+        data: function(){
+            return {
+                name: "John"
+            }
+        },
+        mounted: function(){
+            // store the context of `this` keyword to `self`
+            var self = this;
+
+            setTimeout(function(){
+
+                // use `self` instead of `this`
+                self.name = "Doe";
+
+            }, 2000);
+        }
+    })
+</script>
+```
