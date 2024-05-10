@@ -43,7 +43,6 @@ adminRoute := sdkhttp.VueAdminRoute{
     RouteName: "admin.welcome",
     RoutePath: "/welcome/:name",
     Component: "admin/Welcome.vue",
-    Middlewares: []func(http.Handler) http.Handler{},
     PermitFn: func(perms []string) bool {
         // check if the user has the required permissions
         return true
@@ -77,27 +76,6 @@ func (w http.ResponseWriter, r *http.Request) {
 
 ### Component (required) {#component}
 This field defines the location of the [Vue Component](./vue-components.md) file to be displayed in the web page. Vue components are loaded from the `resources/components` directory of your plugin.
-
-### Middlewares (optional) {#middlewares}
-[Middlewares](../api/http-router-api.md#middlewares) are used to perform operations before the handler function is executed. Middlewares are functions that accept `http.Handler` and return `http.Handler`. Below is an example of how to define a middleware:
-```go title="main.go"
-mw := func (next http.Handler) http.Handler {
-    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        // do something before the handler function
-        next.ServeHTTP(w, r)
-    })
-}
-```
-
-Then you can use the middleware in the route definition:
-```go title="main.go"
-portalRoute := sdkhttp.VuePortalRoute{
-    // other fields...
-    Middlewares: []func(http.Handler) http.Handler{mw},
-}
-```
-
-There are some built-in middlewares that you can use. See the [middlewares](../api/http-api.md#middlewares) documentation.
 
 ### PermitFn (optional) {#permitfn}
 This field is applicable only to admin routes. This function is used to validate access to the admin route. The function accepts a slice of strings which contains the [permissions](../api/accounts-api.md#permissions-sec) of the account that's currently trying to access the page. It's up to you to validate if the user can access the page. The function should return `true` if the user has the required permissions, otherwise `false`.

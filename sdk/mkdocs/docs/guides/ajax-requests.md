@@ -2,26 +2,58 @@
 Ajax is a technique that allows a web page to be updated asynchronously by exchanging small amounts of data with the server behind the scenes. This means that it is possible to update parts of a web page, without reloading the entire page.
 
 ## 1. GET Request {#get-request}
-To make a `GET` request, we need an existing [GET HTTP Route](../api/http-router-api.md#get) and [handler function](#handler-function).
+To make a `GET` request, we need an existing [GET route](../api/http-router-api.md#get) and [handler function](#handler-function).
 
-```go
+Below is an example of a `GET` request to the `/welcome` route.
+This route and handler simply sends a JSON response with a message `Hello World!`.
+
+```go title="routes.go"
 router := api.Http().HttpRouter().PluginRouter()
-router.Get("/welcome/:name", func(w http.ResponseWriter, r *http.Request) {
-    // Handle the request
-    vars := api.Http().MuxVars(r) // map[string]string
-    name := vars["name"]
+router.Get("/welcome", func(w http.ResponseWriter, r *http.Request) {
     data := map[string]string{
-        "name": name
+        "message": "Hello World!"
     }
-
     // send JSON http response
     api.Http().HttpResponse().Json(w, data, http.StatusOK)
 
-}).Name("payments.options") // set the route name
+}).Name("welcome") // set the route name
 ```
+
+Now, we need to create our [vue component](./vue-components.md) to display the message from our handler:
+
+```html title="Welcome.vue"
+<template>
+    <p>{{ message }}</p>
+</template>
+
+<script>
+define(function(){
+    return {
+        template: template,
+        data: function() {
+            return {
+                message: ""
+            }
+        },
+        mounted: function() {
+            var self = this;
+            $flare.http.get('<% .Helpers.UrlForRoute "welcome" %>')
+            .then(function(data) {
+                self.message = data.message;
+            });
+        }
+    }
+})
+</script>
+```
+
+In this example, our vue component simply fetches the message from the http route named `welcome` and displays the message in the template.
 
 ## 2. POST Request {#post-request}
 
+Performing a `POST` request is very similar to `GET` request, except we use the [$flare.http.post](../api/flare-variable.md#flare-http-post) method.
+
+Take a look at [Form Submission](./form-submission.md) for an example on how to make a `POST` request.
+
+
 ## 3. Handler Function {#handler-function}
-
-
