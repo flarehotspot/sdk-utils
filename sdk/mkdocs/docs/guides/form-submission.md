@@ -17,7 +17,7 @@ api.Http().HttpRouter().PluginRouter().Post("/payments/receieved", func (w http.
   }
   fmt.Fprintf(w, "Payment Received: %d", data.Amount)
 
-}).Name("payment.received")
+}).Name("payment:received")
 ```
 
 In this example, we are using the `Post` method from [PluginRouter](../api/http-router-api.md#post) to handle the form submission. The first argument is the route path, and the second argument is the handler function. The handler function accepts two arguments, the first argument is the `http.ResponseWriter`, and the second argument is the `*http.Request`.
@@ -54,7 +54,7 @@ define(function(){
         var self = this;
         var formData = {amount: self.amount};
 
-        $flare.http.post('<% .Helpers.UrlForRoute "payment.received" %>', formData)
+        $flare.http.post('<% .Helpers.UrlForRoute "payment:received" %>', formData)
           .then(function(response){
             console.log(response);
           })

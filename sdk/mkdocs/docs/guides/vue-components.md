@@ -7,15 +7,19 @@ Take a look at the following example:
 ```html title="resources/components/portal/Welcome.vue"
 <template>
     <div>
-        <h1>Welcome {{ flareView.data.name }}</h1>
+        <h1>Welcome {{ name }}</h1>
     </div>
 </template>
 
 <script>
 define(function () {
     return {
-        props: ['flareView'],
         template: template,
+        data: function(){
+            return {
+                name: "John"
+            }
+        }
     }
 })
 </script>
@@ -26,26 +30,22 @@ The equivalent traditional [single-file component](https://v2.vuejs.org/v2/guide
 ```html
 <template>
     <div>
-        <h1>Welcome {{ flareView.data.name }}</h1>
+        <h1>Welcome {{ name }}</h1>
     </div>
 </template>
 
 <script>
 export default {
-    props: ['flareView'],
+    data() {
+        return {
+            name: "John"
+        }
+    }
 }
 </script>
 ```
 
-## 1. The `flareView` prop {#flareview-prop}
-
-The `flareView` prop is automatically populated with the JSON data from the handler function defined in [HandlerFunc](routes-and-links.md#handlerfunc) field of the [portal](./routes-and-links.md#portal-routes) and [admin](./routes-and-links.md#admin-routes) routes. The `flareView` component prop has three fields, namely:
-
-- `data`: The JSON data returned from [VueResponse.Json](../api/vue-response.md#json) method called inside the [handler function](./routes-and-links.md#handlerfunc).
-- `loading`: A boolean value that indicates if the data is still loading.
-- `error`: A string containing the error message if the data loading fails.
-
-## 2. The `template` variable {#template-variable}
+## 1. The `template` variable {#template-variable}
 
 The `template` variable is a string containing the HTML code automatically extracted from the `<template>` tag.
 
@@ -68,7 +68,7 @@ The `template` variable is a string containing the HTML code automatically extra
     </template>
     ```
 
-## 3. Template helpers {#template-helpers}
+## 2. Template helpers {#template-helpers}
 
 Aside from the [HttpHelpers.VueRoutePath](../api/http-helpers.md#vueroutepath) method we used to create a link, there are other useful methods within the [HttpHelpers](../api/http-helpers.md) API. The [HttpHelpers](../api/http-helpers.md) can be accessed anywhere inside the component as `.Helpers` (notice the dot prefix) enclosed by `<%` and `%>` delimiters. Visit the [HttpHelpers](../api/http-helpers.md) API documentation to learn more.
 
@@ -78,9 +78,9 @@ For example, to build a link to another route, you can use the `HttpHelpers.VueR
 <router-link :to='<% .Helpers.VueRoutePath "portal.welcome" %>'>Welcome</router-link>
 ```
 
-## 4. Loading child components {#loading-child-components}
+## 3. Loading child components {#loading-child-components}
 
-Loading child components can be done using the [HttpHelpers.VueComponentPath](../api/http-helpers.md#vuecomponentpath) method in combination with the [$flare.vueLazyLoad](../api/flare-variable.md#flarevuelazyload) method:
+Loading child components can be done using the [HttpHelpers.VueComponentPath](../api/http-helpers.md#vuecomponentpath) method in combination with the [$flare.vueLazyLoad](../api/flare-variable.md#flare-vuelazyload) method:
 
 The parent component:
 
@@ -91,11 +91,9 @@ The parent component:
 
 <script>
 define(function(){
-
     var child = $flare.vueLazyLoad('<% .Helpers.VueComponentPath "SampleChild.vue" %>');
 
     return {
-        props: ['flareView'],
         template: template,
         components: {
             'sample-child': child

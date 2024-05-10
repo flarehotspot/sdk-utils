@@ -39,7 +39,7 @@ $flare.http.post('/path/to/handler', formData)
 !!!warning "Important"
     You must use [VueResponse](./vue-response.md) in the server side to perform http resposes for both the [$flare.http.get](#flare-http-get) and [$flare.http.post](#flare-http-post) methods.
 
-## 2. $flare.vueLazyLoad
+## 2. $flare.vueLazyLoad #{flare-vuelazyload}
 
 The `$flare.vueLazyLoad` method is used to lazy load vue components.
 
