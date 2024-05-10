@@ -1,3 +1,3 @@
 **Release Notes:**
 
-- Fix default theme plugin errors.
+- Remove handler field from vue routes
