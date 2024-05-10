@@ -37,7 +37,7 @@
       reloadListener = $flare.events.on(
         'portal:items:reload',
         function (items) {
-          self.items = items;
+          self.data.portalItems = items;
         }
       );
     },
