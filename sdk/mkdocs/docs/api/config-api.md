@@ -71,9 +71,13 @@ err := api.Config().Bandwidth("eth0").Save(sdkcfg.BandwdCfg{
 })
 ```
 
-## 3. Plugin {#plugin}
+## 3. Custom {#custom}
 
-The plugin configuration API is used to store custom configuration specific to the plugin you are developing. Using this API ensures that your custom plugin configuration can be migrated properly to a new system in case you want to flash new firmware or migrate to a new hardware.
+The custom configuration API is used to store custom configuration specific to the plugin you are developing. Using this API ensures that your custom plugin configuration can be migrated properly to a new system in case you want to flash new firmware or migrate to a new hardware.
+
+The custom configuration data is stored by `key`. This makes it easier to manage multiple configuration options. The resulting files can be found under your plugin name in the `config/plugins` directory inside the root SDK folder.
+
+### Save
 
 To save your plugin configuration, use the `Save` method.
 
@@ -84,18 +88,20 @@ type MyPluginCfg struct {
     Field2 string `json:"field2"`
 }
 
-err := api.Config().Plugin("some_key").Save(MyPluginCfg{
+err := api.Config().Custom("some_key").Save(MyPluginCfg{
     Field1: "value1",
     Field2: "value2",
 })
 ```
+
+### Get
 
 To get your plugin configuration for a specific key, use the `Get` method.
 
 ```go
 var myCfg MyPluginCfg
 
-err := api.Config().Plugin("some_key").Get(&myCfg)
+err := api.Config().Custom("some_key").Get(&myCfg)
 
 fmt.Printf("Field1: %s, Field2: %s", myCfg.Field1, myCfg.Field2)
 ```
