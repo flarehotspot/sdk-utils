@@ -17,11 +17,11 @@ type ConfigApi struct {
 	api *PluginApi
 }
 
-func (self *ConfigApi) Plugin(key string) sdkcfg.PluginCfgApi {
+func (self *ConfigApi) Custom(key string) sdkcfg.CustomCfgApi {
 	if key == "" {
 		key = DEFAULT_CONFIG_KEY
 	}
-	return cfgapi.NewPluginCfgApi(key, self.api.Pkg())
+	return cfgapi.NewCustomCfgApi(key, self.api.Pkg())
 }
 
 func (self *ConfigApi) Application() sdkcfg.AppCfgApi {

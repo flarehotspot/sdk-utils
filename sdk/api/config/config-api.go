@@ -15,6 +15,6 @@ type ConfigApi interface {
 	// Get the bandwidth configuration api of a network interface.
 	Bandwidth(ifname string) BandwidthCfgApi
 
-	// Get the plugin configuration guration api.
-	Plugin(key string) PluginCfgApi
+	// Get the custom configuration guration api.
+	Custom(key string) CustomCfgApi
 }

@@ -6,9 +6,15 @@
 
 package sdkcfg
 
-// PluginCfgApi is used to read and write custom configuration for your plugin.
-type PluginCfgApi interface {
-	// Read reads the custom configuration of your plugin.
+import "errors"
+
+var (
+	ErrNoConfig = errors.New("no configuration file found")
+)
+
+// CustomCfgApi is used to read and write custom configuration for your plugin.
+type CustomCfgApi interface {
+	// Get the custom configuration of your plugin.
 	// It is up to you to unmarshal the configuration into a struct.
 	Get(v any) error
 

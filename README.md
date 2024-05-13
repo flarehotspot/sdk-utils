@@ -74,3 +74,24 @@ Install the `flare-internal` CLI:
 go install ./core/internal/cli/flare-internal.go
 flare-internal --help
 ```
+
+# Documentation
+
+Make sure `pipx` is available in your system and install the following packages:
+
+```sh
+pipx install mkdocs-material --include-deps
+```
+
+Then you can serve the local documentaion server:
+
+```sh
+cd flarehotspot
+make docs-serve
+```
+
+To build the documentation to be uploaded to the docs website:
+
+```sh
+make docs-build
+```
