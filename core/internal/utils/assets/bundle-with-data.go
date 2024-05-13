@@ -7,15 +7,15 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/flarehotspot/core/internal/utils/crypt"
+	"github.com/flarehotspot/core/internal/utils/flaretmpl"
+	jobque "github.com/flarehotspot/core/internal/utils/job-que"
 	fs "github.com/flarehotspot/sdk/utils/fs"
 	paths "github.com/flarehotspot/sdk/utils/paths"
-	"github.com/flarehotspot/core/internal/utils/crypt"
-	jobque "github.com/flarehotspot/core/internal/utils/job-que"
-	tmplcache "github.com/flarehotspot/core/internal/utils/flaretmpl"
 )
 
 var cacheWithHelpers = sync.Map{}
-var bundeWithHelpersQ = jobque.NewJobQues()
+var bundleWithHelpersQue = jobque.NewJobQues()
 
 type AssetWithData struct {
 	File string
@@ -23,7 +23,7 @@ type AssetWithData struct {
 }
 
 func BundleWithData(entries ...AssetWithData) (CacheData, error) {
-	cache, err := bundeWithHelpersQ.Exec(func() (interface{}, error) {
+	cache, err := bundleWithHelpersQue.Exec(func() (interface{}, error) {
 		parsedEntryPaths := []string{}
 
 		tmpDir := filepath.Join(paths.TmpDir, "asset-bundles/entries")
@@ -47,7 +47,7 @@ func BundleWithData(entries ...AssetWithData) (CacheData, error) {
 
 		for _, entry := range entries {
 			var entryCont strings.Builder
-			tmpl, err := tmplcache.GetTextTemplate(entry.File)
+			tmpl, err := flaretmpl.GetTextTemplate(entry.File)
 			if err != nil {
 				return CacheData{}, err
 			}
