@@ -27,6 +27,7 @@ func AdminRoutes(g *plugins.CoreGlobals) {
 
 	adminR.Group("/logs", func(subrouter sdkhttp.HttpRouterInstance) {
 		subrouter.Get("/index", adminctrl.GetLogs(g)).Name(routenames.RouteAdminLogsIndex)
+        subrouter.Post("/clear", adminctrl.ClearLogs(g)).Name("admin:logs:clear")
 	})
 
 	g.CoreAPI.HttpAPI.VueRouter().RegisterAdminRoutes([]sdkhttp.VueAdminRoute{

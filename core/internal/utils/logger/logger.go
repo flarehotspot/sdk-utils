@@ -18,8 +18,10 @@ import (
 	"time"
 
 	jobque "github.com/flarehotspot/core/internal/utils/job-que"
+	sdkplugin "github.com/flarehotspot/sdk/api/plugin"
 	sdkfs "github.com/flarehotspot/sdk/utils/fs"
 	sdkpaths "github.com/flarehotspot/sdk/utils/paths"
+	sdkstr "github.com/flarehotspot/sdk/utils/strings"
 
 	"github.com/flarehotspot/sdk/utils/wsv"
 )
@@ -40,8 +42,27 @@ const (
 	flarelogBaseMetadataCount = 10
 )
 
+type LogLine struct {
+	Level      int      `json:"level"`
+	Title      string   `json:"title"`
+	Year       int      `json:"year"`
+	Month      int      `json:"month"`
+	Day        int      `json:"day"`
+	Hour       int      `json:"hour"`
+	Minute     int      `json:"minute"`
+	Second     int      `json:"second"`
+	Nano       int      `json:"nano"`
+	DateTime   string   `json:"datetime"`
+	FullPath   string   `json:"fullpath"`
+	Plugin     string   `json:"plugin"`
+	PluginPath string   `json:"pluginpath"`
+	Filename   string   `json:"filename"`
+	Line       int      `json:"line"`
+	Body       []string `json:"body"`
+}
+
 var (
-	CurrLines   atomic.Uint64
+	LineCount   atomic.Int64
 	logFilePath = filepath.Join(sdkpaths.TmpDir, "logs", logFilename)
 	que         = jobque.NewJobQues()
 )
@@ -56,7 +77,7 @@ func init() {
 		os.Create(logFilePath)
 	}
 
-	CurrLines.Store(uint64(GetLogLines(logFilename)))
+	LineCount.Store(int64(GetLogLines(logFilename)))
 }
 
 // Returns the file path and line number of the caller function
@@ -65,7 +86,7 @@ func GetCallerFileLine(calldepth int) (file string, line int) {
 
 	_, file, line, ok := runtime.Caller(calldepth)
 	if !ok {
-		log.Println("Cannot retrieve caller")
+		log.Println("Core Logger: Cannot retrieve caller")
 	}
 
 	return
@@ -103,14 +124,12 @@ func GetLogLines(logFile string) int {
 // Returns a map of string : any, formatted based on the log parser
 // and an error. Logs returned will be in the range of start to end,
 // inclusive. Starts at index 0.
-func ReadLogs(logFile string, start int, end int) ([]map[string]any, error) {
+func ReadLogs(start int, end int) ([]*LogLine, error) {
 	ret, err := que.Exec(func() (interface{}, error) {
-		logs := []map[string]any{}
-
-		logFilePathToRead := filepath.Join(sdkpaths.TmpDir, "logs", logFile)
+		logs := []*LogLine{}
 
 		// open logs
-		file, err := os.Open(logFilePathToRead)
+		file, err := os.Open(logFilePath)
 		if err != nil {
 			return nil, err
 		}
@@ -135,20 +154,20 @@ func ReadLogs(logFile string, start int, end int) ([]map[string]any, error) {
 			}
 
 			if err != nil {
-				log.Println("error inside readlogs for loop ", err)
+				log.Println("Core Logger: error inside readlogs for loop ", err)
 				return nil, err
 			}
 
 			// read of line successful
 			dataInLine, err := wsv.ParseLineAsArray(l)
 			if err != nil {
-				log.Println("error parsing raw log file to wsv: ", err)
+				log.Println("Core Logger: error parsing raw log file to wsv: ", err)
 				return nil, err
 			}
 
 			parsedlog, err := parseLog(dataInLine)
 			if err != nil {
-				log.Println("error parsing log file to flarelog format: ", err)
+				log.Println("Core Logger: error parsing log file to flarelog format: ", err)
 				return nil, err
 			}
 
@@ -168,7 +187,15 @@ func ReadLogs(logFile string, start int, end int) ([]map[string]any, error) {
 		return nil, err
 	}
 
-	return ret.([]map[string]any), nil
+	return ret.([]*LogLine), nil
+}
+
+func ClearLogs() error {
+	_, err := que.Exec(func() (interface{}, error) {
+		err := os.WriteFile(logFilePath, []byte(""), sdkfs.PermFile)
+		return nil, err
+	})
+	return err
 }
 
 // Returns the total number of lines of the specified file
@@ -193,59 +220,76 @@ func lineCounter(r io.Reader) (int, error) {
 
 // Accepts a slice of string and parses as a flare log line
 // and returns the parsed string.
-func parseLog(logLine []string) (map[string]any, error) {
+func parseLog(logLine []string) (*LogLine, error) {
 	// log.Println("Logline: ", logLine)
 	logLength := len(logLine)
 
 	// check if valid flare log file
 	if logLength < flarelogBaseMetadataCount {
-		return nil, errors.New("invalid flarelog format")
+		return nil, errors.New("Core Logger: invalid flarelog format")
 	}
-
-	// get file/packages
-	var pkgs []string
 
 	pathRaw := logLine[9] // raw file path
 	relativePath := sdkpaths.StripRoot(pathRaw)
-	j := 0
-	for i := 0; i < len(relativePath); i++ {
-		if relativePath[i] == '/' {
-			pkgs = append(pkgs, relativePath[j:i])
-			j = i + 1
-			continue
-		}
+	subpaths := strings.Split(relativePath, "/")
+
+	var plugin, filename, filepluginpath, pluginpath string
+
+	if subpaths[0] == "core" {
+		plugin = "core"
+		filename = subpaths[len(subpaths)-1]
+		// TODO: show only details for core when in dev mode
+		filepluginpath = "******"
+		pluginpath = plugin
+	} else {
+		plugin = subpaths[1]
+		filename = subpaths[len(subpaths)-1]
+		filepluginpath = strings.Join(subpaths[2:], "/")
+		pluginpath = strings.Join(subpaths[:1], "/")
 	}
-	pkgs = append(pkgs, relativePath[j:])
 
-	plugin := pkgs[1]
-	filename := pkgs[len(pkgs)-1]
-	filepluginpath := strings.Join(pkgs[2:], "/")
+	var pluginInfo sdkplugin.PluginInfo
+	err := sdkfs.ReadJson(filepath.Join(pluginpath, "plugin.json"), &pluginInfo)
+	if err != nil {
+		return nil, err
+	}
 
-	var body any
+	var body []string
 	// check if log has body
 	if logLength > flarelogBaseMetadataCount {
 		body = logLine[flarelogBaseMetadataCount+1:]
 	}
 
-	log := map[string]any{
-		"level":          logLine[0],
-		"title":          logLine[1],
-		"year":           logLine[2],
-		"month":          logLine[3],
-		"day":            logLine[4],
-		"hour":           logLine[5],
-		"min":            logLine[6],
-		"sec":            logLine[7],
-		"nano":           logLine[8],
-		"fullpath":       logLine[9],
-		"plugin":         plugin,
-		"filepluginpath": filepluginpath,
-		"filename":       filename,
-		"line":           logLine[10],
-		"body":           body,
-	}
+	level := sdkstr.AtoiOrDefault(logLine[0], 0)
+	title := logLine[1]
+	year := sdkstr.AtoiOrDefault(logLine[2], 0)
+	month := sdkstr.AtoiOrDefault(logLine[3], 0)
+	day := sdkstr.AtoiOrDefault(logLine[4], 0)
+	hour := sdkstr.AtoiOrDefault(logLine[5], 0)
+	minute := sdkstr.AtoiOrDefault(logLine[6], 0)
+	second := sdkstr.AtoiOrDefault(logLine[7], 0)
+	nano := sdkstr.AtoiOrDefault(logLine[8], 0)
+	fullPath := sdkpaths.StripRoot(logLine[9])
+	line := sdkstr.AtoiOrDefault(logLine[10], 0)
 
-	return log, nil
+	return &LogLine{
+		Level:      level,
+		Title:      title,
+		Year:       year,
+		Month:      month,
+		Day:        day,
+		Hour:       hour,
+		Minute:     minute,
+		Second:     second,
+		Nano:       nano,
+		DateTime:   fmt.Sprintf("%d-%d-%d %d:%d:%d.%d", year, month, day, hour, minute, second, nano),
+		FullPath:   fullPath,
+		Plugin:     pluginInfo.Package,
+		PluginPath: filepluginpath,
+		Filename:   filename,
+		Line:       line,
+		Body:       body,
+	}, nil
 }
 
 // Logs the log info to the console with colored texts
@@ -300,8 +344,8 @@ func LogToConsole(file string, line int, level int, title string, body ...any) {
 }
 
 // Logs the log info to the specified file path
-func LogToFile(file string, line int, level int, title string, body ...any) {
-	_, _ = que.Exec(func() (interface{}, error) {
+func LogToFile(file string, line int, level int, title string, body ...any) error {
+	_, err := que.Exec(func() (interface{}, error) {
 		logFile, err := openLogFile()
 		if err != nil {
 			log.Println(err)
@@ -355,11 +399,13 @@ func LogToFile(file string, line int, level int, title string, body ...any) {
 		}
 
 		// increment log file lines by 1
-		CurrLines.Add(1)
+		LineCount.Add(1)
 
 		// nils for the job que
 		return nil, nil
 	})
+
+	return err
 }
 
 // Returns a date string with format: YYYYMMdd
@@ -428,7 +474,7 @@ func openLogFile() (*os.File, error) {
 	// opening/creating log file
 	logFile, err := os.OpenFile(logFilePath, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0644)
 	if err != nil {
-		log.Println("Error creating log file", "error", err)
+		log.Println("Core Logger: Error creating log file: ", err)
 		return nil, err
 	}
 

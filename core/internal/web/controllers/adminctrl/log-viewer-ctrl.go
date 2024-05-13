@@ -1,13 +1,19 @@
 package adminctrl
 
 import (
+	"fmt"
 	"log"
 	"net/http"
-	"strconv"
 
 	"github.com/flarehotspot/core/internal/plugins"
 	"github.com/flarehotspot/core/internal/utils/logger"
+	sdkstr "github.com/flarehotspot/sdk/utils/strings"
 )
+
+type LogViewerData struct {
+	Logs  []*logger.LogLine `json:"logs"`
+	Count int               `json:"count"`
+}
 
 // Gets the logs based on the requested current page and
 // per page queries
@@ -15,67 +21,53 @@ func GetLogs(g *plugins.CoreGlobals) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		res := g.CoreAPI.HttpAPI.VueResponse()
 
-		var params struct {
-			CurrentPage int
-			PerPage     int
-			LogFile     string
-		}
+		// test
+		rows := int(logger.LineCount.Load())
+		g.CoreAPI.LoggerAPI.Debug("test "+fmt.Sprintf("%d", rows), "test body")
 
-		// get queries
-		rCurrentPage := r.URL.Query().Get("currentPage")
-		rPerPage := r.URL.Query().Get("perPage")
-
-		// get log files
-		// logFiles := logger.GetLogFiles()
-
-		// check queries if empty
-		if rPerPage != "" {
-			params.PerPage, _ = strconv.Atoi(rPerPage)
-		} else {
-			params.PerPage = 50
-		}
-
-		params.LogFile = "app.log"
-
-		// get log rows
-		rows := int(logger.CurrLines.Load())
-		if params.LogFile != "app.log" {
-			rows = logger.GetLogLines(params.LogFile)
-		}
-
-		if rCurrentPage != "" {
-			params.CurrentPage, _ = strconv.Atoi(rCurrentPage)
-		} else {
-			params.CurrentPage = (rows + params.PerPage - 1) / params.PerPage
-		}
+		currentPage := sdkstr.AtoiOrDefault(r.URL.Query().Get("currentPage"), 1)
+		perPage := sdkstr.AtoiOrDefault(r.URL.Query().Get("perPage"), 50)
+		count := int(logger.LineCount.Load())
 
 		// set start and end lines based on the
 		// currentPage and perPage query
-		start := (params.PerPage * (params.CurrentPage - 1))
+		start := (perPage * (currentPage - 1))
 		if start < 0 {
 			start = 0
 		}
-		end := start + params.PerPage - 1
-		if end > rows {
-			end = rows
+
+		end := start + perPage - 1
+		if end > count {
+			end = count
 		}
 
 		// read logs
-		logs, err := logger.ReadLogs(params.LogFile, start, end)
+		logs, err := logger.ReadLogs(start, end)
 		if err != nil {
 			log.Println(err)
-			res.Error(w, err.Error(), 500)
+			res.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
-		data := map[string]any{
-			"logs":           logs,
-			"rows":           rows,
-			"currentPage":    params.CurrentPage,
-			"perPage":        params.PerPage,
-			"currentLogFile": params.LogFile,
+		data := LogViewerData{
+			Logs:  logs,
+			Count: count,
 		}
 
 		res.Json(w, data, http.StatusOK)
+	}
+}
+
+func ClearLogs(g *plugins.CoreGlobals) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		res := g.CoreAPI.HttpAPI.VueResponse()
+		err := logger.ClearLogs()
+		if err != nil {
+			log.Println(err)
+			res.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		res.SetFlashMsg("success", "Logs cleared successfully.")
+		res.Json(w, nil, http.StatusOK)
 	}
 }
