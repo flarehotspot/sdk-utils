@@ -24,7 +24,7 @@ func readConfigFile(out interface{}, f string) error {
 }
 
 func writeConfigFile(f string, config interface{}) error {
-	bytes, err := json.Marshal(config)
+	bytes, err := json.MarshalIndent(config, "", "  ")
 	if err != nil {
 		return err
 	}
