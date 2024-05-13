@@ -7,5 +7,5 @@ const (
 	AdminNavs        = "admin.navs"
 
 	RouteAdminThemesIndex = "admin.themes.index"
-	RouteAdminLogsIndex   = "admin.logs.index"
+	RouteAdminLogsIndex   = "admin:logs:index"
 )
