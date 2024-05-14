@@ -5,11 +5,11 @@ import (
 	"path/filepath"
 
 	"github.com/flarehotspot/core/internal/plugins"
-	paths "github.com/flarehotspot/sdk/utils/paths"
 	"github.com/flarehotspot/core/internal/web/controllers"
 	"github.com/flarehotspot/core/internal/web/middlewares"
 	"github.com/flarehotspot/core/internal/web/router"
 	routenames "github.com/flarehotspot/core/internal/web/routes/names"
+	paths "github.com/flarehotspot/sdk/utils/paths"
 )
 
 func AssetsRoutes(g *plugins.CoreGlobals) {
@@ -23,11 +23,11 @@ func AssetsRoutes(g *plugins.CoreGlobals) {
 
 	vueR.HandleFunc("/with-helper/{pkg}/{version}/{path:.*}", assetsCtrl.AssetWithHelpers).
 		Methods("GET").
-		Name(routenames.AssetWithHelpers)
+		Name(routenames.RouteAssetWithHelpers)
 
 	vueR.HandleFunc("/plugin-components/{pkg}/{version}/{path:.*}", assetsCtrl.VueComponent).
 		Methods("GET").
-		Name(routenames.AssetVueComponent)
+		Name(routenames.RouteAssetVueComponent)
 
 	allPlugins := g.PluginMgr.All()
 	for _, p := range allPlugins {
@@ -38,7 +38,7 @@ func AssetsRoutes(g *plugins.CoreGlobals) {
 		router.RootRouter.PathPrefix(prefix).Handler(fileserver)
 	}
 
-    // set public static files
+	// set public static files
 	assetPathMw := middlewares.AssetPath
 	publicDir := paths.PublicDir
 	fs := http.FileServer(http.Dir(publicDir))

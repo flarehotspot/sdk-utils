@@ -1,6 +1,6 @@
 package routenames
 
 const (
-	AssetWithHelpers  = "assets.with-helpers"
-	AssetVueComponent = "assets.vue-component"
+	RouteAssetWithHelpers  = "assets:with-helpers"
+	RouteAssetVueComponent = "assets:vue-component"
 )

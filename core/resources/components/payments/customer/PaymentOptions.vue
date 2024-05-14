@@ -27,7 +27,7 @@ file, You can obtain one at https://mozilla.org/MPL/2.0/.
       mounted: function () {
         var self = this;
         $flare.http
-          .get('<% .Helpers.UrlForRoute "portal.payments.options" %>')
+          .get('<% .Helpers.UrlForRoute "portal:payments:options" %>')
           .then(function (data) {
             console.log('Options:', data);
             self.options = data;

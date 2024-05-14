@@ -9,7 +9,6 @@ import (
 	"github.com/flarehotspot/core/internal/db/models"
 	"github.com/flarehotspot/core/internal/web/helpers"
 	"github.com/flarehotspot/core/internal/web/middlewares"
-	routenames "github.com/flarehotspot/core/internal/web/routes/names"
 )
 
 func NewPluginMiddlewares(api *PluginApi, mdls *models.Models, dmgr *connmgr.ClientRegister, pmgr *PaymentsMgr) *PluginMiddlewares {
@@ -62,7 +61,7 @@ func (self *PluginMiddlewares) PendingPurchase() func(http.Handler) http.Handler
 			}
 
 			if purchase != nil {
-				res.Redirect(w, routenames.RoutePaymentOptions)
+                res.Redirect(w, "payments:customer:options")
 				return
 			}
 

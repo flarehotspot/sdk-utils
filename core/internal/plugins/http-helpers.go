@@ -34,7 +34,7 @@ func (self *HttpHelpers) AssetPath(p string) string {
 }
 
 func (self *HttpHelpers) AssetWithHelpersPath(path string) string {
-	assetsR := router.AssetsRouter.Get(rnames.AssetWithHelpers)
+	assetsR := router.AssetsRouter.Get(rnames.RouteAssetWithHelpers)
 	pluginApi := self.api
 	url, err := assetsR.URL("pkg", pluginApi.Pkg(), "version", pluginApi.Version(), "path", path)
 	if err != nil {
@@ -46,9 +46,9 @@ func (self *HttpHelpers) AssetWithHelpersPath(path string) string {
 }
 
 func (self *HttpHelpers) VueComponentPath(path string) string {
-	assetsR := router.AssetsRouter.Get(rnames.AssetVueComponent)
+	assetsR := router.AssetsRouter.Get(rnames.RouteAssetVueComponent)
 	if assetsR == nil {
-		log.Println("Route not found: ", rnames.AssetVueComponent)
+		log.Println("Route not found: ", rnames.RouteAssetVueComponent)
 		return ""
 	}
 
