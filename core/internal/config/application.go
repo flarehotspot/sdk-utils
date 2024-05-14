@@ -16,7 +16,7 @@ type AppConfig struct {
 func ReadApplicationConfig() (AppConfig, error) {
 	var cfg AppConfig
 
-	err := readConfigFile(&cfg, applicationJsonFile)
+	err := readConfigFile(applicationJsonFile, &cfg)
 	if err != nil {
 		// generate defaults if not exists
 		cfg := AppConfig{

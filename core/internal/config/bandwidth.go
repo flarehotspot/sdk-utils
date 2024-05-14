@@ -16,7 +16,7 @@ type IfCfg struct {
 
 func ReadBandwidthConfig() (BandwdCfg, error) {
 	var cfg BandwdCfg
-	err := readConfigFile(&cfg, bandwidthJsonFile)
+	err := readConfigFile(bandwidthJsonFile, &cfg)
 	return cfg, err
 }
 

@@ -41,7 +41,7 @@ func (cfg *DbConfig) BaseConnStr() string {
 
 func ReadDatabaseConfig() (*DbConfig, error) {
 	var cfg DbConfig
-	err := readConfigFile(&cfg, databaseJsonFile)
+	err := readConfigFile(databaseJsonFile, &cfg)
 	if err != nil {
 		return nil, err
 	}

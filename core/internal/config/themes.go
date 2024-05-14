@@ -36,7 +36,7 @@ func ReadThemesConfig() (ThemesConfig, error) {
 	themeCfgMu.RUnlock()
 
 	var cfg ThemesConfig
-	if err := readConfigFile(&cfg, themesConfigJsonFile); err != nil {
+	if err := readConfigFile(themesConfigJsonFile, &cfg); err != nil {
 		return cfg, err
 	}
 	if !isThemeValid(cfg.Portal) {
