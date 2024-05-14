@@ -48,7 +48,7 @@ func PortalIndexPage(g *plugins.CoreGlobals) http.Handler {
 			return
 		}
 
-        ssePath := g.CoreAPI.HttpAPI.Helpers().UrlForRoute("portal:sse")
+		ssePath := g.CoreAPI.HttpAPI.Helpers().UrlForRoute("portal:sse")
 
 		jsFiles := []assets.AssetWithData{
 			// libs

@@ -16,8 +16,8 @@ func AdminRoutes(g *plugins.CoreGlobals) {
 	adminIndexCtrl := controllers.AdminIndexPage(g)
 	adminSseCtrl := controllers.AdminSseHandler(g)
 
-    rootR.Handle("/admin", adminIndexCtrl).Methods("GET").Name("admin:index")
-    adminR.Get("/events", adminSseCtrl).Name("admin:sse")
+	rootR.Handle("/admin", adminIndexCtrl).Methods("GET").Name("admin:index")
+	adminR.Get("/events", adminSseCtrl).Name("admin:sse")
 
 	adminR.Group("/themes", func(subrouter sdkhttp.HttpRouterInstance) {
 		subrouter.Get("/index", adminctrl.GetAvailableThemes(g)).Name("admin:themes:list")
@@ -25,8 +25,8 @@ func AdminRoutes(g *plugins.CoreGlobals) {
 	})
 
 	adminR.Group("/logs", func(subrouter sdkhttp.HttpRouterInstance) {
-        subrouter.Get("/index", adminctrl.GetLogs(g)).Name("admin:logs:index")
-        subrouter.Post("/clear", adminctrl.ClearLogs(g)).Name("admin:logs:clear")
+		subrouter.Get("/index", adminctrl.GetLogs(g)).Name("admin:logs:index")
+		subrouter.Post("/clear", adminctrl.ClearLogs(g)).Name("admin:logs:clear")
 	})
 
 	g.CoreAPI.HttpAPI.VueRouter().RegisterAdminRoutes([]sdkhttp.VueAdminRoute{

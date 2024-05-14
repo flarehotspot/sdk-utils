@@ -47,7 +47,7 @@ func AdminIndexPage(g *plugins.CoreGlobals) http.Handler {
 			return
 		}
 
-        ssePath := g.CoreAPI.HttpAPI.Helpers().UrlForRoute("admin:sse")
+		ssePath := g.CoreAPI.HttpAPI.Helpers().UrlForRoute("admin:sse")
 
 		jsFiles := []assets.AssetWithData{
 			// libs

@@ -53,7 +53,7 @@ func (self *PaymentsApi) Checkout(w http.ResponseWriter, r *http.Request, p sdkp
 		}
 
 		coreApi := self.api.CoreAPI
-        coreApi.HttpAPI.VueResponse().Redirect(w, "payments:customer:options")
+		coreApi.HttpAPI.VueResponse().Redirect(w, "payments:customer:options")
 	}
 
 	purMw := self.api.HttpAPI.middlewares.PendingPurchase()

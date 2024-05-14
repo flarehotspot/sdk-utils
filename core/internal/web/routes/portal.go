@@ -15,7 +15,7 @@ func PortalRoutes(g *plugins.CoreGlobals) {
 	portalSseCtrl := controllers.PortalSseHandler(g)
 	portalItemsCtrl := controllers.PortalItemsHandler(g)
 
-    rootR.Handle("/", portalIndexCtrl).Methods("GET").Name("portal:index")
-    portalR.Get("/events", portalSseCtrl).Name("portal:sse")
-    portalR.Get("/nav/items", portalItemsCtrl, pendingPurchaseMw).Name("portal:navs:items")
+	rootR.Handle("/", portalIndexCtrl).Methods("GET").Name("portal:index")
+	portalR.Get("/events", portalSseCtrl).Name("portal:sse")
+	portalR.Get("/nav/items", portalItemsCtrl, pendingPurchaseMw).Name("portal:navs:items")
 }

@@ -61,7 +61,7 @@ func (self *PluginMiddlewares) PendingPurchase() func(http.Handler) http.Handler
 			}
 
 			if purchase != nil {
-                res.Redirect(w, "payments:customer:options")
+				res.Redirect(w, "payments:customer:options")
 				return
 			}
 
