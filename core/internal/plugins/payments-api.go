@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"github.com/flarehotspot/core/internal/web/helpers"
-	routenames "github.com/flarehotspot/core/internal/web/routes/names"
 	sdkpayments "github.com/flarehotspot/sdk/api/payments"
 )
 
@@ -54,7 +53,7 @@ func (self *PaymentsApi) Checkout(w http.ResponseWriter, r *http.Request, p sdkp
 		}
 
 		coreApi := self.api.CoreAPI
-		coreApi.HttpAPI.VueResponse().Redirect(w, routenames.RoutePaymentOptions)
+		coreApi.HttpAPI.VueResponse().Redirect(w, "payments:customer:options")
 	}
 
 	purMw := self.api.HttpAPI.middlewares.PendingPurchase()

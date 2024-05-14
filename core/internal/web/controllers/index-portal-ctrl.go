@@ -11,7 +11,6 @@ import (
 	sse "github.com/flarehotspot/core/internal/utils/sse"
 	webutil "github.com/flarehotspot/core/internal/utils/web"
 	"github.com/flarehotspot/core/internal/web/response"
-	routenames "github.com/flarehotspot/core/internal/web/routes/names"
 )
 
 func PortalIndexPage(g *plugins.CoreGlobals) http.Handler {
@@ -49,7 +48,7 @@ func PortalIndexPage(g *plugins.CoreGlobals) http.Handler {
 			return
 		}
 
-		ssePath := g.CoreAPI.HttpAPI.Helpers().UrlForRoute(routenames.RoutePortalSse)
+		ssePath := g.CoreAPI.HttpAPI.Helpers().UrlForRoute("portal:sse")
 
 		jsFiles := []assets.AssetWithData{
 			// libs

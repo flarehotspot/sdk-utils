@@ -50,7 +50,7 @@
       load: function () {
         var self = this;
         $flare.http
-          .get('<% .Helpers.UrlForRoute "portal.items" %>')
+          .get('<% .Helpers.UrlForRoute "portal:navs:items" %>')
           .then(function (data) {
             console.log('nav items', data);
             self.data.portalItems = data;

@@ -5,7 +5,6 @@ import (
 	"github.com/flarehotspot/core/internal/web/controllers"
 	"github.com/flarehotspot/core/internal/web/controllers/adminctrl"
 	"github.com/flarehotspot/core/internal/web/router"
-	routenames "github.com/flarehotspot/core/internal/web/routes/names"
 	sdkacct "github.com/flarehotspot/sdk/api/accounts"
 	sdkhttp "github.com/flarehotspot/sdk/api/http"
 )
@@ -17,8 +16,8 @@ func AdminRoutes(g *plugins.CoreGlobals) {
 	adminIndexCtrl := controllers.AdminIndexPage(g)
 	adminSseCtrl := controllers.AdminSseHandler(g)
 
-	rootR.Handle("/admin", adminIndexCtrl).Methods("GET").Name(routenames.RouteAdminIndex)
-	adminR.Get("/events", adminSseCtrl).Name(routenames.RouteAdminSse)
+	rootR.Handle("/admin", adminIndexCtrl).Methods("GET").Name("admin:index")
+	adminR.Get("/events", adminSseCtrl).Name("admin:sse")
 
 	adminR.Group("/themes", func(subrouter sdkhttp.HttpRouterInstance) {
 		subrouter.Get("/index", adminctrl.GetAvailableThemes(g)).Name("admin:themes:list")
@@ -26,8 +25,8 @@ func AdminRoutes(g *plugins.CoreGlobals) {
 	})
 
 	adminR.Group("/logs", func(subrouter sdkhttp.HttpRouterInstance) {
-		subrouter.Get("/index", adminctrl.GetLogs(g)).Name(routenames.RouteAdminLogsIndex)
-        subrouter.Post("/clear", adminctrl.ClearLogs(g)).Name("admin:logs:clear")
+		subrouter.Get("/index", adminctrl.GetLogs(g)).Name("admin:logs:index")
+		subrouter.Post("/clear", adminctrl.ClearLogs(g)).Name("admin:logs:clear")
 	})
 
 	g.CoreAPI.HttpAPI.VueRouter().RegisterAdminRoutes([]sdkhttp.VueAdminRoute{
