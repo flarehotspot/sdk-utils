@@ -7,7 +7,6 @@ RUN apt-get update && \
 ENV GOCACHE=/build/.tmp/gocache
 ENV GO_CUSTOM_PATH=/build/go
 ENV GO_ENV=development
-ENV GO_TAGS="dev mono"
 ENV PATH=${GO_CUSTOM_PATH}/bin:${PATH}
 ENV FLARE="./core/devkit/cli/flare.go"
 ENV FLARE_INT="./core/internal/cli/flare-internal.go"
@@ -24,4 +23,4 @@ CMD cp go.work.default go.work && \
         -R 'core\/main\.go' \
         -R 'plugins\/.*\/main\.go' \
         -R 'mono\.go' \
-        -s -- sh -c './run-dev.sh' -v
+        -s -- sh -c './start.sh' -v
