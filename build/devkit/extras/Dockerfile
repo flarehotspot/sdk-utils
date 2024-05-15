@@ -13,8 +13,16 @@ ENV GOCACHE=/build/.tmp/gocache
 ENV GO_ENV=development
 ENV GO_CUSTOM_PATH=/build/go
 ENV PATH=${GO_CUSTOM_PATH}/bin:${PATH}
+ENV PATH=${HOME}/go/bin:${PATH}
 
 WORKDIR /build
+COPY go /build/go
+RUN go install github.com/cespare/reflex@latest
 
-CMD ./bin/flare server
+CMD $HOME/go/bin/reflex \
+        -r '\.go$' \
+        -R 'core\/main\.go' \
+        -R 'plugins\/.*\/main\.go' \
+        -R 'mono\.go' \
+        -s -- sh -c './bin/flare server'
 

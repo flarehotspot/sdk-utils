@@ -33,6 +33,7 @@ func main() {
 		return
 
 	case "create-devkit":
+		SyncVersion()
 		devkit.CreateDevkit()
 		return
 

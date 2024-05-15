@@ -4,7 +4,6 @@
 
 # Description: docker-compose file for running the development kit (devkit).
 ---
-version: "3"
 
 services:
   app:
