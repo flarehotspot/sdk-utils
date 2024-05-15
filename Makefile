@@ -1,5 +1,4 @@
 default:
-	go run ./core/devkit/cli/flare.go install-go ./go
 	docker compose up --build
 
 server-dev:
