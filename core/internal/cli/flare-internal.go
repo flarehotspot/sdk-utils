@@ -32,6 +32,10 @@ func main() {
 		tools.MigrationCreate("core", name)
 		return
 
+    case "sync-version":
+        SyncVersion()
+        return
+
 	case "create-devkit":
 		SyncVersion()
 		devkit.CreateDevkit()
@@ -110,6 +114,8 @@ Available commands:
     make-mono           Create mono-repo files
 
     create-migration    Create new migration files
+
+    sync-version        Sync core version to package.json version
 
     create-devkit       Generate devkit files
 
