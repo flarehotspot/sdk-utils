@@ -7,10 +7,10 @@ import (
 	"github.com/flarehotspot/core/internal/plugins"
 )
 
-
 func main() {}
 
 func Init() {
 	g := plugins.NewGlobals()
 	boot.Init(g)
+	defer g.Db.SqlDB().Close()
 }

@@ -1,3 +1,3 @@
-**Release Notes:**
+# v0.0.20-pre
 
-Fixes for the devkit not working (v0.0.18-pre)
+- Updated docker container to ubuntu 24.04

@@ -4,22 +4,22 @@
 
 # Description: Dockerfile for running the devkit.
 
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 
 RUN apt-get update && apt-get install -y \
         wget curl gcc ca-certificates
 
+ENV GOPATH=/opt/go
 ENV GOCACHE=/build/.tmp/gocache
-ENV GO_ENV=development
 ENV GO_CUSTOM_PATH=/build/go
 ENV PATH=${GO_CUSTOM_PATH}/bin:${PATH}
-ENV PATH=${HOME}/go/bin:${PATH}
+ENV PATH=${GOPATH}/bin:${PATH}
 
 WORKDIR /build
 COPY go /build/go
 RUN go install github.com/cespare/reflex@latest
 
-CMD $HOME/go/bin/reflex \
+CMD reflex \
         -r '\.go$' \
         -R 'core\/main\.go' \
         -R 'plugins\/.*\/main\.go' \
