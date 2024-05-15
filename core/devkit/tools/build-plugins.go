@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	sdkplugin "github.com/flarehotspot/sdk/api/plugin"
 	sdkfs "github.com/flarehotspot/sdk/utils/fs"
 	sdkpaths "github.com/flarehotspot/sdk/utils/paths"
 )
@@ -23,17 +24,24 @@ func BuildPlugin(dir string) error {
 		return errors.New("No plugin path provided")
 	}
 
+	var info sdkplugin.PluginInfo
+
 	mainFile := filepath.Join(dir, "main.go")
 	pluginSo := filepath.Join(dir, "plugin.so")
+	err := sdkfs.ReadJson(filepath.Join(dir, "plugin.json"), &info)
+	if err != nil {
+		return err
+	}
+
 	if !sdkfs.Exists(mainFile) && sdkfs.Exists(pluginSo) {
-		fmt.Println("Plugin already built: " + sdkpaths.StripRoot(dir) + "/plugin.so")
+		fmt.Printf("Plugin '%s' is already built. Skipping...\n", info.Package)
 		return nil
 	}
 
 	gofile := "main.go"
 	outfile := "plugin.so"
 	args := &GoBuildArgs{WorkDir: dir, ExtraArgs: []string{"-buildmode=plugin"}}
-	err := BuildGoModule(gofile, outfile, args)
+	err = BuildGoModule(gofile, outfile, args)
 
 	return err
 }
@@ -53,6 +61,7 @@ func BuildGoModule(gofile string, outfile string, params *GoBuildArgs) error {
 	buildCmd = append(buildCmd, buildArgs...)
 	buildCmd = append(buildCmd, "-o", outfile, gofile)
 
+	fmt.Printf(`Building go module "%s"...`+"\n", sdkpaths.StripRoot(params.WorkDir))
 	cmd := exec.Command(goBin, buildCmd...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr

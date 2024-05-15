@@ -13,3 +13,6 @@ docs-build:
 
 docs-serve:
 	cd sdk/mkdocs && mkdocs serve
+
+devkit:
+	go run -tags="dev" ./core/internal/cli/flare-internal.go create-devkit

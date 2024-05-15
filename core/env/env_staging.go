@@ -7,3 +7,7 @@ const (
 	HttpPort int    = 80
 	BaseURL  string = "http://api.adopisoft.xyz"
 )
+
+var (
+    BuildTags string = "staging"
+)

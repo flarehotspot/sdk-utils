@@ -7,3 +7,7 @@ const (
 	BaseURL  string = "http://api.adopisoft.local"
 	HttpPort int    = 3000
 )
+
+var (
+	BuildTags string = "dev"
+)
