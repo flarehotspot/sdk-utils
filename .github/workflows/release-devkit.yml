@@ -66,8 +66,8 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version: '1.19.12'
-      - run: GOOS=linux GOARCH=arm64 CC=aarch64-linux-gnu-gcc go buil -tags="dev" -o ./flare ./core/devkit/cli/flare.go
-      - run: GOOS=linux GOARCH=arm64 CC=aarch64-linux-gnu-gcc go buil -tags="dev" -o ./flare-internal ./core/internal/cli/flare-internal.go
+      - run: GOOS=linux GOARCH=arm64 CC=aarch64-linux-gnu-gcc go build -tags="dev" -o ./flare ./core/devkit/cli/flare.go
+      - run: GOOS=linux GOARCH=arm64 CC=aarch64-linux-gnu-gcc go build -tags="dev" -o ./flare-internal ./core/internal/cli/flare-internal.go
       - uses: uraimo/run-on-arch-action@v2.3.0
         with:
           arch: ${{ matrix.arch }}
