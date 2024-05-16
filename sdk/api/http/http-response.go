@@ -32,7 +32,7 @@ type HttpResponse interface {
 
 	// Used to render resource files  from the resources directory in your plugin.
 	// For example if you have a view in /resources/views/js/index.tmpl.js,
-	// then you can render it with Script(w, r, "views/js/index.tmpl.js", data).
+	// then you can render it with File(w, r, "views/js/index.tmpl.js", data).
 	File(w http.ResponseWriter, r *http.Request, jspath string, data any)
 
 	// Used to send json response.

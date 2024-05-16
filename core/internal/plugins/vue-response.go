@@ -2,7 +2,6 @@ package plugins
 
 import (
 	"net/http"
-	"path/filepath"
 	"strings"
 
 	"github.com/flarehotspot/core/internal/config"
@@ -36,13 +35,6 @@ func (self *VueResponse) SendFlashMsg(w http.ResponseWriter, msgType string, msg
 func (self *VueResponse) Json(w http.ResponseWriter, data any, status int) {
 	self.data.Response.Data = data
 	response.Json(w, self.data, status)
-}
-
-func (self *VueResponse) Component(w http.ResponseWriter, vuefile string, data any) {
-	vuefile = self.router.api.Utl.Resource(filepath.Join("components", vuefile))
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	helpers := self.router.api.HttpAPI.Helpers()
-	response.Text(w, vuefile, helpers, data)
 }
 
 func (self *VueResponse) Redirect(w http.ResponseWriter, routename string, pairs ...string) {
