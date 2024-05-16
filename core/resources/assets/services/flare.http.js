@@ -67,10 +67,11 @@
     }
 
     if ($res.redirect) {
+      var redirect = $res.redirect;
       $flare.router.push({
-        name: $res.routename,
-        params: $res.params,
-        query: $res.query
+        name: redirect.routename,
+        params: redirect.params,
+        query: redirect.query
       });
       return {};
     } else if ($res.data !== undefined) {

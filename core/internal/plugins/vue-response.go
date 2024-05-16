@@ -9,29 +9,23 @@ import (
 	"github.com/flarehotspot/core/internal/web/response"
 )
 
-const (
-	rootjson = "$vue_response"
-)
-
 func NewVueResponse(vr *VueRouterApi) *VueResponse {
-	data := map[string]any{
-		rootjson: map[string]any{},
+	data := VueResponseData{
+		Response: VueResponseJson{},
 	}
 	return &VueResponse{vr, data}
 }
 
 type VueResponse struct {
 	router *VueRouterApi
-	data   map[string]any
+	data   VueResponseData
 }
 
 func (self *VueResponse) SetFlashMsg(msgType string, msg string) {
-	newdata := self.data[rootjson].(map[string]any)
-	newdata["flash"] = map[string]string{
-		"type": msgType, // "success", "error", "warning", "info
-		"msg":  msg,
+	self.data.Response.Flash = &VueResponseFlash{
+		Type:    msgType,
+		Message: msg,
 	}
-	self.data[rootjson] = newdata
 }
 
 func (self *VueResponse) SendFlashMsg(w http.ResponseWriter, msgType string, msg string, status int) {
@@ -40,12 +34,8 @@ func (self *VueResponse) SendFlashMsg(w http.ResponseWriter, msgType string, msg
 }
 
 func (self *VueResponse) Json(w http.ResponseWriter, data any, status int) {
-	newdata := self.data[rootjson].(map[string]any)
-	newdata["data"] = data
-	data = map[string]any{
-		rootjson: newdata,
-	}
-	response.Json(w, data, status)
+	self.data.Response.Data = data
+	response.Json(w, self.data, status)
 }
 
 func (self *VueResponse) Component(w http.ResponseWriter, vuefile string, data any) {
@@ -88,14 +78,13 @@ func (self *VueResponse) Redirect(w http.ResponseWriter, routename string, pairs
 		}
 	}
 
-	newdata := self.data[rootjson].(map[string]any)
-	newdata["redirect"] = true
-	newdata["routename"] = route.VueRouteName
-	newdata["params"] = params
-	newdata["query"] = query
-	data := map[string]any{rootjson: newdata}
+	self.data.Response.Redirect = &VueResponseRedirect{
+		RouteName: route.VueRouteName,
+		Params:    params,
+		Query:     query,
+	}
 
-	response.Json(w, data, http.StatusOK)
+	response.Json(w, self.data, http.StatusOK)
 }
 
 func (self *VueResponse) RedirectToPortal(w http.ResponseWriter) {
@@ -110,13 +99,33 @@ func (self *VueResponse) RedirectToPortal(w http.ResponseWriter) {
 		return
 	}
 	portalIndexRoute := themePlugin.(*PluginApi).ThemesAPI.PortalIndexRoute
-	newdata := self.data[rootjson].(map[string]any)
-	newdata["redirect"] = true
-	newdata["routename"] = portalIndexRoute.VueRouteName
-	data := map[string]any{rootjson: newdata}
-	response.Json(w, data, http.StatusOK)
+	self.data.Response.Redirect = &VueResponseRedirect{
+		RouteName: portalIndexRoute.VueRouteName,
+	}
+	response.Json(w, self.data, http.StatusOK)
 }
 
 func (self *VueResponse) Error(w http.ResponseWriter, err string, status int) {
 	self.SendFlashMsg(w, "error", err, status)
+}
+
+type VueResponseRedirect struct {
+	RouteName string            `json:"routename"`
+	Params    map[string]string `json:"params"`
+	Query     map[string]string `json:"query"`
+}
+
+type VueResponseFlash struct {
+	Type    string `json:"type"`
+	Message string `json:"msg"`
+}
+
+type VueResponseJson struct {
+	Flash    *VueResponseFlash    `json:"flash"`
+	Redirect *VueResponseRedirect `json:"redirect"`
+	Data     interface{}          `json:"data"`
+}
+
+type VueResponseData struct {
+	Response VueResponseJson `json:"$vue_response"`
 }
