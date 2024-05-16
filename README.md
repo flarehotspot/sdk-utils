@@ -1,13 +1,9 @@
 
 # Flare Hotspot
-
 Flare Hotpost core repository.
 
 # System Requirements
-
-- Go 1.19.12 (exact version)
 - Docker
-- Node.js >= 16
 
 # Installation
 
@@ -38,6 +34,13 @@ rm -rf ./openwrt-files
 unzip openwrt-files.zip -d openwrt-files
 ```
 
+# Installing Go
+```sh
+export GO_CUSTOM_PATH="$HOME/.local/share/go"
+export GOPATH="$HOME/go"
+export PATH="$GOPATH/bin:$PATH"
+```
+
 # Start the server
 
 ```sh
@@ -51,12 +54,6 @@ The default admin access is:
 ```
 username: admin
 password: admin
-```
-
-# Environment variables
-```sh
-export GOPATH="$HOME/go"
-export PATH="$GOPATH/bin:$PATH"
 ```
 
 # Flare CLI
