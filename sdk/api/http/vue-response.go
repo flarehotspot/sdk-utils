@@ -22,10 +22,6 @@ type VueResponse interface {
 	// It sends an HTTP response and must be put as last line in the handler function.
 	Json(w http.ResponseWriter, data any, status int)
 
-	// Respond with a vue component. Useful for rendering dynamic component templates.
-	// It sends an HTTP response and must be put as last line in the handler function.
-	Component(w http.ResponseWriter, vuefile string, data any)
-
 	// Redirect to another vue route. "pairs" are param pairs, e.g. "id", "123", "name", "john".
 	// It sends an HTTP response and must be put as last line in the handler function.
 	Redirect(w http.ResponseWriter, routename string, pairs ...string)

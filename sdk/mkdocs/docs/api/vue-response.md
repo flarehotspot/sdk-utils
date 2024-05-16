@@ -36,16 +36,6 @@ res := api.Http().VueResponse()
 res.Json(w, data, http.StatusOK)
 ```
 
-### Component
-
-This method is used to send a [Vue Component](../guides/vue-components.md) as a response. The [HttpHelpers.VueComponentPath](./http-helpers.md#vuecomponentpath) uses this method under the hood.
-The difference is that you can set additional data to your component from the [handler function](../guides/routes-and-links.md#handlerfunc) using this method.
-
-```go
-res := api.Http().VueResponse()
-res.Component(w, "path/to/component.vue", data)
-```
-
 ### Redirect
 
 This methods redirects the client to another registered [Vue Route](../guides/routes-and-links.md) in your plugin.

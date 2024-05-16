@@ -7,7 +7,7 @@ import (
 
 	"github.com/flarehotspot/core/internal/plugins"
 	"github.com/flarehotspot/core/internal/web/response"
-	"github.com/flarehotspot/sdk/utils/fs"
+	sdkfs "github.com/flarehotspot/sdk/utils/fs"
 	"github.com/gorilla/mux"
 )
 
@@ -51,13 +51,15 @@ func (ctrl *AssetsCtrl) AssetWithHelpers(w http.ResponseWriter, r *http.Request)
 func (ctrl *AssetsCtrl) VueComponent(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	pkg := vars["pkg"]
-	componentPath := vars["path"]
 	pluginApi, ok := ctrl.g.PluginMgr.FindByPkg(pkg)
 	if !ok {
-		ctrl.g.CoreAPI.HttpAPI.VueResponse().Component(w, "empty-component.vue", vars)
+		res := ctrl.g.CoreAPI.HttpAPI.HttpResponse()
+		res.File(w, r, "components/empty-component.vue", vars)
 		return
 	}
 
-	res := pluginApi.Http().VueResponse()
-	res.Component(w, componentPath, nil)
+	componentPath := filepath.Join("components", vars["path"])
+
+	res := pluginApi.Http().HttpResponse()
+	res.File(w, r, componentPath, nil)
 }
