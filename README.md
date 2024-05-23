@@ -36,9 +36,9 @@ unzip openwrt-files.zip -d openwrt-files
 
 # Installing Go
 ```sh
-export GO_CUSTOM_PATH="$HOME/.local/share/go"
-export GOPATH="$HOME/go"
-export PATH="$GOPATH/bin:$PATH"
+curl -sSL https://github.com/moovweb/gvm/raw/master/binscripts/gvm-installer | bash
+gvm install go1.19.12
+cd ../flarehotspot # load go version
 ```
 
 # Start the server
