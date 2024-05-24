@@ -25,8 +25,8 @@ Plugin configuration is separated into different keys for ease of management. Th
 
 To get your plugin data for a specific key, use the [ConfigApi.Custom.Get](../api/config-api.md#custom) method:
 ```go
-
-my_config, err := api.Config().Custom(my_key).Get()
+var my_config MyPluginConfig
+err := api.Config().Custom(my_key).Get(&my_config)
 ```
 
 
