@@ -27,6 +27,8 @@ To get your plugin data for a specific key, use the [ConfigApi.Custom.Get](../ap
 ```go
 var my_config MyPluginConfig
 err := api.Config().Custom(my_key).Get(&my_config)
+
+fmt.Println(my_config) // {MySetting: "my_value", OtherSetting: 123}
 ```
 
 
