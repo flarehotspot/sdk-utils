@@ -44,6 +44,7 @@ nav:
       - 'Saving and Retrieving Data': guides/saving-data.md
       - 'Translations': guides/translations.md
       - 'Database Migrations': guides/database-migrations.md
+      - 'FAQ': guides/faq.md
   - Tutorials:
       - 'Manage Sessions': tutorials/manage-sessions.md
       - 'Accept Payments': tutorials/accepting-payments.md
