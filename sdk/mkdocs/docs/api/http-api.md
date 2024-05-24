@@ -13,8 +13,8 @@ Get the [client device](./client-device.md) info from the http request:
 ```go
 // handler
 func (w http.ResponseWriter, r *http.Request) {
-    device := api.Http().Helpers().GetClientDevice(r)
-    fmt.Println(device) // ClientDevice
+    clnt, err := api.Http().GetClientDevice(r)
+    fmt.Println(clnt) // ClientDevice
 }
 ```
 
