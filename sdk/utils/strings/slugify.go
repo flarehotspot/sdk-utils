@@ -11,16 +11,20 @@ import (
 	"strings"
 )
 
-func Slugify(input string) string {
+func Slugify(input string, separator string) string {
+	if separator == "" {
+		separator = "_"
+	}
+
 	// Convert to lowercase
 	result := strings.ToLower(input)
 
 	// Remove special characters
 	re := regexp.MustCompile("[^a-z0-9]+")
-	result = re.ReplaceAllString(result, "_")
+	result = re.ReplaceAllString(result, separator)
 
 	// Remove leading and trailing hyphens
-	result = strings.Trim(result, "-")
+	result = strings.Trim(result, separator)
 
 	return result
 }
