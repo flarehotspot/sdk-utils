@@ -9,6 +9,7 @@ import (
 	"runtime"
 
 	"github.com/flarehotspot/core/devkit/tools"
+	"github.com/flarehotspot/core/env"
 	sdkcfg "github.com/flarehotspot/sdk/api/config"
 	sdkfs "github.com/flarehotspot/sdk/utils/fs"
 	sdkpaths "github.com/flarehotspot/sdk/utils/paths"
@@ -110,8 +111,10 @@ func CopyDefaultWorksapce() {
 }
 
 func ZipDevkitRelease() {
-	fmt.Println("Zipping devkit release...")
-	zipFile := RELEASE_DIR + ".zip"
+	basename := filepath.Base(RELEASE_DIR) + "-" + sdkstr.Slugify(env.BuildTags, "-") + ".zip"
+	dir := filepath.Dir(RELEASE_DIR)
+	zipFile := filepath.Join(dir, basename)
+	fmt.Printf("Zipping devkit release: %s...\n", zipFile)
 	cmd := exec.Command("zip", "-r", zipFile, ".")
 	cmd.Dir = RELEASE_DIR
 	err := cmd.Run()

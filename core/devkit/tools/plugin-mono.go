@@ -60,7 +60,7 @@ func createMonoFile(pluginDir string) string {
 	}
 	mainContent := string(mainData)
 	packageReg := regexp.MustCompile(`package\s+(\w+)`)
-	monoPackageName := sdkstr.Slugify(filepath.Base(pluginDir))
+	monoPackageName := sdkstr.Slugify(filepath.Base(pluginDir), "_")
 	newMainContent := packageReg.ReplaceAllString(mainContent, fmt.Sprintf("package %s", monoPackageName))
 	newMainContent = fmt.Sprintf("%s\n%s", AUTO_GENERATED_HEADER, newMainContent)
 	newMainContent = strings.ReplaceAll(newMainContent, "!mono", "mono")

@@ -17,7 +17,7 @@ func MigrationCreate(pluginDir string, name string) {
     timestamp = strings.Replace(timestamp, ".", "", 1)
 	migrationsDir := filepath.Join(pluginDir, "resources/migrations")
 
-	name = sdkstr.Slugify(name)
+	name = sdkstr.Slugify(name, "_")
 	migrationUpPath := filepath.Join(migrationsDir, timestamp+"_"+name+".up.sql")
 	migrationDownPath := filepath.Join(migrationsDir, timestamp+"_"+name+".down.sql")
 

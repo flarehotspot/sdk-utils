@@ -22,7 +22,7 @@ type CustomConfig struct {
 }
 
 func (c *CustomConfig) configPath() string {
-	return filepath.Join(paths.ConfigDir, "plugins", c.pkg, sdkstr.Slugify(c.key)+".json")
+	return filepath.Join(paths.ConfigDir, "plugins", c.pkg, sdkstr.Slugify(c.key, "_")+".json")
 }
 
 func (c *CustomConfig) Get(v interface{}) error {

@@ -37,7 +37,7 @@ func MakePluginInitMono() {
 
 	pluginMods := []PluginModule{}
 	for _, dir := range pluginDirs {
-		modVar := sdkstr.Slugify(filepath.Base(dir))
+		modVar := sdkstr.Slugify(filepath.Base(dir), "_")
 		modPath := getGoModule(dir)
 		pkgName := getPackage(dir)
 		mod := PluginModule{modVar, modPath, pkgName}
