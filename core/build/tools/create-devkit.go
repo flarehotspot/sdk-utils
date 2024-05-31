@@ -1,4 +1,4 @@
-package devkit
+package tools
 
 import (
 	"encoding/json"
@@ -8,7 +8,6 @@ import (
 	"path/filepath"
 	"runtime"
 
-	"core/devkit/tools"
 	"core/env"
 	sdkcfg "sdk/api/config"
 	sdkfs "sdk/utils/fs"
@@ -16,33 +15,28 @@ import (
 	sdkstr "sdk/utils/strings"
 )
 
-const (
-	GOARCH = runtime.GOARCH
-)
-
 var (
-	coreInfo     = tools.CoreInfo()
-	RELEASE_DIR  = filepath.Join(sdkpaths.AppDir, "devkit-release", fmt.Sprintf("devkit-%s-%s", coreInfo.Version, GOARCH))
-	DEVKIT_FILES = []string{
+	coreReleaseDir = filepath.Join(sdkpaths.AppDir, "output/devkit", fmt.Sprintf("devkit-%s-%s", CoreInfo().Version, runtime.GOARCH))
+	devkitFiles    = []string{
 		"go",
 		"bin",
-		"sdk",
-		"main/go.mod",
 		"config/.defaults",
 		"core/go.mod",
 		"core/plugin.so",
 		"core/plugin.json",
 		"core/resources",
 		"core/go-version",
+		"main/go.mod",
+		"sdk",
 	}
 )
 
 func CreateDevkit() {
 	PrepareCleanup()
-	tools.InstallGo("./go")
-	tools.BuildFlareCLI()
-	tools.BuildCore()
-	tools.CloneDefaultPlugins(RELEASE_DIR)
+	InstallGo("./go")
+	BuildFlareCLI()
+	BuildCore()
+	CloneDefaultPlugins(coreReleaseDir)
 	CopyDevkitFiles()
 	CopyDevkitExtras()
 	CopyDefaultWorksapce()
@@ -52,7 +46,7 @@ func CreateDevkit() {
 }
 
 func CreateApplicationConfig() {
-	cfgPath := filepath.Join(RELEASE_DIR, "config/application.json")
+	cfgPath := filepath.Join(coreReleaseDir, "config/application.json")
 	appcfg := sdkcfg.AppCfg{
 		Lang:     "en",
 		Currency: "php",
@@ -72,9 +66,9 @@ func CreateApplicationConfig() {
 }
 
 func CopyDevkitFiles() {
-	for _, entry := range DEVKIT_FILES {
+	for _, entry := range devkitFiles {
 		srcPath := filepath.Join(sdkpaths.AppDir, entry)
-		destPath := filepath.Join(RELEASE_DIR, entry)
+		destPath := filepath.Join(coreReleaseDir, entry)
 		fmt.Println("Copying: ", sdkpaths.StripRoot(srcPath), " -> ", sdkpaths.StripRoot(destPath))
 
 		if sdkfs.IsFile(srcPath) {
@@ -95,28 +89,28 @@ func CopyDevkitFiles() {
 }
 
 func CopyDevkitExtras() {
-	extrasPath := filepath.Join(sdkpaths.AppDir, "build/devkit/extras")
-	fmt.Printf("Copying:  %s -> %s\n", sdkpaths.StripRoot(extrasPath), sdkpaths.StripRoot(RELEASE_DIR))
-	err := sdkfs.CopyDir(extrasPath, RELEASE_DIR, nil)
+	extrasPath := filepath.Join(sdkpaths.AppDir, "core/build/devkit/extras")
+	fmt.Printf("Copying:  %s -> %s\n", sdkpaths.StripRoot(extrasPath), sdkpaths.StripRoot(coreReleaseDir))
+	err := sdkfs.CopyDir(extrasPath, coreReleaseDir, nil)
 	if err != nil {
 		panic(err)
 	}
 }
 
 func CopyDefaultWorksapce() {
-	dst := filepath.Join(RELEASE_DIR, "go.work")
+	dst := filepath.Join(coreReleaseDir, "go.work")
 	def := "go.work.default"
 	fmt.Println("Copying: ", sdkpaths.StripRoot(def), " -> ", sdkpaths.StripRoot(dst))
 	sdkfs.CopyFile(def, dst)
 }
 
 func ZipDevkitRelease() {
-	basename := filepath.Base(RELEASE_DIR) + "-" + sdkstr.Slugify(env.BuildTags, "-") + ".zip"
-	dir := filepath.Dir(RELEASE_DIR)
+	basename := filepath.Base(coreReleaseDir) + "-" + sdkstr.Slugify(env.BuildTags, "-") + ".zip"
+	dir := filepath.Dir(coreReleaseDir)
 	zipFile := filepath.Join(dir, basename)
 	fmt.Printf("Zipping devkit release: %s...\n", zipFile)
 	cmd := exec.Command("zip", "-r", zipFile, ".")
-	cmd.Dir = RELEASE_DIR
+	cmd.Dir = coreReleaseDir
 	err := cmd.Run()
 	if err != nil {
 		panic(err)
@@ -137,6 +131,6 @@ func PrepareCleanup() {
 }
 
 func CleanUpRelease() {
-	fmt.Printf("Cleaning up release directory: %s\n", sdkpaths.StripRoot(RELEASE_DIR))
-	os.RemoveAll(RELEASE_DIR)
+	fmt.Printf("Cleaning up release directory: %s\n", sdkpaths.StripRoot(coreReleaseDir))
+	os.RemoveAll(coreReleaseDir)
 }

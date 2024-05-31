@@ -22,7 +22,7 @@ func MakePluginMainMono(pluginDir string) {
 		panic(err)
 	}
 
-	fmt.Printf("%s has been updated\n", mainFile)
+	fmt.Printf("%s has been updated.\n", mainFile)
 
 	// Create mono version of main.go
 	createMonoFile(pluginDir)

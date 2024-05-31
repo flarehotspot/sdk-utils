@@ -32,7 +32,7 @@ func CreatePlugin(pkg string, name string, desc string) {
 	sdkfs.EnsureDir(pluginDir)
 
 	modPath := filepath.Join(pluginDir, "go.mod")
-	modUri := fmt.Sprintf("github.com/your-account/my-plugin-%s", sdkstr.Rand(8))
+	modUri := fmt.Sprintf("com.mydomain.%s", sdkstr.Rand(8))
 	goMod := fmt.Sprintf("module %s\n\ngo %s", modUri, goVersion)
 	err = os.WriteFile(modPath, []byte(goMod), 0644)
 	if err != nil {
@@ -75,5 +75,5 @@ func Init(api sdkplugin.PluginApi) {
 
 	CreateGoWorkspace()
 
-	fmt.Printf("Plugin created at %s\n", pluginDir)
+	fmt.Printf("\n\nPlugin created at %s\n", pluginDir)
 }

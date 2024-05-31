@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"strings"
 
-	tools "core/devkit/tools"
+	tools "core/build/tools"
 	"core/env"
 	sdkpaths "sdk/utils/paths"
 )

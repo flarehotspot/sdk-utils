@@ -28,7 +28,7 @@ func BuildFlareCLI() {
 
 	for _, b := range builds {
 		fmt.Println("Building flare CLI...")
-		cliFile := "core/devkit/cli/flare.go"
+		cliFile := "core/build/devkit/cli/flare.go"
 		cliPath := b.File
 		workDir, _ := os.Getwd()
 		args := &GoBuildArgs{
