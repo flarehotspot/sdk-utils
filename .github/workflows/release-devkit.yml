@@ -123,8 +123,7 @@ jobs:
           sudo rm -rf ./.??* || true
           ls -la ./
       - uses: actions/checkout@v4
-      - run: rm -rf ./output/devkit; mkdir -p ./output && \
-                cp -r /var/tmp/gh-output ./output/devkit && rm -rf /var/tmp/gh-output
+      - run: rm -rf ./output/devkit; mkdir -p ./output && cp -r /var/tmp/gh-output ./output/devkit && rm -rf /var/tmp/gh-output
       - run: tree ./output
       - uses: actions/setup-node@v3
         with:
