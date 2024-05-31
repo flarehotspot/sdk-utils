@@ -5,9 +5,9 @@ package plugincfg
 	// "path/filepath"
 	// "sync/atomic"
 
-	// "github.com/flarehotspot/sdk/libs/slug"
-	// "github.com/flarehotspot/sdk/utils/fs"
-	// "github.com/flarehotspot/sdk/utils/paths"
+	// "sdk/libs/slug"
+	// "sdk/utils/fs"
+	// "sdk/utils/paths"
 // )
 
 // type DownloadError struct {

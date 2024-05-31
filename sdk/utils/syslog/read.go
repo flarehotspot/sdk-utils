@@ -7,9 +7,9 @@
 package sdksyslog
 
 import (
-	"github.com/flarehotspot/sdk/utils/fs"
-	"github.com/flarehotspot/sdk/utils/paths"
-	"github.com/flarehotspot/sdk/utils/slices"
+	"sdk/utils/fs"
+	"sdk/utils/paths"
+	"sdk/utils/slices"
 )
 
 func ReadNotice() ([]*LogEntry, error) {

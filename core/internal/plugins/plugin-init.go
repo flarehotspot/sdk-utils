@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"plugin"
 
-	"github.com/flarehotspot/sdk/api/plugin"
+	"sdk/api/plugin"
 )
 
 func (api *PluginApi) Init() error {

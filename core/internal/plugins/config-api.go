@@ -1,8 +1,8 @@
 package plugins
 
 import (
-	cfgapi "github.com/flarehotspot/core/internal/config/api"
-	"github.com/flarehotspot/sdk/api/config"
+	cfgapi "core/internal/config/api"
+	"sdk/api/config"
 )
 
 const (

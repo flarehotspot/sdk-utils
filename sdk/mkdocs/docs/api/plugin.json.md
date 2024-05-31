@@ -17,4 +17,4 @@ The version of the plugin. It should follow the [Semantic Versioning](https://se
 
 ## sdk
 
-The minimum sdk version that the plugin supports. The supported SDK versions are available in [flarehotspot/sdk](https://github.com/flarehotspot/sdk/releases) repository.
+The minimum sdk version that the plugin supports. The supported SDK versions are available in [flarehotspot/sdk](https://sdk/releases) repository.

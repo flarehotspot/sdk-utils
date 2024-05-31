@@ -7,8 +7,8 @@ import (
 	"regexp"
 	"strings"
 
-	sdkfs "github.com/flarehotspot/sdk/utils/fs"
-	sdkstr "github.com/flarehotspot/sdk/utils/strings"
+	sdkfs "sdk/utils/fs"
+	sdkstr "sdk/utils/strings"
 )
 
 type PluginModule struct {
@@ -80,6 +80,8 @@ func (p *PluginApi) Init() error {
 	if err != nil {
 		panic(err)
 	}
+
+	fmt.Println(pluginInitMonoPath, "has been created.")
 }
 
 func getGoModule(pluginDir string) string {

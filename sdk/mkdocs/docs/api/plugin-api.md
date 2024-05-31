@@ -8,7 +8,7 @@ When the plugin is first loaded into the system, the system looks for the `Init`
 package main
 
 import (
-	sdkplugin "github.com/flarehotspot/sdk/api/plugin"
+	sdkplugin "sdk/api/plugin"
 )
 
 func main() {}

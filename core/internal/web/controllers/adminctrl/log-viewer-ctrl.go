@@ -5,9 +5,9 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/flarehotspot/core/internal/plugins"
-	"github.com/flarehotspot/core/internal/utils/logger"
-	sdkstr "github.com/flarehotspot/sdk/utils/strings"
+	"core/internal/plugins"
+	"core/internal/utils/logger"
+	sdkstr "sdk/utils/strings"
 )
 
 type LogViewerData struct {

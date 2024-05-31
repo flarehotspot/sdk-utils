@@ -1,6 +1,6 @@
 package boot
 
-import "github.com/flarehotspot/core/internal/accounts"
+import "core/internal/accounts"
 
 func InitAccounts() {
 	accounts.EnsureAdminAcct()

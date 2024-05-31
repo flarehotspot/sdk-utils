@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"log"
 
-	"github.com/flarehotspot/core/internal/db"
+	"core/internal/db"
 )
 
 type WalletTrnsModel struct {

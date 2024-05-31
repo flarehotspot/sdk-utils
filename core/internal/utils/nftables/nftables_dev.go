@@ -7,7 +7,7 @@ import (
 	"strings"
 	"sync"
 
-	jobque "github.com/flarehotspot/core/internal/utils/job-que"
+	jobque "core/internal/utils/job-que"
 )
 
 const (

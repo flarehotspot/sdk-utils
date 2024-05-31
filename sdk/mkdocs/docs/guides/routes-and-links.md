@@ -13,8 +13,8 @@ package main
 import (
 	"net/http"
 
-	sdkhttp "github.com/flarehotspot/sdk/api/http"
-	sdkplugin "github.com/flarehotspot/sdk/api/plugin"
+	sdkhttp "sdk/api/http"
+	sdkplugin "sdk/api/plugin"
 )
 
 func main() {}

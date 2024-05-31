@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"path/filepath"
 
-	"github.com/flarehotspot/core/internal/web/response"
-	resp "github.com/flarehotspot/core/internal/web/response"
-	paths "github.com/flarehotspot/sdk/utils/paths"
+	"core/internal/web/response"
+	resp "core/internal/web/response"
+	paths "sdk/utils/paths"
 )
 
 type HttpResponse struct {

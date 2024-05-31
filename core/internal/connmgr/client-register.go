@@ -5,10 +5,10 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/flarehotspot/core/internal/db"
-	"github.com/flarehotspot/core/internal/db/models"
-	jobque "github.com/flarehotspot/core/internal/utils/job-que"
-	connmgr "github.com/flarehotspot/sdk/api/connmgr"
+	"core/internal/db"
+	"core/internal/db/models"
+	jobque "core/internal/utils/job-que"
+	connmgr "sdk/api/connmgr"
 )
 
 const (

@@ -5,9 +5,9 @@ import (
 	"os"
 	"path/filepath"
 
-	sdkplugin "github.com/flarehotspot/sdk/api/plugin"
-	sdkfs "github.com/flarehotspot/sdk/utils/fs"
-	sdkstr "github.com/flarehotspot/sdk/utils/strings"
+	sdkplugin "sdk/api/plugin"
+	sdkfs "sdk/utils/fs"
+	sdkstr "sdk/utils/strings"
 )
 
 func CreatePlugin(pkg string, name string, desc string) {
@@ -51,7 +51,7 @@ func CreatePlugin(pkg string, name string, desc string) {
 package main
 
 import (
-    sdkplugin "github.com/flarehotspot/sdk/api/plugin"
+    sdkplugin "sdk/api/plugin"
 )
 
 func main() {}

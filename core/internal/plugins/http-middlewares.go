@@ -5,10 +5,10 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/flarehotspot/core/internal/connmgr"
-	"github.com/flarehotspot/core/internal/db/models"
-	"github.com/flarehotspot/core/internal/web/helpers"
-	"github.com/flarehotspot/core/internal/web/middlewares"
+	"core/internal/connmgr"
+	"core/internal/db/models"
+	"core/internal/web/helpers"
+	"core/internal/web/middlewares"
 )
 
 func NewPluginMiddlewares(api *PluginApi, mdls *models.Models, dmgr *connmgr.ClientRegister, pmgr *PaymentsMgr) *PluginMiddlewares {

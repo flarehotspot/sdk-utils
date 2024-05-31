@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"sort"
 
-	jobque "github.com/flarehotspot/core/internal/utils/job-que"
+	jobque "core/internal/utils/job-que"
 )
 
 const (

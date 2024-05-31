@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/flarehotspot/core/internal/plugins"
+	"core/internal/plugins"
 )
 
 func Init(g *plugins.CoreGlobals) {

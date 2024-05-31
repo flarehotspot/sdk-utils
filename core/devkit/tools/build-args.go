@@ -3,7 +3,7 @@ package tools
 import (
 	"fmt"
 
-	"github.com/flarehotspot/core/env"
+	"core/env"
 )
 
 func BuildArgs() []string {

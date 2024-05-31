@@ -1,8 +1,8 @@
 package migrate
 
 import (
-	fs "github.com/flarehotspot/sdk/utils/fs"
-	slices "github.com/flarehotspot/sdk/utils/slices"
+	fs "sdk/utils/fs"
+	slices "sdk/utils/slices"
 	"sort"
 	"strings"
 )

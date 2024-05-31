@@ -14,7 +14,7 @@ import (
 	"net/http"
 	// "time"
 
-	sdkstr "github.com/flarehotspot/sdk/utils/strings"
+	sdkstr "sdk/utils/strings"
 )
 
 func NewSocket(w http.ResponseWriter, r *http.Request) (s *SseSocket, err error) {

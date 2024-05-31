@@ -3,7 +3,7 @@ package storage
 import (
 	"fmt"
 
-	"github.com/flarehotspot/core/internal/utils/cmd"
+	"core/internal/utils/cmd"
 )
 
 func Expand(dev string, part string, partnum int) error {

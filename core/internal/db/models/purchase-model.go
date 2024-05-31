@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/flarehotspot/core/internal/db"
+	"core/internal/db"
 )
 
 type PurchaseModel struct {

@@ -5,8 +5,8 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/flarehotspot/core/internal/web/helpers"
-	sdkpayments "github.com/flarehotspot/sdk/api/payments"
+	"core/internal/web/helpers"
+	sdkpayments "sdk/api/payments"
 )
 
 func NewPaymentsApi(plugin *PluginApi, pmgr *PaymentsMgr) *PaymentsApi {

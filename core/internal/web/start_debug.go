@@ -9,7 +9,7 @@ import (
 	"net/http"
 	_ "net/http/pprof"
 
-	"github.com/flarehotspot/core/env"
+	"core/env"
 	"github.com/gorilla/mux"
 )
 

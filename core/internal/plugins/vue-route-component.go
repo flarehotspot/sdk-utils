@@ -3,8 +3,8 @@ package plugins
 import (
 	"path/filepath"
 
-	"github.com/flarehotspot/core/internal/utils/crypt"
-	sdkstr "github.com/flarehotspot/sdk/utils/strings"
+	"core/internal/utils/crypt"
+	sdkstr "sdk/utils/strings"
 )
 
 func NewVueRouteComponent(api *PluginApi, name string, path string, file string, permsReq []string, permsAny []string) *VueRouteComponent {

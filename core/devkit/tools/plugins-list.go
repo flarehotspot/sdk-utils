@@ -3,7 +3,7 @@ package tools
 import (
 	"path/filepath"
 
-	sdkfs "github.com/flarehotspot/sdk/utils/fs"
+	sdkfs "sdk/utils/fs"
 )
 
 // PluginPathList returns a list of plugin (absolute) paths

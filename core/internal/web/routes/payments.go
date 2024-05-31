@@ -1,9 +1,9 @@
 package routes
 
 import (
-	"github.com/flarehotspot/core/internal/plugins"
-	"github.com/flarehotspot/core/internal/web/controllers"
-	sdkhttp "github.com/flarehotspot/sdk/api/http"
+	"core/internal/plugins"
+	"core/internal/web/controllers"
+	sdkhttp "sdk/api/http"
 )
 
 func PaymentRoutes(g *plugins.CoreGlobals) {

@@ -4,13 +4,13 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/flarehotspot/core/internal/accounts"
-	"github.com/flarehotspot/core/internal/config"
-	"github.com/flarehotspot/core/internal/utils/jsonwebtoken"
-	"github.com/flarehotspot/core/internal/web/helpers"
-	"github.com/flarehotspot/core/internal/web/middlewares"
-	"github.com/flarehotspot/sdk/api/accounts"
-	"github.com/flarehotspot/sdk/api/http"
+	"core/internal/accounts"
+	"core/internal/config"
+	"core/internal/utils/jsonwebtoken"
+	"core/internal/web/helpers"
+	"core/internal/web/middlewares"
+	"sdk/api/accounts"
+	"sdk/api/http"
 )
 
 func NewHttpAuth(api *PluginApi) *HttpAuth {

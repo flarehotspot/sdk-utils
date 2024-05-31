@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/flarehotspot/core/internal/config"
-	"github.com/flarehotspot/core/internal/plugins"
+	"core/internal/config"
+	"core/internal/plugins"
 )
 
 func GetAvailableThemes(g *plugins.CoreGlobals) http.HandlerFunc {

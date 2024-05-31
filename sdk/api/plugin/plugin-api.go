@@ -9,17 +9,17 @@ package sdkplugin
 import (
 	"database/sql"
 
-	sdkacct "github.com/flarehotspot/sdk/api/accounts"
-	sdkads "github.com/flarehotspot/sdk/api/ads"
-	sdkcfg "github.com/flarehotspot/sdk/api/config"
-	sdkconnmgr "github.com/flarehotspot/sdk/api/connmgr"
-	sdkhttp "github.com/flarehotspot/sdk/api/http"
-	sdkinappur "github.com/flarehotspot/sdk/api/inappur"
-	sdklogger "github.com/flarehotspot/sdk/api/logger"
-	sdknet "github.com/flarehotspot/sdk/api/network"
-	sdkpayments "github.com/flarehotspot/sdk/api/payments"
-	sdktheme "github.com/flarehotspot/sdk/api/themes"
-	sdkuci "github.com/flarehotspot/sdk/api/uci"
+	sdkacct "sdk/api/accounts"
+	sdkads "sdk/api/ads"
+	sdkcfg "sdk/api/config"
+	sdkconnmgr "sdk/api/connmgr"
+	sdkhttp "sdk/api/http"
+	sdkinappur "sdk/api/inappur"
+	sdklogger "sdk/api/logger"
+	sdknet "sdk/api/network"
+	sdkpayments "sdk/api/payments"
+	sdktheme "sdk/api/themes"
+	sdkuci "sdk/api/uci"
 )
 
 // PluginApi is the root of all plugin APIs.

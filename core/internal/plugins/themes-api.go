@@ -3,8 +3,8 @@ package plugins
 import (
 	"net/http"
 
-	"github.com/flarehotspot/sdk/api/themes"
-	"github.com/flarehotspot/sdk/utils/fs"
+	"sdk/api/themes"
+	"sdk/utils/fs"
 )
 
 func NewThemesApi(api *PluginApi) *ThemesApi {

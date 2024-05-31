@@ -6,7 +6,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/flarehotspot/core/internal/db"
+	"core/internal/db"
 )
 
 type Device struct {

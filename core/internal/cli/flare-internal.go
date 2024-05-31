@@ -6,9 +6,9 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/flarehotspot/core/devkit"
-	"github.com/flarehotspot/core/devkit/tools"
-	sdkfs "github.com/flarehotspot/sdk/utils/fs"
+	"core/devkit"
+	"core/devkit/tools"
+	sdkfs "sdk/utils/fs"
 )
 
 func main() {

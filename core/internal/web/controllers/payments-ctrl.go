@@ -3,8 +3,8 @@ package controllers
 import (
 	"net/http"
 
-	"github.com/flarehotspot/core/internal/plugins"
-	"github.com/flarehotspot/core/internal/web/helpers"
+	"core/internal/plugins"
+	"core/internal/web/helpers"
 )
 
 func PaymentOptionsCtrl(g *plugins.CoreGlobals) http.HandlerFunc {

@@ -7,7 +7,7 @@ import (
 	"regexp"
 	"strings"
 
-	sdkstr "github.com/flarehotspot/sdk/utils/strings"
+	sdkstr "sdk/utils/strings"
 )
 
 func MakePluginMainMono(pluginDir string) {

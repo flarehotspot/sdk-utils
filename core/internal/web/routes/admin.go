@@ -1,12 +1,12 @@
 package routes
 
 import (
-	"github.com/flarehotspot/core/internal/plugins"
-	"github.com/flarehotspot/core/internal/web/controllers"
-	"github.com/flarehotspot/core/internal/web/controllers/adminctrl"
-	"github.com/flarehotspot/core/internal/web/router"
-	sdkacct "github.com/flarehotspot/sdk/api/accounts"
-	sdkhttp "github.com/flarehotspot/sdk/api/http"
+	"core/internal/plugins"
+	"core/internal/web/controllers"
+	"core/internal/web/controllers/adminctrl"
+	"core/internal/web/router"
+	sdkacct "sdk/api/accounts"
+	sdkhttp "sdk/api/http"
 )
 
 func AdminRoutes(g *plugins.CoreGlobals) {

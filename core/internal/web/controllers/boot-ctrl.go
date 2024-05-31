@@ -3,10 +3,10 @@ package controllers
 import (
 	"net/http"
 
-	"github.com/flarehotspot/core/internal/plugins"
-	sse "github.com/flarehotspot/core/internal/utils/sse"
-	"github.com/flarehotspot/core/internal/web/helpers"
-	"github.com/flarehotspot/core/internal/web/routes/urls"
+	"core/internal/plugins"
+	sse "core/internal/utils/sse"
+	"core/internal/web/helpers"
+	"core/internal/web/routes/urls"
 )
 
 func NewBootCtrl(g *plugins.CoreGlobals, pmgr *plugins.PluginsMgr, api *plugins.PluginApi) BootCtrl {

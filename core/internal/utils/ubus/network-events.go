@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"strings"
 
-	"github.com/flarehotspot/core/internal/utils/cmd"
-	jobque "github.com/flarehotspot/core/internal/utils/job-que"
+	"core/internal/utils/cmd"
+	jobque "core/internal/utils/job-que"
 )
 
 var jobQue *jobque.JobQues = jobque.NewJobQues()

@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/flarehotspot/core/internal/utils/cmd"
+	"core/internal/utils/cmd"
 )
 
 type NftListMapResult struct {

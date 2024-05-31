@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"strings"
 
-	httpI "github.com/flarehotspot/sdk/api/http"
-	tmplcache "github.com/flarehotspot/core/internal/utils/flaretmpl"
+	httpI "sdk/api/http"
+	tmplcache "core/internal/utils/flaretmpl"
 )
 
 type ViewData struct {

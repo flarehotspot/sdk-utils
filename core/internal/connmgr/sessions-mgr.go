@@ -7,13 +7,13 @@ import (
 	"log"
 	"sync"
 
-	"github.com/flarehotspot/core/internal/db"
-	"github.com/flarehotspot/core/internal/db/models"
-	"github.com/flarehotspot/core/internal/network"
-	"github.com/flarehotspot/core/internal/utils/nftables"
-	"github.com/flarehotspot/sdk/api/connmgr"
-	"github.com/flarehotspot/sdk/api/network"
-	"github.com/flarehotspot/sdk/utils/slices"
+	"core/internal/db"
+	"core/internal/db/models"
+	"core/internal/network"
+	"core/internal/utils/nftables"
+	"sdk/api/connmgr"
+	"sdk/api/network"
+	"sdk/utils/slices"
 )
 
 const (

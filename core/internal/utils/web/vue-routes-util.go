@@ -1,7 +1,7 @@
 package webutil
 
 import (
-	"github.com/flarehotspot/core/internal/plugins"
+	"core/internal/plugins"
 )
 
 type RouteMeta struct {

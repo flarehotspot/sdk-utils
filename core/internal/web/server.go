@@ -3,9 +3,9 @@ package web
 import (
 	"net/http"
 
-	"github.com/flarehotspot/core/internal/plugins"
-	"github.com/flarehotspot/core/internal/web/router"
-	"github.com/flarehotspot/core/internal/web/routes"
+	"core/internal/plugins"
+	"core/internal/web/router"
+	"core/internal/web/routes"
 )
 
 func SetupBootRoutes(g *plugins.CoreGlobals) {

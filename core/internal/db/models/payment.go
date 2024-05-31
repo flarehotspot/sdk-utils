@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"time"
 
-	"github.com/flarehotspot/core/internal/db"
+	"core/internal/db"
 )
 
 type Payment struct {

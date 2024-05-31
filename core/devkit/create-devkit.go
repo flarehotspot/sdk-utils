@@ -8,12 +8,12 @@ import (
 	"path/filepath"
 	"runtime"
 
-	"github.com/flarehotspot/core/devkit/tools"
-	"github.com/flarehotspot/core/env"
-	sdkcfg "github.com/flarehotspot/sdk/api/config"
-	sdkfs "github.com/flarehotspot/sdk/utils/fs"
-	sdkpaths "github.com/flarehotspot/sdk/utils/paths"
-	sdkstr "github.com/flarehotspot/sdk/utils/strings"
+	"core/devkit/tools"
+	"core/env"
+	sdkcfg "sdk/api/config"
+	sdkfs "sdk/utils/fs"
+	sdkpaths "sdk/utils/paths"
+	sdkstr "sdk/utils/strings"
 )
 
 const (

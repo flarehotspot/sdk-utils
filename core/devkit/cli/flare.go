@@ -9,9 +9,9 @@ import (
 	"strconv"
 	"strings"
 
-	tools "github.com/flarehotspot/core/devkit/tools"
-	"github.com/flarehotspot/core/env"
-	sdkpaths "github.com/flarehotspot/sdk/utils/paths"
+	tools "core/devkit/tools"
+	"core/env"
+	sdkpaths "sdk/utils/paths"
 )
 
 var (

@@ -7,8 +7,8 @@
 package sdkhttp
 
 import (
-	sdkacct "github.com/flarehotspot/sdk/api/accounts"
-	sdkconnmgr "github.com/flarehotspot/sdk/api/connmgr"
+	sdkacct "sdk/api/accounts"
+	sdkconnmgr "sdk/api/connmgr"
 )
 
 const (

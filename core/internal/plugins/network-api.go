@@ -1,9 +1,9 @@
 package plugins
 
 import (
-	cnet "github.com/flarehotspot/core/internal/network"
-	"github.com/flarehotspot/core/internal/utils/ubus"
-	sdknet "github.com/flarehotspot/sdk/api/network"
+	cnet "core/internal/network"
+	"core/internal/utils/ubus"
+	sdknet "sdk/api/network"
 )
 
 func NewNetworkApi(trfk *cnet.TrafficMgr) *NetworkApi {
