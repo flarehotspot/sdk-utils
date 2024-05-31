@@ -14,7 +14,7 @@ import (
 var (
 	coreReleaseDir   = ""
 	coreReleaseFiles = []string{
-        "bin/flare",
+		"bin/flare",
 		"config/.defaults",
 		"core/go-version",
 		"core/go.mod",
@@ -31,14 +31,16 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-	coreReleaseDir = filepath.Join(sdkpaths.AppDir, "output/core", fmt.Sprintf("core-%s-%s-go%s", CoreInfo().Version, runtime.GOARCH, goversion))
+
+	tags := sdkstr.Slugify(env.BuildTags, "-")
+	coreReleaseDir = filepath.Join(sdkpaths.AppDir, "output/core", fmt.Sprintf("core-%s-%s-go%s-%s", CoreInfo().Version, runtime.GOARCH, goversion, tags))
 }
 
 func CreateRelease() {
-    fmt.Println("Cleaning up", sdkpaths.StripRoot(coreReleaseDir), "...")
+	fmt.Println("Cleaning up", sdkpaths.StripRoot(coreReleaseDir), "...")
 	sdkfs.RmEmpty(coreReleaseDir)
 
-    BuildFlareCLI()
+	BuildFlareCLI()
 	BuildCore()
 	CopyCoreReleaseFiles()
 	ZipCoreRelease()
@@ -67,7 +69,7 @@ func CopyCoreReleaseFiles() {
 }
 
 func ZipCoreRelease() {
-	basename := filepath.Base(coreReleaseDir) + "-" + sdkstr.Slugify(env.BuildTags, "-") + ".zip"
+	basename := filepath.Base(coreReleaseDir) + ".zip"
 	dir := filepath.Dir(coreReleaseDir)
 	zipFile := filepath.Join(dir, basename)
 	fmt.Printf("Zipping core release: %s...\n", sdkpaths.StripRoot(zipFile))

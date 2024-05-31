@@ -36,7 +36,8 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-	devkitReleaseDir = filepath.Join(sdkpaths.AppDir, "output/devkit", fmt.Sprintf("devkit-%s-%s-go%s", CoreInfo().Version, runtime.GOARCH, goversion))
+	tags := sdkstr.Slugify(env.BuildTags, "-")
+	devkitReleaseDir = filepath.Join(sdkpaths.AppDir, "output/devkit", fmt.Sprintf("devkit-%s-%s-go%s-%s", CoreInfo().Version, runtime.GOARCH, goversion, tags))
 }
 
 func CreateDevkit() {
@@ -112,7 +113,7 @@ func CopyDefaultWorksapce() {
 }
 
 func ZipDevkitRelease() {
-	basename := filepath.Base(devkitReleaseDir) + "-" + sdkstr.Slugify(env.BuildTags, "-") + ".zip"
+	basename := filepath.Base(devkitReleaseDir) + ".zip"
 	dir := filepath.Dir(devkitReleaseDir)
 	zipFile := filepath.Join(dir, basename)
 	err := sdkzip.Zip(devkitReleaseDir, zipFile)
