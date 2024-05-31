@@ -30,6 +30,7 @@ func main() {
 	case "env":
 		fmt.Println(GoEnvToString(env.GoEnv))
 		return
+
 	case "server":
 		Server()
 		return
