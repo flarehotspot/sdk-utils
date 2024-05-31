@@ -19,5 +19,5 @@
   "scripts": {
     "start": "node run.js"
   },
-  "version": "0.0.21-pre"
+  "version": "0.0.20-pre"
 }
