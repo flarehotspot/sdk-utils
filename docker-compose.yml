@@ -6,7 +6,7 @@ services:
       context: .
     volumes:
       - ./:/build
-      - ./build/devkit/extras/config/database.json:/build/config/database.json
+      - ./core/build/devkit/extras/config/database.json:/build/config/database.json
     depends_on:
       mariadb:
         condition: service_healthy

@@ -1,7 +1,7 @@
-package makemono
+package main
 
 import "core/build/tools"
 
-func main(){
-    tools.CreateMonoFiles()
+func main() {
+	tools.CreateMonoFiles()
 }

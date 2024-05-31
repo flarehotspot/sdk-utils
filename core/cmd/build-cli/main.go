@@ -1,4 +1,4 @@
-package buildcli
+package main
 
 import "core/build/tools"
 

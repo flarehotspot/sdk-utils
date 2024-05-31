@@ -15,6 +15,14 @@ import (
 )
 
 func InstallGo(installPath string) {
+	if installPath == "" {
+		installPath = os.Getenv("GO_CUSTOM_PATH")
+	}
+
+	if installPath == "" {
+		installPath = filepath.Join(sdkpaths.AppDir, "go")
+	}
+
 	GOOS := runtime.GOOS
 	GOARCH := runtime.GOARCH
 	GO_VERSION, err := GoVersion()

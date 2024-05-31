@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"runtime"
 
@@ -13,10 +12,11 @@ import (
 	sdkfs "sdk/utils/fs"
 	sdkpaths "sdk/utils/paths"
 	sdkstr "sdk/utils/strings"
+	sdkzip "sdk/utils/zip"
 )
 
 var (
-	devkitReleaseDir = filepath.Join(sdkpaths.AppDir, "output/devkit", fmt.Sprintf("devkit-%s-%s", CoreInfo().Version, runtime.GOARCH))
+	devkitReleaseDir string
 	devkitFiles      = []string{
 		"go",
 		"bin",
@@ -31,6 +31,15 @@ var (
 	}
 )
 
+func init() {
+	goversion, err := GoVersion()
+	if err != nil {
+		panic(err)
+	}
+	tags := sdkstr.Slugify(env.BuildTags, "-")
+	devkitReleaseDir = filepath.Join(sdkpaths.AppDir, "output/devkit", fmt.Sprintf("devkit-%s-%s-go%s-%s", CoreInfo().Version, runtime.GOARCH, goversion, tags))
+}
+
 func CreateDevkit() {
 	PrepareCleanup()
 	InstallGo("./go")
@@ -42,7 +51,6 @@ func CreateDevkit() {
 	CopyDefaultWorksapce()
 	CreateApplicationConfig()
 	ZipDevkitRelease()
-	CleanUpRelease()
 }
 
 func CreateApplicationConfig() {
@@ -105,13 +113,10 @@ func CopyDefaultWorksapce() {
 }
 
 func ZipDevkitRelease() {
-	basename := filepath.Base(devkitReleaseDir) + "-" + sdkstr.Slugify(env.BuildTags, "-") + ".zip"
+	basename := filepath.Base(devkitReleaseDir) + ".zip"
 	dir := filepath.Dir(devkitReleaseDir)
 	zipFile := filepath.Join(dir, basename)
-	fmt.Printf("Zipping devkit release: %s...\n", zipFile)
-	cmd := exec.Command("zip", "-r", zipFile, ".")
-	cmd.Dir = devkitReleaseDir
-	err := cmd.Run()
+	err := sdkzip.Zip(devkitReleaseDir, zipFile)
 	if err != nil {
 		panic(err)
 	}
@@ -128,9 +133,4 @@ func PrepareCleanup() {
 			panic(err)
 		}
 	}
-}
-
-func CleanUpRelease() {
-	fmt.Printf("Cleaning up release directory: %s\n", sdkpaths.StripRoot(devkitReleaseDir))
-	os.RemoveAll(devkitReleaseDir)
 }

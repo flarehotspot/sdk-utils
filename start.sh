@@ -1,9 +1,10 @@
 #!/bin/env bash
 
 BUILD_TAGS="dev mono"
-FLARECLI="./core/internal/cli/flare-internal.go"
+CREATE_MONO="./core/cmd/make-mono/main.go"
+DEBUG_SERVER="./core/cmd/debug-server/main.go"
 
-go run -tags="${BUILD_TAGS}" $FLARECLI make-mono && \
-    go run -tags="${BUILD_TAGS}" $FLARECLI server
+go run -tags="${BUILD_TAGS}" $CREATE_MONO && \
+    go run -tags="${BUILD_TAGS}" $DEBUG_SERVER
 
 
