@@ -14,6 +14,7 @@ import (
 var (
 	coreReleaseDir   = ""
 	coreReleaseFiles = []string{
+        "bin/flare",
 		"config/.defaults",
 		"core/go-version",
 		"core/go.mod",
@@ -37,6 +38,7 @@ func CreateRelease() {
     fmt.Println("Cleaning up", sdkpaths.StripRoot(coreReleaseDir), "...")
 	sdkfs.RmEmpty(coreReleaseDir)
 
+    BuildFlareCLI()
 	BuildCore()
 	CopyCoreReleaseFiles()
 	ZipCoreRelease()

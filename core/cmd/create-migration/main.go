@@ -1,4 +1,4 @@
-package createmigration
+package main
 
 import "core/build/tools"
 

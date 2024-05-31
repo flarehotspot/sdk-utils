@@ -27,6 +27,9 @@ func main() {
 	command := os.Args[1]
 
 	switch command {
+	case "env":
+		fmt.Println(GoEnvToString(env.GoEnv))
+		return
 	case "server":
 		Server()
 		return
@@ -48,7 +51,11 @@ func main() {
 		return
 
 	case "install-go":
-		InstallGo()
+		var installPath string
+		if len(os.Args) > 2 {
+			installPath = os.Args[2]
+		}
+		tools.InstallGo(installPath)
 		return
 
 	case "help":
@@ -151,20 +158,6 @@ func BuildPlugin() {
 	}
 }
 
-func InstallGo() {
-	var installPath string
-	if len(os.Args) > 2 {
-		installPath = os.Args[2]
-	}
-	if installPath == "" {
-		installPath = os.Getenv("GO_CUSTOM_PATH")
-	}
-	if installPath == "" {
-		installPath = filepath.Join("go")
-	}
-	tools.InstallGo(installPath)
-}
-
 func Server() {
 	if env.GoEnv == env.ENV_DEV {
 		tools.CreateGoWorkspace()
@@ -182,11 +175,24 @@ func Server() {
 	initFn()
 }
 
+func GoEnvToString(e int8) string {
+	switch e {
+	case env.ENV_DEV:
+		return "development"
+	case env.ENV_PRODUCTION:
+		return "production"
+	case env.ENV_SANDBOX:
+		return "sandbox"
+	}
+	return "unknown"
+}
+
 func Usage() string {
 	return `
 Usage: flare <command> [options]
 
 list of commands:
+    env                                 Print the build environment
 
     server                              Start the flare server
 
