@@ -20,7 +20,7 @@ func InstallGo(installPath string) {
 	}
 
 	if installPath == "" {
-		installPath = filepath.Join("go")
+		installPath = filepath.Join(sdkpaths.AppDir, "go")
 	}
 
 	GOOS := runtime.GOOS
