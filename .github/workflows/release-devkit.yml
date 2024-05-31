@@ -91,7 +91,8 @@ jobs:
 
   push-sdk:
     runs-on: self-hosted-x64
-    needs: [build-amd64, build-arm]
+    # needs: [build-amd64, build-arm]
+    needs: [build-amd64]
     steps:
       - name: 'Clean up build directory'
         run: |
