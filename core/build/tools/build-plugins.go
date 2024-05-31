@@ -61,7 +61,7 @@ func BuildGoModule(gofile string, outfile string, params *GoBuildArgs) error {
 	buildCmd = append(buildCmd, buildArgs...)
 	buildCmd = append(buildCmd, "-o", outfile, gofile)
 
-	fmt.Printf(`Building go module "%s"...`+"\n", sdkpaths.StripRoot(params.WorkDir))
+	fmt.Printf(`Building go module in path "%s"...`+"\n", sdkpaths.StripRoot(params.WorkDir))
 	cmd := exec.Command(goBin, buildCmd...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
