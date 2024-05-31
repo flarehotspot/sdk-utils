@@ -87,7 +87,7 @@ jobs:
               ./flare install-go ./go && \
               ./create-devkit
       - run: tree ./output/devkit
-      - run: sudo mkdir -p /var/tmp/gh-output && cp -r output/devkit/. /var/tmp/gh-output
+      - run: sudo mkdir -p /var/tmp/gh-output && cp -r ./output/devkit/. /var/tmp/gh-output
 
   push-sdk:
     runs-on: self-hosted-x64
@@ -123,7 +123,8 @@ jobs:
           sudo rm -rf ./.??* || true
           ls -la ./
       - uses: actions/checkout@v4
-      - run: rm -rf ./output/devkit; mkdir -p output && cp -r /var/tmp/gh-output ./output/devkit && rm -rf /var/tmp/gh-output
+      - run: rm -rf ./output/devkit; mkdir -p ./output && \
+                cp -r /var/tmp/gh-output ./output/devkit && rm -rf /var/tmp/gh-output
       - run: tree ./output
       - uses: actions/setup-node@v3
         with:
