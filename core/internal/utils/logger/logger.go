@@ -17,13 +17,13 @@ import (
 	"sync/atomic"
 	"time"
 
-	jobque "github.com/flarehotspot/core/internal/utils/job-que"
-	sdkplugin "github.com/flarehotspot/sdk/api/plugin"
-	sdkfs "github.com/flarehotspot/sdk/utils/fs"
-	sdkpaths "github.com/flarehotspot/sdk/utils/paths"
-	sdkstr "github.com/flarehotspot/sdk/utils/strings"
+	jobque "core/internal/utils/job-que"
+	sdkplugin "sdk/api/plugin"
+	sdkfs "sdk/utils/fs"
+	sdkpaths "sdk/utils/paths"
+	sdkstr "sdk/utils/strings"
 
-	"github.com/flarehotspot/sdk/utils/wsv"
+	"sdk/utils/wsv"
 )
 
 const (

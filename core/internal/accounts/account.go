@@ -6,10 +6,10 @@ import (
 
 	"encoding/json"
 
-	"github.com/flarehotspot/core/internal/utils/events"
-	sse "github.com/flarehotspot/core/internal/utils/sse"
-	sdkfs "github.com/flarehotspot/sdk/utils/fs"
-	paths "github.com/flarehotspot/sdk/utils/paths"
+	"core/internal/utils/events"
+	sse "core/internal/utils/sse"
+	sdkfs "sdk/utils/fs"
+	paths "sdk/utils/paths"
 )
 
 var (

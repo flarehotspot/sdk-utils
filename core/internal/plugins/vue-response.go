@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/flarehotspot/core/internal/config"
-	"github.com/flarehotspot/core/internal/web/response"
+	"core/internal/config"
+	"core/internal/web/response"
 )
 
 func NewVueResponse(vr *VueRouterApi) *VueResponse {

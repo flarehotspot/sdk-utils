@@ -3,13 +3,13 @@ package plugins
 import (
 	"net/http"
 
-	"github.com/flarehotspot/core/internal/connmgr"
-	"github.com/flarehotspot/core/internal/db"
-	"github.com/flarehotspot/core/internal/db/models"
-	"github.com/flarehotspot/core/internal/web/helpers"
-	sdkacct "github.com/flarehotspot/sdk/api/accounts"
-	sdkconnmgr "github.com/flarehotspot/sdk/api/connmgr"
-	sdkhttp "github.com/flarehotspot/sdk/api/http"
+	"core/internal/connmgr"
+	"core/internal/db"
+	"core/internal/db/models"
+	"core/internal/web/helpers"
+	sdkacct "sdk/api/accounts"
+	sdkconnmgr "sdk/api/connmgr"
+	sdkhttp "sdk/api/http"
 	"github.com/gorilla/mux"
 )
 

@@ -2,7 +2,7 @@ package plugincfg
 
 // import (
 // 	"encoding/json"
-// 	paths "github.com/flarehotspot/sdk/utils/paths"
+// 	paths "sdk/utils/paths"
 // 	"log"
 // 	"os"
 // 	"path/filepath"

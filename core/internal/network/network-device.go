@@ -1,8 +1,8 @@
 package network
 
 import (
-	"github.com/flarehotspot/sdk/api/network"
-	"github.com/flarehotspot/core/internal/utils/ubus"
+	"sdk/api/network"
+	"core/internal/utils/ubus"
 )
 
 type NetworkDevice struct {

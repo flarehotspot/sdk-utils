@@ -1,9 +1,9 @@
 package plugins
 
 import (
-	sdkhttp "github.com/flarehotspot/sdk/api/http"
-	payments "github.com/flarehotspot/sdk/api/payments"
-	plugin "github.com/flarehotspot/sdk/api/plugin"
+	sdkhttp "sdk/api/http"
+	payments "sdk/api/payments"
+	plugin "sdk/api/plugin"
 )
 
 func NewPaymentOpt(api plugin.PluginApi, opt payments.PaymentOpt) PaymentOption {

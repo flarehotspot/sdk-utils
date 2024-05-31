@@ -9,8 +9,8 @@ package sdkhttp
 import (
 	"net/http"
 
-	sdkacct "github.com/flarehotspot/sdk/api/accounts"
-	sdkconnmgr "github.com/flarehotspot/sdk/api/connmgr"
+	sdkacct "sdk/api/accounts"
+	sdkconnmgr "sdk/api/connmgr"
 )
 
 // HttpApi is used to process and respond to http requests.

@@ -5,11 +5,11 @@ import (
 	"os"
 	"path/filepath"
 
-	sdkcfg "github.com/flarehotspot/sdk/api/config"
-	fs "github.com/flarehotspot/sdk/utils/fs"
-	sdkfs "github.com/flarehotspot/sdk/utils/fs"
-	paths "github.com/flarehotspot/sdk/utils/paths"
-	sdkstr "github.com/flarehotspot/sdk/utils/strings"
+	sdkcfg "sdk/api/config"
+	fs "sdk/utils/fs"
+	sdkfs "sdk/utils/fs"
+	paths "sdk/utils/paths"
+	sdkstr "sdk/utils/strings"
 )
 
 func NewCustomConfig(key string, pkg string) *CustomConfig {

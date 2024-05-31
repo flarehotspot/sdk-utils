@@ -1,9 +1,9 @@
 package plugins
 
 import (
-	"github.com/flarehotspot/sdk/api/accounts"
-	"github.com/flarehotspot/sdk/api/connmgr"
-	"github.com/flarehotspot/sdk/api/http"
+	"sdk/api/accounts"
+	"sdk/api/connmgr"
+	"sdk/api/http"
 )
 
 func NewPluginsMgrUtil(pmgr *PluginsMgr, coreApi *PluginApi) *PluginsMgrUtils {

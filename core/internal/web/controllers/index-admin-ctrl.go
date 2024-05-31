@@ -5,12 +5,12 @@ import (
 	"net/http"
 	"path/filepath"
 
-	"github.com/flarehotspot/core/internal/config"
-	"github.com/flarehotspot/core/internal/plugins"
-	"github.com/flarehotspot/core/internal/utils/assets"
-	sse "github.com/flarehotspot/core/internal/utils/sse"
-	webutil "github.com/flarehotspot/core/internal/utils/web"
-	"github.com/flarehotspot/core/internal/web/response"
+	"core/internal/config"
+	"core/internal/plugins"
+	"core/internal/utils/assets"
+	sse "core/internal/utils/sse"
+	webutil "core/internal/utils/web"
+	"core/internal/web/response"
 )
 
 func AdminIndexPage(g *plugins.CoreGlobals) http.Handler {

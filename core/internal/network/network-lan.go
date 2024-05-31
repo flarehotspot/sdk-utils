@@ -5,11 +5,11 @@ import (
 	"log"
 	"sync"
 
-	"github.com/flarehotspot/core/internal/config"
-	jobque "github.com/flarehotspot/core/internal/utils/job-que"
-	"github.com/flarehotspot/core/internal/utils/nftables"
-	"github.com/flarehotspot/core/internal/utils/tc"
-	"github.com/flarehotspot/core/internal/utils/ubus"
+	"core/internal/config"
+	jobque "core/internal/utils/job-que"
+	"core/internal/utils/nftables"
+	"core/internal/utils/tc"
+	"core/internal/utils/ubus"
 )
 
 type NetworkLan struct {

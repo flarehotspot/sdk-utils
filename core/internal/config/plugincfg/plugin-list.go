@@ -4,8 +4,8 @@ package plugincfg
 // 	"log"
 // 	"path/filepath"
 
-// 	fs "github.com/flarehotspot/sdk/utils/fs"
-// 	paths "github.com/flarehotspot/sdk/utils/paths"
+// 	fs "sdk/utils/fs"
+// 	paths "sdk/utils/paths"
 // )
 
 // // ListDirs returns a list of plugins (aboslute path to plugin directory) from "vendor" directory.

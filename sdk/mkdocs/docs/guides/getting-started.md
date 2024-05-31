@@ -11,7 +11,7 @@ For a detailed instruction to install Docker Desktop, please refer to the [offic
 
 ## 2. Download Flare Hotspot SDK {#download-sdk}
 
-Download the latest **devkit-x.x.xzip** file from [https://github.com/flarehotspot/sdk/releases](https://github.com/flarehotspot/sdk/releases) repository. Select the appropriate zip file that's compatible with your CPU architecture. Windows computers are most likely be running Intel or AMD x86 CPUs, so just select `devkit-0.0.13-pre-amd64.zip` (whatever is the latest release file).
+Download the latest **devkit-x.x.xzip** file from [https://sdk/releases](https://sdk/releases) repository. Select the appropriate zip file that's compatible with your CPU architecture. Windows computers are most likely be running Intel or AMD x86 CPUs, so just select `devkit-0.0.13-pre-amd64.zip` (whatever is the latest release file).
 
 ![Download Flare Hotspot SDK](./img/01-select-latest-release.png)
 
@@ -57,5 +57,5 @@ docker compose restart app
 
 ## 4. Upgrading The SDK {#upgrade-sdk}
 
-To upgrade the SDK, download the latest release from the [SDK releases page](https://github.com/flarehotspot/sdk/releases) and extract the contents to your desired destination. Then copy your plugin directory into the `plugins` directory inside the new SDK. Make sure to stop the previous SDK runtime then [start](#start-sdk) the new SDK runtime.
+To upgrade the SDK, download the latest release from the [SDK releases page](https://sdk/releases) and extract the contents to your desired destination. Then copy your plugin directory into the `plugins` directory inside the new SDK. Make sure to stop the previous SDK runtime then [start](#start-sdk) the new SDK runtime.
 

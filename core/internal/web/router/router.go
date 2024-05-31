@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/flarehotspot/sdk/api/http"
+	"sdk/api/http"
 	"github.com/gorilla/mux"
 )
 

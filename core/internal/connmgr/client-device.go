@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/flarehotspot/core/internal/db"
-	"github.com/flarehotspot/core/internal/db/models"
-	"github.com/flarehotspot/core/internal/utils/events"
-	"github.com/flarehotspot/core/internal/utils/sse"
+	"core/internal/db"
+	"core/internal/db/models"
+	"core/internal/utils/events"
+	"core/internal/utils/sse"
 )
 
 type ClientDevice struct {

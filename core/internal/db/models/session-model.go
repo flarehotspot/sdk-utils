@@ -7,7 +7,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/flarehotspot/core/internal/db"
+	"core/internal/db"
 )
 
 const (

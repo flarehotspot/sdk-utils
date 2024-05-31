@@ -6,7 +6,7 @@ import (
 	"os/exec"
 	"path/filepath"
 
-	sdkfs "github.com/flarehotspot/sdk/utils/fs"
+	sdkfs "sdk/utils/fs"
 )
 
 func GoBin() string {

@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	sdkpaths "github.com/flarehotspot/sdk/utils/paths"
+	sdkpaths "sdk/utils/paths"
 )
 
 func GoVersion() (string, error) {

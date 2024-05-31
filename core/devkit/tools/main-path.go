@@ -4,7 +4,7 @@ import (
 	"path/filepath"
 	"runtime"
 
-	sdkpaths "github.com/flarehotspot/sdk/utils/paths"
+	sdkpaths "sdk/utils/paths"
 )
 
 func MainFile() string {

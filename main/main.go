@@ -1,7 +1,7 @@
 //go:build mono
 package main
 
-import "github.com/flarehotspot/core"
+import "core"
 
 func main() {
     core.Init()

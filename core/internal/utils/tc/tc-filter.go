@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/flarehotspot/core/internal/utils/cmd"
-	"github.com/flarehotspot/core/internal/utils/ifbutil"
+	"core/internal/utils/cmd"
+	"core/internal/utils/ifbutil"
 )
 
 type TcIpField string

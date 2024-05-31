@@ -3,10 +3,10 @@ package routes
 import (
 	"net/http"
 
-	"github.com/flarehotspot/core/internal/plugins"
-	"github.com/flarehotspot/core/internal/web/controllers"
-	"github.com/flarehotspot/core/internal/web/router"
-	"github.com/flarehotspot/core/internal/web/routes/urls"
+	"core/internal/plugins"
+	"core/internal/web/controllers"
+	"core/internal/web/router"
+	"core/internal/web/routes/urls"
 )
 
 func BootRoutes(g *plugins.CoreGlobals) {

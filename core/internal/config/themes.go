@@ -4,8 +4,8 @@ import (
 	"path/filepath"
 	"sync"
 
-	sdkfs "github.com/flarehotspot/sdk/utils/fs"
-	sdkpaths "github.com/flarehotspot/sdk/utils/paths"
+	sdkfs "sdk/utils/fs"
+	sdkpaths "sdk/utils/paths"
 )
 
 const (

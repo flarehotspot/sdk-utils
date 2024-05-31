@@ -8,9 +8,9 @@ import (
 	"os/exec"
 	"path/filepath"
 
-	"github.com/flarehotspot/core/internal/config/plugincfg"
-	"github.com/flarehotspot/sdk/utils/fs"
-	"github.com/flarehotspot/sdk/utils/paths"
+	"core/internal/config/plugincfg"
+	"sdk/utils/fs"
+	"sdk/utils/paths"
 )
 
 type InstPrgrs struct {

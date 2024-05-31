@@ -8,8 +8,8 @@ package plugincfg
 	// "path/filepath"
 
 	// "github.com/flarehotspot/goutils/cmd"
-	// "github.com/flarehotspot/sdk/utils/fs"
-	// "github.com/flarehotspot/sdk/utils/paths"
+	// "sdk/utils/fs"
+	// "sdk/utils/paths"
 // )
 
 // const (

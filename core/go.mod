@@ -1,6 +1,6 @@
 // NOTE: Do not use "go mod tidy" to prevent coupling of dependencies.
 
-module github.com/flarehotspot/core
+module core
 
 go 1.19
 
@@ -16,3 +16,4 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
+

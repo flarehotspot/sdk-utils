@@ -6,7 +6,7 @@
 
 package sdkuci
 
-import "github.com/flarehotspot/sdk/libs/go-uci"
+import "sdk/libs/go-uci"
 
 type UciApi interface {
 	Uci() uci.Tree

@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	paths "github.com/flarehotspot/sdk/utils/paths"
+	paths "sdk/utils/paths"
 )
 
 func GetDistributorCode() (string, error) {

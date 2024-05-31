@@ -1,8 +1,8 @@
 package plugins
 
 import (
-	"github.com/flarehotspot/core/internal/accounts"
-	acct "github.com/flarehotspot/sdk/api/accounts"
+	"core/internal/accounts"
+	acct "sdk/api/accounts"
 )
 
 func NewAcctApi(api *PluginApi) *AccountsApi {

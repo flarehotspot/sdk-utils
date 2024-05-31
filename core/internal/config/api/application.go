@@ -1,8 +1,8 @@
 package cfgapi
 
 import (
-	"github.com/flarehotspot/core/internal/config"
-	"github.com/flarehotspot/sdk/api/config"
+	"core/internal/config"
+	"sdk/api/config"
 )
 
 func NewAppCfgApi() *AppCfgApi {

@@ -3,8 +3,8 @@ package boot
 import (
 	"log"
 
-	"github.com/flarehotspot/core/internal/utils/uci"
-	"github.com/flarehotspot/core/internal/utils/storage"
+	"core/internal/utils/uci"
+	"core/internal/utils/storage"
 )
 
 // InitStorage initializes the storage

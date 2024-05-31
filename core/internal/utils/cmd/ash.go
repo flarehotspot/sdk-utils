@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
-    sdkstr "github.com/flarehotspot/sdk/utils/strings"
+    sdkstr "sdk/utils/strings"
 )
 
 func ExecAsh(command string) error {

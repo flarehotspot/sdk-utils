@@ -4,8 +4,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/flarehotspot/core/internal/utils/cmd"
-	"github.com/flarehotspot/core/internal/utils/ifbutil"
+	"core/internal/utils/cmd"
+	"core/internal/utils/ifbutil"
 )
 
 type TcClassMgr struct {

@@ -6,10 +6,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/flarehotspot/core/internal/db"
-	"github.com/flarehotspot/core/internal/db/models"
-	connmgr "github.com/flarehotspot/sdk/api/connmgr"
-	sdkconnmgr "github.com/flarehotspot/sdk/api/connmgr"
+	"core/internal/db"
+	"core/internal/db/models"
+	connmgr "sdk/api/connmgr"
+	sdkconnmgr "sdk/api/connmgr"
 )
 
 func NewLocalSession(dtb *db.Database, mdls *models.Models, s *models.Session) connmgr.SessionSource {

@@ -4,8 +4,8 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/flarehotspot/core/internal/db/models"
-	sdkpayments "github.com/flarehotspot/sdk/api/payments"
+	"core/internal/db/models"
+	sdkpayments "sdk/api/payments"
 )
 
 func NewPurchase(api *PluginApi, ctx context.Context, deviceId int64, p *models.Purchase) *Purchase {

@@ -6,7 +6,7 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/flarehotspot/core/internal/utils/arp"
+	"core/internal/utils/arp"
 )
 
 func FindByIp(ip string) (*HostData, error) {

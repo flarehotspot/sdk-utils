@@ -2,7 +2,7 @@ package jsonwebtoken
 
 import (
 	"fmt"
-	"github.com/flarehotspot/sdk/libs/jwt"
+	"sdk/libs/jwt"
 )
 
 func GenerateToken(clms map[string]string, secret string) (string, error) {

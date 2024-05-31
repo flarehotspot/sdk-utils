@@ -6,12 +6,12 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/flarehotspot/core/internal/config"
-	jobque "github.com/flarehotspot/core/internal/utils/job-que"
-	sdkplugin "github.com/flarehotspot/sdk/api/plugin"
-	fs "github.com/flarehotspot/sdk/utils/fs"
-	paths "github.com/flarehotspot/sdk/utils/paths"
-	strings "github.com/flarehotspot/sdk/utils/strings"
+	"core/internal/config"
+	jobque "core/internal/utils/job-que"
+	sdkplugin "sdk/api/plugin"
+	fs "sdk/utils/fs"
+	paths "sdk/utils/paths"
+	strings "sdk/utils/strings"
 )
 
 var (

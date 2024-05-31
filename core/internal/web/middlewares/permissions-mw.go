@@ -3,8 +3,8 @@ package middlewares
 import (
 	"net/http"
 
-	acct "github.com/flarehotspot/core/internal/accounts"
-	"github.com/flarehotspot/sdk/api/http"
+	acct "core/internal/accounts"
+	"sdk/api/http"
 )
 
 func PermsMiddleware(perms []string) func(http.Handler) http.Handler {

@@ -10,10 +10,10 @@ import (
 	stdstr "strings"
 	"time"
 
-	"github.com/flarehotspot/core/internal/utils/cmd"
-	"github.com/flarehotspot/sdk/libs/go-uci"
-fs	"github.com/flarehotspot/sdk/utils/fs"
-paths	"github.com/flarehotspot/sdk/utils/paths"
+	"core/internal/utils/cmd"
+	"sdk/libs/go-uci"
+fs	"sdk/utils/fs"
+paths	"sdk/utils/paths"
 )
 
 var (

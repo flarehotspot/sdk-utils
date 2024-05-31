@@ -7,8 +7,8 @@ import (
 	"strings"
 	"time"
 
-	sdkfs "github.com/flarehotspot/sdk/utils/fs"
-	sdkstr "github.com/flarehotspot/sdk/utils/strings"
+	sdkfs "sdk/utils/fs"
+	sdkstr "sdk/utils/strings"
 )
 
 func MigrationCreate(pluginDir string, name string) {

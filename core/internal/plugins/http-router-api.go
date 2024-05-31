@@ -5,11 +5,11 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/flarehotspot/core/internal/connmgr"
-	"github.com/flarehotspot/core/internal/db"
-	"github.com/flarehotspot/core/internal/web/middlewares"
-	"github.com/flarehotspot/core/internal/web/router"
-	sdkhttp "github.com/flarehotspot/sdk/api/http"
+	"core/internal/connmgr"
+	"core/internal/db"
+	"core/internal/web/middlewares"
+	"core/internal/web/router"
+	sdkhttp "sdk/api/http"
 	"github.com/gorilla/mux"
 )
 

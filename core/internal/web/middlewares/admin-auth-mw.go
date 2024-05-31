@@ -7,11 +7,11 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/flarehotspot/core/internal/accounts"
-	"github.com/flarehotspot/core/internal/config"
-	"github.com/flarehotspot/sdk/api/http"
-	"github.com/flarehotspot/sdk/libs/jwt"
-	"github.com/flarehotspot/core/internal/utils/jsonwebtoken"
+	"core/internal/accounts"
+	"core/internal/config"
+	"sdk/api/http"
+	"sdk/libs/jwt"
+	"core/internal/utils/jsonwebtoken"
 )
 
 const (

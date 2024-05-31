@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	sdkpaths "github.com/flarehotspot/sdk/utils/paths"
+	sdkpaths "sdk/utils/paths"
 )
 
 func readConfigFile(f string, out interface{}) error {

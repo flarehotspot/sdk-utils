@@ -9,12 +9,12 @@ import (
 	"strings"
 	texttemplate "text/template"
 
-	"github.com/flarehotspot/core/internal/utils/flaretmpl"
-	"github.com/flarehotspot/core/internal/web/response"
-	"github.com/flarehotspot/core/internal/web/router"
-	rnames "github.com/flarehotspot/core/internal/web/routes/names"
-	sdkhttp "github.com/flarehotspot/sdk/api/http"
-	plugin "github.com/flarehotspot/sdk/api/plugin"
+	"core/internal/utils/flaretmpl"
+	"core/internal/web/response"
+	"core/internal/web/router"
+	rnames "core/internal/web/routes/names"
+	sdkhttp "sdk/api/http"
+	plugin "sdk/api/plugin"
 )
 
 func NewHttpHelpers(api *PluginApi) sdkhttp.HttpHelpers {

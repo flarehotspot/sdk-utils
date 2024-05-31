@@ -6,12 +6,12 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/flarehotspot/core/internal/config"
-	"github.com/flarehotspot/core/internal/config/plugincfg"
-	"github.com/flarehotspot/core/internal/utils/git"
-	"github.com/flarehotspot/sdk/api/plugin"
-	"github.com/flarehotspot/sdk/utils/paths"
-	"github.com/flarehotspot/sdk/utils/strings"
+	"core/internal/config"
+	"core/internal/config/plugincfg"
+	"core/internal/utils/git"
+	"sdk/api/plugin"
+	"sdk/utils/paths"
+	"sdk/utils/strings"
 )
 
 type InstallStatus struct {

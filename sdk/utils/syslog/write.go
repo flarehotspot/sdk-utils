@@ -11,7 +11,7 @@ import (
 	"path"
 	"time"
 
-	"github.com/flarehotspot/sdk/utils/paths"
+	"sdk/utils/paths"
 )
 
 func LogNotice(msg string) error {

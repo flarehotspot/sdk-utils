@@ -8,7 +8,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/flarehotspot/core/env"
+	"core/env"
 	"github.com/gorilla/mux"
 )
 
