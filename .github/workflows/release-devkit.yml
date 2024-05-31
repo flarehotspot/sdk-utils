@@ -43,51 +43,51 @@ jobs:
       - run: tree ./output/devkit
       - run: sudo mkdir -p /var/tmp/gh-output && cp -r output/devkit/. /var/tmp/gh-output
 
-  build-arm:
-    runs-on: self-hosted-x64
-    name: Build on ${{ matrix.arch }}
-    strategy:
-      matrix:
-        include:
-          - arch: aarch64
-            distro: ubuntu22.04
-    steps:
-      - name: 'Cleanup build folder'
-        run: |
-          sudo rm -rf ./* || true
-          sudo rm -rf ./.??* || true
-          ls -la ./
-      - run: |
-          sudo apt update && \
-          sudo apt-get install -y curl ca-certificates git openssl \
-            gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu
-      - uses: actions/checkout@v4
-      - run: cp go.work.default go.work
-      - uses: actions/setup-go@v5
-        with:
-          go-version: '1.19.12'
-      - run: GOOS=linux GOARCH=arm64 CC=aarch64-linux-gnu-gcc go build -tags="dev" -o ./flare ./core/build/devkit/cli/flare.go
-      - run: GOOS=linux GOARCH=arm64 CC=aarch64-linux-gnu-gcc go build -tags="dev" -o ./create-devkit ./core/cmd/create-devkit/main.go
-      - uses: uraimo/run-on-arch-action@v2.3.0
-        with:
-          arch: ${{ matrix.arch }}
-          distro: ${{ matrix.distro }}
-          dockerRunArgs: |
-            --volume "${PWD}:/build"
-          env: | # YAML, but pipe character is necessary
-            CGO_ENABLED: '1'
-            GO_CUSTOM_PATH: /build/go
-            GITHUB_TOKEN: ${{ secrets.DEVKIT_RELEASE_SECRET }}
-          install: |
-            apt-get update -q -y && \
-              apt-get install -q -y \
-              gcc ca-certificates zip git
-          run: |
-            cd /build && \
-              ./flare install-go ./go && \
-              ./create-devkit
-      - run: tree ./devkit-release
-      - run: sudo mkdir -p /var/tmp/gh-output && cp -r devkit-release/. /var/tmp/gh-output
+  # build-arm:
+  #   runs-on: self-hosted-x64
+  #   name: Build on ${{ matrix.arch }}
+  #   strategy:
+  #     matrix:
+  #       include:
+  #         - arch: aarch64
+  #           distro: ubuntu22.04
+  #   steps:
+  #     - name: 'Cleanup build folder'
+  #       run: |
+  #         sudo rm -rf ./* || true
+  #         sudo rm -rf ./.??* || true
+  #         ls -la ./
+  #     - run: |
+  #         sudo apt update && \
+  #         sudo apt-get install -y curl ca-certificates git openssl \
+  #           gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu
+  #     - uses: actions/checkout@v4
+  #     - run: cp go.work.default go.work
+  #     - uses: actions/setup-go@v5
+  #       with:
+  #         go-version: '1.19.12'
+  #     - run: GOOS=linux GOARCH=arm64 CC=aarch64-linux-gnu-gcc go build -tags="dev" -o ./flare ./core/build/devkit/cli/flare.go
+  #     - run: GOOS=linux GOARCH=arm64 CC=aarch64-linux-gnu-gcc go build -tags="dev" -o ./create-devkit ./core/cmd/create-devkit/main.go
+  #     - uses: uraimo/run-on-arch-action@v2.3.0
+  #       with:
+  #         arch: ${{ matrix.arch }}
+  #         distro: ${{ matrix.distro }}
+  #         dockerRunArgs: |
+  #           --volume "${PWD}:/build"
+  #         env: | # YAML, but pipe character is necessary
+  #           CGO_ENABLED: '1'
+  #           GO_CUSTOM_PATH: /build/go
+  #           GITHUB_TOKEN: ${{ secrets.DEVKIT_RELEASE_SECRET }}
+  #         install: |
+  #           apt-get update -q -y && \
+  #             apt-get install -q -y \
+  #             gcc ca-certificates zip git
+  #         run: |
+  #           cd /build && \
+  #             ./flare install-go ./go && \
+  #             ./create-devkit
+  #     - run: tree ./devkit-release
+  #     - run: sudo mkdir -p /var/tmp/gh-output && cp -r devkit-release/. /var/tmp/gh-output
 
   push-sdk:
     runs-on: self-hosted-x64
