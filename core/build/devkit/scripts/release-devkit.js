@@ -27,7 +27,7 @@ const main = async () => {
 
   async function releaseNotes() {
     const notes = await fs.readFile(
-      path.join(__dirname, '../release-notes', `${CORE_VERSION}.md`),
+      path.join(__dirname, '../../release-notes/', `${CORE_VERSION}.md`),
       'utf8'
     );
     return (
