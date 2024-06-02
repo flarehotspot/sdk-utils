@@ -3,6 +3,7 @@ package tools
 import (
 	"core/env"
 	"fmt"
+	"os"
 	"path/filepath"
 	"runtime"
 	sdkfs "sdk/utils/fs"
@@ -72,10 +73,16 @@ func ZipCoreRelease() {
 	basename := filepath.Base(coreReleaseDir) + ".zip"
 	dir := filepath.Dir(coreReleaseDir)
 	zipFile := filepath.Join(dir, basename)
+
 	fmt.Printf("Zipping core release: %s...\n", sdkpaths.StripRoot(zipFile))
-	err := sdkzip.Zip(coreReleaseDir, zipFile)
-	if err != nil {
+	if err := sdkzip.Zip(coreReleaseDir, zipFile); err != nil {
 		panic(err)
 	}
+
+	outputTxtPath := filepath.Join(sdkpaths.AppDir, "output/core-release.txt")
+	if err := os.WriteFile(outputTxtPath, []byte(zipFile), sdkfs.PermFile); err != nil {
+		panic(err)
+	}
+
 	fmt.Println("Devkit created: ", sdkpaths.StripRoot(zipFile))
 }
