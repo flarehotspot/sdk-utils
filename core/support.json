@@ -1,0 +1,14 @@
+{
+  "support": [
+    {
+      "os": "OpenWrt",
+      "os_version": "23.05.3",
+      "go": [
+        {
+          "go_version": "1.19.13",
+          "go_arch": "x86_64"
+        }
+      ]
+    }
+  ]
+}
