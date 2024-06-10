@@ -17,6 +17,7 @@ var (
 	coreReleaseFiles = []string{
 		"bin/flare",
 		"config/.defaults",
+        "core/support.json",
 		"core/go-version",
 		"core/go.mod",
 		"core/plugin.json",
