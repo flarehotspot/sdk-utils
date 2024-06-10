@@ -3,10 +3,11 @@
     {
       "os": "OpenWrt",
       "os_version": "23.05.3",
+      "os_arch": "x86/64",
       "go": [
         {
           "go_version": "1.19.13",
-          "go_arch": "x86_64"
+          "go_arch": "amd64"
         }
       ]
     }
