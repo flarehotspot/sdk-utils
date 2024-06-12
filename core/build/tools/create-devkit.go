@@ -11,6 +11,7 @@ import (
 	sdkcfg "sdk/api/config"
 	sdkfs "sdk/utils/fs"
 	sdkpaths "sdk/utils/paths"
+	sdkruntime "sdk/utils/runtime"
 	sdkstr "sdk/utils/strings"
 	sdkzip "sdk/utils/zip"
 )
@@ -32,10 +33,7 @@ var (
 )
 
 func init() {
-	goversion, err := GoVersion()
-	if err != nil {
-		panic(err)
-	}
+	goversion := sdkruntime.GOVERSION
 	tags := sdkstr.Slugify(env.BuildTags, "-")
 	devkitReleaseDir = filepath.Join(sdkpaths.AppDir, "output/devkit", fmt.Sprintf("devkit-%s-%s-go%s-%s", CoreInfo().Version, runtime.GOARCH, goversion, tags))
 }

@@ -6,17 +6,15 @@ import (
 	"path/filepath"
 
 	sdkfs "sdk/utils/fs"
+	sdkruntime "sdk/utils/runtime"
 )
 
 func CreateGoWorkspace() {
-	goVersion, err := GoShortVersion()
-	if err != nil {
-		panic(err)
-	}
-
+	goVersion := sdkruntime.GOVERSION
 	goWork := fmt.Sprintf(`go %s
 
 use (
+    ./launcher
     ./core
     ./sdk
     ./main`, goVersion)
@@ -42,10 +40,10 @@ use (
 
 	goWork += "\n)"
 
-	if err = os.WriteFile(filepath.Join("go.work"), []byte(goWork), 0644); err != nil {
+	if err := os.WriteFile(filepath.Join("go.work"), []byte(goWork), 0644); err != nil {
 		panic(err)
 	}
 
 	// fmt.Printf("go.work file created: \n%s\n", goWork)
-    fmt.Println("go.work file created.")
+	fmt.Println("go.work file created.")
 }

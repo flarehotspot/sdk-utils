@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	tools.CreateRelease()
+	tools.BuildCoreBins()
 }

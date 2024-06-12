@@ -7,11 +7,11 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"runtime"
 	"strings"
 
 	sdkfs "sdk/utils/fs"
 	sdkpaths "sdk/utils/paths"
+	sdkruntime "sdk/utils/runtime"
 )
 
 func InstallGo(installPath string) {
@@ -23,20 +23,17 @@ func InstallGo(installPath string) {
 		installPath = filepath.Join(sdkpaths.AppDir, "go")
 	}
 
-	GOOS := runtime.GOOS
-	GOARCH := runtime.GOARCH
-	GO_VERSION, err := GoVersion()
-	if err != nil {
-		panic(err)
-	}
+	GOOS := sdkruntime.GOOS
+	GOARCH := sdkruntime.GOARCH
+	GOVERSION := sdkruntime.GOVERSION
 
 	if GoInstallExists(installPath) {
-		fmt.Printf("Go version %s already installed to %s\n", GO_VERSION, installPath)
+		fmt.Printf("Go version %s already installed to %s\n", GOVERSION, installPath)
 		return
 	}
 
-	EXTRACT_PATH := filepath.Join(sdkpaths.CacheDir, "downloads", fmt.Sprintf("go%s-%s-%s", GO_VERSION, GOOS, GOARCH))
-	err = downloadAndExtractGo(GOOS, GOARCH, GO_VERSION, EXTRACT_PATH)
+	EXTRACT_PATH := filepath.Join(sdkpaths.CacheDir, "downloads", fmt.Sprintf("go%s-%s-%s", GOVERSION, GOOS, GOARCH))
+	err := downloadAndExtractGo(GOOS, GOARCH, GOVERSION, EXTRACT_PATH)
 	if err != nil {
 		panic(err)
 	}
@@ -53,19 +50,12 @@ func InstallGo(installPath string) {
 		panic(err)
 	}
 
-	fmt.Printf("Go version %s installed to %s\n", GO_VERSION, installPath)
+	fmt.Printf("Go version %s installed to %s\n", GOVERSION, installPath)
 	fmt.Printf("To use the newly installed Go version, run: \n\nexport PATH=%s/bin:$PATH\n", installPath)
 }
 
 func GoInstallExists(installPath string) bool {
 	fmt.Println("Checking if Go is already installed...")
-
-	GOOS := runtime.GOOS
-	GOARCH := runtime.GOARCH
-	GO_VERSION, err := GoVersion()
-	if err != nil {
-		panic(err)
-	}
 
 	goBin := filepath.Join(installPath, "bin", "go")
 	cmd := exec.Command(goBin, "env")
@@ -84,11 +74,15 @@ func GoInstallExists(installPath string) bool {
 		}
 	}
 
+	GOOS := sdkruntime.GOOS
+	GOARCH := sdkruntime.GOARCH
+	GOVERSION := sdkruntime.GOVERSION
+
 	goos := strings.Trim(envValues["GOOS"], "\"")
 	goarch := strings.Trim(envValues["GOARCH"], "\"")
 	goversion := strings.TrimPrefix(strings.Trim(envValues["GOVERSION"], "\""), "go")
 
-	return goos == GOOS && goarch == GOARCH && goversion == GO_VERSION
+	return goos == GOOS && goarch == GOARCH && goversion == GOVERSION
 }
 
 func downloadAndExtractGo(goos, goarch, version, extractPath string) error {
