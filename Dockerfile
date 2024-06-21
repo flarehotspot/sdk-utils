@@ -15,7 +15,7 @@ WORKDIR /build
 RUN go install github.com/cespare/reflex@latest
 
 CMD cp go.work.default go.work && \
-    go run --tags=dev ./core/cmd/cli/main.go install-go && \
+    go run --tags=dev ./core/internal/cli/main.go install-go && \
     go run --tags=dev ./core/cmd/make-mono/main.go && \
     reflex \
         -r '\.go$' \
