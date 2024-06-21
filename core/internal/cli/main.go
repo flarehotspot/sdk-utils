@@ -151,7 +151,8 @@ func BuildPlugin() {
 		err = tools.BuildAllPlugins()
 	} else {
 		pluginPath := os.Args[2]
-		err = tools.BuildPlugin(pluginPath)
+		workdir := filepath.Join(sdkpaths.TmpDir, "builds", filepath.Base(pluginPath))
+		err = tools.BuildPlugin(pluginPath, workdir)
 	}
 	if err != nil {
 		fmt.Println("Error building plugin: " + err.Error())

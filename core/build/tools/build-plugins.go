@@ -11,6 +11,7 @@ import (
 	sdkplugin "sdk/api/plugin"
 	sdkfs "sdk/utils/fs"
 	sdkpaths "sdk/utils/paths"
+	sdkruntime "sdk/utils/runtime"
 )
 
 type GoBuildArgs struct {
@@ -19,31 +20,72 @@ type GoBuildArgs struct {
 	ExtraArgs []string
 }
 
-func BuildPlugin(dir string) error {
-	if dir == "" {
-		return errors.New("No plugin path provided")
+func BuildPlugin(pluginSrcDir string, workdir string) error {
+	if pluginSrcDir == "" {
+		return errors.New("Build plugin error: no plugin source path")
+	}
+
+	if workdir == "" {
+		return errors.New("Build plugin error: no build path")
 	}
 
 	var info sdkplugin.PluginInfo
 
-	mainFile := filepath.Join(dir, "main.go")
-	pluginSo := filepath.Join(dir, "plugin.so")
-	err := sdkfs.ReadJson(filepath.Join(dir, "plugin.json"), &info)
-	if err != nil {
+	pluginSoPath := filepath.Join(pluginSrcDir, "plugin.so")
+	if err := sdkfs.ReadJson(filepath.Join(pluginSrcDir, "plugin.json"), &info); err != nil {
 		return err
 	}
 
-	if !sdkfs.Exists(mainFile) && sdkfs.Exists(pluginSo) {
-		fmt.Printf("Plugin '%s' is already built. Skipping...\n", info.Package)
-		return nil
+	buildpath := filepath.Join(workdir, "plugins", info.Package)
+
+	if sdkfs.Exists(pluginSoPath) {
+		if err := os.Remove(pluginSoPath); err != nil {
+			return err
+		}
+	}
+
+	if err := sdkfs.EmptyDir(workdir); err != nil {
+		return err
+	}
+	defer os.RemoveAll(workdir)
+
+	if err := sdkfs.EnsureDir(filepath.Join(workdir, "plugins")); err != nil {
+		return err
+	}
+
+	if err := os.Symlink(pluginSrcDir, buildpath); err != nil {
+		return err
+	}
+
+	if err := os.Symlink(filepath.Join(sdkpaths.AppDir, "sdk"), filepath.Join(workdir, "sdk")); err != nil {
+		return err
+	}
+
+	goWork := fmt.Sprintf(`
+go %s
+
+use (
+    ./sdk
+    ./plugins/%s
+)
+    `, sdkruntime.GO_SHORT_VERSION, info.Package)
+
+	if err := os.WriteFile(filepath.Join(workdir, "go.work"), []byte(goWork), sdkfs.PermFile); err != nil {
+		return err
 	}
 
 	gofile := "main.go"
 	outfile := "plugin.so"
-	args := &GoBuildArgs{WorkDir: dir, ExtraArgs: []string{"-buildmode=plugin"}}
-	err = BuildGoModule(gofile, outfile, args)
+	args := &GoBuildArgs{WorkDir: buildpath, ExtraArgs: []string{"-buildmode=plugin"}}
+	if err := BuildGoModule(gofile, outfile, args); err != nil {
+		return err
+	}
 
-	return err
+	if err := sdkfs.CopyFile(filepath.Join(buildpath, "plugin.so"), pluginSoPath); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func BuildGoModule(gofile string, outfile string, params *GoBuildArgs) error {
@@ -79,14 +121,18 @@ func BuildGoModule(gofile string, outfile string, params *GoBuildArgs) error {
 	return nil
 }
 
-func BuildCore() error {
-	return BuildPlugin(sdkpaths.CoreDir)
+func BuildCore() {
+	workdir := filepath.Join(sdkpaths.TmpDir, "builds/core")
+	if err := BuildPlugin(sdkpaths.CoreDir, workdir); err != nil {
+		panic(err)
+	}
 }
 
 func BuildAllPlugins() error {
 	pluginPaths := PluginPathList()
 	for _, pluginPath := range pluginPaths {
-		if err := BuildPlugin(pluginPath); err != nil {
+		workdir := filepath.Join(sdkpaths.TmpDir, "builds", filepath.Base(pluginPath))
+		if err := BuildPlugin(pluginPath, workdir); err != nil {
 			return err
 		}
 	}
