@@ -1,4 +1,4 @@
-#!/bin/env bash
+#!/usr/bin/env bash
 
 BUILD_TAGS="dev mono"
 CREATE_MONO="./core/cmd/make-mono/main.go"

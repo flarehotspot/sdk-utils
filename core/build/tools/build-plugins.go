@@ -82,7 +82,7 @@ use (
 	}
 
 	pluginSoOut := filepath.Join(buildpath, "plugin.so")
-	fmt.Printf("Copying %s to %s\n", pluginSoOut, pluginSoPath)
+	fmt.Printf("Copying '%s' to '%s'\n", sdkpaths.StripRoot(pluginSoOut), sdkpaths.StripRoot(pluginSoPath))
 	if err := sdkfs.CopyFile(pluginSoOut, pluginSoPath); err != nil {
 		return err
 	}
