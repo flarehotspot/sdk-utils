@@ -81,7 +81,9 @@ use (
 		return err
 	}
 
-	if err := sdkfs.CopyFile(filepath.Join(buildpath, "plugin.so"), pluginSoPath); err != nil {
+	pluginSoOut := filepath.Join(buildpath, "plugin.so")
+	fmt.Printf("Copying %s to %s\n", pluginSoOut, pluginSoPath)
+	if err := sdkfs.CopyFile(pluginSoOut, pluginSoPath); err != nil {
 		return err
 	}
 
