@@ -3,12 +3,9 @@
     {
       "os": "openwrt",
       "os_version": "23.05.3",
-      "os_arch": "x86/64",
-      "go": [
-        {
-          "go_version": "1.21.11",
-          "go_arch": "amd64"
-        }
+      "os_arch": "x86_64",
+      "go_versions": [
+        "1.21.11"
       ]
     }
   ]
