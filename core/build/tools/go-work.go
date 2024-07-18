@@ -14,7 +14,6 @@ func CreateGoWorkspace() {
 	goWork := fmt.Sprintf(`go %s
 
 use (
-    ./launcher
     ./core
     ./sdk
     ./main`, goVersion)
