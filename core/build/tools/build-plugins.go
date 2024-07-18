@@ -53,11 +53,11 @@ func BuildPlugin(pluginSrcDir string, workdir string) error {
 		return err
 	}
 
-	if err := os.Symlink(pluginSrcDir, buildpath); err != nil {
+	if err := sdkfs.CopyDir(pluginSrcDir, buildpath, &sdkfs.CopyOpts{}); err != nil {
 		return err
 	}
 
-	if err := os.Symlink(filepath.Join(sdkpaths.AppDir, "sdk"), filepath.Join(workdir, "sdk")); err != nil {
+	if err := sdkfs.CopyDir(filepath.Join(sdkpaths.AppDir, "sdk"), filepath.Join(workdir, "sdk"), &sdkfs.CopyOpts{}); err != nil {
 		return err
 	}
 
