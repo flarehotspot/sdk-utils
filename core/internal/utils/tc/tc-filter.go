@@ -132,15 +132,15 @@ func (self *TcFilter) Setup() error {
 					divisor := self.ipsegmt.segMaxVal(segIndex) + 1
 					pos := self.maskPosition(dev)
 					mask := self.ipsegmt.segMaskHex(segIndex)
-					base := self.ipsegmt.baseIp()
-					prfx := self.ipsegmt.netmask
+					netip := self.ipsegmt.baseIp()
+					netmask := self.ipsegmt.netmask
 					f := self.tcpField(dev)
 
 					if ht == 1 {
 						cmds = append(cmds, []string{
 							fmt.Sprintf("tc filter add dev %s parent 1:0 prio 10 protocol ip u32", dev),
 							fmt.Sprintf("tc filter add dev %s parent 1:0 protocol ip prio 10 handle %x: u32 divisor %d", dev, ht, divisor),
-							fmt.Sprintf("tc filter add dev %s parent 1:0 protocol ip prio 100 u32 ht 800:: match ip %s %s/%d hashkey mask %s at %d link %x:", dev, f, base, prfx, mask, pos, ht),
+							fmt.Sprintf("tc filter add dev %s parent 1:0 protocol ip prio 100 u32 ht 800:: match ip %s %s/%d hashkey mask %s at %d link %x:", dev, f, netip, netmask, mask, pos, ht),
 						}...)
 						ht += 1
 					} else {
@@ -152,7 +152,7 @@ func (self *TcFilter) Setup() error {
 							for i := listIndex; i <= maxIndex; i++ {
 								cmds = append(cmds, []string{
 									fmt.Sprintf("tc filter add dev %s parent 1:0 protocol ip prio 10 handle %x: u32 divisor %d", dev, ht, 256),
-									fmt.Sprintf("tc filter add dev %s parent 1:0 protocol ip prio 10 u32 ht %x:%x: match ip %s %s/%d hashkey mask %s at %d link %x:", dev, parentHt, i, self.tcpField(dev), base, prfx, mask, pos, ht),
+									fmt.Sprintf("tc filter add dev %s parent 1:0 protocol ip prio 10 u32 ht %x:%x: match ip %s %s/%d hashkey mask %s at %d link %x:", dev, parentHt, i, self.tcpField(dev), netip, netmask, mask, pos, ht),
 								}...)
 								ht += 1
 							}
