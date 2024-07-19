@@ -12,7 +12,7 @@ import (
 	"path/filepath"
 )
 
-// Remove all contents of a directory without removing the directory itself. If the directory does not exist, create it.
+// Makes sure the directory exists and is empty. Removes contents of the directory if it already exists.
 func EmptyDir(dirPath string) error {
 	if err := os.RemoveAll(dirPath); err != nil {
 		return err
