@@ -6,7 +6,7 @@ import (
 
 	"core/internal/plugins"
 	"core/internal/utils/migrate"
-	"sdk/utils/paths"
+	sdkpaths "sdk/utils/paths"
 )
 
 func RunMigrations(g *plugins.CoreGlobals) {
@@ -25,5 +25,14 @@ func RunMigrations(g *plugins.CoreGlobals) {
 		log.Println("Core migrations success!")
 	}
 
-	g.PluginMgr.MigrateAll()
+	// pluginDirs := config.PluginDirList()
+	// for _, pdir := range pluginDirs {
+	// 	migdir := filepath.Join(pdir, "resources/migrations")
+	// 	err := migrate.MigrateUp(g.Db.SqlDB(), migdir)
+	// 	if err != nil {
+	// 		log.Println("Error in plugin migration "+pdir, ":", err.Error())
+	// 	} else {
+	// 		log.Println("Done migrating plugin:", pdir)
+	// 	}
+	// }
 }

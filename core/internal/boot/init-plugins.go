@@ -10,30 +10,30 @@ import (
 func InitPlugins(g *plugins.CoreGlobals) error {
 	bp := g.BootProgress
 
-	out := plugins.InstallPlugins()
-	done := false
+	// out := plugins.InstallPlugins()
+	// done := false
 
-	for !done {
-		select {
-		case msg := <-out.Msg:
-			g.BootProgress.SetStatus(msg)
-		case err := <-out.Done:
-			done = true
+	// for !done {
+	// 	select {
+	// 	case msg := <-out.Msg:
+	// 		g.BootProgress.SetStatus(msg)
+	// 	case err := <-out.Done:
+	// 		done = true
 
-			if err != nil {
-				return err
-			}
-		}
-	}
+	// 		if err != nil {
+	// 			return err
+	// 		}
+	// 	}
+	// }
 
 	bp.SetStatus("Initializing database...")
 	RunMigrations(g)
 
 	pluginDirs := config.PluginDirList()
-	log.Println("pluginDirs:", pluginDirs)
+	log.Println("Plugin dirs:", pluginDirs)
 
 	for _, dir := range pluginDirs {
-		log.Println("loading plugin from :", dir)
+		log.Println("Loading plugin from :", dir)
 		p := plugins.NewPluginApi(dir, g.PluginMgr, g.TrafficMgr)
 		g.PluginMgr.RegisterPlugin(p)
 	}

@@ -52,6 +52,9 @@ type PluginApi interface {
 	// Returns an instance of database/sql package from go standard library.
 	SqlDb() *sql.DB
 
+    // Run the plugin migration scripts in resources/migrations folder.
+    Migrate() error
+
 	// Returns an instance of accounts api.
 	Acct() sdkacct.AccountsApi
 

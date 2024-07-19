@@ -62,7 +62,7 @@ fmt.Println(description) // "My plugin description"
 
 ### Dir
 
-It returns the absolute path of the plugin's installtion directory.
+It returns the absolute path of the plugin's installation directory.
 
 ```go
 dir := api.Dir()
@@ -80,7 +80,7 @@ fmt.Println(msg) // "Payment received USD 1.0.0"
 
 In this example, given that the [application](../api/config-api.md#application) language is set to `en`, the system will look for the file `resources/translations/en/info/payment_received.txt` inside your plugin directory. If the file is found, the system will use the contents of the file as the translation template.
 
-Sometimes we want to put variables inside the translation message. In this example, we want to pass the `amount` as a paramenter to the message. We can do that by passing the amount param as key-value pairs to the `Translate` method. Internally, the param pairs are converted into a type `map[any]any`. To use the `amount` param in the translation file, we'll enclose it with `<%` and `%>` delimiters (with dot prefix). Therefore the content of `payment_received.txt` should be:
+Sometimes we want to put variables inside the translation message. In this example, we want to pass the `amount` as a parameter to the message. We can do that by passing the amount param as key-value pairs to the `Translate` method. Internally, the param pairs are converted into a type `map[any]any`. To use the `amount` param in the translation file, we'll enclose it with `<%` and `%>` delimiters (with dot prefix). Therefore the content of `payment_received.txt` should be:
 
 ```go
 Payment received: USD <% .amount %>
@@ -103,6 +103,17 @@ It returns [\*sql.DB](http://go-database-sql.org/overview.html) instance which i
 db := api.SqlDb()
 fmt.Println(db) // *sql.DB
 ```
+
+### Migrate
+
+It looks for any `.sql` scripts in the plugin's `resources/migrations` directory and runs them on the database. The scripts are run in alphabetical order.
+
+```go
+err := api.Migrate()
+// handle err
+```
+
+See [Database Migrations](../guides/database-migrations.md) for more information on how to create and run database migrations.
 
 ### Acct
 
@@ -215,6 +226,7 @@ fmt.Println(themes) // ThemesApi
 ### Features
 
 Returns the implement features of the plugin.
+
 ```go
 features := api.Features()
 fmt.Println(features) // []string{"theme:admin", "theme:portal"}
@@ -226,4 +238,3 @@ Below are the available features and their descriptions:
 | --- | --- |
 | `theme:admin` | Plugin provides an admin theme
 | `theme:portal` | Plugin provides a portal theme
-

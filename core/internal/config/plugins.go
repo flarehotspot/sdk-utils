@@ -29,19 +29,6 @@ type PluginSrcDef struct {
 
 type PluginList []*PluginSrcDef
 
-// func PluginsDefaultList() (PluginList, error) {
-// 	var pluginList []string
-// 	if err := fs.LsDirs(paths.PluginsDir, &pluginList, false); err != nil {
-// 		panic(err)
-// 	}
-// 	log.Println("Plugin List: ")
-// 	for _, p := range pluginList {
-// 		log.Println("\t" + p)
-// 	}
-
-// 	return pluginList, nil
-// }
-
 func PluginsUserList() PluginList {
 	configFile := filepath.Join(paths.ConfigDir, pluginsConfigJsonFile)
 	bytes, err := os.ReadFile(configFile)

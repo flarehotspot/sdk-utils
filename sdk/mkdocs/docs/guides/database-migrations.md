@@ -3,15 +3,18 @@
 Database migrations are a way to manage changes to your database schema over time. They are a way to keep track of changes to your database schema and apply them in a consistent way. This is important because as your application evolves, the database schema will need to change to reflect that.
 
 ## 1. Creating Migration Files {#creating-migration-files}
+
 To create migration files for your database, you can use the `db-migrate` command:
 
 In Windows:
-``` title="PowerShell"
+
+```title="PowerShell"
 bin\flare.exe create-migration
 ```
 
 In Linux/Mac:
-``` title="Terminal"
+
+```title="Terminal"
 ./bin/flare create-migration
 ```
 
@@ -21,7 +24,7 @@ The file with the `.up.sql` extension contains the SQL commands to apply the mig
 
 SQL commands must be written for MySQL database since we are using MySQL as the database for Flare Hotspot.
 
-Below is an example of a migration file:
+Below is an example of an **up** migration file:
 
 ```sql title="resources/migrations/20210101000000_create_users_table.up.sql"
 CREATE TABLE IF NOT EXISTS users (
@@ -33,15 +36,29 @@ CREATE TABLE IF NOT EXISTS users (
 );
 ```
 
-Below is an example of the down migration file:
+Below is an example of the **down** migration file:
+
 ```sql title="resources/migrations/20210101000000_create_users_table.down.sql"
 DROP TABLE IF EXISTS users;
 ```
 
 ## 2. Running Migration Files {#running-migration-files}
 
-You don't have to manually run the migration files. The up migration file automatically gets executed during plugin installation and application boot up (if not yet executed). The down migration file is used when the plugin is uninstalled.
+To run the migration file, you have to call the [PluginApi.Migrate](../api/plugin-api.md#migrate) method. The down migration files are executed when the plugin is uninstalled.
 
-## 3. Troubleshooting {#troubleshooting}
+```go
+package main
 
-**TODO**: Add a section for logging or debugging migrations.
+import (
+	sdkplugin "sdk/api/plugin"
+)
+
+func main() {}
+
+func Init(api sdkplugin.PluginApi) {
+    err := api.Migrate()
+    if err != nil {
+        api.Logger().Error(err.Error())
+    }
+}
+```
