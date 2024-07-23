@@ -24,15 +24,4 @@ func RunMigrations(g *plugins.CoreGlobals) {
 	} else {
 		log.Println("Core migrations success!")
 	}
-
-	// pluginDirs := config.PluginDirList()
-	// for _, pdir := range pluginDirs {
-	// 	migdir := filepath.Join(pdir, "resources/migrations")
-	// 	err := migrate.MigrateUp(g.Db.SqlDB(), migdir)
-	// 	if err != nil {
-	// 		log.Println("Error in plugin migration "+pdir, ":", err.Error())
-	// 	} else {
-	// 		log.Println("Done migrating plugin:", pdir)
-	// 	}
-	// }
 }
