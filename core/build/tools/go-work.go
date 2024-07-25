@@ -18,7 +18,7 @@ use (
     ./sdk
     ./main`, goVersion)
 
-	pluginSearchPaths := []string{"plugins"}
+	pluginSearchPaths := []string{"plugins/local"}
 
 	for _, searchPath := range pluginSearchPaths {
 		if sdkfs.Exists(searchPath) {
@@ -28,7 +28,8 @@ use (
 			}
 
 			for _, entry := range entries {
-				pluginDir := searchPath + "/" + entry.Name()
+                pluginDir := filepath.Join(searchPath, entry.Name())
+				// pluginDir := searchPath + "/" + entry.Name()
 				jsonFile := filepath.Join(pluginDir, "plugin.json")
 				if entry.IsDir() && sdkfs.Exists(jsonFile) {
 					goWork += "\n    ./" + pluginDir

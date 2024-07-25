@@ -20,6 +20,6 @@ CMD cp go.work.default go.work && \
     reflex \
         -r '\.go$' \
         -R 'core\/main\.go' \
-        -R 'plugins\/.*\/main\.go' \
+        -R 'plugins\/local\/.*\/main\.go' \
         -R '(.*)mono\.go' \
         -s -- sh -c './start.sh' -v

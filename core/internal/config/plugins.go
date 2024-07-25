@@ -1,13 +1,16 @@
 package config
 
 import (
+	"core/internal/config/plugincfg"
 	"encoding/json"
 	"log"
 	"os"
 	"path/filepath"
 
 	fs "sdk/utils/fs"
+	sdkfs "sdk/utils/fs"
 	paths "sdk/utils/paths"
+	sdkpaths "sdk/utils/paths"
 )
 
 const (
@@ -57,11 +60,11 @@ func AllPluginSrc() PluginList {
 	// return append(defaultPlugins, userPlugins...)
 }
 
-// PluginDirList returns the list of installed plugins in the plugins directory.
-func PluginDirList() []string {
+// InstalledDirList returns the list of installed plugins in the plugins directory.
+func InstalledDirList() []string {
 	var pluginList []string
 
-	if err := fs.LsDirs(paths.PluginsDir, &pluginList, false); err != nil {
+	if err := fs.LsDirs(filepath.Join(paths.PluginsDir, "installed"), &pluginList, false); err != nil {
 		panic(err)
 	}
 

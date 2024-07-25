@@ -6,13 +6,20 @@ import (
 	"os"
 	"path/filepath"
 
+	"core/build/tools"
 	"core/internal/config"
 	"core/internal/config/plugincfg"
+	"core/internal/utils/encdisk"
 	"core/internal/utils/git"
 	"sdk/api/plugin"
+	sdkfs "sdk/utils/fs"
 	"sdk/utils/paths"
 	"sdk/utils/strings"
 )
+
+type InstallOpts struct {
+	RemoveSrc bool
+}
 
 type InstallStatus struct {
 	Msg  chan string
@@ -61,6 +68,31 @@ func InstallPlugins() *InstallStatus {
 	}()
 
 	return out
+}
+
+func installPlugin(src string, info *sdkplugin.PluginInfo, opts InstallOpts) error {
+	diskfile := filepath.Join(sdkpaths.TmpDir, "plugin-build", "disk", info.Package)
+	buildPath := filepath.Join(sdkpaths.TmpDir, "plugin-build", "mount", info.Package)
+	installPath := filepath.Join(sdkpaths.PluginsDir, "installed", info.Package)
+	dev := sdkstr.Slugify(info.Package, "_")
+	mnt := encdisk.NewEncrypedDisk(buildPath, diskfile, dev)
+	if err := mnt.Mount(); err != nil {
+		return err
+	}
+
+	if err := tools.BuildPlugin(src, buildPath); err != nil {
+		return err
+	}
+
+	if err := sdkfs.CopyDir(buildPath, installPath, nil); err != nil {
+		return err
+	}
+
+	if opts.RemoveSrc {
+		os.RemoveAll(src)
+	}
+
+	return mnt.Unmount()
 }
 
 func buildFromGit(w io.Writer, src *config.PluginSrcDef) (*sdkplugin.PluginInfo, error) {

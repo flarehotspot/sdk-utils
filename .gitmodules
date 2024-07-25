@@ -4,9 +4,6 @@
 [submodule "plugins/local/com.flarego.basic-wifi-hotspot"]
 	path = plugins/local/com.flarego.basic-wifi-hotspot
 	url = git@github.com:flarehotspot/com.flarego.basic-wifi-hotspot.git
-[submodule "plugins/local/com.flarego.default-theme"]
-	path = plugins/local/com.flarego.default-theme
-	url = git@github.com:flarehotspot/com.flarego.default-theme.git
 [submodule "plugins/local/com.flarego.basic-system-account"]
 	path = plugins/local/com.flarego.basic-system-account
 	url = git@github.com:flarehotspot/com.flarego.basic-system-account.git
