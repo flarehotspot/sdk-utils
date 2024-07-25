@@ -1,16 +1,13 @@
 package config
 
 import (
-	"core/internal/config/plugincfg"
 	"encoding/json"
 	"log"
 	"os"
 	"path/filepath"
 
 	fs "sdk/utils/fs"
-	sdkfs "sdk/utils/fs"
 	paths "sdk/utils/paths"
-	sdkpaths "sdk/utils/paths"
 )
 
 const (

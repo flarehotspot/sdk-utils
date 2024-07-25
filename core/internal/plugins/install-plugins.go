@@ -2,7 +2,6 @@ package plugins
 
 import (
 	"io"
-	"log"
 	"os"
 	"path/filepath"
 
@@ -38,34 +37,34 @@ func InstallPlugins() *InstallStatus {
 		Done: make(chan error),
 	}
 
-	go func() {
-		for _, def := range config.AllPluginSrc() {
-			if !isInstalled(def) {
-				if def.Src == config.PluginSrcGit {
-					info, err := buildFromGit(out, def)
-					if err != nil {
-						log.Println("buildFromGit error:", err)
-						out.Done <- err
-						return
-					}
+	// go func() {
+	// 	for _, def := range config.AllPluginSrc() {
+	// 		if !isInstalled(def) {
+	// 			if def.Src == config.PluginSrcGit {
+	// 				info, err := buildFromGit(out, def)
+	// 				if err != nil {
+	// 					log.Println("buildFromGit error:", err)
+	// 					out.Done <- err
+	// 					return
+	// 				}
 
-					err = plugincfg.WriteCache(def, info)
-					if err != nil {
-						log.Println("WriteCache error:", err)
-						out.Done <- err
-						return
-					}
-				}
+	// 				err = plugincfg.WriteCache(def, info)
+	// 				if err != nil {
+	// 					log.Println("WriteCache error:", err)
+	// 					out.Done <- err
+	// 					return
+	// 				}
+	// 			}
 
-				if def.Src == config.PluginSrcStore {
-					log.Printf("TODO: build from store")
-				}
+	// 			if def.Src == config.PluginSrcStore {
+	// 				log.Printf("TODO: build from store")
+	// 			}
 
-			}
-		}
+	// 		}
+	// 	}
 
-		out.Done <- nil
-	}()
+	// 	out.Done <- nil
+	// }()
 
 	return out
 }
@@ -123,15 +122,16 @@ func buildFromGit(w io.Writer, src *config.PluginSrcDef) (*sdkplugin.PluginInfo,
 }
 
 func isInstalled(def *config.PluginSrcDef) bool {
-	cacheInfo, ok := plugincfg.GetCacheInfo(def)
-	if !ok {
-		return false
-	}
+	// cacheInfo, ok := plugincfg.GetCacheInfo(def)
+	// if !ok {
+	// 	return false
+	// }
 
-	installInfo, err := plugincfg.GetInstallInfo(cacheInfo.Package)
-	if err != nil {
-		return false
-	}
+	// installInfo, err := plugincfg.GetInstallInfo(cacheInfo.Package)
+	// if err != nil {
+	// 	return false
+	// }
 
-	return installInfo.Package == cacheInfo.Package
+	// return installInfo.Package == cacheInfo.Package
+    return false
 }

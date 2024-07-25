@@ -3,6 +3,7 @@ package tools
 import (
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"os/exec"
@@ -12,6 +13,7 @@ import (
 	sdkfs "sdk/utils/fs"
 	sdkpaths "sdk/utils/paths"
 	sdkruntime "sdk/utils/runtime"
+	sdkstr "sdk/utils/strings"
 )
 
 func InstallGo(installPath string) {
@@ -78,11 +80,20 @@ func GoInstallExists(installPath string) bool {
 	GOARCH := sdkruntime.GOARCH
 	GOVERSION := sdkruntime.GOVERSION
 
-	goos := strings.Trim(envValues["GOOS"], "\"")
-	goarch := strings.Trim(envValues["GOARCH"], "\"")
-	goversion := strings.TrimPrefix(strings.Trim(envValues["GOVERSION"], "\""), "go")
+	goos := sdkstr.TrimChars(envValues["GOOS"], "\"", "'")
+	goarch := sdkstr.TrimChars(envValues["GOARCH"], "\"", "'")
+	goversion := strings.TrimPrefix(sdkstr.TrimChars(envValues["GOVERSION"], "\"", "'"), "go")
 
-	return goos == GOOS && goarch == GOARCH && goversion == GOVERSION
+	if goos == GOOS && goarch == GOARCH && goversion == GOVERSION {
+		return true
+	} else {
+		log.Println("Go version check mismatch!")
+		log.Println("goos: ", goos)
+		log.Println("goarch: ", goarch)
+		log.Println("GOOS: ", GOOS)
+		log.Println("GOARCH: ", GOARCH)
+		return false
+	}
 }
 
 func downloadAndExtractGo(goos, goarch, version, extractPath string) error {

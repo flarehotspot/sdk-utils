@@ -27,6 +27,7 @@ var (
 		"core/plugin.json",
 		"core/resources",
 		"core/go-version",
+		"plugins/system",
 		"main/go.mod",
 		"sdk",
 	}
@@ -43,7 +44,6 @@ func CreateDevkit() {
 	InstallGo("./go")
 	BuildFlareCLI()
 	BuildCore()
-	CloneDefaultPlugins(devkitReleaseDir)
 	CopyDevkitFiles()
 	CopyDevkitExtras()
 	CopyDefaultWorksapce()
@@ -77,19 +77,8 @@ func CopyDevkitFiles() {
 		destPath := filepath.Join(devkitReleaseDir, entry)
 		fmt.Println("Copying: ", sdkpaths.StripRoot(srcPath), " -> ", sdkpaths.StripRoot(destPath))
 
-		if sdkfs.IsFile(srcPath) {
-			err := sdkfs.CopyFile(srcPath, destPath)
-			if err != nil {
-				panic(err)
-			}
-
-		} else if sdkfs.IsDir(srcPath) {
-			err := sdkfs.CopyDir(srcPath, destPath, nil)
-			if err != nil {
-				panic(err)
-			}
-		} else {
-			fmt.Println("Warning: ", srcPath, " is not a file or directory. Skipping.")
+		if err := sdkfs.Copy(srcPath, destPath); err != nil {
+			panic(err)
 		}
 	}
 }

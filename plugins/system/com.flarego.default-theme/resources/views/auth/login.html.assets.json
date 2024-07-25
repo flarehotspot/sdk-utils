@@ -1,0 +1,8 @@
+{
+  "scripts": [
+    "../../assets/vendor/bootstrap-5.2.3/js/bootstrap.bundle.js"
+  ],
+  "styles": [
+    "../../assets/vendor/bootstrap-5.2.3/css/bootstrap.min.css"
+  ]
+}

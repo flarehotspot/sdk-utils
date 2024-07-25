@@ -47,6 +47,10 @@ func main() {
 		BuildPlugin()
 		return
 
+	case "build-plugins":
+		BuildPlugin()
+		return
+
 	case "fix-workspace":
 		tools.CreateGoWorkspace()
 		return
@@ -107,7 +111,7 @@ func CreatePlugin() {
 }
 
 func CreateMigration() {
-	pluginPaths := tools.PluginPathList()
+	pluginPaths := tools.LocalPluginPaths()
 	pluginPkgs := make([]string, len(pluginPaths))
 	for i, pluginPath := range pluginPaths {
 		pluginPkgs[i] = filepath.Base(pluginPath)
@@ -148,7 +152,7 @@ func CreateMigration() {
 func BuildPlugin() {
 	var err error
 	if len(os.Args) < 3 {
-		err = tools.BuildAllPlugins()
+		err = tools.BuildLocalPlugins()
 	} else {
 		pluginPath := os.Args[2]
 		workdir := filepath.Join(sdkpaths.TmpDir, "builds", filepath.Base(pluginPath))
@@ -163,7 +167,7 @@ func BuildPlugin() {
 func Server() {
 	if env.GoEnv == env.ENV_DEV {
 		tools.CreateGoWorkspace()
-		tools.BuildAllPlugins()
+		tools.BuildLocalPlugins()
 	}
 
 	corePath := filepath.Join(sdkpaths.AppDir, "core/plugin.so")
@@ -203,6 +207,8 @@ list of commands:
     create-migration                    Create a new migration
 
     build-plugin <plugin path>          Build plugin.so file. If no plugin path is provided, all plugins will be built.
+
+    build-plugins                       Build plugin.so of all the local and system plugins. Similar to build-plugin command without arguments.
 
     fix-workspace                       Re-generate the go.work file
 

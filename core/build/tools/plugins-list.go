@@ -6,9 +6,9 @@ import (
 	sdkfs "sdk/utils/fs"
 )
 
-// PluginPathList returns a list of plugin (absolute) paths
-func PluginPathList() []string {
-	searchPaths := []string{"plugins"}
+// LocalPluginPaths returns a list of plugin (absolute) paths to be compiled and installed
+func LocalPluginPaths() []string {
+	searchPaths := []string{"plugins/system", "plugins/local"}
 	pluginPaths := []string{}
 
 	for _, sp := range searchPaths {

@@ -3,6 +3,7 @@
 package plugins
 
 import (
+	"log"
 	"path/filepath"
 	"plugin"
 
@@ -11,11 +12,13 @@ import (
 
 func (api *PluginApi) Init() error {
 	pluginLib := filepath.Join(api.dir, "plugin.so")
+	log.Println("Opening ", pluginLib)
 	p, err := plugin.Open(pluginLib)
 	if err != nil {
 		return err
 	}
 
+	log.Println("Loaded ", pluginLib, "successfully")
 	initSym, err := p.Lookup("Init")
 	if err != nil {
 		return err

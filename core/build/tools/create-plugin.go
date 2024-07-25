@@ -20,7 +20,7 @@ func CreatePlugin(pkg string, name string, desc string) {
 	}
 
 	goVersion := sdkruntime.GOVERSION
-	pluginDir := filepath.Join("plugins", pkg)
+	pluginDir := filepath.Join("plugins/local", pkg)
 	if sdkfs.Exists(pluginDir) {
 		fmt.Printf("Plugin already exists at %s\n", pluginDir)
 		os.Exit(1)

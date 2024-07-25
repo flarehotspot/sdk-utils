@@ -20,7 +20,7 @@ type PluginModule struct {
 func CreateMonoFiles() {
 	CreateGoWorkspace()
 
-	pluginDirs := PluginPathList()
+	pluginDirs := LocalPluginPaths()
 	pluginDirs = append(pluginDirs, "core")
 	for _, dir := range pluginDirs {
 		MakePluginMainMono(dir)
@@ -31,7 +31,7 @@ func CreateMonoFiles() {
 
 func MakePluginInitMono() {
 	pluginPaths := []string{"core"}
-	pluginDirs := PluginPathList()
+	pluginDirs := LocalPluginPaths()
 	pluginPaths = append(pluginPaths, pluginDirs...)
 	coreInfo := CoreInfo()
 

@@ -10,21 +10,8 @@ import (
 )
 
 var (
-	GITHUB_TOKEN    = os.Getenv("GITHUB_TOKEN")
-	DEFAULT_PLUGINS = []string{
-		"flarehotspot/com.flarego.default-theme",
-	}
+	GITHUB_TOKEN = os.Getenv("GITHUB_TOKEN")
 )
-
-func CloneDefaultPlugins(rootDir string) {
-	workDir := filepath.Join(rootDir, "plugins")
-	sdkfs.EnsureDir(workDir)
-	fmt.Println("Cloning system plugins in " + workDir)
-
-	for _, repo := range DEFAULT_PLUGINS {
-		GitCloneRepo(repo, workDir)
-	}
-}
 
 func GitCheckoutMain() {
 	dirPaths := []string{"core"}
@@ -53,8 +40,8 @@ func GitCloneRepo(repo string, workDir string) {
 		gitUrl = fmt.Sprintf("git@github.com:%s.git", repo)
 	}
 
-    dirname := filepath.Base(repo)
-    os.RemoveAll(filepath.Join(workDir, dirname))
+	dirname := filepath.Base(repo)
+	os.RemoveAll(filepath.Join(workDir, dirname))
 
 	fmt.Println("Cloning " + gitUrl + " in " + workDir)
 
