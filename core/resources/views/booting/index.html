@@ -11,9 +11,10 @@
   <div id="container" class="center">
     <div id="progressbar">
       <span id="percent" style="width: 0px"></span>
-      <div id="status-text">{{ .Data().status }}</div>
+      <div id="status-text"><% .Data.status %></div>
     </div>
   </div>
+  <script src='<% .Helpers.AssetPath "booting/js/booting.js" %>'></script>
 </body>
 
 </html>

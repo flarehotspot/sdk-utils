@@ -165,11 +165,6 @@ func BuildPlugin() {
 }
 
 func Server() {
-	if env.GoEnv == env.ENV_DEV {
-		tools.CreateGoWorkspace()
-		tools.BuildLocalPlugins()
-	}
-
 	corePath := filepath.Join(sdkpaths.AppDir, "core/plugin.so")
 	p, err := plugin.Open(corePath)
 	if err != nil {
