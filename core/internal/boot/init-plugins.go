@@ -1,3 +1,5 @@
+//go:build !mono
+
 package boot
 
 import (
@@ -7,36 +9,30 @@ import (
 	"core/internal/plugins"
 )
 
-func InitPlugins(g *plugins.CoreGlobals) error {
+func InitPlugins(g *plugins.CoreGlobals) {
 	bp := g.BootProgress
+	install := plugins.InstallPlugins()
+	done := false
 
-	// out := plugins.InstallPlugins()
-	// done := false
-
-	// for !done {
-	// 	select {
-	// 	case msg := <-out.Msg:
-	// 		g.BootProgress.SetStatus(msg)
-	// 	case err := <-out.Done:
-	// 		done = true
-
-	// 		if err != nil {
-	// 			return err
-	// 		}
-	// 	}
-	// }
-
-	bp.SetStatus("Initializing database...")
-	RunMigrations(g)
+	for !done {
+		select {
+		case msg := <-install.Msg:
+			bp.AppendLog(msg)
+		case err := <-install.Done:
+			if err != nil {
+				bp.Done(err)
+				return
+			}
+			done = true
+		}
+	}
 
 	pluginDirs := config.InstalledDirList()
-	log.Println("Plugin dirs:", pluginDirs)
+	log.Println("Installed plugin directories:", pluginDirs)
 
 	for _, dir := range pluginDirs {
 		log.Println("Loading plugin from :", dir)
 		p := plugins.NewPluginApi(dir, g.PluginMgr, g.TrafficMgr)
 		g.PluginMgr.RegisterPlugin(p)
 	}
-
-	return nil
 }

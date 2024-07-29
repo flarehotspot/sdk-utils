@@ -7,12 +7,16 @@ import (
 	"path/filepath"
 
 	fs "sdk/utils/fs"
+	sdkfs "sdk/utils/fs"
 	paths "sdk/utils/paths"
+	sdkpaths "sdk/utils/paths"
 )
 
 const (
 	PluginSrcGit          PluginSrc = "git"
 	PluginSrcStore        PluginSrc = "store"
+	PluginSrcSystem       PluginSrc = "system"
+	PluginSrcLocal        PluginSrc = "local"
 	pluginsConfigJsonFile string    = "plugins.json"
 )
 
@@ -20,11 +24,12 @@ type PluginSrc string
 
 // A plugin can be from store or from a git repo.
 type PluginSrcDef struct {
-	Src          PluginSrc `json:"src"`           // git | strore
+	Src          PluginSrc `json:"src"`           // git | strore | system | local
 	StorePackage string    `json:"store_pacakge"` // if src is "store"
 	StoreVersion string    `json:"store_version"` // if src is "store"
 	GitURL       string    `json:"git_url"`       // if src is "git"
 	GitRef       string    `json:"git_ref"`       // can be a branch, tag or commit hash
+	LocalPath    string    `json:"local_path"`    // if src is "local or system"
 }
 
 type PluginList []*PluginSrcDef
@@ -52,9 +57,25 @@ func AllPluginSrc() PluginList {
 	// 	log.Println("Failed to load default plugins:", err)
 	// }
 
-	userPlugins := PluginsUserList()
+	userPlugins := LocalPlugins()
 	return userPlugins
 	// return append(defaultPlugins, userPlugins...)
+}
+
+func LocalPlugins() PluginList {
+	var list PluginList
+	searchpaths := []string{string(PluginSrcSystem), string(PluginSrcLocal)}
+	for _, p := range searchpaths {
+		var dirs []string
+		if err := sdkfs.LsDirs(filepath.Join(sdkpaths.PluginsDir, p), &dirs, false); err != nil {
+			log.Println("Error listing local plugins:", err)
+			continue
+		}
+		for _, d := range dirs {
+			list = append(list, &PluginSrcDef{Src: PluginSrc(p), LocalPath: d})
+		}
+	}
+	return list
 }
 
 // InstalledDirList returns the list of installed plugins in the plugins directory.

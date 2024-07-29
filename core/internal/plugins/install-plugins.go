@@ -1,19 +1,22 @@
 package plugins
 
 import (
+	"fmt"
 	"io"
+	"log"
 	"os"
 	"path/filepath"
+	"time"
 
 	"core/build/tools"
 	"core/internal/config"
 	"core/internal/config/plugincfg"
 	"core/internal/utils/encdisk"
 	"core/internal/utils/git"
-	"sdk/api/plugin"
+	sdkplugin "sdk/api/plugin"
 	sdkfs "sdk/utils/fs"
-	"sdk/utils/paths"
-	"sdk/utils/strings"
+	sdkpaths "sdk/utils/paths"
+	sdkstr "sdk/utils/strings"
 )
 
 type InstallOpts struct {
@@ -37,34 +40,36 @@ func InstallPlugins() *InstallStatus {
 		Done: make(chan error),
 	}
 
-	// go func() {
-	// 	for _, def := range config.AllPluginSrc() {
-	// 		if !isInstalled(def) {
-	// 			if def.Src == config.PluginSrcGit {
-	// 				info, err := buildFromGit(out, def)
-	// 				if err != nil {
-	// 					log.Println("buildFromGit error:", err)
-	// 					out.Done <- err
-	// 					return
-	// 				}
+	go func() {
+		for _, def := range config.AllPluginSrc() {
+			log.Printf("Plugin Def: %+v\n", def)
+			if def.Src == config.PluginSrcGit {
+				info, err := buildFromGit(out, def)
+				if err != nil {
+					log.Println("buildFromGit error:", err)
+					out.Msg <- fmt.Sprintf("Error building plugin from git source %s: %s", def.GitURL, err.Error())
+				} else {
+					out.Msg <- "Installed plugin: " + info.Package
+				}
+			}
 
-	// 				err = plugincfg.WriteCache(def, info)
-	// 				if err != nil {
-	// 					log.Println("WriteCache error:", err)
-	// 					out.Done <- err
-	// 					return
-	// 				}
-	// 			}
+			// if def.Src == config.PluginSrcStore {
+			// 	log.Printf("TODO: build from store")
+			// }
 
-	// 			if def.Src == config.PluginSrcStore {
-	// 				log.Printf("TODO: build from store")
-	// 			}
+			if def.Src == config.PluginSrcSystem || def.Src == config.PluginSrcLocal {
+				info, err := buildFromLocal(out, def)
+				if err != nil {
+					out.Msg <- fmt.Sprintf("Error buidling plugin from local path %s: %s", def.LocalPath, err.Error())
+				} else {
+					out.Msg <- "Installed plugin: " + info.Package
+				}
+			}
 
-	// 		}
-	// 	}
+		}
 
-	// 	out.Done <- nil
-	// }()
+		out.Done <- nil
+	}()
 
 	return out
 }
@@ -83,8 +88,13 @@ func installPlugin(src string, info *sdkplugin.PluginInfo, opts InstallOpts) err
 		return err
 	}
 
-	if err := sdkfs.CopyDir(buildPath, installPath, nil); err != nil {
-		return err
+	// TODO: remove
+	time.Sleep(3 * time.Second)
+
+	for _, file := range tools.PLUGIN_FILES {
+		if err := sdkfs.Copy(filepath.Join(src, file), filepath.Join(installPath, file)); err != nil {
+			return err
+		}
 	}
 
 	if opts.RemoveSrc {
@@ -94,10 +104,24 @@ func installPlugin(src string, info *sdkplugin.PluginInfo, opts InstallOpts) err
 	return mnt.Unmount()
 }
 
+func buildFromLocal(w io.Writer, src *config.PluginSrcDef) (*sdkplugin.PluginInfo, error) {
+	w.Write([]byte("Building plugin from local path: " + src.LocalPath))
+	info, err := plugincfg.GetPluginInfo(src.LocalPath)
+	if err != nil {
+		return nil, err
+	}
+	err = installPlugin(src.LocalPath, info, InstallOpts{RemoveSrc: false})
+	if err != nil {
+		return nil, err
+	}
+	return info, nil
+}
+
 func buildFromGit(w io.Writer, src *config.PluginSrcDef) (*sdkplugin.PluginInfo, error) {
 	repo := git.RepoSource{URL: src.GitURL, Ref: src.GitRef}
 	clonePath := filepath.Join(sdkpaths.TmpDir, "plugins", sdkstr.Rand(16))
 
+	w.Write([]byte("Cloning plugin from git: " + src.GitURL))
 	err := git.Clone(w, repo, clonePath)
 	if err != nil {
 		return nil, err
@@ -108,30 +132,11 @@ func buildFromGit(w io.Writer, src *config.PluginSrcDef) (*sdkplugin.PluginInfo,
 		return nil, err
 	}
 
-	// if ok := UserLocalVersion(w, info.Package); ok {
-	// return plugincfg.GetInstallInfo(info.Package)
-	// }
-
-	err = Build(w, clonePath)
+	err = installPlugin(clonePath, info, InstallOpts{})
 	if err != nil {
 		return nil, err
 	}
 
 	os.RemoveAll(clonePath)
-	return plugincfg.GetInstallInfo(info.Package)
-}
-
-func isInstalled(def *config.PluginSrcDef) bool {
-	// cacheInfo, ok := plugincfg.GetCacheInfo(def)
-	// if !ok {
-	// 	return false
-	// }
-
-	// installInfo, err := plugincfg.GetInstallInfo(cacheInfo.Package)
-	// if err != nil {
-	// 	return false
-	// }
-
-	// return installInfo.Package == cacheInfo.Package
-    return false
+	return plugincfg.GetPluginInfo(clonePath)
 }

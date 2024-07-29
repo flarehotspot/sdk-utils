@@ -23,7 +23,8 @@ type BootCtrl struct {
 func (ctrl *BootCtrl) IndexPage(w http.ResponseWriter, r *http.Request) {
 	data := map[string]any{
 		"title":  "Booting",
-		"status": ctrl.bp.Status(),
+		"logs":   ctrl.bp.Logs(),
+		"sseUrl": urls.BOOT_STATUS_URL,
 		"done":   ctrl.bp.IsDone(),
 	}
 

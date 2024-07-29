@@ -52,8 +52,3 @@ func FindPluginSrc(dir string) (string, error) {
 
 	return "", errors.New("Can't find plugin.json in " + paths.StripRoot(dir))
 }
-
-func GetInstallInfo(pkg string) (*sdkplugin.PluginInfo, error) {
-	installPath := filepath.Join(paths.PluginsDir, pkg)
-	return GetPluginInfo(installPath)
-}

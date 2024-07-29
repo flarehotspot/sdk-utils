@@ -9,7 +9,7 @@ import (
 	sdkpaths "sdk/utils/paths"
 )
 
-func RunMigrations(g *plugins.CoreGlobals) {
+func RunCoreMigrations(g *plugins.CoreGlobals) {
 	db := g.Db.SqlDB()
 
 	err := migrate.Init(db)
