@@ -11,6 +11,7 @@ import (
 
 	tools "core/build/tools"
 	"core/env"
+	"core/internal/utils/pkg"
 	sdkpaths "sdk/utils/paths"
 )
 
@@ -52,7 +53,7 @@ func main() {
 		return
 
 	case "fix-workspace":
-		tools.CreateGoWorkspace()
+		pkg.CreateGoWorkspace()
 		return
 
 	case "install-go":
@@ -111,7 +112,7 @@ func CreatePlugin() {
 }
 
 func CreateMigration() {
-	pluginPaths := tools.LocalPluginPaths()
+	pluginPaths := pkg.LocalPluginPaths()
 	pluginPkgs := make([]string, len(pluginPaths))
 	for i, pluginPath := range pluginPaths {
 		pluginPkgs[i] = filepath.Base(pluginPath)
@@ -156,7 +157,7 @@ func BuildPlugin() {
 	} else {
 		pluginPath := os.Args[2]
 		workdir := filepath.Join(sdkpaths.TmpDir, "builds", filepath.Base(pluginPath))
-		err = tools.BuildPlugin(pluginPath, workdir)
+		err = pkg.BuildPlugin(pluginPath, workdir)
 	}
 	if err != nil {
 		fmt.Println("Error building plugin: " + err.Error())

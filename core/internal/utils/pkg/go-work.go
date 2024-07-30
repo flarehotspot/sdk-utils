@@ -1,4 +1,4 @@
-package tools
+package pkg
 
 import (
 	"fmt"
@@ -28,7 +28,7 @@ use (
 			}
 
 			for _, entry := range entries {
-                pluginDir := filepath.Join(searchPath, entry.Name())
+				pluginDir := filepath.Join(searchPath, entry.Name())
 				// pluginDir := searchPath + "/" + entry.Name()
 				jsonFile := filepath.Join(pluginDir, "plugin.json")
 				if entry.IsDir() && sdkfs.Exists(jsonFile) {

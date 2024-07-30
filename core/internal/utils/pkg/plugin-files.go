@@ -1,4 +1,4 @@
-package tools
+package pkg
 
 var PLUGIN_FILES = []string{
 	"plugin.json",

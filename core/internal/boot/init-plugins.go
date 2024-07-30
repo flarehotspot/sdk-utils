@@ -5,13 +5,13 @@ package boot
 import (
 	"log"
 
-	"core/internal/config"
 	"core/internal/plugins"
+	"core/internal/utils/pkg"
 )
 
 func InitPlugins(g *plugins.CoreGlobals) {
 	bp := g.BootProgress
-	install := plugins.InstallPlugins()
+	install := pkg.InstallPlugins()
 	done := false
 
 	for !done {
@@ -27,7 +27,7 @@ func InitPlugins(g *plugins.CoreGlobals) {
 		}
 	}
 
-	pluginDirs := config.InstalledDirList()
+	pluginDirs := pkg.InstalledDirList()
 	log.Println("Installed plugin directories:", pluginDirs)
 
 	for _, dir := range pluginDirs {

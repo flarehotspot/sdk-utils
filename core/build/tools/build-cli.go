@@ -1,6 +1,7 @@
 package tools
 
 import (
+	"core/internal/utils/pkg"
 	"fmt"
 	"os"
 	"runtime"
@@ -31,11 +32,11 @@ func BuildFlareCLI() {
 		cliFile := "core/internal/cli/main.go"
 		cliPath := b.File
 		workDir, _ := os.Getwd()
-		args := &GoBuildArgs{
+		args := &pkg.GoBuildArgs{
 			WorkDir: workDir,
 			Env:     []string{"GOOS=" + b.GOOS, "GOARCH=" + b.GOARCH},
 		}
-		err := BuildGoModule(cliFile, cliPath, args)
+		err := pkg.BuildGoModule(cliFile, cliPath, args)
 		if err != nil {
 			panic(err)
 		}

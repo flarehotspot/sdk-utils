@@ -18,7 +18,7 @@ CMD cp go.work.default go.work && \
     go run --tags=dev ./core/internal/cli/main.go install-go && \
     reflex \
         -r '\.go$' \
-        -R '\.tmp' \
+        -R '\.tmp\/*.' \
         -R 'core\/main\.go' \
         -R 'plugins\/installed' \
         -R 'plugins\/system\/.*\/main\.go' \

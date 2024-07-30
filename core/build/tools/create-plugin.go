@@ -1,6 +1,7 @@
 package tools
 
 import (
+	"core/internal/utils/pkg"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -11,16 +12,16 @@ import (
 	sdkstr "sdk/utils/strings"
 )
 
-func CreatePlugin(pkg string, name string, desc string) {
+func CreatePlugin(pack string, name string, desc string) {
 	info := sdkplugin.PluginInfo{
 		Name:        name,
-		Package:     pkg,
+		Package:     pack,
 		Description: desc,
 		Version:     "0.0.1",
 	}
 
 	goVersion := sdkruntime.GOVERSION
-	pluginDir := filepath.Join("plugins/local", pkg)
+	pluginDir := filepath.Join("plugins/local", pack)
 	if sdkfs.Exists(pluginDir) {
 		fmt.Printf("Plugin already exists at %s\n", pluginDir)
 		os.Exit(1)
@@ -66,7 +67,7 @@ func Init(api sdkplugin.PluginApi) {
 		panic(err)
 	}
 
-	CreateGoWorkspace()
+	pkg.CreateGoWorkspace()
 
 	fmt.Printf("\n\nPlugin created at %s\n", pluginDir)
 }

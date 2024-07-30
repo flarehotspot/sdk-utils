@@ -1,7 +1,7 @@
 package main
 
 import (
-	"core/build/tools"
+	"core/internal/utils/pkg"
 	"fmt"
 	"os"
 	"os/exec"
@@ -9,8 +9,8 @@ import (
 )
 
 func main() {
-	goBin := tools.GoBin()
-	buildArgs := tools.BuildArgs()
+	goBin := pkg.GoBin()
+	buildArgs := pkg.BuildArgs()
 	runCmd := []string{"run"}
 	runCmd = append(runCmd, buildArgs...)
 	runCmd = append(runCmd, "main/main.go")
