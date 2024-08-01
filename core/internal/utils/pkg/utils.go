@@ -1,6 +1,7 @@
 package pkg
 
 import (
+	"core/internal/config"
 	"encoding/json"
 	"log"
 	"os"
@@ -144,6 +145,31 @@ func InstalledPluginsList() []PluginInstalledMark {
 
 func PluginInstallPath(info sdkplugin.PluginInfo) string {
 	return filepath.Join(sdkpaths.PluginsDir, "installed", info.Package)
+}
+
+func NeedsRecompile(def PluginSrcDef) bool {
+	cfg, err := config.ReadPluginsConfig()
+	if err != nil {
+		return true
+	}
+
+	ok, path := IsPluginInstalled(def)
+	if !ok {
+		return true
+	}
+
+	info, err := PluginInfo(path)
+	if err != nil {
+		return true
+	}
+
+	for _, pkg := range cfg.Recompile {
+		if info.Package == pkg {
+			return true
+		}
+	}
+
+	return false
 }
 
 func PluginInfo(path string) (sdkplugin.PluginInfo, error) {

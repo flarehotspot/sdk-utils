@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"core/internal/config"
-	"sdk/utils/strings"
 	"core/internal/utils/mysql"
+	sdkstr "sdk/utils/strings"
 	//
 	// UNCOMMENT BELOW LINES WHEN DEBUGGING SQL QUERIES:
 	//
@@ -41,14 +41,10 @@ func NewDatabase() (*Database, error) {
 		return nil, err
 	}
 
-	url := cfg.UrlString()
+	url := cfg.DbUrlString()
 	log.Println("DB URL: ", url)
-	if err != nil {
-		return nil, err
-	}
 
 	conn, err := sql.Open("mysql", url)
-
 	if err != nil {
 		return nil, err
 	}
