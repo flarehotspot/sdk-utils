@@ -2,8 +2,21 @@ package main
 
 import (
 	"core/build/tools"
+	"core/internal/utils/pkg"
+	"os"
+	"path/filepath"
+	sdkfs "sdk/utils/fs"
+	sdkpaths "sdk/utils/paths"
 )
 
-func main(){
-    tools.SyncVersion()
+func main() {
+	tools.SyncVersion()
+	version := pkg.CoreInfo().Version
+	releaseNotePath := filepath.Join(sdkpaths.CoreDir, "build", "release-notes", version+".md")
+	if !sdkfs.Exists(releaseNotePath) {
+		if err := os.WriteFile(releaseNotePath, []byte("## "+version+"\n\n"), 0644); err != nil {
+			panic(err)
+		}
+		return
+	}
 }

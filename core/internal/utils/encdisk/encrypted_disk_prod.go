@@ -31,3 +31,13 @@ func (d *EncryptedDisk) Mount() error {
 
 	return nil
 }
+
+func (d *EncryptedDisk) Unmount() error {
+	if err := cmd.ExecAsh(fmt.Sprintf("umount %s", d.mountpath)); err != nil {
+		return err
+	}
+	if err := cmd.ExecAsh(fmt.Sprintf("cryptsetup luksClose %s", d.name)); err != nil {
+		return err
+	}
+	return nil
+}
