@@ -1,4 +1,4 @@
-package main
+package sdktargz
 
 import (
     "archive/tar"
