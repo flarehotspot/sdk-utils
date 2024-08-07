@@ -70,7 +70,7 @@ func (b *BuildOutput) Run() error {
 		GoVersion: sdkruntime.GOVERSION,
 		GoArch:    sdkruntime.GOARCH,
 		OutputDir: b.outputPath(),
-		OutputZip: b.zipFilePath(),
+		OutputZip: b.targzFilePath(),
 		Files:     files,
 	}
 
