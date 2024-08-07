@@ -9,7 +9,7 @@ import (
 	sdkfs "sdk/utils/fs"
 	sdkpaths "sdk/utils/paths"
 	sdkruntime "sdk/utils/runtime"
-	sdkzip "sdk/utils/zip"
+	// sdkzip "sdk/utils/zip"
 	sdktargz "sdk/utils/targz"
 )
 
