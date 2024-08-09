@@ -44,7 +44,13 @@ func NewDatabase() (*Database, error) {
 	url := cfg.DbUrlString()
 	log.Println("DB URL: ", url)
 
+	// Ensure mysql starts up during boot before returning err
+	openErrorCountThreshold := 5
 	conn, err := sql.Open("mysql", url)
+	for openErrorCount := 0; err != nil && openErrorCount < openErrorCountThreshold; openErrorCount++ {
+		conn, err = sql.Open("mysql", url)
+		time.Sleep(time.Second * 2)
+	}
 	if err != nil {
 		return nil, err
 	}
