@@ -24,6 +24,14 @@ const (
 
 var (
 	installedPluginsJson = filepath.Join(sdkpaths.CacheDir, "installed_plugins.json")
+
+	PLUGIN_FILES = []string{
+		"plugin.json",
+		"plugin.so",
+		"resources",
+		"go.mod",
+		"LICENSE.txt",
+	}
 )
 
 type PluginSrc string
@@ -81,6 +89,32 @@ func LocalPlugins() PluginDefList {
 	}
 	log.Println("plugins list: ", list)
 	return list
+}
+
+// LocalPluginPaths returns a list of plugin absolute source paths
+func LocalPluginPaths() []string {
+	searchPaths := []string{"plugins/system", "plugins/local"}
+	pluginPaths := []string{}
+
+	for _, sp := range searchPaths {
+		if sdkfs.Exists(sp) {
+			var dirs []string
+			if err := sdkfs.LsDirs(sp, &dirs, false); err != nil {
+				continue
+			}
+
+			for _, dir := range dirs {
+				pluginJson := filepath.Join(dir, "plugin.json")
+				modFile := filepath.Join(dir, "go.mod")
+
+				if sdkfs.Exists(pluginJson) && sdkfs.Exists(modFile) {
+					pluginPaths = append(pluginPaths, dir)
+				}
+			}
+		}
+	}
+
+	return pluginPaths
 }
 
 // InstalledDirList returns the list of installed plugins in the plugins directory.
