@@ -121,14 +121,14 @@ func LocalPluginPaths() []string {
 func InstalledDirList() []string {
 	var pluginList []string
 
-    installedPluginsPath := filepath.Join(paths.PluginsDir, "installed")
+	installedPluginsPath := filepath.Join(paths.PluginsDir, "installed")
 
-    // check if plugins/installed directory exists before traversing
-    if !(fs.Exists(installedPluginsPath)) {
-        return pluginList
-    }
+	// check if plugins/installed directory exists before traversing
+	if !(fs.Exists(installedPluginsPath)) {
+		return pluginList
+	}
 
-    // this lists all directories inside paths.PluginsDir/installed
+	// this lists all directories inside paths.PluginsDir/installed
 	if err := fs.LsDirs(installedPluginsPath, &pluginList, false); err != nil {
 		panic(err)
 	}
