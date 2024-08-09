@@ -9,7 +9,8 @@ import (
 	sdkfs "sdk/utils/fs"
 	sdkpaths "sdk/utils/paths"
 	sdkruntime "sdk/utils/runtime"
-	sdkzip "sdk/utils/zip"
+	// sdkzip "sdk/utils/zip"
+	sdktargz "sdk/utils/targz"
 )
 
 type BuildOutput struct {
@@ -55,15 +56,21 @@ func (b *BuildOutput) Run() error {
 		files = append(files, entry.Dest)
 	}
 
-	if err := sdkzip.Zip(b.outputPath(), b.zipFilePath()); err != nil {
-		return err
-	}
+    // previous implementation of zipping
+	// if err := sdkzip.Zip(b.outputPath(), b.zipFilePath()); err != nil {
+	// 	return err
+	// }
+
+    // new implementation using tar.gz
+    if err := sdktargz.TarGz(b.outputPath(), b.targzFilePath()); err != nil {
+        return err
+    }
 
 	md := metajson{
 		GoVersion: sdkruntime.GOVERSION,
 		GoArch:    sdkruntime.GOARCH,
 		OutputDir: b.outputPath(),
-		OutputZip: b.zipFilePath(),
+		OutputZip: b.targzFilePath(),
 		Files:     files,
 	}
 
@@ -108,6 +115,10 @@ func (b *BuildOutput) outputPath() string {
 
 func (b *BuildOutput) zipFilePath() string {
 	return filepath.Join(b.outputPath() + ".zip")
+}
+
+func (b *BuildOutput) targzFilePath() string {
+	return filepath.Join(b.outputPath() + ".tar.gz")
 }
 
 func (b *BuildOutput) metadataPath() string {
