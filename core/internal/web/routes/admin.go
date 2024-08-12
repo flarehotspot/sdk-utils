@@ -29,6 +29,10 @@ func AdminRoutes(g *plugins.CoreGlobals) {
 		subrouter.Post("/clear", adminctrl.ClearLogs(g)).Name("admin:logs:clear")
 	})
 
+	adminR.Group("/plugins", func(subrouter sdkhttp.HttpRouterInstance) {
+		subrouter.Get("/index", adminctrl.PluginsIndexCtrl(g)).Name("admin:plugins:index")
+	})
+
 	g.CoreAPI.HttpAPI.VueRouter().RegisterAdminRoutes([]sdkhttp.VueAdminRoute{
 		{
 			RouteName: "theme-picker",
@@ -39,6 +43,11 @@ func AdminRoutes(g *plugins.CoreGlobals) {
 			RouteName: "log-viewer",
 			RoutePath: "/log-viewer",
 			Component: "admin/LogViewer.vue",
+		},
+		{
+			RouteName: "plugins-index",
+			RoutePath: "/plugins",
+			Component: "admin/plugins/Index.vue",
 		},
 	}...)
 
@@ -53,6 +62,11 @@ func AdminRoutes(g *plugins.CoreGlobals) {
 				Category:  sdkhttp.NavCategorySystem,
 				Label:     "View Logs",
 				RouteName: "log-viewer",
+			},
+			{
+				Category:  sdkhttp.NavCategorySystem,
+				Label:     "Plugins",
+				RouteName: "plugins-index",
 			},
 		}
 	})

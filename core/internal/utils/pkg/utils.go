@@ -36,15 +36,6 @@ var (
 
 type PluginSrc string
 
-type PluginSrcDef struct {
-	Src          string `json:"src"`           // git | strore | system | local
-	StorePackage string `json:"store_pacakge"` // if src is "store"
-	StoreVersion string `json:"store_version"` // if src is "store"
-	GitURL       string `json:"git_url"`       // if src is "git"
-	GitRef       string `json:"git_ref"`       // can be a branch, tag or commit hash
-	LocalPath    string `json:"local_path"`    // if src is "local or system"
-}
-
 type PluginInstalledMark struct {
 	Def         PluginSrcDef
 	Installed   bool
@@ -70,14 +61,14 @@ func PluginsUserList() PluginDefList {
 	return userJson
 }
 
-func AllPluginSrc() PluginDefList {
+func AllPluginDef() PluginDefList {
 	// defaultPlugins, err := PluginsDefaultList()
 	// if err != nil {
 	// 	log.Println("Failed to load default plugins:", err)
 	// }
 
-	userPlugins := LocalPlugins()
-	return userPlugins
+	localPlugins := LocalPlugins()
+	return localPlugins
 	// return append(defaultPlugins, userPlugins...)
 }
 
@@ -87,7 +78,7 @@ func LocalPlugins() PluginDefList {
 	for _, p := range paths {
 		list = append(list, PluginSrcDef{Src: PluginSrcLocal, LocalPath: p})
 	}
-	log.Println("plugins list: ", list)
+	log.Println("local plugins list: ", list)
 	return list
 }
 
@@ -143,42 +134,39 @@ func InstalledDirList() []string {
 
 func MarkPluginAsInstalled(def PluginSrcDef, installPath string) error {
 	installedPlugins := InstalledPluginsList()
-	for _, p := range installedPlugins {
-		if p.Def.GitURL == def.GitURL {
-			p.Installed = true
-			p.InstallPath = installPath
-			return sdkfs.WriteJson(installedPluginsJson, installedPlugins)
+	for i, p := range installedPlugins {
+		switch def.Src {
+		case PluginSrcLocal, PluginSrcSystem:
+			if p.Def.LocalPath == def.LocalPath {
+				installedPlugins[i].InstallPath = installPath
+			}
+		default:
+			log.Println("MarkPluginAsInstalled: invalid source type")
+			return nil
 		}
 	}
-	installedPlugins = append(installedPlugins, PluginInstalledMark{Def: def, Installed: true})
+
+	installedPlugins = append(installedPlugins, PluginInstalledMark{
+		Def:         def,
+		Installed:   true,
+		InstallPath: installPath,
+	})
+
 	return sdkfs.WriteJson(installedPluginsJson, installedPlugins)
 }
 
 func IsPluginInstalled(def PluginSrcDef) (ok bool, path string) {
 	installedPlugins := InstalledPluginsList()
 	for _, p := range installedPlugins {
-		info, err := PluginInfo(p.InstallPath)
-		if err != nil {
-			return false, ""
-		}
-
-		if p.Def.Src == PluginSrcGit && p.Def.GitURL == def.GitURL {
-			return p.Installed, p.InstallPath
-		}
-
-		if p.Def.Src == PluginSrcSystem && sdkfs.Exists(p.InstallPath) {
-			return true, p.InstallPath
-		}
-
-		if p.Def.Src == PluginSrcLocal && sdkfs.Exists(PluginInstallPath(info)) {
-			return true, p.InstallPath
+		if (def.Src == PluginSrcLocal || def.Src == PluginSrcSystem) && p.Def.LocalPath == def.LocalPath {
+			return sdkfs.Exists(p.InstallPath), p.InstallPath
 		}
 	}
 	return false, ""
 }
 
 func InstalledPluginsList() []PluginInstalledMark {
-	installedPlugins := make([]PluginInstalledMark, 0)
+	installedPlugins := []PluginInstalledMark{}
 	if err := sdkfs.ReadJson(installedPluginsJson, &installedPlugins); err != nil {
 		return installedPlugins
 	}
@@ -192,11 +180,13 @@ func PluginInstallPath(info sdkplugin.PluginInfo) string {
 func NeedsRecompile(def PluginSrcDef) bool {
 	cfg, err := config.ReadPluginsConfig()
 	if err != nil {
+		log.Println("Error reading plugins config: ", err)
 		return true
 	}
 
 	ok, path := IsPluginInstalled(def)
 	if !ok {
+		log.Println("Plugin is not installed: ", def.LocalPath)
 		return true
 	}
 

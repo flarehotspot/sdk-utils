@@ -19,15 +19,6 @@ import (
 )
 
 func BuildFromLocal(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, error) {
-	if ok, path := IsPluginInstalled(def); ok {
-		info, err := PluginInfo(path)
-		if err != nil {
-			return sdkplugin.PluginInfo{}, err
-		}
-		w.Write([]byte("Plugin already installed: " + info.Package))
-		return PluginInfo(path)
-	}
-
 	w.Write([]byte("Building plugin from local path: " + def.LocalPath))
 
 	info, err := PluginInfo(def.LocalPath)
@@ -35,7 +26,7 @@ func BuildFromLocal(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, error)
 		return sdkplugin.PluginInfo{}, err
 	}
 
-	err = installPlugin(def.LocalPath, info, InstallOpts{RemoveSrc: false})
+	err = InstallPlugin(def.LocalPath, info, InstallOpts{RemoveSrc: false})
 	if err != nil {
 		return sdkplugin.PluginInfo{}, err
 	}
@@ -74,7 +65,7 @@ func BuildFromGit(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, error) {
 		return sdkplugin.PluginInfo{}, err
 	}
 
-	if err := installPlugin(clonePath, info, InstallOpts{}); err != nil {
+	if err := InstallPlugin(clonePath, info, InstallOpts{}); err != nil {
 		return sdkplugin.PluginInfo{}, err
 	}
 

@@ -15,7 +15,7 @@ type InstallOpts struct {
 	RemoveSrc bool
 }
 
-func installPlugin(src string, info sdkplugin.PluginInfo, opts InstallOpts) error {
+func InstallPlugin(src string, info sdkplugin.PluginInfo, opts InstallOpts) error {
 	diskfile := filepath.Join(sdkpaths.TmpDir, "plugin-build", "disk", info.Package)
 	buildPath := filepath.Join(sdkpaths.TmpDir, "plugin-build", "mount", info.Package)
 	dev := sdkstr.Slugify(info.Package, "_")
@@ -36,7 +36,9 @@ func installPlugin(src string, info sdkplugin.PluginInfo, opts InstallOpts) erro
 	}
 
 	if opts.RemoveSrc {
-		os.RemoveAll(src)
+		if err := os.RemoveAll(src); err != nil {
+			return err
+		}
 	}
 
 	return mnt.Unmount()
