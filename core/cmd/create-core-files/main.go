@@ -12,6 +12,7 @@ func main() {
 			"core/plugin.json",
 			"core/support.json",
 			"core/resources",
+			"plugins/system",
 			"sdk",
 		},
 		ExtraFiles: []tools.ExtraFiles{

@@ -9,6 +9,7 @@ import (
 	sdkfs "sdk/utils/fs"
 	sdkpaths "sdk/utils/paths"
 	sdkruntime "sdk/utils/runtime"
+
 	// sdkzip "sdk/utils/zip"
 	sdktargz "sdk/utils/targz"
 )
@@ -56,15 +57,15 @@ func (b *BuildOutput) Run() error {
 		files = append(files, entry.Dest)
 	}
 
-    // previous implementation of zipping
+	// previous implementation of zipping
 	// if err := sdkzip.Zip(b.outputPath(), b.zipFilePath()); err != nil {
 	// 	return err
 	// }
 
-    // new implementation using tar.gz
-    if err := sdktargz.TarGz(b.outputPath(), b.targzFilePath()); err != nil {
-        return err
-    }
+	// new implementation using tar.gz
+	if err := sdktargz.TarGz(b.outputPath(), b.targzFilePath()); err != nil {
+		return err
+	}
 
 	md := metajson{
 		GoVersion: sdkruntime.GOVERSION,
