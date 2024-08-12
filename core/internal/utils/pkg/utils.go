@@ -133,26 +133,27 @@ func InstalledDirList() []string {
 }
 
 func MarkPluginAsInstalled(def PluginSrcDef, installPath string) error {
-	installedPlugins := InstalledPluginsList()
-	for i, p := range installedPlugins {
+	newList := []PluginInstalledMark{}
+	plugins := InstalledPluginsList()
+	found := false
+
+	for _, p := range plugins {
 		switch def.Src {
 		case PluginSrcLocal, PluginSrcSystem:
-			if p.Def.LocalPath == def.LocalPath {
-				installedPlugins[i].InstallPath = installPath
+			if def.Src == p.Def.Src && def.LocalPath == p.Def.LocalPath {
+				found = true
+				p.InstallPath = installPath
+				p.Installed = true
 			}
-		default:
-			log.Println("MarkPluginAsInstalled: invalid source type")
-			return nil
 		}
+		newList = append(newList, p)
 	}
 
-	installedPlugins = append(installedPlugins, PluginInstalledMark{
-		Def:         def,
-		Installed:   true,
-		InstallPath: installPath,
-	})
+	if !found {
+		newList = append(newList, PluginInstalledMark{Def: def, Installed: true, InstallPath: installPath})
+	}
 
-	return sdkfs.WriteJson(installedPluginsJson, installedPlugins)
+	return sdkfs.WriteJson(installedPluginsJson, newList)
 }
 
 func IsPluginInstalled(def PluginSrcDef) (ok bool, path string) {
@@ -166,11 +167,11 @@ func IsPluginInstalled(def PluginSrcDef) (ok bool, path string) {
 }
 
 func InstalledPluginsList() []PluginInstalledMark {
-	installedPlugins := []PluginInstalledMark{}
-	if err := sdkfs.ReadJson(installedPluginsJson, &installedPlugins); err != nil {
-		return installedPlugins
+	plugins := []PluginInstalledMark{}
+	if err := sdkfs.ReadJson(installedPluginsJson, &plugins); err != nil {
+		return plugins
 	}
-	return installedPlugins
+	return plugins
 }
 
 func PluginInstallPath(info sdkplugin.PluginInfo) string {
