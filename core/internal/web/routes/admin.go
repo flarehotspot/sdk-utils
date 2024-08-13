@@ -49,6 +49,11 @@ func AdminRoutes(g *plugins.CoreGlobals) {
 			RoutePath: "/plugins",
 			Component: "admin/plugins/Index.vue",
 		},
+		{
+			RouteName: "plugins-new",
+			RoutePath: "/plugins/new",
+			Component: "admin/plugins/NewInstall.vue",
+		},
 	}...)
 
 	g.CoreAPI.HttpAPI.VueRouter().AdminNavsFunc(func(acct sdkacct.Account) []sdkhttp.VueAdminNav {

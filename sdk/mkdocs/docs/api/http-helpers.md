@@ -59,7 +59,7 @@ Alias to [VueRouterApi.VueRouteName](./vue-router-api.md#vueroutename) method.
 
 ### VueRoutePath
 
-Alias to [VueRouterApi.VueRouterPath](./vue-router-api.md#vueroutepath) method.
+Alias to [VueRouterApi.VueRoutePath](./vue-router-api.md#vueroutepath) method.
 
 ### VuePkgRoutePath
 
