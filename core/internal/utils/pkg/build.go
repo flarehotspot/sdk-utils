@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -30,16 +31,22 @@ func BuildFromLocal(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, error)
 
 	w.Write([]byte("Building plugin from local path: " + def.LocalPath))
 
+	// TODO: remove logs
+	log.Println("Getting plugin info..")
 	info, err := PluginInfo(def.LocalPath)
 	if err != nil {
 		return sdkplugin.PluginInfo{}, err
 	}
 
+	// TODO: remove logs
+	log.Println("Installing plugin..")
 	err = installPlugin(def.LocalPath, info, InstallOpts{RemoveSrc: false})
 	if err != nil {
 		return sdkplugin.PluginInfo{}, err
 	}
 
+	// TODO: remove logs
+	log.Println("Marking plugins..")
 	if err := MarkPluginAsInstalled(def, PluginInstallPath(info)); err != nil {
 		return sdkplugin.PluginInfo{}, err
 	}

@@ -72,16 +72,25 @@ func installPlugin(src string, info sdkplugin.PluginInfo, opts InstallOpts) erro
 	diskfile := filepath.Join(parentpath, "plugin-clone", "disk", dev)
 	mountpath := filepath.Join(parentpath, "plugin-build", "mount", dev)
 	mnt := encdisk.NewEncrypedDisk(parentpath, diskfile, mountpath, dev)
+
+	// TODO: remove logs
+	log.Println("\n\n---\nMounting..")
 	if err := mnt.Mount(); err != nil {
 		return err
 	}
 
+	// TODO: remove logs
+	log.Println("\n\n---\nBuilding plugin..")
 	if err := BuildPlugin(src, mountpath); err != nil {
 		return err
 	}
 
 	installPath := PluginInstallPath(info)
+	// TODO: remove logs
+	log.Println("\n\n---\nCopying files..")
 	for _, file := range PLUGIN_FILES {
+		// TODO: remove logs
+		log.Println("\n\n---\nCopying file..")
 		if err := sdkfs.Copy(filepath.Join(src, file), filepath.Join(installPath, file)); err != nil {
 			return err
 		}
@@ -91,5 +100,7 @@ func installPlugin(src string, info sdkplugin.PluginInfo, opts InstallOpts) erro
 		os.RemoveAll(src)
 	}
 
+	// TODO: remove logs
+	log.Println("\n\n---\nUnmounting..")
 	return mnt.Unmount()
 }
