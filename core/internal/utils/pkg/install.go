@@ -1,21 +1,93 @@
 package pkg
 
 import (
+	"errors"
+	"io"
 	"os"
 	"path/filepath"
 
 	"core/internal/utils/encdisk"
+	"core/internal/utils/git"
 	sdkplugin "sdk/api/plugin"
 	sdkfs "sdk/utils/fs"
 	sdkpaths "sdk/utils/paths"
 	sdkstr "sdk/utils/strings"
 )
 
-type InstallOpts struct {
-	RemoveSrc bool
+func InstallSrcDef(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, error) {
+	switch def.Src {
+	case PluginSrcGit:
+		return InstallGitSrc(w, def)
+	case PluginSrcLocal, PluginSrcSystem:
+		return InstallLocalPlugin(w, def)
+	default:
+		return sdkplugin.PluginInfo{}, errors.New("Invalid plugin source: " + def.Src)
+	}
 }
 
-func InstallPlugin(src string, info sdkplugin.PluginInfo, opts InstallOpts) error {
+func InstallLocalPlugin(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, error) {
+	w.Write([]byte("Building plugin from local path: " + def.LocalPath))
+
+	info, err := PluginInfo(def.LocalPath)
+	if err != nil {
+		return sdkplugin.PluginInfo{}, err
+	}
+
+	err = InstallPluginPath(def.LocalPath, InstallOpts{RemoveSrc: false})
+	if err != nil {
+		return sdkplugin.PluginInfo{}, err
+	}
+
+	if err := MarkPluginAsInstalled(def, GetInstallPath(info)); err != nil {
+		return sdkplugin.PluginInfo{}, err
+	}
+
+	return info, nil
+}
+
+func InstallGitSrc(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, error) {
+	rnd := sdkstr.Rand(16)
+	diskfile := filepath.Join(sdkpaths.TmpDir, "plugin-clone", "disk", rnd)
+	clonePath := filepath.Join(sdkpaths.TmpDir, "plugin-clone", "mount", rnd)
+	dev := sdkstr.Slugify(rnd, "_")
+	mnt := encdisk.NewEncrypedDisk(clonePath, diskfile, dev)
+	if err := mnt.Mount(); err != nil {
+		return sdkplugin.PluginInfo{}, err
+	}
+
+	w.Write([]byte("Cloning plugin from git: " + def.GitURL))
+	repo := git.RepoSource{URL: def.GitURL, Ref: def.GitRef}
+
+	if err := git.Clone(w, repo, clonePath); err != nil {
+		return sdkplugin.PluginInfo{}, err
+	}
+
+	info, err := PluginInfo(clonePath)
+	if err != nil {
+		return sdkplugin.PluginInfo{}, err
+	}
+
+	if err := InstallPluginPath(clonePath, InstallOpts{RemoveSrc: false}); err != nil {
+		return sdkplugin.PluginInfo{}, err
+	}
+
+	if err := mnt.Unmount(); err != nil {
+		return sdkplugin.PluginInfo{}, err
+	}
+
+	if err := MarkPluginAsInstalled(def, GetInstallPath(info)); err != nil {
+		return sdkplugin.PluginInfo{}, err
+	}
+
+	return info, nil
+}
+
+func InstallPluginPath(src string, opts InstallOpts) error {
+	info, err := PluginInfo(src)
+	if err != nil {
+		return err
+	}
+
 	diskfile := filepath.Join(sdkpaths.TmpDir, "plugin-build", "disk", info.Package)
 	buildPath := filepath.Join(sdkpaths.TmpDir, "plugin-build", "mount", info.Package)
 	dev := sdkstr.Slugify(info.Package, "_")
@@ -28,8 +100,8 @@ func InstallPlugin(src string, info sdkplugin.PluginInfo, opts InstallOpts) erro
 		return err
 	}
 
-	installPath := PluginInstallPath(info)
-	for _, file := range PLUGIN_FILES {
+	installPath := GetInstallPath(info)
+	for _, file := range PLuginFiles {
 		if err := sdkfs.Copy(filepath.Join(src, file), filepath.Join(installPath, file)); err != nil {
 			return err
 		}

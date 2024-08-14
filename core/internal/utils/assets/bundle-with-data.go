@@ -15,7 +15,7 @@ import (
 )
 
 var cacheWithHelpers = sync.Map{}
-var bundleWithHelpersQue = jobque.NewJobQues()
+var bundleWithHelpersQue = jobque.NewJobQue()
 
 type AssetWithData struct {
 	File string

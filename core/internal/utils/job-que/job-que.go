@@ -1,52 +1,64 @@
 package jobque
 
-type jobResult struct {
-	err    error
-	result interface{}
+import "sync"
+
+// Define a Job type
+type Job func() (interface{}, error)
+
+// JobQue is the structure that holds the job queue
+type JobQue struct {
+	jobChannel chan Job
+	results    chan JobResult
+	stopChan   chan struct{}
+	wg         sync.WaitGroup
 }
 
-type jobQueFn struct {
-	fn       func() (result interface{}, err error)
-	resultCh chan *jobResult
+// JobResult holds the result of a job execution
+type JobResult struct {
+	Result interface{}
+	Err    error
 }
 
-type JobQues struct {
-	queCh chan *jobQueFn
+// NewJobQue creates and initializes a new JobQue
+func NewJobQue() *JobQue {
+	jq := &JobQue{
+		jobChannel: make(chan Job),
+		results:    make(chan JobResult),
+		stopChan:   make(chan struct{}),
+	}
+	go jq.worker()
+	return jq
 }
 
-func (self *JobQues) loop() {
-	for job := range self.queCh {
-		go func(job *jobQueFn) {
-			res, err := job.fn()
-			job.resultCh <- &jobResult{
-				err:    err,
-				result: res,
-			}
-		}(job)
+// worker processes jobs from the jobChannel
+func (jq *JobQue) worker() {
+	for {
+		select {
+		case job := <-jq.jobChannel:
+			result, err := job()
+			jq.results <- JobResult{Result: result, Err: err}
+		case <-jq.stopChan:
+			close(jq.results)
+			return
+		}
 	}
 }
 
-func (self *JobQues) Exec(fn func() (interface{}, error)) (interface{}, error) {
-	job := &jobQueFn{
-		fn:       fn,
-		resultCh: make(chan *jobResult),
-	}
+// Exec adds a job to the queue and waits for the result
+func (jq *JobQue) Exec(job Job) (interface{}, error) {
+	jq.wg.Add(1)
+	defer jq.wg.Done()
 
-	go func() {
-		self.queCh <- job
-	}()
+	// Send the job to the worker
+	jq.jobChannel <- job
 
-	result := <-job.resultCh
-
-	return result.result, result.err
+	// Wait for the result
+	result := <-jq.results
+	return result.Result, result.Err
 }
 
-func NewJobQues() *JobQues {
-	q := &JobQues{
-		queCh: make(chan *jobQueFn),
-	}
-
-	go q.loop()
-
-	return q
+// Stop stops the job queue and waits for all jobs to finish
+func (jq *JobQue) Stop() {
+	close(jq.stopChan)
+	jq.wg.Wait() // Wait for all jobs to be processed
 }

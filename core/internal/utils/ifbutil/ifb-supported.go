@@ -11,7 +11,7 @@ var (
 )
 
 func init() {
-	err := cmd.Exec("modprobe ifb")
+	err := cmd.Exec("modprobe ifb", nil)
 	supported.Store(err == nil)
 }
 

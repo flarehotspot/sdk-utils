@@ -2,6 +2,7 @@ package pkg
 
 import (
 	"core/internal/config"
+	jobque "core/internal/utils/job-que"
 	"encoding/json"
 	"log"
 	"os"
@@ -23,9 +24,9 @@ const (
 )
 
 var (
+	markQue              = jobque.NewJobQue()
 	installedPluginsJson = filepath.Join(sdkpaths.CacheDir, "installed_plugins.json")
-
-	PLUGIN_FILES = []string{
+	PLuginFiles          = []string{
 		"plugin.json",
 		"plugin.so",
 		"resources",
@@ -153,7 +154,12 @@ func MarkPluginAsInstalled(def PluginSrcDef, installPath string) error {
 		newList = append(newList, PluginInstalledMark{Def: def, Installed: true, InstallPath: installPath})
 	}
 
-	return sdkfs.WriteJson(installedPluginsJson, newList)
+	_, err := markQue.Exec(func() (interface{}, error) {
+		err := sdkfs.WriteJson(installedPluginsJson, newList)
+		return nil, err
+	})
+
+	return err
 }
 
 func IsPluginInstalled(def PluginSrcDef) (ok bool, path string) {
@@ -167,14 +173,22 @@ func IsPluginInstalled(def PluginSrcDef) (ok bool, path string) {
 }
 
 func InstalledPluginsList() []PluginInstalledMark {
-	plugins := []PluginInstalledMark{}
-	if err := sdkfs.ReadJson(installedPluginsJson, &plugins); err != nil {
-		return plugins
+	result, err := markQue.Exec(func() (interface{}, error) {
+		plugins := []PluginInstalledMark{}
+		if err := sdkfs.ReadJson(installedPluginsJson, &plugins); err != nil {
+			return nil, err
+		}
+		return plugins, nil
+	})
+
+	if err != nil {
+		return []PluginInstalledMark{}
 	}
-	return plugins
+
+	return result.([]PluginInstalledMark)
 }
 
-func PluginInstallPath(info sdkplugin.PluginInfo) string {
+func GetInstallPath(info sdkplugin.PluginInfo) string {
 	return filepath.Join(sdkpaths.PluginsDir, "installed", info.Package)
 }
 

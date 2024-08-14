@@ -3,8 +3,11 @@ package adminctrl
 import (
 	"core/internal/plugins"
 	"core/internal/utils/pkg"
+	"encoding/json"
+	"log"
 	"net/http"
 	sdkplugin "sdk/api/plugin"
+	"strings"
 )
 
 func PluginsIndexCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
@@ -36,5 +39,37 @@ func PluginsIndexCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 		}
 
 		res.Json(w, plugins, http.StatusOK)
+	}
+}
+
+func PluginsInstallCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		res := g.CoreAPI.HttpAPI.VueResponse()
+		// read post body as json
+		var data pkg.PluginSrcDef
+		err := json.NewDecoder(r.Body).Decode(&data)
+		if err != nil {
+			res.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		var result strings.Builder
+		info, err := pkg.InstallSrcDef(&result, data)
+		if err != nil {
+			res.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		log.Println("Info: ", info)
+
+		b, err := json.Marshal(nil)
+		if err != nil {
+			res.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		w.Write(b)
+
+		// res.Json(w, info, http.StatusOK)
 	}
 }

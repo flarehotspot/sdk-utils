@@ -4,7 +4,7 @@ import jobque "core/internal/utils/job-que"
 
 const pluginsJsonFile = "plugins.json"
 
-var q = jobque.NewJobQues()
+var q = jobque.NewJobQue()
 
 type PluginsConfig struct {
 	Recompile []string `json:"recompile"`

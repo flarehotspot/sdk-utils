@@ -34,9 +34,10 @@ func InitPlugins(g *plugins.CoreGlobals) {
 			continue
 		}
 
+		// TODO: might be good to move this to pkg util
 		switch def.Src {
 		case pkg.PluginSrcLocal, pkg.PluginSrcSystem:
-			info, err := pkg.BuildFromLocal(inst, def)
+			info, err := pkg.InstallLocalPlugin(inst, def)
 			if err != nil {
 				bp.AppendLog(fmt.Sprintf("Error buidling plugin from local path %s: %s", def.LocalPath, err.Error()))
 			} else {

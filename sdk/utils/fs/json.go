@@ -7,8 +7,8 @@
 package sdkfs
 
 import (
-	"encoding/json"
 	"os"
+	json "sdk/libs/go-json"
 )
 
 func WriteJson(f string, v any) error {

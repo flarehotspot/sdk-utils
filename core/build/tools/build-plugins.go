@@ -28,7 +28,7 @@ func BuildLocalPlugins() error {
 			return err
 		}
 
-		for _, f := range pkg.PLUGIN_FILES {
+		for _, f := range pkg.PLuginFiles {
 			if err := sdkfs.Copy(filepath.Join(pluginPath, f), filepath.Join(pluginInstallDir, f)); err != nil {
 				return err
 			}
