@@ -60,7 +60,13 @@ func BuildFromGit(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, error) {
 	}
 
 	// TODO: update disk file path to randomly select either /etc /var /usr
-	diskfile := filepath.Join(sdkpaths.TmpDir, "plugin-clone", "disk", info.Package)
+	diskfileParentPath := filepath.Join(sdkpaths.TmpDir, "plugin-clone", "disk", info.Package)
+	// ensure to create the virt disk parent file path exists
+	if err := os.MkdirAll(diskfileParentPath, 0755); err != nil {
+		return sdkplugin.PluginInfo{}, err
+	}
+	diskfile := filepath.Join(diskfileParentPath, info.Package)
+
 	clonePath := filepath.Join(sdkpaths.TmpDir, "plugin-clone", "mount", info.Package)
 	dev := sdkstr.Slugify(info.Package, "_")
 	mnt := encdisk.NewEncrypedDisk(clonePath, diskfile, dev)
