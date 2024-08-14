@@ -9,6 +9,10 @@ import (
 )
 
 func (d *EncryptedDisk) Mount() error {
+	if err := cmd.ExecAsh("dd if=/dev/zero " + "of=" + d.file + " bs=1M count=50"); err != nil {
+		return err
+	}
+
 	if err := cmd.ExecAsh(fmt.Sprintf(`echo -n "%s" | cryptsetup luksFormat %s -`, d.pass, d.file)); err != nil {
 		return err
 	}

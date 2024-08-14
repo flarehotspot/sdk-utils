@@ -59,6 +59,7 @@ func BuildFromGit(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, error) {
 		return PluginInfo(path)
 	}
 
+	// TODO: update disk file path to randomly select either /etc /var /usr
 	diskfile := filepath.Join(sdkpaths.TmpDir, "plugin-clone", "disk", info.Package)
 	clonePath := filepath.Join(sdkpaths.TmpDir, "plugin-clone", "mount", info.Package)
 	dev := sdkstr.Slugify(info.Package, "_")
