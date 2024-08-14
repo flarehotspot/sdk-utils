@@ -69,7 +69,15 @@ func InstallPlugins() *InstallStatus {
 }
 
 func installPlugin(src string, info sdkplugin.PluginInfo, opts InstallOpts) error {
-	diskfile := filepath.Join(sdkpaths.TmpDir, "plugin-build", "disk", info.Package)
+	// TODO: update disk file path to randomly select either /etc /var /usr
+	diskfileParentPath := filepath.Join(sdkpaths.TmpDir, "plugin-clone", "disk", info.Package)
+	// ensure to create the virt disk parent file path exists
+	fmt.Printf("creating virtual disk file parent path at: %s", diskfileParentPath)
+	if err := os.MkdirAll(diskfileParentPath, 0755); err != nil {
+		return err
+	}
+
+	diskfile := filepath.Join(diskfileParentPath, info.Package)
 	buildPath := filepath.Join(sdkpaths.TmpDir, "plugin-build", "mount", info.Package)
 	dev := sdkstr.Slugify(info.Package, "_")
 	mnt := encdisk.NewEncrypedDisk(buildPath, diskfile, dev)
