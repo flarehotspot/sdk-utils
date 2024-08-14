@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -63,7 +62,7 @@ func BuildFromGit(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, error) {
 	// TODO: update disk file path to randomly select either /etc /var /usr
 	diskfileParentPath := filepath.Join(sdkpaths.TmpDir, "plugin-clone", "disk", info.Package)
 	// ensure to create the virt disk parent file path exists
-	log.Printf("creating virtual disk file parent path at: %s", diskfileParentPath)
+	fmt.Printf("creating virtual disk file parent path at: %s", diskfileParentPath)
 	if err := os.MkdirAll(diskfileParentPath, 0755); err != nil {
 		return sdkplugin.PluginInfo{}, err
 	}
