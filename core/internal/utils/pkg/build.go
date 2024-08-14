@@ -59,18 +59,11 @@ func BuildFromGit(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, error) {
 		return PluginInfo(path)
 	}
 
-	// TODO: update disk file path to randomly select either /etc /var /usr
-	diskfileParentPath := filepath.Join(sdkpaths.TmpDir, "plugin-clone", "disk", info.Package)
-	// ensure to create the virt disk parent file path exists
-	fmt.Printf("creating virtual disk file parent path at: %s", diskfileParentPath)
-	if err := os.MkdirAll(diskfileParentPath, 0755); err != nil {
-		return sdkplugin.PluginInfo{}, err
-	}
-	diskfile := filepath.Join(diskfileParentPath, info.Package)
-
-	clonePath := filepath.Join(sdkpaths.TmpDir, "plugin-clone", "mount", info.Package)
 	dev := sdkstr.Slugify(info.Package, "_")
-	mnt := encdisk.NewEncrypedDisk(clonePath, diskfile, dev)
+	parentpath := RandomPluginPath()
+	diskfile := filepath.Join(parentpath, "plugin-clone", "disk", dev)
+	mountpath := filepath.Join(parentpath, "plugin-build", "mount", dev)
+	mnt := encdisk.NewEncrypedDisk(parentpath, diskfile, mountpath, dev)
 	if err := mnt.Mount(); err != nil {
 		return sdkplugin.PluginInfo{}, err
 	}
@@ -78,11 +71,11 @@ func BuildFromGit(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, error) {
 	w.Write([]byte("Cloning plugin from git: " + def.GitURL))
 	repo := git.RepoSource{URL: def.GitURL, Ref: def.GitRef}
 
-	if err := git.Clone(w, repo, clonePath); err != nil {
+	if err := git.Clone(w, repo, mountpath); err != nil {
 		return sdkplugin.PluginInfo{}, err
 	}
 
-	if err := installPlugin(clonePath, info, InstallOpts{}); err != nil {
+	if err := installPlugin(mountpath, info, InstallOpts{}); err != nil {
 		return sdkplugin.PluginInfo{}, err
 	}
 
@@ -95,7 +88,7 @@ func BuildFromGit(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, error) {
 		return sdkplugin.PluginInfo{}, err
 	}
 
-	return PluginInfo(clonePath)
+	return PluginInfo(mountpath)
 }
 
 type GoBuildArgs struct {
@@ -127,11 +120,6 @@ func BuildPlugin(pluginSrcDir string, workdir string) error {
 			return err
 		}
 	}
-
-	if err := sdkfs.EmptyDir(workdir); err != nil {
-		return err
-	}
-	defer os.RemoveAll(workdir)
 
 	if err := sdkfs.EnsureDir(filepath.Join(workdir, "plugins")); err != nil {
 		return err

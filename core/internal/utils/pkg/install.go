@@ -5,12 +5,10 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"time"
 
 	"core/internal/utils/encdisk"
 	sdkplugin "sdk/api/plugin"
 	sdkfs "sdk/utils/fs"
-	sdkpaths "sdk/utils/paths"
 	sdkstr "sdk/utils/strings"
 )
 
@@ -69,28 +67,18 @@ func InstallPlugins() *InstallStatus {
 }
 
 func installPlugin(src string, info sdkplugin.PluginInfo, opts InstallOpts) error {
-	// TODO: update disk file path to randomly select either /etc /var /usr
-	diskfileParentPath := filepath.Join(sdkpaths.TmpDir, "plugin-clone", "disk", info.Package)
-	// ensure to create the virt disk parent file path exists
-	fmt.Printf("creating virtual disk file parent path at: %s", diskfileParentPath)
-	if err := os.MkdirAll(diskfileParentPath, 0755); err != nil {
-		return err
-	}
-
-	diskfile := filepath.Join(diskfileParentPath, info.Package)
-	buildPath := filepath.Join(sdkpaths.TmpDir, "plugin-build", "mount", info.Package)
 	dev := sdkstr.Slugify(info.Package, "_")
-	mnt := encdisk.NewEncrypedDisk(buildPath, diskfile, dev)
+	parentpath := RandomPluginPath()
+	diskfile := filepath.Join(parentpath, "plugin-clone", "disk", dev)
+	mountpath := filepath.Join(parentpath, "plugin-build", "mount", dev)
+	mnt := encdisk.NewEncrypedDisk(parentpath, diskfile, mountpath, dev)
 	if err := mnt.Mount(); err != nil {
 		return err
 	}
 
-	if err := BuildPlugin(src, buildPath); err != nil {
+	if err := BuildPlugin(src, mountpath); err != nil {
 		return err
 	}
-
-	// TODO: remove
-	time.Sleep(3 * time.Second)
 
 	installPath := PluginInstallPath(info)
 	for _, file := range PLUGIN_FILES {

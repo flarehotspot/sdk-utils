@@ -7,7 +7,7 @@ server-dev:
 openwrt:
 	go run ./core/cmd/build-cli/main.go && \
 	go run ./core/cmd/build-core/main.go && \
-	./bin/flare server
+	./bin/flare server > flarehotspot.log 2>&1
 
 docs-build:
 	cd sdk/mkdocs && mkdocs build

@@ -6,10 +6,16 @@ import (
 	"core/internal/utils/cmd"
 	"fmt"
 	"os"
+	"path/filepath"
+	sdkfs "sdk/utils/fs"
 )
 
 func (d *EncryptedDisk) Mount() error {
-	fmt.Printf("creating virtual disk at: %s", d.file)
+	diskfileParentPath := filepath.Dir(d.file)
+	if err := os.MkdirAll(diskfileParentPath, 0755); err != nil {
+		return err
+	}
+
 	if err := cmd.ExecAsh("dd if=/dev/zero " + "of=" + d.file + " bs=1M count=50"); err != nil {
 		return err
 	}
@@ -44,5 +50,11 @@ func (d *EncryptedDisk) Unmount() error {
 	if err := cmd.ExecAsh(fmt.Sprintf("cryptsetup luksClose %s", d.name)); err != nil {
 		return err
 	}
+
+	if err := sdkfs.EmptyDir(d.parentpath); err != nil {
+		return err
+	}
+	defer os.RemoveAll(d.parentpath)
+
 	return nil
 }
