@@ -5,10 +5,12 @@ package encdisk
 import (
 	"core/internal/utils/cmd"
 	"fmt"
+	"log"
 	"os"
 )
 
 func (d *EncryptedDisk) Mount() error {
+	log.Printf("creating virtual disk at: %s", d.file)
 	if err := cmd.ExecAsh("dd if=/dev/zero " + "of=" + d.file + " bs=1M count=50"); err != nil {
 		return err
 	}
