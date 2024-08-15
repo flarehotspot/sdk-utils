@@ -1,77 +1,130 @@
 package pkg
 
 import (
-	"fmt"
+	"errors"
+	"io"
 	"log"
 	"os"
 	"path/filepath"
 
 	"core/internal/utils/encdisk"
+	"core/internal/utils/git"
 	sdkplugin "sdk/api/plugin"
 	sdkfs "sdk/utils/fs"
+	sdkpaths "sdk/utils/paths"
 	sdkstr "sdk/utils/strings"
 )
 
-type InstallOpts struct {
-	RemoveSrc bool
+type PluginFile struct {
+	File     string
+	Optional bool
 }
 
-type InstallStatus struct {
-	Msg  chan string
-	Done chan error
+var PLuginFiles = []PluginFile{
+	{
+		File:     "plugin.json",
+		Optional: false,
+	},
+	{
+		File:     "plugin.so",
+		Optional: false,
+	},
+	{
+		File:     "resources",
+		Optional: true,
+	},
+	{
+		File:     "go.mod",
+		Optional: false,
+	},
+	{
+		File:     "LICENSE.txt",
+		Optional: true,
+	},
 }
 
-func (i *InstallStatus) Write(p []byte) (n int, err error) {
-	status := string(p)
-	i.Msg <- status
-	return len(p), nil
+func InstallSrcDef(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, error) {
+	switch def.Src {
+	case PluginSrcGit:
+		return InstallGitSrc(w, def)
+	case PluginSrcLocal, PluginSrcSystem:
+		return InstallLocalPlugin(w, def)
+	default:
+		return sdkplugin.PluginInfo{}, errors.New("Invalid plugin source: " + def.Src)
+	}
 }
 
-func InstallPlugins() *InstallStatus {
-	out := &InstallStatus{
-		Msg:  make(chan string),
-		Done: make(chan error),
+func InstallLocalPlugin(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, error) {
+	w.Write([]byte("Building plugin from local path: " + def.LocalPath))
+
+	info, err := PluginInfo(def.LocalPath)
+	if err != nil {
+		return sdkplugin.PluginInfo{}, err
 	}
 
-	go func() {
-		for _, def := range AllPluginSrc() {
-			if def.Src == PluginSrcGit {
-				info, err := BuildFromGit(out, def)
-				if err != nil {
-					log.Println("buildFromGit error:", err)
-					out.Msg <- fmt.Sprintf("Error building plugin from git source %s: %s", def.GitURL, err.Error())
-				} else {
-					out.Msg <- "Installed plugin: " + info.Package
-				}
-			}
+	err = InstallPluginPath(def.LocalPath, InstallOpts{RemoveSrc: false})
+	if err != nil {
+		return sdkplugin.PluginInfo{}, err
+	}
 
-			// if def.Src == config.PluginSrcStore {
-			// 	log.Printf("TODO: build from store")
-			// }
+	if err := MarkPluginAsInstalled(def, GetInstallPath(info)); err != nil {
+		return sdkplugin.PluginInfo{}, err
+	}
 
-			if def.Src == PluginSrcSystem || def.Src == PluginSrcLocal {
-				info, err := BuildFromLocal(out, def)
-				if err != nil {
-					out.Msg <- fmt.Sprintf("Error buidling plugin from local path %s: %s", def.LocalPath, err.Error())
-				} else {
-					out.Msg <- "Installed plugin: " + info.Package
-				}
-			}
-
-		}
-
-		out.Done <- nil
-	}()
-
-	return out
+	return info, nil
 }
 
-func installPlugin(src string, info sdkplugin.PluginInfo, opts InstallOpts) error {
+func InstallGitSrc(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, error) {
+	rnd := sdkstr.Rand(16)
+	diskfile := filepath.Join(sdkpaths.TmpDir, "plugin-clone", "disk", rnd)
+	mountpath := filepath.Join(sdkpaths.TmpDir, "plugin-clone", "mount", rnd)
+	clonePath := filepath.Join(mountpath, "clone")
+	dev := sdkstr.Slugify(rnd, "_")
+	mnt := encdisk.NewEncrypedDisk(diskfile, mountpath, dev)
+	if err := mnt.Mount(); err != nil {
+		return sdkplugin.PluginInfo{}, err
+	}
+
+	w.Write([]byte("Cloning plugin from git: " + def.GitURL))
+	repo := git.RepoSource{URL: def.GitURL, Ref: def.GitRef}
+
+	if err := git.Clone(w, repo, clonePath); err != nil {
+		return sdkplugin.PluginInfo{}, err
+	}
+
+	info, err := PluginInfo(clonePath)
+	if err != nil {
+		return sdkplugin.PluginInfo{}, err
+	}
+
+	if err := InstallPluginPath(clonePath, InstallOpts{RemoveSrc: false}); err != nil {
+		os.RemoveAll(clonePath)
+		return sdkplugin.PluginInfo{}, err
+	}
+
+	if err := mnt.Unmount(); err != nil {
+		return sdkplugin.PluginInfo{}, err
+	}
+
+	if err := MarkPluginAsInstalled(def, GetInstallPath(info)); err != nil {
+		return sdkplugin.PluginInfo{}, err
+	}
+
+	return info, nil
+}
+
+func InstallPluginPath(src string, opts InstallOpts) error {
+	info, err := PluginInfo(src)
+	if err != nil {
+		return err
+	}
+
 	dev := sdkstr.Slugify(info.Package, "_")
 	parentpath := RandomPluginPath()
 	diskfile := filepath.Join(parentpath, "plugin-clone", "disk", dev)
 	mountpath := filepath.Join(parentpath, "plugin-build", "mount", dev)
-	mnt := encdisk.NewEncrypedDisk(parentpath, diskfile, mountpath, dev)
+	buildpath := filepath.Join(mountpath, "build")
+	mnt := encdisk.NewEncrypedDisk(diskfile, mountpath, dev)
 
 	// TODO: remove logs
 	log.Println("\n\n---\nMounting..")
@@ -81,23 +134,21 @@ func installPlugin(src string, info sdkplugin.PluginInfo, opts InstallOpts) erro
 
 	// TODO: remove logs
 	log.Println("\n\n---\nBuilding plugin..")
-	if err := BuildPlugin(src, mountpath); err != nil {
+	if err := BuildPlugin(src, buildpath); err != nil {
 		return err
 	}
 
-	installPath := PluginInstallPath(info)
-	// TODO: remove logs
-	log.Println("\n\n---\nCopying files..")
-	for _, file := range PLUGIN_FILES {
-		// TODO: remove logs
-		log.Println("\n\n---\nCopying file..")
-		if err := sdkfs.Copy(filepath.Join(src, file), filepath.Join(installPath, file)); err != nil {
+	installPath := GetInstallPath(info)
+	for _, f := range PLuginFiles {
+		if err := sdkfs.Copy(filepath.Join(src, f.File), filepath.Join(installPath, f.File)); err != nil && !f.Optional {
 			return err
 		}
 	}
 
 	if opts.RemoveSrc {
-		os.RemoveAll(src)
+		if err := os.RemoveAll(src); err != nil {
+			return err
+		}
 	}
 
 	// TODO: remove logs

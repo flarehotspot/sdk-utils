@@ -7,19 +7,17 @@ import (
 )
 
 type EncryptedDisk struct {
-	mountpath  string
-	parentpath string
-	file       string
-	name       string
-	pass       string
+	mountpath string
+	file      string
+	name      string
+	pass      string
 }
 
-func NewEncrypedDisk(parentpath string, file string, mountpath string, name string) *EncryptedDisk {
+func NewEncrypedDisk(file string, mountpath string, name string) *EncryptedDisk {
 	return &EncryptedDisk{
-		mountpath:  mountpath,
-		parentpath: parentpath,
-		file:       file,
-		name:       name,
-		pass:       sdkstr.Rand(16),
+		mountpath: mountpath,
+		file:      file,
+		name:      name,
+		pass:      sdkstr.Rand(16),
 	}
 }

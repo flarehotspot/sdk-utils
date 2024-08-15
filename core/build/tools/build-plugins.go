@@ -28,8 +28,8 @@ func BuildLocalPlugins() error {
 			return err
 		}
 
-		for _, f := range pkg.PLUGIN_FILES {
-			if err := sdkfs.Copy(filepath.Join(pluginPath, f), filepath.Join(pluginInstallDir, f)); err != nil {
+		for _, f := range pkg.PLuginFiles {
+			if err := sdkfs.Copy(filepath.Join(pluginPath, f.File), filepath.Join(pluginInstallDir, f.File)); err != nil && !f.Optional {
 				return err
 			}
 		}

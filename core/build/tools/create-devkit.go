@@ -35,7 +35,7 @@ var (
 )
 
 func init() {
-	goversion := sdkruntime.GOVERSION
+	goversion := sdkruntime.GO_VERSION
 	tags := sdkstr.Slugify(env.BuildTags, "-")
 	devkitReleaseDir = filepath.Join(sdkpaths.AppDir, "output/devkit", fmt.Sprintf("devkit-%s-%s-go%s-%s", pkg.CoreInfo().Version, runtime.GOARCH, goversion, tags))
 }

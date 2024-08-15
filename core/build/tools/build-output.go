@@ -68,7 +68,7 @@ func (b *BuildOutput) Run() error {
 	}
 
 	md := metajson{
-		GoVersion: sdkruntime.GOVERSION,
+		GoVersion: sdkruntime.GO_VERSION,
 		GoArch:    sdkruntime.GOARCH,
 		OutputDir: b.outputPath(),
 		OutputZip: b.targzFilePath(),

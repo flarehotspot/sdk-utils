@@ -1,20 +1,36 @@
 package config
 
-const pluginsJsnFile = "plugins.json"
+import jobque "core/internal/utils/job-que"
+
+const pluginsJsonFile = "plugins.json"
+
+var q = jobque.NewJobQue()
 
 type PluginsConfig struct {
 	Recompile []string `json:"recompile"`
 }
 
-func ReadPluginsConfig() (*PluginsConfig, error) {
-	var cfg PluginsConfig
-	err := readConfigFile(pluginsJsnFile, &cfg)
+func ReadPluginsConfig() (PluginsConfig, error) {
+	cfg, err := q.Exec(func() (interface{}, error) {
+		var cfg PluginsConfig
+		err := readConfigFile(pluginsJsonFile, &cfg)
+		if err != nil {
+			return PluginsConfig{}, err
+		}
+		return cfg, nil
+	})
+
 	if err != nil {
-		return nil, err
+		return PluginsConfig{}, err
 	}
-	return &cfg, nil
+
+	return cfg.(PluginsConfig), nil
 }
 
 func WritePluginsConfig(cfg PluginsConfig) error {
-	return writeConfigFile(pluginsJsnFile, cfg)
+	_, err := q.Exec(func() (interface{}, error) {
+		return nil, writeConfigFile(pluginsJsonFile, cfg)
+	})
+
+	return err
 }

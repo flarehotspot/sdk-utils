@@ -7,7 +7,7 @@
   "description": "Flare Hotspot SDK",
   "devDependencies": {
     "eslint": "^9.0.0",
-    "typescript": "^5.3.3"
+    "typescript": "^5.5.4"
   },
   "keywords": [
     "flarehotspot",

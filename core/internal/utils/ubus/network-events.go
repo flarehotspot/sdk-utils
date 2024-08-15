@@ -8,7 +8,7 @@ import (
 	jobque "core/internal/utils/job-que"
 )
 
-var jobQue *jobque.JobQues = jobque.NewJobQues()
+var jobQue *jobque.JobQue = jobque.NewJobQue()
 var interfaceListeners map[string][]chan InterfaceEvent
 
 func init() {

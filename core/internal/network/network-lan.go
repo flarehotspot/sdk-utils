@@ -14,7 +14,7 @@ import (
 
 type NetworkLan struct {
 	mu          sync.RWMutex
-	que         *jobque.JobQues
+	que         *jobque.JobQue
 	name        string
 	up          bool
 	tcClassMgr  *tc.TcClassMgr
@@ -25,7 +25,7 @@ func NewNetworkLan(ifname string) *NetworkLan {
 	return &NetworkLan{
 		name: ifname,
 		up:   true,
-		que:  jobque.NewJobQues(),
+		que:  jobque.NewJobQue(),
 	}
 }
 

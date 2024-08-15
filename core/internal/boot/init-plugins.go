@@ -3,28 +3,66 @@
 package boot
 
 import (
+	"fmt"
 	"log"
+	"time"
 
 	"core/internal/plugins"
 	"core/internal/utils/pkg"
 )
 
+type InstallStatus struct {
+	bp *plugins.BootProgress
+}
+
+func (is *InstallStatus) Write(p []byte) (n int, err error) {
+	status := string(p)
+	is.bp.AppendLog(status)
+	return len(p), nil
+}
+
 func InitPlugins(g *plugins.CoreGlobals) {
 	bp := g.BootProgress
-	install := pkg.InstallPlugins()
-	done := false
+	inst := &InstallStatus{bp: bp}
 
-	for !done {
-		select {
-		case msg := <-install.Msg:
-			bp.AppendLog(msg)
-		case err := <-install.Done:
-			if err != nil {
-				bp.Done(err)
-				return
-			}
-			done = true
+	for _, def := range pkg.AllPluginDef() {
+		recompile := pkg.NeedsRecompile(def)
+
+		// Skip when plugin is already installed and no recompilation is needed
+		if !recompile {
+			bp.AppendLog("Plugin is already installed: " + def.String())
+			continue
 		}
+
+		// TODO: might be good to move this to pkg util
+		switch def.Src {
+		case pkg.PluginSrcLocal, pkg.PluginSrcSystem:
+			info, err := pkg.InstallLocalPlugin(inst, def)
+			if err != nil {
+				bp.AppendLog(fmt.Sprintf("Error buidling plugin from local path %s: %s", def.LocalPath, err.Error()))
+			} else {
+				bp.AppendLog("Successfully installed plugin: " + info.Package)
+			}
+
+		default:
+			log.Println("Unknown plugin source:", def.Src)
+		}
+
+		// if def.Src == pkg.PluginSrcGit {
+		// 	info, err := pkg.BuildFromGit(inst, def)
+		// 	if err != nil {
+		// 		log.Println("buildFromGit error:", err)
+		// 		msg = fmt.Sprintf("Error building plugin from git source %s: %s", def.GitURL, err.Error())
+		// 	} else {
+		// 		msg = "Installed plugin: " + info.Package
+		// 	}
+		// }
+
+		// if def.Src == config.PluginSrcStore {
+		// 	log.Printf("TODO: build from store")
+		// }
+
+		time.Sleep(1000 * 3 * time.Millisecond)
 	}
 
 	pluginDirs := pkg.InstalledDirList()

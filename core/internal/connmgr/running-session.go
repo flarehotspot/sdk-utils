@@ -12,10 +12,10 @@ import (
 	"core/internal/utils/tc"
 	connmgr "sdk/api/connmgr"
 	sdkconnmgr "sdk/api/connmgr"
-	"sdk/api/network"
+	sdknet "sdk/api/network"
 )
 
-var sessionQ *jobque.JobQues = jobque.NewJobQues()
+var sessionQ *jobque.JobQue = jobque.NewJobQue()
 
 func NewRunningSession(clnt sdkconnmgr.ClientDevice, s connmgr.ClientSession) (*RunningSession, error) {
 	lan, err := network.FindByIp(clnt.IpAddr())
