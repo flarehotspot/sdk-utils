@@ -6,9 +6,21 @@ import (
 	"core/internal/utils/cmd"
 	"fmt"
 	"os"
+	"path/filepath"
+	sdkfs "sdk/utils/fs"
 )
 
 func (d *EncryptedDisk) Mount() error {
+	if err := sdkfs.EmptyDir(filepath.Dir(d.file)); err != nil {
+		return err
+	}
+
+	if !sdkfs.Exists(d.file) {
+		if err := cmd.Exec(fmt.Sprintf("dd if=/dev/zero of=%s bs=1M count=50", d.file), nil); err != nil {
+			return err
+		}
+	}
+
 	if err := cmd.Exec(fmt.Sprintf(`echo -n "%s" | cryptsetup luksFormat %s -`, d.pass, d.file), nil); err != nil {
 		return err
 	}
