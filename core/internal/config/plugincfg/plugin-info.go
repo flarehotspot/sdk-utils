@@ -6,8 +6,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"encoding/json"
 	sdkplugin "sdk/api/plugin"
+	"sdk/libs/go-json"
 	fs "sdk/utils/fs"
 	paths "sdk/utils/paths"
 )

@@ -1,7 +1,7 @@
 package events
 
 import (
-	"encoding/json"
+	"sdk/libs/go-json"
 	"sync"
 )
 

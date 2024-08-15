@@ -1,7 +1,7 @@
 package ubus
 
 import (
-	"encoding/json"
+	"sdk/libs/go-json"
 	"strings"
 
 	"core/internal/utils/cmd"

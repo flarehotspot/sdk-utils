@@ -2,16 +2,16 @@ package middlewares
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"net/http"
+	"sdk/libs/go-json"
 	"strings"
 
 	"core/internal/accounts"
 	"core/internal/config"
-	"sdk/api/http"
-	"sdk/libs/jwt"
 	"core/internal/utils/jsonwebtoken"
+	sdkhttp "sdk/api/http"
+	"sdk/libs/jwt"
 )
 
 const (

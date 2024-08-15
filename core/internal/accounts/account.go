@@ -4,7 +4,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"encoding/json"
+	"sdk/libs/go-json"
 
 	"core/internal/utils/events"
 	sse "core/internal/utils/sse"

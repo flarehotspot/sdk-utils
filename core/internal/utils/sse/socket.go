@@ -7,11 +7,12 @@
 package sse
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
 	"net/http"
+	"sdk/libs/go-json"
+
 	// "time"
 
 	sdkstr "sdk/utils/strings"

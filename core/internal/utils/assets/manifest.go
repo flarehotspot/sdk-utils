@@ -1,12 +1,12 @@
 package assets
 
 import (
-	"encoding/json"
-	fs "sdk/utils/fs"
-	paths "sdk/utils/paths"
 	"log"
 	"os"
 	"path/filepath"
+	"sdk/libs/go-json"
+	fs "sdk/utils/fs"
+	paths "sdk/utils/paths"
 )
 
 var manifestDir = filepath.Join(paths.CacheDir, "assets/manifest")

@@ -3,9 +3,9 @@ package ubus
 import (
 	"bufio"
 	"bytes"
-	"encoding/json"
 	"errors"
 	"log"
+	"sdk/libs/go-json"
 	"strings"
 
 	"core/internal/utils/cmd"

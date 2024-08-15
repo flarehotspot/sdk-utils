@@ -1,11 +1,11 @@
 package tools
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
+	"sdk/libs/go-json"
 	sdkfs "sdk/utils/fs"
 	sdkpaths "sdk/utils/paths"
 	sdkruntime "sdk/utils/runtime"

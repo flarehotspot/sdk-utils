@@ -2,8 +2,8 @@ package nftables
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
+	"sdk/libs/go-json"
 
 	"core/internal/utils/cmd"
 )

@@ -1,8 +1,8 @@
 package response
 
 import (
-	"encoding/json"
 	"net/http"
+	"sdk/libs/go-json"
 )
 
 func ErrorJson(w http.ResponseWriter, err string, status int) {

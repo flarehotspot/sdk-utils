@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"sync"
 
-	"encoding/json"
+	"sdk/libs/go-json"
 
 	accounts "sdk/api/accounts"
 	fs "sdk/utils/fs"

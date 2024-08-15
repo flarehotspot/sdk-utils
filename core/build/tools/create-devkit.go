@@ -1,11 +1,11 @@
 package tools
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
 	"runtime"
+	"sdk/libs/go-json"
 
 	"core/env"
 	"core/internal/utils/pkg"

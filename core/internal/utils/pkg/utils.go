@@ -3,11 +3,11 @@ package pkg
 import (
 	"core/internal/config"
 	jobque "core/internal/utils/job-que"
-	"encoding/json"
 	"log"
 	"math/rand"
 	"os"
 	"path/filepath"
+	"sdk/libs/go-json"
 
 	sdkplugin "sdk/api/plugin"
 	fs "sdk/utils/fs"

@@ -4,9 +4,9 @@ package ubus
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"log"
+	"sdk/libs/go-json"
 
 	"core/internal/utils/cmd"
 )

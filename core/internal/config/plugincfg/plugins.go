@@ -1,7 +1,7 @@
 package plugincfg
 
 // import (
-// 	"encoding/json"
+// 	"sdk/libs/go-json"
 // 	paths "sdk/utils/paths"
 // 	"log"
 // 	"os"

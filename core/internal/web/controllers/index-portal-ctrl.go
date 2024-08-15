@@ -1,9 +1,9 @@
 package controllers
 
 import (
-	"encoding/json"
 	"net/http"
 	"path/filepath"
+	"sdk/libs/go-json"
 
 	"core/internal/config"
 	"core/internal/plugins"

@@ -3,9 +3,9 @@ package adminctrl
 import (
 	"core/internal/plugins"
 	"core/internal/utils/pkg"
-	"encoding/json"
 	"net/http"
 	sdkplugin "sdk/api/plugin"
+	"sdk/libs/go-json"
 	"strings"
 )
 

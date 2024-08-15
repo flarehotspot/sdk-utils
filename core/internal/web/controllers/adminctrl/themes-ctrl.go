@@ -1,8 +1,8 @@
 package adminctrl
 
 import (
-	"encoding/json"
 	"net/http"
+	"sdk/libs/go-json"
 
 	"core/internal/config"
 	"core/internal/plugins"
