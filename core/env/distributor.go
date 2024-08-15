@@ -10,7 +10,7 @@ import (
 
 func GetDistributorCode() (string, error) {
 	var p string
-	if GoEnv != ENV_PRODUCTION {
+	if GO_ENV != ENV_PRODUCTION {
 		p = filepath.Join(paths.AppDir, ".files", "distributor")
 	} else {
 		p = "/etc/distributor"

@@ -29,7 +29,7 @@ func main() {
 
 	switch command {
 	case "env":
-		fmt.Println(GoEnvToString(env.GoEnv))
+		fmt.Println(GoEnvToString(env.GO_ENV))
 		return
 
 	case "server":

@@ -7,9 +7,9 @@ import (
 )
 
 func Print() {
-  log.Println(lineComment)
-	log.Println("Base API: ", BaseURL)
+	log.Println(lineComment)
+	log.Println("Base API: ", BASE_URL)
 	log.Println("Mode: ", "Development")
-	log.Println("Http Port: ", HttpPort)
-  log.Println(lineComment)
+	log.Println("Http Port: ", HTTP_PORT)
+	log.Println(lineComment)
 }

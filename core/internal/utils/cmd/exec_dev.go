@@ -11,18 +11,21 @@ import (
 )
 
 var (
-	packetsCounter = 0
-	bytesCounter   = 0
+	packetsCounter  = 0
+	bytesCounter    = 0
+	ignoreCmdsStart = []string{
+		"modprobe",
+		"ip",
+		"tc",
+	}
 )
 
 func Exec(command string, opts *ExecOpts) error {
 	log.Println("Executing:", command)
-	if strings.HasPrefix(command, "modprobe") {
-		return nil
-	}
-
-	if strings.HasPrefix(command, "ip") {
-		return nil
+	for _, ignoreCmd := range ignoreCmdsStart {
+		if strings.HasPrefix(command, ignoreCmd) {
+			return nil
+		}
 	}
 
 	return execShell(command, opts)
