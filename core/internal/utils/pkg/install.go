@@ -77,9 +77,10 @@ func InstallLocalPlugin(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, er
 func InstallGitSrc(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, error) {
 	rnd := sdkstr.Rand(16)
 	diskfile := filepath.Join(sdkpaths.TmpDir, "plugin-clone", "disk", rnd)
-	clonePath := filepath.Join(sdkpaths.TmpDir, "plugin-clone", "mount", rnd)
+	mountpath := filepath.Join(sdkpaths.TmpDir, "plugin-clone", "mount", rnd)
+	clonePath := filepath.Join(mountpath, "clone")
 	dev := sdkstr.Slugify(rnd, "_")
-	mnt := encdisk.NewEncrypedDisk(clonePath, diskfile, dev)
+	mnt := encdisk.NewEncrypedDisk(diskfile, mountpath, dev)
 	if err := mnt.Mount(); err != nil {
 		log.Println("Error mounting disk: ", err)
 		return sdkplugin.PluginInfo{}, err
@@ -119,16 +120,20 @@ func InstallPluginPath(src string, opts InstallOpts) error {
 		return err
 	}
 
-	diskfile := filepath.Join(sdkpaths.TmpDir, "plugin-build", "disk", info.Package)
-	mountPath := filepath.Join(sdkpaths.TmpDir, "plugin-build", "mount", info.Package)
 	dev := sdkstr.Slugify(info.Package, "_")
-	mnt := encdisk.NewEncrypedDisk(mountPath, diskfile, dev)
+	parentpath := RandomPluginPath()
+	diskfile := filepath.Join(parentpath, "plugin-clone", "disk", dev)
+	mountpath := filepath.Join(parentpath, "plugin-build", "mount", dev)
+	buildpath := filepath.Join(mountpath, "build")
+	mnt := encdisk.NewEncrypedDisk(diskfile, mountpath, dev)
+
+	// TODO: remove logs
+	log.Println("\n\n---\nMounting..")
 	if err := mnt.Mount(); err != nil {
 		return err
 	}
 
-	buildPath := filepath.Join(mountPath, "build")
-	if err := BuildPlugin(src, buildPath); err != nil {
+	if err := BuildPlugin(src, buildpath); err != nil {
 		return err
 	}
 
@@ -145,5 +150,7 @@ func InstallPluginPath(src string, opts InstallOpts) error {
 		}
 	}
 
+	// TODO: remove logs
+	log.Println("\n\n---\nUnmounting..")
 	return mnt.Unmount()
 }

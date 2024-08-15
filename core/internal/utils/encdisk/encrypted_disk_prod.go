@@ -15,6 +15,10 @@ func (d *EncryptedDisk) Mount() error {
 		return err
 	}
 
+	if err := sdkfs.EmptyDir(d.mountpath); err != nil {
+		return err
+	}
+
 	if !sdkfs.Exists(d.file) {
 		if err := cmd.Exec(fmt.Sprintf("dd if=/dev/zero of=%s bs=1M count=50", d.file), nil); err != nil {
 			return err
@@ -51,5 +55,10 @@ func (d *EncryptedDisk) Unmount() error {
 	if err := cmd.Exec(fmt.Sprintf("cryptsetup luksClose %s", d.name), nil); err != nil {
 		return err
 	}
+
+	if err := os.RemoveAll(d.mountpath); err != nil {
+		return err
+	}
+
 	return nil
 }
