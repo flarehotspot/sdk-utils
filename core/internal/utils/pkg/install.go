@@ -14,6 +14,34 @@ import (
 	sdkstr "sdk/utils/strings"
 )
 
+type PluginFile struct {
+	File     string
+	Optional bool
+}
+
+var PLuginFiles = []PluginFile{
+	{
+		File:     "plugin.json",
+		Optional: false,
+	},
+	{
+		File:     "plugin.so",
+		Optional: false,
+	},
+	{
+		File:     "resources",
+		Optional: true,
+	},
+	{
+		File:     "go.mod",
+		Optional: false,
+	},
+	{
+		File:     "LICENSE.txt",
+		Optional: true,
+	},
+}
+
 func InstallSrcDef(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, error) {
 	switch def.Src {
 	case PluginSrcGit:
@@ -68,6 +96,7 @@ func InstallGitSrc(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, error) 
 	}
 
 	if err := InstallPluginPath(clonePath, InstallOpts{RemoveSrc: false}); err != nil {
+		os.RemoveAll(clonePath)
 		return sdkplugin.PluginInfo{}, err
 	}
 
@@ -101,8 +130,8 @@ func InstallPluginPath(src string, opts InstallOpts) error {
 	}
 
 	installPath := GetInstallPath(info)
-	for _, file := range PLuginFiles {
-		if err := sdkfs.Copy(filepath.Join(src, file), filepath.Join(installPath, file)); err != nil {
+	for _, f := range PLuginFiles {
+		if err := sdkfs.Copy(filepath.Join(src, f.File), filepath.Join(installPath, f.File)); err != nil && !f.Optional {
 			return err
 		}
 	}

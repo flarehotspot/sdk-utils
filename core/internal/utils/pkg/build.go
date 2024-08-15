@@ -60,7 +60,7 @@ use (
     ./sdk
     ./plugins/%s
 )
-    `, sdkruntime.GO_SHORT_VERSION, info.Package)
+    `, sdkruntime.GO_VERSION, info.Package)
 
 	goworkFile := filepath.Join(workdir, "go.work")
 	if err := os.WriteFile(goworkFile, []byte(goWork), sdkfs.PermFile); err != nil {

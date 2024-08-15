@@ -26,13 +26,6 @@ const (
 var (
 	markQue              = jobque.NewJobQue()
 	installedPluginsJson = filepath.Join(sdkpaths.CacheDir, "installed_plugins.json")
-	PLuginFiles          = []string{
-		"plugin.json",
-		"plugin.so",
-		"resources",
-		"go.mod",
-		"LICENSE.txt",
-	}
 )
 
 type PluginSrc string

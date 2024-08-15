@@ -27,7 +27,7 @@ func InstallGo(installPath string) {
 
 	GOOS := sdkruntime.GOOS
 	GOARCH := sdkruntime.GOARCH
-	GOVERSION := sdkruntime.GOVERSION
+	GOVERSION := sdkruntime.GO_VERSION
 
 	if GoInstallExists(installPath) {
 		fmt.Printf("Go version %s already installed to %s\n", GOVERSION, installPath)
@@ -78,7 +78,7 @@ func GoInstallExists(installPath string) bool {
 
 	GOOS := sdkruntime.GOOS
 	GOARCH := sdkruntime.GOARCH
-	GOVERSION := sdkruntime.GOVERSION
+	GOVERSION := sdkruntime.GO_VERSION
 
 	goos := sdkstr.TrimChars(envValues["GOOS"], "\"", "'")
 	goarch := sdkstr.TrimChars(envValues["GOARCH"], "\"", "'")

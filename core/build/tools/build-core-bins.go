@@ -14,7 +14,7 @@ func BuildCoreBins() {
 	BuildFlareCLI()
 	BuildCore()
 
-	goversion := sdkruntime.GOVERSION
+	goversion := sdkruntime.GO_VERSION
 	tags := sdkstr.Slugify(env.BuildTags, "-")
 
 	build := &BuildOutput{

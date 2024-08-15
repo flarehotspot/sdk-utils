@@ -4,7 +4,6 @@ import (
 	"core/internal/plugins"
 	"core/internal/utils/pkg"
 	"encoding/json"
-	"log"
 	"net/http"
 	sdkplugin "sdk/api/plugin"
 	"strings"
@@ -60,16 +59,6 @@ func PluginsInstallCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 			return
 		}
 
-		log.Println("Info: ", info)
-
-		b, err := json.Marshal(nil)
-		if err != nil {
-			res.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		w.Write(b)
-
-		// res.Json(w, info, http.StatusOK)
+		res.Json(w, info, http.StatusOK)
 	}
 }
