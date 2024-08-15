@@ -33,7 +33,9 @@ func (self *VueResponse) SendFlashMsg(w http.ResponseWriter, msgType string, msg
 }
 
 func (self *VueResponse) Json(w http.ResponseWriter, data any, status int) {
-	self.data.Response.Data = data
+	if data != nil {
+		self.data.Response.Data = data
+	}
 	response.Json(w, self.data, status)
 }
 
@@ -44,6 +46,7 @@ func (self *VueResponse) Redirect(w http.ResponseWriter, routename string, pairs
 		return
 	}
 
+	// convert pairs to vue route params
 	paramKeys := []string{}
 	pathsegs := strings.Split(route.VueRoutePath.GetTemplate(), "/")
 	for _, seg := range pathsegs {

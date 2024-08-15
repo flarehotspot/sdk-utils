@@ -17,7 +17,7 @@ const (
 var (
 	usedClassIds []TcClassId
 	tmpClassIds  []TcClassId
-	q            *jobque.JobQues = jobque.NewJobQues()
+	q            *jobque.JobQue = jobque.NewJobQue()
 )
 
 type TcClassId uint

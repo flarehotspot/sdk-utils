@@ -28,9 +28,6 @@ func CopyFile(srcFile, dstFile string) error {
 	}
 
 	defer in.Close()
-	if err != nil {
-		return err
-	}
 
 	_, err = io.Copy(out, in)
 	if err != nil {

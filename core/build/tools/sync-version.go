@@ -1,9 +1,13 @@
 package tools
 
-import sdkfs "sdk/utils/fs"
+import (
+	"core/internal/utils/pkg"
+	"fmt"
+	sdkfs "sdk/utils/fs"
+)
 
 func SyncVersion() {
-	version := CoreInfo().Version
+	version := pkg.CoreInfo().Version
 	packageJson := "package.json"
 	var pkg map[string]interface{}
 	err := sdkfs.ReadJson(packageJson, &pkg)
@@ -15,4 +19,6 @@ func SyncVersion() {
 	if err != nil {
 		panic(err)
 	}
+
+	fmt.Println("Updated package.json version to", version)
 }

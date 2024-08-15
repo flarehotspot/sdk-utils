@@ -1,0 +1,4 @@
+.DS_Store
+node_modules/
+*.so
+main_mono.go

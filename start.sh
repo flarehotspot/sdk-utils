@@ -1,10 +1,11 @@
-#!/bin/env bash
+#!/usr/bin/env bash
 
-BUILD_TAGS="dev mono"
-CREATE_MONO="./core/cmd/make-mono/main.go"
-DEBUG_SERVER="./core/cmd/debug-server/main.go"
+GO="./go/bin/go"
+BUILD_TAGS="dev"
+BUILD_CORE="./core/cmd/build-core/main.go"
+BUILD_CLI="./core/cmd/build-cli/main.go"
+FLARE_BIN="./bin/flare"
 
-go run -tags="${BUILD_TAGS}" $CREATE_MONO && \
-    go run -tags="${BUILD_TAGS}" $DEBUG_SERVER
-
-
+$GO run -tags="${BUILD_TAGS}" $BUILD_CORE && \
+    $GO run -tags="${BUILD_TAGS}" $BUILD_CLI && \
+    sh -c "$FLARE_BIN server"

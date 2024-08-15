@@ -5,7 +5,9 @@ server-dev:
 	./run-dev.sh
 
 openwrt:
-	go build -tags="mono staging" -o ./bin/debug-server ./main/main.go
+	go run ./core/cmd/build-cli/main.go && \
+	go run ./core/cmd/build-core/main.go && \
+	./bin/flare server
 
 docs-build:
 	cd sdk/mkdocs && mkdocs build

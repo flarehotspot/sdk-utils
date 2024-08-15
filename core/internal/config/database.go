@@ -17,7 +17,7 @@ type DbConfig struct {
 	SslMode  string `json:"sslmode"`
 }
 
-func (cfg *DbConfig) UrlString() string {
+func (cfg *DbConfig) DbUrlString() string {
 	return fmt.Sprintf("%s%s?parseTime=true", cfg.BaseConnStr(), cfg.Database)
 }
 

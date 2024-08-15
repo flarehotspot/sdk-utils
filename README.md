@@ -80,7 +80,7 @@ Make sure `pipx` is available in your system and install the following packages:
 pipx install mkdocs-material --include-deps
 ```
 
-Then you can serve the local documentaion server:
+Then you can serve the local documentation server:
 
 ```sh
 cd flarehotspot

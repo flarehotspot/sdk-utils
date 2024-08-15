@@ -60,7 +60,7 @@ func (self *TcClassMgr) Setup() error {
 		}
 
 		for _, c := range calls {
-			err := cmd.Exec(c)
+			err := cmd.Exec(c, nil)
 			if err != nil {
 				return nil, err
 			}
@@ -178,12 +178,12 @@ func (self *TcClassMgr) tcAddOrChange(action tcAction, parent TcClassId, klass *
 	classid := klass.ClassId.String()
 	parentid := parent.String()
 
-	if err = cmd.Exec(fmt.Sprintf(`tc class %s dev %s parent %s classid %s hfsc ls rate %dkbit ul rate %dkbit`, action, self.dev, parentid, classid, klass.MinDown, klass.CeilDown)); err != nil {
+	if err = cmd.Exec(fmt.Sprintf(`tc class %s dev %s parent %s classid %s hfsc ls rate %dkbit ul rate %dkbit`, action, self.dev, parentid, classid, klass.MinDown, klass.CeilDown), nil); err != nil {
 		return err
 	}
 
 	if ifbutil.IsIfbSupported() {
-		if err = cmd.Exec(fmt.Sprintf(`tc class %s dev %s parent %s classid %s hfsc ls rate %dkbit ul rate %dkbit`, action, ifb, parentid, classid, klass.MinUp, klass.CeilUp)); err != nil {
+		if err = cmd.Exec(fmt.Sprintf(`tc class %s dev %s parent %s classid %s hfsc ls rate %dkbit ul rate %dkbit`, action, ifb, parentid, classid, klass.MinUp, klass.CeilUp), nil); err != nil {
 			return err
 		}
 	}
@@ -195,12 +195,12 @@ func (self *TcClassMgr) tcDel(klass *TcClass) error {
 	classid := klass.ClassId.String()
 	ifb := ifbName(self.dev)
 
-	if err := cmd.Exec(fmt.Sprintf("tc class del dev %s classid %s", self.dev, classid)); err != nil {
+	if err := cmd.Exec(fmt.Sprintf("tc class del dev %s classid %s", self.dev, classid), nil); err != nil {
 		return err
 	}
 
 	if ifbutil.IsIfbSupported() {
-		if err := cmd.Exec(fmt.Sprintf("tc class del dev %s classid %s", ifb, classid)); err != nil {
+		if err := cmd.Exec(fmt.Sprintf("tc class del dev %s classid %s", ifb, classid), nil); err != nil {
 			return err
 		}
 	}
@@ -236,10 +236,10 @@ func (self *TcClassMgr) CleanUp() error {
 	dev := self.dev
 	ifb := ifbName(dev)
 
-	cmd.Exec(fmt.Sprintf("tc qdisc del dev %s root", dev))
-	cmd.Exec(fmt.Sprintf("tc qdisc del dev %s ingress", dev))
-	cmd.Exec(fmt.Sprintf("tc qdisc del dev %s root", ifb)) // this migt not be necessary since we're deleting the interface
-	cmd.Exec(fmt.Sprintf("ip link delete %s", ifb))
+	cmd.Exec(fmt.Sprintf("tc qdisc del dev %s root", dev), nil)
+	cmd.Exec(fmt.Sprintf("tc qdisc del dev %s ingress", dev), nil)
+	cmd.Exec(fmt.Sprintf("tc qdisc del dev %s root", ifb), nil) // this migt not be necessary since we're deleting the interface
+	cmd.Exec(fmt.Sprintf("ip link delete %s", ifb), nil)
 
 	return nil
 }

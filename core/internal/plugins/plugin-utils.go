@@ -49,7 +49,9 @@ func (self *PluginUtils) Translate(msgtype string, msgk string, pairs ...interfa
 		log.Println("Error executing translation template "+f, err)
 		return msgk
 	}
-	return output.String()
+
+	s := output.String()
+	return strings.TrimSpace(s)
 }
 
 func (self *PluginUtils) Resource(path string) string {

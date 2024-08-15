@@ -11,7 +11,7 @@ import (
 	"path/filepath"
 )
 
-// LsDirs returns directories inside dir. Directory paths are prepended with dir
+// LsDirs returns directories inside dir. Directory paths are prepended with parent directory path.
 func LsDirs(path string, directories *[]string, recursive bool) error {
 	stat, err := os.Stat(path)
 	if err != nil {

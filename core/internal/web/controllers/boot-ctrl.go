@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"log"
 	"net/http"
 
 	"core/internal/plugins"
@@ -22,7 +23,8 @@ type BootCtrl struct {
 func (ctrl *BootCtrl) IndexPage(w http.ResponseWriter, r *http.Request) {
 	data := map[string]any{
 		"title":  "Booting",
-		"status": ctrl.bp.Status(),
+		"logs":   ctrl.bp.Logs(),
+		"sseUrl": urls.BOOT_STATUS_URL,
 		"done":   ctrl.bp.IsDone(),
 	}
 
@@ -43,7 +45,10 @@ func (ctrl *BootCtrl) Middleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		done := ctrl.bp.IsDone()
 
-		if r.Method == "GET" && !helpers.IsAssetPath(r.URL.Path) {
+		isAssetPath := helpers.IsAssetPath(r.URL.Path)
+		log.Printf("Is asset path: %s => %v", r.URL.Path, isAssetPath)
+
+		if r.Method == "GET" && !isAssetPath {
 			if !done && r.URL.Path != urls.BOOT_URL && r.URL.Path != urls.BOOT_STATUS_URL {
 				http.Redirect(w, r, urls.BOOT_URL, http.StatusSeeOther)
 				return

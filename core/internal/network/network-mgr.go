@@ -16,7 +16,7 @@ import (
 const defaultSpeed int = 100 //mbits download/upload per inteface
 
 var lanMap = sync.Map{}
-var netQue = jobque.NewJobQues()
+var netQue = jobque.NewJobQue()
 
 func addLan(lan *NetworkLan) {
 	lanMap.Store(lan.Name(), lan)

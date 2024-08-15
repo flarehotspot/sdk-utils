@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"log"
 	"net/http"
 
 	"core/internal/plugins"
@@ -17,6 +18,7 @@ func BootRoutes(g *plugins.CoreGlobals) {
 	r.HandleFunc(urls.BOOT_STATUS_URL, bootCtrl.SseHandler).Methods("GET")
 
 	r.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        log.Println("Location not found: ", r.URL.Path)
 		http.Redirect(w, r, urls.BOOT_URL, http.StatusFound)
 	})
 }

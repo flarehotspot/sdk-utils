@@ -1,87 +1,36 @@
 package config
 
-import (
-	"encoding/json"
-	"log"
-	"os"
-	"path/filepath"
+import jobque "core/internal/utils/job-que"
 
-	fs "sdk/utils/fs"
-	paths "sdk/utils/paths"
-)
+const pluginsJsonFile = "plugins.json"
 
-const (
-	PluginSrcGit          PluginSrc = "git"
-	PluginSrcStore        PluginSrc = "store"
-	pluginsConfigJsonFile string    = "plugins.json"
-)
+var q = jobque.NewJobQue()
 
-type PluginSrc string
-
-// A plugin can be from store or from a git repo.
-type PluginSrcDef struct {
-	Src          PluginSrc `json:"src"`           // git | strore
-	StorePackage string    `json:"store_pacakge"` // if src is "store"
-	StoreVersion string    `json:"store_version"` // if src is "store"
-	GitURL       string    `json:"git_url"`       // if src is "git"
-	GitRef       string    `json:"git_ref"`       // can be a branch, tag or commit hash
+type PluginsConfig struct {
+	Recompile []string `json:"recompile"`
 }
 
-type PluginList []*PluginSrcDef
+func ReadPluginsConfig() (PluginsConfig, error) {
+	cfg, err := q.Exec(func() (interface{}, error) {
+		var cfg PluginsConfig
+		err := readConfigFile(pluginsJsonFile, &cfg)
+		if err != nil {
+			return PluginsConfig{}, err
+		}
+		return cfg, nil
+	})
 
-// func PluginsDefaultList() (PluginList, error) {
-// 	var pluginList []string
-// 	if err := fs.LsDirs(paths.PluginsDir, &pluginList, false); err != nil {
-// 		panic(err)
-// 	}
-// 	log.Println("Plugin List: ")
-// 	for _, p := range pluginList {
-// 		log.Println("\t" + p)
-// 	}
-
-// 	return pluginList, nil
-// }
-
-func PluginsUserList() PluginList {
-	configFile := filepath.Join(paths.ConfigDir, pluginsConfigJsonFile)
-	bytes, err := os.ReadFile(configFile)
 	if err != nil {
-		return PluginList{}
+		return PluginsConfig{}, err
 	}
 
-	var userJson PluginList
-
-	err = json.Unmarshal(bytes, &userJson)
-	if err != nil {
-		return PluginList{}
-	}
-
-	return userJson
+	return cfg.(PluginsConfig), nil
 }
 
-func AllPluginSrc() PluginList {
-	// defaultPlugins, err := PluginsDefaultList()
-	// if err != nil {
-	// 	log.Println("Failed to load default plugins:", err)
-	// }
+func WritePluginsConfig(cfg PluginsConfig) error {
+	_, err := q.Exec(func() (interface{}, error) {
+		return nil, writeConfigFile(pluginsJsonFile, cfg)
+	})
 
-	userPlugins := PluginsUserList()
-	return userPlugins
-	// return append(defaultPlugins, userPlugins...)
-}
-
-// PluginDirList returns the list of installed plugins in the plugins directory.
-func PluginDirList() []string {
-	var pluginList []string
-
-	if err := fs.LsDirs(paths.PluginsDir, &pluginList, false); err != nil {
-		panic(err)
-	}
-
-	log.Println("Plugin List: ")
-	for _, p := range pluginList {
-		log.Println("\t" + p)
-	}
-
-	return pluginList
+	return err
 }

@@ -64,7 +64,7 @@ type LogLine struct {
 var (
 	LineCount   atomic.Int64
 	logFilePath = filepath.Join(sdkpaths.TmpDir, "logs", logFilename)
-	que         = jobque.NewJobQues()
+	que         = jobque.NewJobQue()
 )
 
 func init() {
