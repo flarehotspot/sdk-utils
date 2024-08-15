@@ -82,6 +82,7 @@ func InstallGitSrc(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, error) 
 	dev := sdkstr.Slugify(rnd, "_")
 	mnt := encdisk.NewEncrypedDisk(diskfile, mountpath, dev)
 	if err := mnt.Mount(); err != nil {
+		log.Println("Error mounting disk: ", err)
 		return sdkplugin.PluginInfo{}, err
 	}
 
@@ -132,8 +133,6 @@ func InstallPluginPath(src string, opts InstallOpts) error {
 		return err
 	}
 
-	// TODO: remove logs
-	log.Println("\n\n---\nBuilding plugin..")
 	if err := BuildPlugin(src, buildpath); err != nil {
 		return err
 	}
