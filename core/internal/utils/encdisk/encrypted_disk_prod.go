@@ -11,11 +11,11 @@ import (
 )
 
 func (d *EncryptedDisk) Mount() error {
-	if err := sdkfs.EmptyDir(filepath.Dir(d.file)); err != nil {
+	if err := os.MkdirAll(filepath.Dir(d.file), 0755); err != nil {
 		return err
 	}
 
-	if err := sdkfs.EmptyDir(d.mountpath); err != nil {
+	if err := os.MkdirAll(d.mountpath, 0755); err != nil {
 		return err
 	}
 
@@ -34,10 +34,6 @@ func (d *EncryptedDisk) Mount() error {
 	}
 
 	if err := cmd.Exec("mkfs.ext4 /dev/mapper/"+d.name, nil); err != nil {
-		return err
-	}
-
-	if err := os.MkdirAll(d.mountpath, 0755); err != nil {
 		return err
 	}
 
