@@ -14,8 +14,10 @@ import (
 
 // Makes sure the directory exists and is empty. Removes contents of the directory if it already exists.
 func EmptyDir(dirPath string) error {
-	if err := os.RemoveAll(dirPath); err != nil {
-		return err
+	if Exists(dirPath) {
+		if err := os.RemoveAll(dirPath); err != nil {
+			return err
+		}
 	}
 	return os.MkdirAll(dirPath, PermDir)
 }

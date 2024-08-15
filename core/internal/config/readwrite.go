@@ -1,9 +1,9 @@
 package config
 
 import (
-	"encoding/json"
 	"os"
 	"path/filepath"
+	"sdk/libs/go-json"
 
 	sdkpaths "sdk/utils/paths"
 )

@@ -26,30 +26,30 @@ func Init(g *plugins.CoreGlobals) {
 		InitStorage()
 
 		// delay boot
-		time.Sleep(1000 * 3 * time.Millisecond)
+		// time.Sleep(1000 * 3 * time.Millisecond)
 
 		bp.AppendLog("Running core migrations...")
 		RunCoreMigrations(g)
 
 		// delay boot
-		time.Sleep(1000 * 3 * time.Millisecond)
+		// time.Sleep(1000 * 3 * time.Millisecond)
 
 		bp.AppendLog("Initializing admin accounts...")
 		InitAccounts()
 
 		// delay boot
-		time.Sleep(1000 * 3 * time.Millisecond)
+		// time.Sleep(1000 * 3 * time.Millisecond)
 
 		bp.AppendLog("Setting up network interfaces...")
 		InitNetwork()
 
 		// delay boot
-		time.Sleep(1000 * 3 * time.Millisecond)
+		// time.Sleep(1000 * 3 * time.Millisecond)
 
 		s := fmt.Sprintf("Done booting in %v", time.Since(now))
 		bp.AppendLog(s)
 
-		time.Sleep(1000 * 1 * time.Millisecond)
+		// time.Sleep(1000 * 1 * time.Millisecond)
 		bp.Done(nil)
 
 		log.Println("Done booting in", time.Since(now))

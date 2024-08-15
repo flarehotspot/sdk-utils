@@ -5,7 +5,7 @@ import (
 	jobque "core/internal/utils/job-que"
 )
 
-var bundleQue = jobque.NewJobQues()
+var bundleQue = jobque.NewJobQue()
 
 func Bundle(files []string) (data CacheData, err error) {
 	result, err := bundleQue.Exec(func() (interface{}, error) {

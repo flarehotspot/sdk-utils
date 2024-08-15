@@ -1,100 +1,17 @@
 package pkg
 
 import (
+	"core/internal/utils/cmd"
 	"errors"
 	"fmt"
-	"io"
+	"log"
 	"os"
-	"os/exec"
 	"path/filepath"
-	"strings"
-
-	"core/internal/utils/encdisk"
-	"core/internal/utils/git"
 	sdkplugin "sdk/api/plugin"
 	sdkfs "sdk/utils/fs"
 	sdkpaths "sdk/utils/paths"
 	sdkruntime "sdk/utils/runtime"
-	sdkstr "sdk/utils/strings"
 )
-
-func BuildFromLocal(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, error) {
-	if ok, path := IsPluginInstalled(def); ok {
-		info, err := PluginInfo(path)
-		if err != nil {
-			return sdkplugin.PluginInfo{}, err
-		}
-		w.Write([]byte("Plugin already installed: " + info.Package))
-		return PluginInfo(path)
-	}
-
-	w.Write([]byte("Building plugin from local path: " + def.LocalPath))
-
-	info, err := PluginInfo(def.LocalPath)
-	if err != nil {
-		return sdkplugin.PluginInfo{}, err
-	}
-
-	err = installPlugin(def.LocalPath, info, InstallOpts{RemoveSrc: false})
-	if err != nil {
-		return sdkplugin.PluginInfo{}, err
-	}
-
-	if err := MarkPluginAsInstalled(def, PluginInstallPath(info)); err != nil {
-		return sdkplugin.PluginInfo{}, err
-	}
-
-	return info, nil
-}
-
-func BuildFromGit(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, error) {
-	ok, path := IsPluginInstalled(def)
-	info, err := PluginInfo(path)
-	if err != nil {
-		return sdkplugin.PluginInfo{}, err
-	}
-
-	if ok {
-		w.Write([]byte("Plugin already installed: " + info.Package))
-		return PluginInfo(path)
-	}
-
-	diskfile := filepath.Join(sdkpaths.TmpDir, "plugin-clone", "disk", info.Package)
-	clonePath := filepath.Join(sdkpaths.TmpDir, "plugin-clone", "mount", info.Package)
-	dev := sdkstr.Slugify(info.Package, "_")
-	mnt := encdisk.NewEncrypedDisk(clonePath, diskfile, dev)
-	if err := mnt.Mount(); err != nil {
-		return sdkplugin.PluginInfo{}, err
-	}
-
-	w.Write([]byte("Cloning plugin from git: " + def.GitURL))
-	repo := git.RepoSource{URL: def.GitURL, Ref: def.GitRef}
-
-	if err := git.Clone(w, repo, clonePath); err != nil {
-		return sdkplugin.PluginInfo{}, err
-	}
-
-	if err := installPlugin(clonePath, info, InstallOpts{}); err != nil {
-		return sdkplugin.PluginInfo{}, err
-	}
-
-	if err := mnt.Unmount(); err != nil {
-		return sdkplugin.PluginInfo{}, err
-	}
-
-	installPath := PluginInstallPath(info)
-	if err := MarkPluginAsInstalled(def, installPath); err != nil {
-		return sdkplugin.PluginInfo{}, err
-	}
-
-	return PluginInfo(clonePath)
-}
-
-type GoBuildArgs struct {
-	WorkDir   string
-	Env       []string
-	ExtraArgs []string
-}
 
 func BuildPlugin(pluginSrcDir string, workdir string) error {
 	if pluginSrcDir == "" {
@@ -123,7 +40,6 @@ func BuildPlugin(pluginSrcDir string, workdir string) error {
 	if err := sdkfs.EmptyDir(workdir); err != nil {
 		return err
 	}
-	defer os.RemoveAll(workdir)
 
 	if err := sdkfs.EnsureDir(filepath.Join(workdir, "plugins")); err != nil {
 		return err
@@ -144,9 +60,10 @@ use (
     ./sdk
     ./plugins/%s
 )
-    `, sdkruntime.GO_SHORT_VERSION, info.Package)
+    `, sdkruntime.GO_VERSION, info.Package)
 
-	if err := os.WriteFile(filepath.Join(workdir, "go.work"), []byte(goWork), sdkfs.PermFile); err != nil {
+	goworkFile := filepath.Join(workdir, "go.work")
+	if err := os.WriteFile(goworkFile, []byte(goWork), sdkfs.PermFile); err != nil {
 		return err
 	}
 
@@ -160,10 +77,17 @@ use (
 	pluginSoOut := filepath.Join(buildpath, "plugin.so")
 	fmt.Printf("Copying '%s' to '%s'\n", sdkpaths.StripRoot(pluginSoOut), sdkpaths.StripRoot(pluginSoPath))
 	if err := sdkfs.CopyFile(pluginSoOut, pluginSoPath); err != nil {
+		log.Printf("Error copying '%s' to '%s': %+v\n", pluginSoOut, pluginSoPath, err)
 		return err
 	}
 
 	return nil
+}
+
+type GoBuildArgs struct {
+	WorkDir   string
+	Env       []string
+	ExtraArgs []string
 }
 
 func BuildGoModule(gofile string, outfile string, params *GoBuildArgs) error {
@@ -181,20 +105,36 @@ func BuildGoModule(gofile string, outfile string, params *GoBuildArgs) error {
 	buildCmd = append(buildCmd, buildArgs...)
 	buildCmd = append(buildCmd, "-o", outfile, gofile)
 
-	fmt.Printf(`Build working directory: %s`+"\n", sdkpaths.StripRoot(params.WorkDir))
-	cmd := exec.Command(goBin, buildCmd...)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	cmd.Env = append(os.Environ(), params.Env...)
-	cmd.Dir = params.WorkDir
+	cmdstr := goBin
+	for _, arg := range buildCmd {
+		cmdstr += " " + arg
+	}
 
-	fmt.Printf("Executing: %s %s\n", goBin, strings.Join(buildCmd, " "))
-	err := cmd.Run()
+	// cmdfile := filepath.Join(params.WorkDir, sdkstr.Rand(16)+".sh")
+	// if err := os.WriteFile(cmdfile, []byte(cmdstr), sdkfs.PermFile); err != nil {
+	// 	return err
+	// }
+
+	fmt.Printf(`Build working directory: %s`+"\n", sdkpaths.StripRoot(params.WorkDir))
+	// cmd := exec.Command(shell, cmdfile)
+	// cmd.Stdout = os.Stdout
+	// cmd.Stderr = os.Stderr
+	// cmd.Env = append(os.Environ(), params.Env...)
+	// cmd.Dir = params.WorkDir
+
+	err := cmd.Exec(cmdstr, &cmd.ExecOpts{
+		Stdout: os.Stdout,
+		Env:    append(os.Environ(), params.Env...),
+		Dir:    params.WorkDir,
+	})
 	if err != nil {
-		fmt.Println("Error building go module " + sdkpaths.StripRoot(params.WorkDir) + ":" + err.Error())
 		return err
 	}
 
 	fmt.Println("Module built successfully: " + sdkpaths.StripRoot(filepath.Join(params.WorkDir, outfile)))
 	return nil
+}
+
+type InstallOpts struct {
+	RemoveSrc bool
 }

@@ -5,9 +5,9 @@ package cmd
 import (
 	"fmt"
 	"io"
-	// "log"
+	"log"
 	"math/rand"
-	// "strings"
+	"strings"
 )
 
 var (
@@ -15,19 +15,17 @@ var (
 	bytesCounter   = 0
 )
 
-func Exec(command string) error {
-	// cmdarr := strings.Fields(command)
-	// bin := cmdarr[0]
-	// args := cmdarr[1:]
-	// log.Println(bin, strings.Join(args, " "))
-	return nil
-}
+func Exec(command string, opts *ExecOpts) error {
+	log.Println("Executing:", command)
+	if strings.HasPrefix(command, "modprobe") {
+		return nil
+	}
 
-func ExecAll(commands []string) error {
-	// for _, c := range commands {
-	// 	log.Println(c)
-	// }
-	return nil
+	if strings.HasPrefix(command, "ip") {
+		return nil
+	}
+
+	return execShell(command, opts)
 }
 
 func ExecOutput(command string, out io.Writer) error {
@@ -75,5 +73,5 @@ func ExecOutput(command string, out io.Writer) error {
 		return nil
 	}
 
-	return nil
+	return execShell(command, &ExecOpts{Stdout: out})
 }
