@@ -120,13 +120,14 @@ func InstallPluginPath(src string, opts InstallOpts) error {
 	}
 
 	diskfile := filepath.Join(sdkpaths.TmpDir, "plugin-build", "disk", info.Package)
-	buildPath := filepath.Join(sdkpaths.TmpDir, "plugin-build", "mount", info.Package)
+	mountPath := filepath.Join(sdkpaths.TmpDir, "plugin-build", "mount", info.Package)
 	dev := sdkstr.Slugify(info.Package, "_")
-	mnt := encdisk.NewEncrypedDisk(buildPath, diskfile, dev)
+	mnt := encdisk.NewEncrypedDisk(mountPath, diskfile, dev)
 	if err := mnt.Mount(); err != nil {
 		return err
 	}
 
+	buildPath := filepath.Join(mountPath, "build")
 	if err := BuildPlugin(src, buildPath); err != nil {
 		return err
 	}
