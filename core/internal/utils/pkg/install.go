@@ -3,6 +3,7 @@ package pkg
 import (
 	"errors"
 	"io"
+	"log"
 	"os"
 	"path/filepath"
 
@@ -80,6 +81,7 @@ func InstallGitSrc(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, error) 
 	dev := sdkstr.Slugify(rnd, "_")
 	mnt := encdisk.NewEncrypedDisk(clonePath, diskfile, dev)
 	if err := mnt.Mount(); err != nil {
+		log.Println("Error mounting disk: ", err)
 		return sdkplugin.PluginInfo{}, err
 	}
 

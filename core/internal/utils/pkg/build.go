@@ -110,17 +110,7 @@ func BuildGoModule(gofile string, outfile string, params *GoBuildArgs) error {
 		cmdstr += " " + arg
 	}
 
-	// cmdfile := filepath.Join(params.WorkDir, sdkstr.Rand(16)+".sh")
-	// if err := os.WriteFile(cmdfile, []byte(cmdstr), sdkfs.PermFile); err != nil {
-	// 	return err
-	// }
-
 	fmt.Printf(`Build working directory: %s`+"\n", sdkpaths.StripRoot(params.WorkDir))
-	// cmd := exec.Command(shell, cmdfile)
-	// cmd.Stdout = os.Stdout
-	// cmd.Stderr = os.Stderr
-	// cmd.Env = append(os.Environ(), params.Env...)
-	// cmd.Dir = params.WorkDir
 
 	err := cmd.Exec(cmdstr, &cmd.ExecOpts{
 		Stdout: os.Stdout,
