@@ -20,26 +20,25 @@ type ExecOpts struct {
 	Env    []string
 }
 
-func execShell(command string, opts *ExecOpts) (err error) {
+var shell string
 
-	f := filepath.Join(sdkpaths.TmpDir, sdkstr.Rand(16)+".sh")
-	if err = os.WriteFile(f, []byte(command), sdkfs.PermFile); err != nil {
-		return err
-	}
-
-	defer os.Remove(f)
-
-	var (
-		shells = []string{"/bin/ash", "/bin/bash", "/bin/zsh"}
-	)
-
-	var shell string
+func init() {
+	var shells = []string{"/bin/ash", "/bin/bash", "/bin/zsh"}
 	for _, s := range shells {
 		if sdkfs.Exists(s) {
 			shell = s
 			break
 		}
 	}
+}
+
+func execShell(command string, opts *ExecOpts) (err error) {
+	f := filepath.Join(sdkpaths.TmpDir, sdkstr.Rand(16)+".sh")
+	if err = os.WriteFile(f, []byte(command), sdkfs.PermFile); err != nil {
+		return err
+	}
+
+	defer os.Remove(f)
 
 	hasStderr := false
 	cmd := exec.Command(shell, f)
