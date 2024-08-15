@@ -9,15 +9,15 @@ import (
 )
 
 func (d *EncryptedDisk) Mount() error {
-	if err := cmd.ExecAsh(fmt.Sprintf(`echo -n "%s" | cryptsetup luksFormat %s -`, d.pass, d.file)); err != nil {
+	if err := cmd.Exec(fmt.Sprintf(`echo -n "%s" | cryptsetup luksFormat %s -`, d.pass, d.file), nil); err != nil {
 		return err
 	}
 
-	if err := cmd.ExecAsh(fmt.Sprintf(`echo -n "%s" | cryptsetup luksOpen %s %s -`, d.pass, d.file, d.name)); err != nil {
+	if err := cmd.Exec(fmt.Sprintf(`echo -n "%s" | cryptsetup luksOpen %s %s -`, d.pass, d.file, d.name), nil); err != nil {
 		return err
 	}
 
-	if err := cmd.ExecAsh("mkfs.ext4 /dev/mapper/" + d.name); err != nil {
+	if err := cmd.Exec("mkfs.ext4 /dev/mapper/"+d.name, nil); err != nil {
 		return err
 	}
 
@@ -25,7 +25,7 @@ func (d *EncryptedDisk) Mount() error {
 		return err
 	}
 
-	if err := cmd.ExecAsh(fmt.Sprintf("mount /dev/mapper/%s %s", d.name, d.mountpath)); err != nil {
+	if err := cmd.Exec(fmt.Sprintf("mount /dev/mapper/%s %s", d.name, d.mountpath), nil); err != nil {
 		return err
 	}
 
@@ -33,10 +33,10 @@ func (d *EncryptedDisk) Mount() error {
 }
 
 func (d *EncryptedDisk) Unmount() error {
-	if err := cmd.ExecAsh(fmt.Sprintf("umount %s", d.mountpath)); err != nil {
+	if err := cmd.Exec(fmt.Sprintf("umount %s", d.mountpath), nil); err != nil {
 		return err
 	}
-	if err := cmd.ExecAsh(fmt.Sprintf("cryptsetup luksClose %s", d.name)); err != nil {
+	if err := cmd.Exec(fmt.Sprintf("cryptsetup luksClose %s", d.name), nil); err != nil {
 		return err
 	}
 	return nil

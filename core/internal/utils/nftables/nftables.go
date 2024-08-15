@@ -23,7 +23,7 @@ const (
 
 var nftMu sync.RWMutex
 var initCallbacks []func() error = []func() error{}
-var nftQue *jobque.JobQues = jobque.NewJobQues()
+var nftQue *jobque.JobQue = jobque.NewJobQue()
 
 func JumpChain(mac string) string {
 	return "counter_" + strings.ReplaceAll(mac, ":", "")
@@ -117,7 +117,7 @@ func runInitCallbacks() {
 }
 
 func isConnected(mac string) bool {
-	err := cmd.Exec(fmt.Sprintf("nft get element ip %s %s { %s }", internetTable, connMacSet, mac))
+	err := cmd.Exec(fmt.Sprintf("nft get element ip %s %s { %s }", internetTable, connMacSet, mac), nil)
 	return err == nil
 }
 
