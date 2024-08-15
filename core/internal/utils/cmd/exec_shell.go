@@ -4,12 +4,8 @@ import (
 	"errors"
 	"io"
 	"log"
-	"os"
 	"os/exec"
-	"path/filepath"
 	sdkfs "sdk/utils/fs"
-	sdkpaths "sdk/utils/paths"
-	sdkstr "sdk/utils/strings"
 	"strings"
 )
 
@@ -33,15 +29,8 @@ func init() {
 }
 
 func execShell(command string, opts *ExecOpts) (err error) {
-	f := filepath.Join(sdkpaths.TmpDir, sdkstr.Rand(16)+".sh")
-	if err = os.WriteFile(f, []byte(command), sdkfs.PermFile); err != nil {
-		return err
-	}
-
-	defer os.Remove(f)
-
 	hasStderr := false
-	cmd := exec.Command(shell, f)
+	cmd := exec.Command(shell, "-c", command)
 
 	if opts != nil {
 		if opts.Stdout != nil {
