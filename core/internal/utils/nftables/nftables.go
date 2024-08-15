@@ -52,11 +52,11 @@ func Setup() (err error) {
 
 	cmds := []string{
 		fmt.Sprintf("nft add table ip %s", internetTable),
-		fmt.Sprintf("nft add chain ip %s %s { type nat hook prerouting priority dstnat; policy accept ; }", internetTable, prerouting),
-		fmt.Sprintf("nft add chain ip %s %s { type filter hook forward priority filter ; policy drop ; }", internetTable, forward),
-		fmt.Sprintf("nft add map ip %s %s { type ipv4_addr : verdict ; counter; }", internetTable, connIpMap),
-		fmt.Sprintf("nft add map ip %s %s { type ether_addr : verdict ; counter; }", internetTable, connMacMap),
-		fmt.Sprintf("nft add set ip %s %s { type ether_addr; }", internetTable, connMacSet),
+		fmt.Sprintf("nft add chain ip %s %s '{ type nat hook prerouting priority dstnat; policy accept ; }'", internetTable, prerouting),
+		fmt.Sprintf("nft add chain ip %s %s '{ type filter hook forward priority filter ; policy drop ; }'", internetTable, forward),
+		fmt.Sprintf("nft add map ip %s %s '{ type ipv4_addr : verdict ; counter; }'", internetTable, connIpMap),
+		fmt.Sprintf("nft add map ip %s %s '{ type ether_addr : verdict ; counter; }'", internetTable, connMacMap),
+		fmt.Sprintf("nft add set ip %s %s '{ type ether_addr; }'", internetTable, connMacSet),
 		fmt.Sprintf("nft add rule %s %s ether saddr vmap @%s", internetTable, forward, connMacMap),
 		fmt.Sprintf("nft add rule %s %s ip daddr vmap @%s", internetTable, forward, connIpMap),
 	}
@@ -74,7 +74,7 @@ func SetupCaptivePortal(dev string, routerIp string) (err error) {
 	_, err = nftQue.Exec(func() (interface{}, error) {
 		cmds := []string{
 			fmt.Sprintf("nft add rule ip %s %s ether saddr @%s counter accept", internetTable, prerouting, connMacSet),
-			fmt.Sprintf("nft add rule ip %s %s iif %s tcp dport { 80, 443 } counter dnat to %s", internetTable, prerouting, dev, routerIp),
+			fmt.Sprintf("nft add rule ip %s %s iif %s tcp dport '{ 80, 443 }' counter dnat to %s", internetTable, prerouting, dev, routerIp),
 		}
 		err := cmd.ExecAll(cmds)
 		return nil, err
@@ -117,7 +117,7 @@ func runInitCallbacks() {
 }
 
 func isConnected(mac string) bool {
-	err := cmd.Exec(fmt.Sprintf("nft get element ip %s %s { %s }", internetTable, connMacSet, mac), nil)
+	err := cmd.Exec(fmt.Sprintf("nft get element ip %s %s '{ %s }'", internetTable, connMacSet, mac), nil)
 	return err == nil
 }
 
@@ -127,9 +127,9 @@ func doConnect(ip string, mac string) error {
 
 	if !connected {
 		cmds = []string{
-			fmt.Sprintf("nft add element ip %s %s { %s : accept }", internetTable, connIpMap, ip),
-			fmt.Sprintf("nft add element ip %s %s { %s : accept }", internetTable, connMacMap, mac),
-			fmt.Sprintf("nft add element ip %s %s { %s }", internetTable, connMacSet, mac),
+			fmt.Sprintf("nft add element ip %s %s '{ %s : accept }'", internetTable, connIpMap, ip),
+			fmt.Sprintf("nft add element ip %s %s '{ %s : accept }'", internetTable, connMacMap, mac),
+			fmt.Sprintf("nft add element ip %s %s '{ %s }'", internetTable, connMacSet, mac),
 		}
 
 		return cmd.ExecAll(cmds)
@@ -142,9 +142,9 @@ func doDisconnect(ip string, mac string) error {
 	connected := isConnected(mac)
 	if connected {
 		cmds := []string{
-			fmt.Sprintf("nft delete element ip %s %s { %s : accept }", internetTable, connIpMap, ip),
+			fmt.Sprintf("nft delete element ip %s %s '{ %s : accept }'", internetTable, connIpMap, ip),
 			fmt.Sprintf("nft delete element ip %s %s { %s : accept }", internetTable, connMacMap, mac),
-			fmt.Sprintf("nft delete element ip %s %s { %s }", internetTable, connMacSet, mac),
+			fmt.Sprintf("nft delete element ip %s %s '{ %s }'", internetTable, connMacSet, mac),
 		}
 		return cmd.ExecAll(cmds)
 	}
