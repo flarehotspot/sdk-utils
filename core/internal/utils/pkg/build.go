@@ -2,8 +2,11 @@ package pkg
 
 import (
 	"core/internal/utils/cmd"
+	"core/internal/utils/encdisk"
+	"core/internal/utils/git"
 	"errors"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"path/filepath"
@@ -11,7 +14,88 @@ import (
 	sdkfs "sdk/utils/fs"
 	sdkpaths "sdk/utils/paths"
 	sdkruntime "sdk/utils/runtime"
+	sdkstr "sdk/utils/strings"
 )
+
+func BuildFromLocal(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, error) {
+	if ok, path := IsPluginInstalled(def); ok {
+		info, err := PluginInfo(path)
+		if err != nil {
+			return sdkplugin.PluginInfo{}, err
+		}
+		w.Write([]byte("Plugin already installed: " + info.Package))
+		return PluginInfo(path)
+	}
+
+	w.Write([]byte("Building plugin from local path: " + def.LocalPath))
+
+	// TODO: remove logs
+	log.Println("Getting plugin info..")
+	info, err := PluginInfo(def.LocalPath)
+	if err != nil {
+		return sdkplugin.PluginInfo{}, err
+	}
+
+	// TODO: remove logs
+	log.Println("Installing plugin..")
+	err = InstallPluginPath(def.LocalPath, InstallOpts{RemoveSrc: false})
+	if err != nil {
+		return sdkplugin.PluginInfo{}, err
+	}
+
+	// TODO: remove logs
+	log.Println("Marking plugins..")
+	if err := MarkPluginAsInstalled(def, GetInstallPath(info)); err != nil {
+		return sdkplugin.PluginInfo{}, err
+	}
+
+	return info, nil
+}
+
+func BuildFromGit(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, error) {
+	ok, path := IsPluginInstalled(def)
+	info, err := PluginInfo(path)
+	if err != nil {
+		return sdkplugin.PluginInfo{}, err
+	}
+
+	if ok {
+		w.Write([]byte("Plugin already installed: " + info.Package))
+		return PluginInfo(path)
+	}
+
+	dev := sdkstr.Slugify(info.Package, "_")
+	parentpath := RandomPluginPath()
+	diskfile := filepath.Join(parentpath, "plugin-clone", "disk", dev)
+	mountpath := filepath.Join(parentpath, "plugin-build", "mount", dev)
+	clonepath := filepath.Join(mountpath, "clone")
+	mnt := encdisk.NewEncrypedDisk(diskfile, mountpath, dev)
+	if err := mnt.Mount(); err != nil {
+		return sdkplugin.PluginInfo{}, err
+	}
+
+	w.Write([]byte("Cloning plugin from git: " + def.GitURL))
+	repo := git.RepoSource{URL: def.GitURL, Ref: def.GitRef}
+
+	if err := git.Clone(w, repo, clonepath); err != nil {
+		return sdkplugin.PluginInfo{}, err
+	}
+
+	if err := InstallPluginPath(clonepath, InstallOpts{}); err != nil {
+		return sdkplugin.PluginInfo{}, err
+	}
+
+	if err := mnt.Unmount(); err != nil {
+		return sdkplugin.PluginInfo{}, err
+	}
+
+	installPath := GetInstallPath(info)
+	if err := MarkPluginAsInstalled(def, installPath); err != nil {
+		return sdkplugin.PluginInfo{}, err
+	}
+
+	return PluginInfo(mountpath)
+}
 
 func BuildPlugin(pluginSrcDir string, workdir string) error {
 	if pluginSrcDir == "" {
@@ -110,17 +194,7 @@ func BuildGoModule(gofile string, outfile string, params *GoBuildArgs) error {
 		cmdstr += " " + arg
 	}
 
-	// cmdfile := filepath.Join(params.WorkDir, sdkstr.Rand(16)+".sh")
-	// if err := os.WriteFile(cmdfile, []byte(cmdstr), sdkfs.PermFile); err != nil {
-	// 	return err
-	// }
-
 	fmt.Printf(`Build working directory: %s`+"\n", sdkpaths.StripRoot(params.WorkDir))
-	// cmd := exec.Command(shell, cmdfile)
-	// cmd.Stdout = os.Stdout
-	// cmd.Stderr = os.Stderr
-	// cmd.Env = append(os.Environ(), params.Env...)
-	// cmd.Dir = params.WorkDir
 
 	err := cmd.Exec(cmdstr, &cmd.ExecOpts{
 		Stdout: os.Stdout,

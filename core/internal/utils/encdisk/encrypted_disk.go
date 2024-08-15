@@ -2,7 +2,9 @@
 
 package encdisk
 
-import sdkstr "sdk/utils/strings"
+import (
+	sdkstr "sdk/utils/strings"
+)
 
 type EncryptedDisk struct {
 	mountpath string
@@ -11,7 +13,7 @@ type EncryptedDisk struct {
 	pass      string
 }
 
-func NewEncrypedDisk(mountpath string, file string, name string) *EncryptedDisk {
+func NewEncrypedDisk(file string, mountpath string, name string) *EncryptedDisk {
 	return &EncryptedDisk{
 		mountpath: mountpath,
 		file:      file,

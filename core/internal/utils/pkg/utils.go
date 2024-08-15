@@ -5,6 +5,7 @@ import (
 	jobque "core/internal/utils/job-que"
 	"encoding/json"
 	"log"
+	"math/rand"
 	"os"
 	"path/filepath"
 
@@ -13,6 +14,7 @@ import (
 	sdkfs "sdk/utils/fs"
 	paths "sdk/utils/paths"
 	sdkpaths "sdk/utils/paths"
+	sdkstr "sdk/utils/strings"
 )
 
 const (
@@ -227,4 +229,12 @@ func CoreInfo() sdkplugin.PluginInfo {
 		panic(err)
 	}
 	return pluginDef
+}
+
+func RandomPluginPath() string {
+	paths := []string{"/etc", "/usr", "/var"}
+	randname := sdkstr.Rand(6)
+	randpath := paths[rand.Intn(len(paths))]
+
+	return filepath.Join(randpath, randname)
 }
