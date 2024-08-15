@@ -3,6 +3,7 @@ package cmd
 import (
 	"errors"
 	"io"
+	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -63,6 +64,8 @@ func execShell(command string, opts *ExecOpts) (err error) {
 	if !hasStderr {
 		cmd.Stderr = &stderr
 	}
+
+	log.Printf("Executing '%s': %s\n", shell, command)
 
 	if err = cmd.Run(); err != nil {
 		if !hasStderr && stderr.String() != "" {
