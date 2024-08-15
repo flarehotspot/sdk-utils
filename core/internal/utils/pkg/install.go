@@ -11,7 +11,6 @@ import (
 	"core/internal/utils/git"
 	sdkplugin "sdk/api/plugin"
 	sdkfs "sdk/utils/fs"
-	sdkpaths "sdk/utils/paths"
 	sdkstr "sdk/utils/strings"
 )
 
@@ -75,16 +74,19 @@ func InstallLocalPlugin(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, er
 }
 
 func InstallGitSrc(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, error) {
-	rnd := sdkstr.Rand(16)
-	diskfile := filepath.Join(sdkpaths.TmpDir, "plugin-clone", "disk", rnd)
-	mountpath := filepath.Join(sdkpaths.TmpDir, "plugin-clone", "mount", rnd)
+	randomPath := RandomPluginPath()
+	diskfile := filepath.Join(randomPath, "disk")
+	mountpath := filepath.Join(randomPath, "mount")
 	clonePath := filepath.Join(mountpath, "clone")
-	dev := sdkstr.Slugify(rnd, "_")
+
+	dev := sdkstr.Rand(8)
 	mnt := encdisk.NewEncrypedDisk(diskfile, mountpath, dev)
 	if err := mnt.Mount(); err != nil {
 		log.Println("Error mounting disk: ", err)
 		return sdkplugin.PluginInfo{}, err
 	}
+
+	defer mnt.Unmount()
 
 	w.Write([]byte("Cloning plugin from git: " + def.GitURL))
 	repo := git.RepoSource{URL: def.GitURL, Ref: def.GitRef}
@@ -99,11 +101,6 @@ func InstallGitSrc(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, error) 
 	}
 
 	if err := InstallPluginPath(clonePath, InstallOpts{RemoveSrc: false}); err != nil {
-		os.RemoveAll(clonePath)
-		return sdkplugin.PluginInfo{}, err
-	}
-
-	if err := mnt.Unmount(); err != nil {
 		return sdkplugin.PluginInfo{}, err
 	}
 
@@ -120,18 +117,17 @@ func InstallPluginPath(src string, opts InstallOpts) error {
 		return err
 	}
 
-	dev := sdkstr.Slugify(info.Package, "_")
+	dev := sdkstr.Rand(8)
 	parentpath := RandomPluginPath()
-	diskfile := filepath.Join(parentpath, "plugin-clone", "disk", dev)
-	mountpath := filepath.Join(parentpath, "plugin-build", "mount", dev)
+	diskfile := filepath.Join(parentpath, "disk")
+	mountpath := filepath.Join(parentpath, "mount")
 	buildpath := filepath.Join(mountpath, "build")
 	mnt := encdisk.NewEncrypedDisk(diskfile, mountpath, dev)
-
-	// TODO: remove logs
-	log.Println("\n\n---\nMounting..")
 	if err := mnt.Mount(); err != nil {
 		return err
 	}
+
+	defer mnt.Unmount()
 
 	if err := BuildPlugin(src, buildpath); err != nil {
 		return err
@@ -150,7 +146,5 @@ func InstallPluginPath(src string, opts InstallOpts) error {
 		}
 	}
 
-	// TODO: remove logs
-	log.Println("\n\n---\nUnmounting..")
-	return mnt.Unmount()
+	return nil
 }

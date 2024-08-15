@@ -8,7 +8,6 @@ import (
 	"os"
 	"path/filepath"
 	sdkfs "sdk/utils/fs"
-	"time"
 )
 
 func (d *EncryptedDisk) Mount() error {
@@ -56,8 +55,6 @@ func (d *EncryptedDisk) Unmount() error {
 	if err := cmd.Exec(fmt.Sprintf("cryptsetup luksClose %s", d.name), nil); err != nil {
 		return err
 	}
-
-	time.Sleep(3 * time.Second)
 
 	if err := os.RemoveAll(d.mountpath); err != nil {
 		return err
