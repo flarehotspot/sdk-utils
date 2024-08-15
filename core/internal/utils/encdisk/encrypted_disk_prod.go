@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	sdkfs "sdk/utils/fs"
+	"time"
 )
 
 func (d *EncryptedDisk) Mount() error {
@@ -56,7 +57,13 @@ func (d *EncryptedDisk) Unmount() error {
 		return err
 	}
 
+	time.Sleep(3 * time.Second)
+
 	if err := os.RemoveAll(d.mountpath); err != nil {
+		return err
+	}
+
+	if err := os.RemoveAll(d.file); err != nil {
 		return err
 	}
 
