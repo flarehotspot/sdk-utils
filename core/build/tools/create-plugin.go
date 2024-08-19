@@ -1,7 +1,6 @@
 package tools
 
 import (
-	"core/internal/utils/pkg"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -67,7 +66,7 @@ func Init(api sdkplugin.PluginApi) {
 		panic(err)
 	}
 
-	pkg.CreateGoWorkspace()
+	CreateGoWorkspace()
 
 	fmt.Printf("\n\nPlugin created at %s\n", pluginDir)
 }

@@ -1,7 +1,7 @@
 package main
 
-import "core/internal/utils/pkg"
+import "core/build/tools"
 
 func main() {
-	pkg.CreateMonoFiles()
+	tools.CreateMonoFiles()
 }
