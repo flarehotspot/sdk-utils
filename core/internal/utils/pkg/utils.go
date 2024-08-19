@@ -2,7 +2,6 @@ package pkg
 
 import (
 	"core/internal/config"
-	jobque "core/internal/utils/job-que"
 	"errors"
 	"log"
 	"os"
@@ -25,11 +24,6 @@ const (
 	PluginSrcSystem       string = "system"
 	PluginSrcLocal        string = "local"
 	pluginsConfigJsonFile string = "plugins.json"
-)
-
-var (
-	markQue              = jobque.NewJobQue()
-	installedPluginsJson = filepath.Join(sdkpaths.CacheDir, "installed_plugins.json")
 )
 
 type PluginSrc string
@@ -106,7 +100,7 @@ func LocalPluginPaths() []string {
 	return pluginPaths
 }
 
-// InstalledDirList returns the list of installed plugins in the plugins directory.
+// InstalledDirList returns the list of installed plugins in the plugins directory. The path of each plugin is an aboslute path.
 func InstalledDirList() []string {
 	var pluginList []string
 
@@ -131,32 +125,12 @@ func InstalledDirList() []string {
 }
 
 func MarkPluginAsInstalled(def PluginSrcDef, installPath string) error {
-	newList := []PluginInstalledMark{}
-	plugins := InstalledPluginsList()
-	found := false
-
-	for _, p := range plugins {
-		switch def.Src {
-		case PluginSrcLocal, PluginSrcSystem:
-			if def.Src == p.Def.Src && def.LocalPath == p.Def.LocalPath {
-				found = true
-				p.InstallPath = installPath
-				p.Installed = true
-			}
-		}
-		newList = append(newList, p)
+	metapath := filepath.Join(installPath, "metadata.json")
+	metadata := PluginMetadata{
+		Def: def,
 	}
 
-	if !found {
-		newList = append(newList, PluginInstalledMark{Def: def, Installed: true, InstallPath: installPath})
-	}
-
-	_, err := markQue.Exec(func() (interface{}, error) {
-		err := sdkfs.WriteJson(installedPluginsJson, newList)
-		return nil, err
-	})
-
-	return err
+	return sdkfs.WriteJson(metapath, metadata)
 }
 
 func IsPluginInstalled(def PluginSrcDef) bool {
@@ -165,19 +139,22 @@ func IsPluginInstalled(def PluginSrcDef) bool {
 }
 
 func InstalledPluginsList() []PluginInstalledMark {
-	result, err := markQue.Exec(func() (interface{}, error) {
-		plugins := []PluginInstalledMark{}
-		if err := sdkfs.ReadJson(installedPluginsJson, &plugins); err != nil {
-			return nil, err
+	marks := []PluginInstalledMark{}
+	list := InstalledDirList()
+	for _, p := range list {
+		metadata, err := ReadMetadata(p)
+		if err != nil {
+			log.Println("Error reading plugin metadata: ", err)
+			continue
 		}
-		return plugins, nil
-	})
 
-	if err != nil {
-		return []PluginInstalledMark{}
+		marks = append(marks, PluginInstalledMark{
+			Def:         metadata.Def,
+			InstallPath: p,
+			Installed:   true,
+		})
 	}
-
-	return result.([]PluginInstalledMark)
+	return marks
 }
 
 func NeedsRecompile(def PluginSrcDef) bool {
@@ -248,4 +225,11 @@ func RestoreBackup(pkg string) error {
 
 func RemoveBackup(pkg string) error {
 	return os.RemoveAll(GetBackupPath(pkg))
+}
+
+func ReadMetadata(pkg string) (PluginMetadata, error) {
+	var metadata PluginMetadata
+	installPath := GetInstallPath(pkg)
+	err := sdkfs.ReadJson(filepath.Join(installPath, "metadata.json"), &metadata)
+	return metadata, err
 }

@@ -15,6 +15,10 @@ import (
 	sdkstr "sdk/utils/strings"
 )
 
+type PluginMetadata struct {
+	Def PluginSrcDef
+}
+
 type PluginFile struct {
 	File     string
 	Optional bool
@@ -133,7 +137,8 @@ func InstallPlugin(src string, opts InstallOpts) error {
 
 		defer mnt.Unmount()
 	} else {
-		buildpath = filepath.Join(sdkpaths.TmpDir, "plugins", "build", sdkstr.Rand(16), "0")
+		parentpath := filepath.Join(sdkpaths.TmpDir, "plugins", "build", sdkstr.Rand(16))
+		buildpath = filepath.Join(parentpath, "0")
 		if err := sdkfs.EmptyDir(buildpath); err != nil {
 			return err
 		}
