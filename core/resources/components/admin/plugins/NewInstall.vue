@@ -2,7 +2,7 @@
   <div>
     <h1>Install Plugin</h1>
     <hr />
-    <form name="plugin-form" v-on:submit="install">
+    <form name="plugin-form">
       <p>
         {{ def }}
       </p>
@@ -39,7 +39,9 @@
           />
         </div>
         <div class="mt-3">
-          <button type="submit" class="btn btn-primary">Install</button>
+          <button type="submit" v-on:click="install" class="btn btn-primary">
+            Install
+          </button>
         </div>
       </div>
     </form>
@@ -66,9 +68,13 @@ define(function () {
       };
     },
     methods: {
-      install: function () {
+      install: function (e) {
+        e.preventDefault();
         var self = this;
-        $flare.http.post('<% .Helpers.UrlForRoute "admin:plugins:install" %>', self.def);
+        $flare.http.post(
+          '<% .Helpers.UrlForRoute "admin:plugins:install" %>',
+          self.def
+        );
       }
     }
   };

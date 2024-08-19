@@ -22,12 +22,7 @@ func PluginsIndexCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 		plugins := []Plugin{}
 
 		for _, src := range sources {
-			ok, path := pkg.IsPluginInstalled(src.Def)
-			if !ok {
-				continue
-			}
-
-			info, err := pkg.PluginInfo(path)
+			info, err := pkg.GetPluginInfo(src.Def)
 			if err != nil {
 				res.Error(w, err.Error(), http.StatusInternalServerError)
 				return

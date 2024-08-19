@@ -19,16 +19,6 @@ WORKDIR /build
 COPY go /build/go
 RUN go install github.com/cespare/reflex@latest
 
-        # -r 'core\/.*\.go$' \
-        # -r 'plugins\/system\/.*\.go$' \
-        # -r 'plugins\/local\/.*\.go$' \
-        # -R '\.tmp\/*.' \
-        # -R 'core\/main\.go' \
-        # -R 'plugins\/installed' \
-        # -R 'plugins\/system\/.*\/main\.go' \
-        # -R 'plugins\/local\/.*\/main\.go' \
-        # -R '(.*)mono\.go' \
-
 CMD reflex \
         -r '\.go$' \
         -R '\.tmp\/*.' \
@@ -36,6 +26,8 @@ CMD reflex \
         -R 'plugins\/installed' \
         -R 'plugins\/system\/.*\/main\.go' \
         -R 'plugins\/local\/.*\/main\.go' \
+        -R 'plugins\/update\/.*\/main\.go' \
+        -R 'plugins\/backup\/.*\/main\.go' \
         -R '(.*)mono\.go' \
         -s -- sh -c './start.sh' -v
 

@@ -101,7 +101,7 @@ func getGoModule(pluginDir string) string {
 }
 
 func getPackage(pluginDir string) string {
-	info, err := PluginInfo(pluginDir)
+	info, err := GetSrcInfo(pluginDir)
 	if err != nil {
 		panic(err)
 	}

@@ -11,6 +11,7 @@ import (
 	"core/internal/utils/git"
 	sdkplugin "sdk/api/plugin"
 	sdkfs "sdk/utils/fs"
+	sdkpaths "sdk/utils/paths"
 	sdkstr "sdk/utils/strings"
 )
 
@@ -45,35 +46,35 @@ var PLuginFiles = []PluginFile{
 func InstallSrcDef(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, error) {
 	switch def.Src {
 	case PluginSrcGit:
-		return InstallGitSrc(w, def)
+		return InstallFromGitSrc(w, def)
 	case PluginSrcLocal, PluginSrcSystem:
-		return InstallLocalPlugin(w, def)
+		return InstallFromLocalPath(w, def)
 	default:
 		return sdkplugin.PluginInfo{}, errors.New("Invalid plugin source: " + def.Src)
 	}
 }
 
-func InstallLocalPlugin(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, error) {
+func InstallFromLocalPath(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, error) {
 	w.Write([]byte("Building plugin from local path: " + def.LocalPath))
 
-	info, err := PluginInfo(def.LocalPath)
+	info, err := GetSrcInfo(def.LocalPath)
 	if err != nil {
 		return sdkplugin.PluginInfo{}, err
 	}
 
-	err = InstallPluginPath(def.LocalPath, InstallOpts{RemoveSrc: false})
+	err = InstallPlugin(def.LocalPath, InstallOpts{RemoveSrc: false})
 	if err != nil {
 		return sdkplugin.PluginInfo{}, err
 	}
 
-	if err := MarkPluginAsInstalled(def, GetInstallPath(info)); err != nil {
+	if err := MarkPluginAsInstalled(def, GetInstallPath(info.Package)); err != nil {
 		return sdkplugin.PluginInfo{}, err
 	}
 
 	return info, nil
 }
 
-func InstallGitSrc(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, error) {
+func InstallFromGitSrc(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, error) {
 	randomPath := RandomPluginPath()
 	diskfile := filepath.Join(randomPath, "disk")
 	mountpath := filepath.Join(randomPath, "mount")
@@ -96,52 +97,62 @@ func InstallGitSrc(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, error) 
 		return sdkplugin.PluginInfo{}, err
 	}
 
-	info, err := PluginInfo(clonePath)
+	info, err := GetSrcInfo(clonePath)
 	if err != nil {
 		log.Println("Error getting plugin info: ", err)
 		return sdkplugin.PluginInfo{}, err
 	}
 
-	if err := InstallPluginPath(clonePath, InstallOpts{RemoveSrc: false}); err != nil {
+	if err := InstallPlugin(clonePath, InstallOpts{RemoveSrc: false}); err != nil {
 		return sdkplugin.PluginInfo{}, err
 	}
 
-	if err := MarkPluginAsInstalled(def, GetInstallPath(info)); err != nil {
+	if err := MarkPluginAsInstalled(def, GetInstallPath(info.Package)); err != nil {
 		return sdkplugin.PluginInfo{}, err
 	}
 
 	return info, nil
 }
 
-func InstallPluginPath(src string, opts InstallOpts) error {
+func InstallPlugin(src string, opts InstallOpts) error {
 	log.Println("Installing plugin: ", src)
 
-	info, err := PluginInfo(src)
-	if err != nil {
-		return err
-	}
+	var buildpath string
 
-	dev := sdkstr.Rand(8)
-	parentpath := RandomPluginPath()
-	diskfile := filepath.Join(parentpath, "disk")
-	mountpath := filepath.Join(parentpath, "mount")
-	buildpath := filepath.Join(mountpath, "build")
-	mnt := encdisk.NewEncrypedDisk(diskfile, mountpath, dev)
-	if err := mnt.Mount(); err != nil {
-		log.Println("Error mounting: ", err)
-		return err
-	}
+	if opts.Encrypt {
+		dev := sdkstr.Rand(8)
+		parentPath := RandomPluginPath()
+		diskfile := filepath.Join(parentPath, "disk")
+		mountpath := filepath.Join(parentPath, "mount")
+		buildpath = filepath.Join(mountpath, "build")
+		mnt := encdisk.NewEncrypedDisk(diskfile, mountpath, dev)
+		if err := mnt.Mount(); err != nil {
+			log.Println("Error mounting: ", err)
+			return err
+		}
 
-	defer mnt.Unmount()
+		defer mnt.Unmount()
+	} else {
+		buildpath = filepath.Join(sdkpaths.TmpDir, "plugins", "build", sdkstr.Rand(16), "0")
+		if err := sdkfs.EmptyDir(buildpath); err != nil {
+			return err
+		}
+	}
 
 	if err := BuildPlugin(src, buildpath); err != nil {
 		log.Println("Error building plugin: ", err)
 		return err
 	}
 
-	installPath := GetInstallPath(info)
+	info, err := GetSrcInfo(src)
+	if err != nil {
+		return err
+	}
+
+	installPath := GetInstallPath(info.Package)
 	for _, f := range PLuginFiles {
-		if err := sdkfs.Copy(filepath.Join(src, f.File), filepath.Join(installPath, f.File)); err != nil && !f.Optional {
+		err := sdkfs.Copy(filepath.Join(src, f.File), filepath.Join(installPath, f.File))
+		if err != nil && !f.Optional {
 			return err
 		}
 	}

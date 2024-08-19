@@ -18,34 +18,19 @@ import (
 )
 
 func BuildFromLocal(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, error) {
-	if ok, path := IsPluginInstalled(def); ok {
-		info, err := PluginInfo(path)
-		if err != nil {
-			return sdkplugin.PluginInfo{}, err
-		}
-		w.Write([]byte("Plugin already installed: " + info.Package))
-		return PluginInfo(path)
-	}
-
-	w.Write([]byte("Building plugin from local path: " + def.LocalPath))
-
-	// TODO: remove logs
-	log.Println("Getting plugin info..")
-	info, err := PluginInfo(def.LocalPath)
+	err := InstallPlugin(def.LocalPath, InstallOpts{RemoveSrc: false})
 	if err != nil {
 		return sdkplugin.PluginInfo{}, err
 	}
 
-	// TODO: remove logs
-	log.Println("Installing plugin..")
-	err = InstallPluginPath(def.LocalPath, InstallOpts{RemoveSrc: false})
+	info, err := GetPluginInfo(def)
 	if err != nil {
 		return sdkplugin.PluginInfo{}, err
 	}
 
 	// TODO: remove logs
 	log.Println("Marking plugins..")
-	if err := MarkPluginAsInstalled(def, GetInstallPath(info)); err != nil {
+	if err := MarkPluginAsInstalled(def, GetInstallPath(info.Package)); err != nil {
 		return sdkplugin.PluginInfo{}, err
 	}
 
@@ -53,18 +38,7 @@ func BuildFromLocal(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, error)
 }
 
 func BuildFromGit(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, error) {
-	ok, path := IsPluginInstalled(def)
-	info, err := PluginInfo(path)
-	if err != nil {
-		return sdkplugin.PluginInfo{}, err
-	}
-
-	if ok {
-		w.Write([]byte("Plugin already installed: " + info.Package))
-		return PluginInfo(path)
-	}
-
-	dev := sdkstr.Slugify(info.Package, "_")
+	dev := sdkstr.Slugify(sdkstr.Rand(16), "_")
 	parentpath := RandomPluginPath()
 	diskfile := filepath.Join(parentpath, "plugin-clone", "disk", dev)
 	mountpath := filepath.Join(parentpath, "plugin-build", "mount", dev)
@@ -81,7 +55,7 @@ func BuildFromGit(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, error) {
 		return sdkplugin.PluginInfo{}, err
 	}
 
-	if err := InstallPluginPath(clonepath, InstallOpts{}); err != nil {
+	if err := InstallPlugin(clonepath, InstallOpts{}); err != nil {
 		return sdkplugin.PluginInfo{}, err
 	}
 
@@ -89,12 +63,17 @@ func BuildFromGit(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, error) {
 		return sdkplugin.PluginInfo{}, err
 	}
 
-	installPath := GetInstallPath(info)
+	info, err := GetPluginInfo(def)
+	if err != nil {
+		return sdkplugin.PluginInfo{}, err
+	}
+
+	installPath := GetInstallPath(info.Package)
 	if err := MarkPluginAsInstalled(def, installPath); err != nil {
 		return sdkplugin.PluginInfo{}, err
 	}
 
-	return PluginInfo(mountpath)
+	return info, nil
 }
 
 func BuildPlugin(pluginSrcDir string, workdir string) error {
@@ -211,4 +190,5 @@ func BuildGoModule(gofile string, outfile string, params *GoBuildArgs) error {
 
 type InstallOpts struct {
 	RemoveSrc bool
+	Encrypt   bool
 }

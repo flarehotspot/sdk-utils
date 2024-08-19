@@ -3,18 +3,20 @@ package pkg
 import (
 	"core/internal/config"
 	jobque "core/internal/utils/job-que"
+	"errors"
 	"log"
-	"math/rand"
 	"os"
 	"path/filepath"
 	"sdk/libs/go-json"
 
-	sdkplugin "sdk/api/plugin"
 	fs "sdk/utils/fs"
 	sdkfs "sdk/utils/fs"
 	paths "sdk/utils/paths"
 	sdkpaths "sdk/utils/paths"
-	sdkstr "sdk/utils/strings"
+)
+
+var (
+	ErrNotInstalled = errors.New("Plugin is not installed")
 )
 
 const (
@@ -157,14 +159,9 @@ func MarkPluginAsInstalled(def PluginSrcDef, installPath string) error {
 	return err
 }
 
-func IsPluginInstalled(def PluginSrcDef) (ok bool, path string) {
-	installedPlugins := InstalledPluginsList()
-	for _, p := range installedPlugins {
-		if (def.Src == PluginSrcLocal || def.Src == PluginSrcSystem) && p.Def.LocalPath == def.LocalPath {
-			return sdkfs.Exists(p.InstallPath), p.InstallPath
-		}
-	}
-	return false, ""
+func IsPluginInstalled(def PluginSrcDef) bool {
+	_, ok := FindPluginInstallPath(def)
+	return ok
 }
 
 func InstalledPluginsList() []PluginInstalledMark {
@@ -183,10 +180,6 @@ func InstalledPluginsList() []PluginInstalledMark {
 	return result.([]PluginInstalledMark)
 }
 
-func GetInstallPath(info sdkplugin.PluginInfo) string {
-	return filepath.Join(sdkpaths.PluginsDir, "installed", info.Package)
-}
-
 func NeedsRecompile(def PluginSrcDef) bool {
 	cfg, err := config.ReadPluginsConfig()
 	if err != nil {
@@ -194,13 +187,13 @@ func NeedsRecompile(def PluginSrcDef) bool {
 		return true
 	}
 
-	ok, path := IsPluginInstalled(def)
+	path, ok := FindPluginInstallPath(def)
 	if !ok {
 		log.Println("Plugin is not installed: ", def.LocalPath)
 		return true
 	}
 
-	info, err := PluginInfo(path)
+	info, err := GetSrcInfo(path)
 	if err != nil {
 		return true
 	}
@@ -214,50 +207,45 @@ func NeedsRecompile(def PluginSrcDef) bool {
 	return false
 }
 
-func PluginInfo(path string) (sdkplugin.PluginInfo, error) {
-	pluginInfo := sdkplugin.PluginInfo{}
-	if err := sdkfs.ReadJson(filepath.Join(path, "plugin.json"), &pluginInfo); err != nil {
-		return sdkplugin.PluginInfo{}, err
-	}
-	return pluginInfo, nil
+func HasPendingUpdate(pkg string) bool {
+	return sdkfs.Exists(filepath.Join(sdkpaths.PluginsDir, "update", pkg))
 }
 
-func CoreInfo() sdkplugin.PluginInfo {
-	pluginJsonPath := filepath.Join(sdkpaths.CoreDir, "plugin.json")
-	var pluginDef sdkplugin.PluginInfo
-	if err := sdkfs.ReadJson(pluginJsonPath, &pluginDef); err != nil {
-		panic(err)
+func MovePendingUpdate(pkg string) error {
+	updatePath := GetPendingUpdatePath(pkg)
+	if err := CreateBackup(pkg); err != nil {
+		return err
 	}
-	return pluginDef
+	if err := sdkfs.Copy(updatePath, GetInstallPath(pkg)); err != nil {
+		return err
+	}
+	if err := os.RemoveAll(updatePath); err != nil {
+		return err
+	}
+	return nil
 }
 
-func RandomPluginPath() string {
-	parents := []string{
-		"/etc",
-		"/var",
-		"/usr",
-		"/run",
-	}
-	subparents := []string{
-		"/share",
-		"/tmp",
-		"/lib",
-		"/bin",
-		"/libout",
-		"/encoding",
-		"/decoding",
-	}
-	linuxFolders := []string{
-		"home", "var", "usr", "etc", "bin", "lib", "tmp", "root", "sbin", "opt", "proc", "sys", "mnt", "srv", "media",
-		"dev", "run", "lib64", "boot", "cgroup", "lost+found", "tmp", "docker", "network", "journal", "snap", "local", "rpool",
-		"iso", "srv", "cache", "system", "networkd", "security", "config", "shared", "user", "app", "repositories", "backups",
-		"scripts", "services", "log", "web", "build", "data", "applications", "private", "public", "jobs", "archives", "software",
-		"settings", "documents", "images", "videos", "audio", "projects", "archives", "old", "new", "configuration", "desktop",
-	}
-	randname := sdkstr.Rand(6)
-	parentpath := parents[rand.Intn(len(parents))]
-	folder := linuxFolders[rand.Intn(len(linuxFolders))]
-	subpar := subparents[rand.Intn(len(subparents))]
+func CreateBackup(pkg string) error {
+	installPath := GetInstallPath(pkg)
+	backupPath := GetBackupPath(pkg)
+	return sdkfs.Copy(installPath, backupPath)
+}
 
-	return filepath.Join(parentpath, subpar, folder, randname)
+func HasBackup(pkg string) bool {
+	return sdkfs.Exists(GetBackupPath(pkg))
+}
+
+func RestoreBackup(pkg string) error {
+	backupPath := GetBackupPath(pkg)
+	if err := sdkfs.Copy(backupPath, GetInstallPath(pkg)); err != nil {
+		return err
+	}
+	if err := os.RemoveAll(backupPath); err != nil {
+		return err
+	}
+	return nil
+}
+
+func RemoveBackup(pkg string) error {
+	return os.RemoveAll(GetBackupPath(pkg))
 }
