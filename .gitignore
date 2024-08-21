@@ -3,6 +3,8 @@
 /config/*.json
 /plugins/local/com.sample.plugin
 /plugins/installed/*
+/plugins/update/*
+/plugins/backup/*
 /output
 /public
 /openwrt-files

@@ -1,6 +1,7 @@
-package pkg
+package tools
 
 import (
+	"core/internal/utils/pkg"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -20,7 +21,7 @@ type PluginModule struct {
 func CreateMonoFiles() {
 	CreateGoWorkspace()
 
-	pluginDirs := LocalPluginPaths()
+	pluginDirs := pkg.LocalPluginPaths()
 	pluginDirs = append(pluginDirs, "core")
 	for _, dir := range pluginDirs {
 		MakePluginMainMono(dir)
@@ -31,9 +32,9 @@ func CreateMonoFiles() {
 
 func MakePluginInitMono() {
 	pluginPaths := []string{"core"}
-	pluginDirs := LocalPluginPaths()
+	pluginDirs := pkg.LocalPluginPaths()
 	pluginPaths = append(pluginPaths, pluginDirs...)
-	coreInfo := CoreInfo()
+	coreInfo := pkg.CoreInfo()
 
 	pluginMods := []PluginModule{}
 	for _, dir := range pluginDirs {
@@ -101,7 +102,7 @@ func getGoModule(pluginDir string) string {
 }
 
 func getPackage(pluginDir string) string {
-	info, err := PluginInfo(pluginDir)
+	info, err := pkg.GetSrcInfo(pluginDir)
 	if err != nil {
 		panic(err)
 	}

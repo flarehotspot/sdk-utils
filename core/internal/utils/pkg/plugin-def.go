@@ -1,5 +1,7 @@
 package pkg
 
+import "core/internal/utils/git"
+
 type PluginSrcDef struct {
 	Src          string // git | strore | system | local
 	StorePackage string // if src is "store"
@@ -20,4 +22,14 @@ func (def PluginSrcDef) String() string {
 	default:
 		return "unknown"
 	}
+}
+
+func (def PluginSrcDef) Equal(compare PluginSrcDef) bool {
+	if (def.Src == PluginSrcLocal || def.Src == PluginSrcSystem) && def.LocalPath == compare.LocalPath {
+		return true
+	}
+	if def.Src == PluginSrcGit && git.NeutralizeUrl(def.GitURL) == git.NeutralizeUrl(compare.GitURL) {
+		return true
+	}
+	return false
 }

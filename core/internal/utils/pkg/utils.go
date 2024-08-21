@@ -2,19 +2,18 @@ package pkg
 
 import (
 	"core/internal/config"
-	jobque "core/internal/utils/job-que"
+	"errors"
 	"log"
-	"math/rand"
 	"os"
 	"path/filepath"
 	"sdk/libs/go-json"
 
-	sdkplugin "sdk/api/plugin"
-	fs "sdk/utils/fs"
 	sdkfs "sdk/utils/fs"
 	paths "sdk/utils/paths"
-	sdkpaths "sdk/utils/paths"
-	sdkstr "sdk/utils/strings"
+)
+
+var (
+	ErrNotInstalled = errors.New("Plugin is not installed")
 )
 
 const (
@@ -25,16 +24,10 @@ const (
 	pluginsConfigJsonFile string = "plugins.json"
 )
 
-var (
-	markQue              = jobque.NewJobQue()
-	installedPluginsJson = filepath.Join(sdkpaths.CacheDir, "installed_plugins.json")
-)
-
 type PluginSrc string
 
-type PluginInstalledMark struct {
+type PluginInstallData struct {
 	Def         PluginSrcDef
-	Installed   bool
 	InstallPath string
 }
 
@@ -57,15 +50,24 @@ func PluginsUserList() PluginDefList {
 	return userJson
 }
 
-func AllPluginDef() PluginDefList {
-	// defaultPlugins, err := PluginsDefaultList()
-	// if err != nil {
-	// 	log.Println("Failed to load default plugins:", err)
-	// }
+func IsDefInList(defs PluginDefList, def PluginSrcDef) bool {
+	for _, i := range defs {
+		if i.Equal(def) {
+			return true
+		}
+	}
+	return false
+}
 
+func AllPluginDef() PluginDefList {
+	list := InsalledPluginsDef()
 	localPlugins := LocalPlugins()
-	return localPlugins
-	// return append(defaultPlugins, userPlugins...)
+	for _, loc := range localPlugins {
+		if !IsDefInList(list, loc) {
+			list = append(list, loc)
+		}
+	}
+	return list
 }
 
 func LocalPlugins() PluginDefList {
@@ -75,6 +77,21 @@ func LocalPlugins() PluginDefList {
 		list = append(list, PluginSrcDef{Src: PluginSrcLocal, LocalPath: p})
 	}
 	log.Println("local plugins list: ", list)
+	return list
+}
+
+func InsalledPluginsDef() PluginDefList {
+	var list PluginDefList
+	paths := InstalledDirList()
+	for _, p := range paths {
+		info, err := GetSrcInfo(p)
+		if err != nil {
+			log.Println("Error reading plugin info: ", err)
+			continue
+		}
+		metadata, err := ReadMetadata(info.Package)
+		list = append(list, metadata.Def)
+	}
 	return list
 }
 
@@ -104,87 +121,74 @@ func LocalPluginPaths() []string {
 	return pluginPaths
 }
 
-// InstalledDirList returns the list of installed plugins in the plugins directory.
+// InstalledDirList returns the list of installed plugins in the plugins directory. The path of each plugin is an aboslute path.
 func InstalledDirList() []string {
 	var pluginList []string
 
 	installedPluginsPath := filepath.Join(paths.PluginsDir, "installed")
 
 	// check if plugins/installed directory exists before traversing
-	if !(fs.Exists(installedPluginsPath)) {
+	if !(sdkfs.Exists(installedPluginsPath)) {
 		return pluginList
 	}
 
 	// this lists all directories inside paths.PluginsDir/installed
-	if err := fs.LsDirs(installedPluginsPath, &pluginList, false); err != nil {
+	if err := sdkfs.LsDirs(installedPluginsPath, &pluginList, false); err != nil {
 		panic(err)
-	}
-
-	log.Println("Plugin List: ")
-	for _, p := range pluginList {
-		log.Println("\t" + p)
 	}
 
 	return pluginList
 }
 
-func MarkPluginAsInstalled(def PluginSrcDef, installPath string) error {
-	newList := []PluginInstalledMark{}
-	plugins := InstalledPluginsList()
-	found := false
-
-	for _, p := range plugins {
-		switch def.Src {
-		case PluginSrcLocal, PluginSrcSystem:
-			if def.Src == p.Def.Src && def.LocalPath == p.Def.LocalPath {
-				found = true
-				p.InstallPath = installPath
-				p.Installed = true
-			}
-		}
-		newList = append(newList, p)
+func WriteMetadata(def PluginSrcDef, installPath string) error {
+	metapath := filepath.Join(installPath, "metadata.json")
+	metadata := PluginMetadata{
+		Def: def,
 	}
 
-	if !found {
-		newList = append(newList, PluginInstalledMark{Def: def, Installed: true, InstallPath: installPath})
+	if err := sdkfs.EnsureDir(installPath); err != nil {
+		return err
 	}
 
-	_, err := markQue.Exec(func() (interface{}, error) {
-		err := sdkfs.WriteJson(installedPluginsJson, newList)
-		return nil, err
-	})
-
-	return err
+	return sdkfs.WriteJson(metapath, metadata)
 }
 
-func IsPluginInstalled(def PluginSrcDef) (ok bool, path string) {
-	installedPlugins := InstalledPluginsList()
-	for _, p := range installedPlugins {
-		if (def.Src == PluginSrcLocal || def.Src == PluginSrcSystem) && p.Def.LocalPath == def.LocalPath {
-			return sdkfs.Exists(p.InstallPath), p.InstallPath
-		}
-	}
-	return false, ""
+func IsPackageInstalled(pkg string) bool {
+	installPath := GetInstallPath(pkg)
+	err := ValidateSrcPath(installPath)
+	return err == nil
 }
 
-func InstalledPluginsList() []PluginInstalledMark {
-	result, err := markQue.Exec(func() (interface{}, error) {
-		plugins := []PluginInstalledMark{}
-		if err := sdkfs.ReadJson(installedPluginsJson, &plugins); err != nil {
-			return nil, err
-		}
-		return plugins, nil
-	})
-
-	if err != nil {
-		return []PluginInstalledMark{}
+func IsSrcDefInstalled(def PluginSrcDef) bool {
+	installPath, ok := FindDefInstallPath(def)
+	if !ok {
+		return false
 	}
-
-	return result.([]PluginInstalledMark)
+	err := ValidateSrcPath(installPath)
+	return err == nil
 }
 
-func GetInstallPath(info sdkplugin.PluginInfo) string {
-	return filepath.Join(sdkpaths.PluginsDir, "installed", info.Package)
+func InstalledPluginsList() []PluginInstallData {
+	marks := []PluginInstallData{}
+	list := InstalledDirList()
+	for _, p := range list {
+		info, err := GetSrcInfo(p)
+		if err != nil {
+			log.Println("Error reading plugin info: ", err)
+			continue
+		}
+		metadata, err := ReadMetadata(info.Package)
+		if err != nil {
+			log.Println("Error reading plugin metadata: ", err)
+			continue
+		}
+
+		marks = append(marks, PluginInstallData{
+			Def:         metadata.Def,
+			InstallPath: p,
+		})
+	}
+	return marks
 }
 
 func NeedsRecompile(def PluginSrcDef) bool {
@@ -194,13 +198,13 @@ func NeedsRecompile(def PluginSrcDef) bool {
 		return true
 	}
 
-	ok, path := IsPluginInstalled(def)
+	path, ok := FindDefInstallPath(def)
 	if !ok {
 		log.Println("Plugin is not installed: ", def.LocalPath)
 		return true
 	}
 
-	info, err := PluginInfo(path)
+	info, err := GetSrcInfo(path)
 	if err != nil {
 		return true
 	}
@@ -214,50 +218,83 @@ func NeedsRecompile(def PluginSrcDef) bool {
 	return false
 }
 
-func PluginInfo(path string) (sdkplugin.PluginInfo, error) {
-	pluginInfo := sdkplugin.PluginInfo{}
-	if err := sdkfs.ReadJson(filepath.Join(path, "plugin.json"), &pluginInfo); err != nil {
-		return sdkplugin.PluginInfo{}, err
-	}
-	return pluginInfo, nil
+func HasPendingUpdate(pkg string) bool {
+	updatepath := GetPendingUpdatePath(pkg)
+	return ValidateSrcPath(updatepath) == nil
 }
 
-func CoreInfo() sdkplugin.PluginInfo {
-	pluginJsonPath := filepath.Join(sdkpaths.CoreDir, "plugin.json")
-	var pluginDef sdkplugin.PluginInfo
-	if err := sdkfs.ReadJson(pluginJsonPath, &pluginDef); err != nil {
-		panic(err)
+func MovePendingUpdate(pkg string) error {
+	updatePath := GetPendingUpdatePath(pkg)
+	if err := CreateBackup(pkg); err != nil {
+		return err
 	}
-	return pluginDef
+	if err := sdkfs.Copy(updatePath, GetInstallPath(pkg)); err != nil {
+		if err := RestoreBackup(pkg); err != nil {
+			return err
+		}
+		return err
+	}
+	if err := os.RemoveAll(updatePath); err != nil {
+		return err
+	}
+	if HasBackup(pkg) {
+		if err := RemoveBackup(pkg); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
-func RandomPluginPath() string {
-	parents := []string{
-		"/etc",
-		"/var",
-		"/usr",
-		"/run",
+func CreateBackup(pkg string) error {
+	installPath := GetInstallPath(pkg)
+	backupPath := GetBackupPath(pkg)
+	if sdkfs.Exists(backupPath) {
+		if err := os.RemoveAll(backupPath); err != nil {
+			return err
+		}
 	}
-	subparents := []string{
-		"/share",
-		"/tmp",
-		"/lib",
-		"/bin",
-		"/libout",
-		"/encoding",
-		"/decoding",
-	}
-	linuxFolders := []string{
-		"home", "var", "usr", "etc", "bin", "lib", "tmp", "root", "sbin", "opt", "proc", "sys", "mnt", "srv", "media",
-		"dev", "run", "lib64", "boot", "cgroup", "lost+found", "tmp", "docker", "network", "journal", "snap", "local", "rpool",
-		"iso", "srv", "cache", "system", "networkd", "security", "config", "shared", "user", "app", "repositories", "backups",
-		"scripts", "services", "log", "web", "build", "data", "applications", "private", "public", "jobs", "archives", "software",
-		"settings", "documents", "images", "videos", "audio", "projects", "archives", "old", "new", "configuration", "desktop",
-	}
-	randname := sdkstr.Rand(6)
-	parentpath := parents[rand.Intn(len(parents))]
-	folder := linuxFolders[rand.Intn(len(linuxFolders))]
-	subpar := subparents[rand.Intn(len(subparents))]
+	return sdkfs.Copy(installPath, backupPath)
+}
 
-	return filepath.Join(parentpath, subpar, folder, randname)
+func HasBackup(pkg string) bool {
+	backup := GetBackupPath(pkg)
+	err := ValidateSrcPath(backup)
+	return err == nil
+}
+
+func RestoreBackup(pkg string) error {
+	backupPath := GetBackupPath(pkg)
+	if err := sdkfs.Copy(backupPath, GetInstallPath(pkg)); err != nil {
+		return err
+	}
+	if err := os.RemoveAll(backupPath); err != nil {
+		return err
+	}
+	return nil
+}
+
+func RemoveBackup(pkg string) error {
+	return os.RemoveAll(GetBackupPath(pkg))
+}
+
+func RemovePendingUpdate(pkg string) error {
+	return os.RemoveAll(GetPendingUpdatePath(pkg))
+}
+
+func ReadMetadata(pkg string) (PluginMetadata, error) {
+	var metadata PluginMetadata
+	installPath := GetInstallPath(pkg)
+	err := sdkfs.ReadJson(filepath.Join(installPath, "metadata.json"), &metadata)
+	return metadata, err
+}
+
+func ValidateSrcPath(src string) error {
+	requiredFiles := []string{"plugin.json", "plugin.so", "go.mod"}
+
+	for _, f := range requiredFiles {
+		if !sdkfs.Exists(filepath.Join(src, f)) {
+			return errors.New(f + " not found in source path")
+		}
+	}
+	return nil
 }

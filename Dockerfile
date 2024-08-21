@@ -23,5 +23,7 @@ CMD cp go.work.default go.work && \
         -R 'plugins\/installed' \
         -R 'plugins\/system\/.*\/main\.go' \
         -R 'plugins\/local\/.*\/main\.go' \
+        -R 'plugins\/update\/.*\/main\.go' \
+        -R 'plugins\/backup\/.*\/main\.go' \
         -R '(.*)mono\.go' \
         -s -- sh -c './start.sh' -v

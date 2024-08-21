@@ -53,7 +53,7 @@ func main() {
 		return
 
 	case "fix-workspace":
-		pkg.CreateGoWorkspace()
+		tools.CreateGoWorkspace()
 		return
 
 	case "install-go":
