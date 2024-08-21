@@ -26,9 +26,8 @@ const (
 
 type PluginSrc string
 
-type PluginInstalledMark struct {
+type PluginInstallData struct {
 	Def         PluginSrcDef
-	Installed   bool
 	InstallPath string
 }
 
@@ -169,8 +168,8 @@ func IsSrcDefInstalled(def PluginSrcDef) bool {
 	return err == nil
 }
 
-func InstalledPluginsList() []PluginInstalledMark {
-	marks := []PluginInstalledMark{}
+func InstalledPluginsList() []PluginInstallData {
+	marks := []PluginInstallData{}
 	list := InstalledDirList()
 	for _, p := range list {
 		info, err := GetSrcInfo(p)
@@ -184,10 +183,9 @@ func InstalledPluginsList() []PluginInstalledMark {
 			continue
 		}
 
-		marks = append(marks, PluginInstalledMark{
+		marks = append(marks, PluginInstallData{
 			Def:         metadata.Def,
 			InstallPath: p,
-			Installed:   true,
 		})
 	}
 	return marks

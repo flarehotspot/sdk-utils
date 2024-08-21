@@ -11,15 +11,16 @@ import (
 
 func PluginsIndexCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 
-	type Plugin struct {
-		Info sdkplugin.PluginInfo
-		Src  pkg.PluginInstalledMark
+	type PluginData struct {
+		Info             sdkplugin.PluginInfo
+		Src              pkg.PluginInstallData
+		HasPendingUpdate bool
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		res := g.CoreAPI.HttpAPI.VueResponse()
 		sources := pkg.InstalledPluginsList()
-		plugins := []Plugin{}
+		plugins := []PluginData{}
 
 		for _, src := range sources {
 			info, err := pkg.GetPluginInfo(src.Def)
@@ -28,7 +29,12 @@ func PluginsIndexCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 				return
 			}
 
-			p := Plugin{Info: info, Src: src}
+			p := PluginData{
+				Info:             info,
+				Src:              src,
+				HasPendingUpdate: pkg.HasPendingUpdate(info.Package),
+			}
+
 			plugins = append(plugins, p)
 		}
 
