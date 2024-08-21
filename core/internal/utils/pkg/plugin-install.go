@@ -34,6 +34,10 @@ var PLuginFiles = []PluginFile{
 		Optional: false,
 	},
 	{
+		File:     "metadata.json",
+		Optional: true,
+	},
+	{
 		File:     "resources",
 		Optional: true,
 	},
@@ -47,31 +51,29 @@ var PLuginFiles = []PluginFile{
 	},
 }
 
-func InstallSrcDef(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, error) {
+func InstallSrcDef(w io.Writer, def PluginSrcDef) (info sdkplugin.PluginInfo, err error) {
 	switch def.Src {
 	case PluginSrcGit:
-		return InstallFromGitSrc(w, def)
+		info, err = InstallFromGitSrc(w, def)
 	case PluginSrcLocal, PluginSrcSystem:
-		return InstallFromLocalPath(w, def)
+		info, err = InstallFromLocalPath(w, def)
 	default:
 		return sdkplugin.PluginInfo{}, errors.New("Invalid plugin source: " + def.Src)
 	}
+
+	return info, err
 }
 
 func InstallFromLocalPath(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, error) {
-	w.Write([]byte("Building plugin from local path: " + def.LocalPath))
+	w.Write([]byte("Installing plugin from local path: " + def.LocalPath))
 
 	info, err := GetSrcInfo(def.LocalPath)
 	if err != nil {
 		return sdkplugin.PluginInfo{}, err
 	}
 
-	err = InstallPlugin(def.LocalPath, InstallOpts{RemoveSrc: false})
+	err = InstallPlugin(def.LocalPath, InstallOpts{Def: def, RemoveSrc: false})
 	if err != nil {
-		return sdkplugin.PluginInfo{}, err
-	}
-
-	if err := MarkPluginAsInstalled(def, GetInstallPath(info.Package)); err != nil {
 		return sdkplugin.PluginInfo{}, err
 	}
 
@@ -79,6 +81,7 @@ func InstallFromLocalPath(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, 
 }
 
 func InstallFromGitSrc(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, error) {
+	log.Println("Installing plugin from git source: " + def.String())
 	randomPath := RandomPluginPath()
 	diskfile := filepath.Join(randomPath, "disk")
 	mountpath := filepath.Join(randomPath, "mount")
@@ -107,11 +110,7 @@ func InstallFromGitSrc(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, err
 		return sdkplugin.PluginInfo{}, err
 	}
 
-	if err := InstallPlugin(clonePath, InstallOpts{RemoveSrc: false}); err != nil {
-		return sdkplugin.PluginInfo{}, err
-	}
-
-	if err := MarkPluginAsInstalled(def, GetInstallPath(info.Package)); err != nil {
+	if err := InstallPlugin(clonePath, InstallOpts{Def: def, RemoveSrc: false}); err != nil {
 		return sdkplugin.PluginInfo{}, err
 	}
 
@@ -155,6 +154,16 @@ func InstallPlugin(src string, opts InstallOpts) error {
 	}
 
 	installPath := GetInstallPath(info.Package)
+	if sdkfs.Exists(installPath) {
+		installPath = GetPendingUpdatePath(info.Package)
+	}
+
+	if err := WriteMetadata(opts.Def, installPath); err != nil {
+		return err
+	}
+
+	log.Println("Copying plugin files to: ", installPath)
+
 	for _, f := range PLuginFiles {
 		err := sdkfs.Copy(filepath.Join(src, f.File), filepath.Join(installPath, f.File))
 		if err != nil && !f.Optional {

@@ -5,6 +5,8 @@ package boot
 import (
 	"fmt"
 	"log"
+	"os"
+	sdkplugin "sdk/api/plugin"
 	"time"
 
 	"core/internal/plugins"
@@ -26,13 +28,59 @@ func InitPlugins(g *plugins.CoreGlobals) {
 	inst := &InstallStatus{bp: bp}
 
 	for _, def := range pkg.AllPluginDef() {
+		var info sdkplugin.PluginInfo
+		path, installed := pkg.FindDefInstallPath(def)
+		recompile := pkg.NeedsRecompile(def)
+		installed = installed && (pkg.ValidateSrcPath(path) == nil)
+		if installed {
+			info, _ = pkg.GetSrcInfo(path)
+		}
+
+		log.Println(fmt.Sprintf("Is plugin %s installed? %t", info.Package, installed))
+
+		if pkg.HasPendingUpdate(info.Package) {
+			bp.AppendLog(fmt.Sprintf("%s: Plugin has a pending update, installing...", info.Package))
+			err := pkg.MovePendingUpdate(info.Package)
+			if err != nil {
+				bp.AppendLog(fmt.Sprintf("%s: Error installing pending update: %s", info.Package, err.Error()))
+			} else {
+				continue
+			}
+		}
+
+		if installed && !recompile {
+			bp.AppendLog(fmt.Sprintf("%s: Plugin is already installed", info.Package))
+			continue
+		}
+
+		if installed {
+			if err := pkg.CreateBackup(info.Package); err != nil {
+				bp.AppendLog(fmt.Sprintf("%s: Error creating backup for plugin: %s", info.Package, err.Error()))
+				continue
+			}
+			if err := os.RemoveAll(path); err != nil {
+				bp.AppendLog(fmt.Sprintf("%s: Error removing plugin: %s", info.Package, err.Error()))
+				continue
+			}
+		}
+
 		info, err := pkg.InstallSrcDef(inst, def)
 		if err != nil {
-			msg := fmt.Sprintf("Error installing plugin %s: %s", def.String(), err.Error())
-			bp.AppendLog(msg)
+			bp.AppendLog(fmt.Sprintf("%s: Error installing plugin: %s", def.String(), err.Error()))
+			if pkg.HasBackup(info.Package) {
+				bp.AppendLog(fmt.Sprintf("%s: Restoring backup for plugin", info.Package))
+				if err := pkg.RestoreBackup(info.Package); err != nil {
+					bp.AppendLog(fmt.Sprintf("%s: Error restoring backup for plugin: %s", info.Package, err.Error()))
+				}
+			}
 		} else {
-			msg := "Installed plugin: " + info.Package
-			bp.AppendLog(msg)
+			bp.AppendLog(fmt.Sprintf("%s: Successfully installed plugin", info.Package))
+			if pkg.HasBackup(info.Package) {
+				pkg.RemoveBackup(info.Package)
+			}
+			if pkg.HasPendingUpdate(info.Package) {
+				pkg.RemovePendingUpdate(info.Package)
+			}
 		}
 
 		time.Sleep(1000 * 3 * time.Millisecond)

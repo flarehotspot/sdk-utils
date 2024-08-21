@@ -8,7 +8,7 @@ import (
 )
 
 func GetPluginInfo(def PluginSrcDef) (sdkplugin.PluginInfo, error) {
-	path, ok := FindPluginInstallPath(def)
+	path, ok := FindDefInstallPath(def)
 	if !ok {
 		return sdkplugin.PluginInfo{}, ErrNotInstalled
 	}

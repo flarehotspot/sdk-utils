@@ -17,7 +17,7 @@ func GetBackupPath(pkg string) string {
 	return filepath.Join(sdkpaths.PluginsDir, "backup", pkg)
 }
 
-func FindPluginInstallPath(def PluginSrcDef) (path string, ok bool) {
+func FindDefInstallPath(def PluginSrcDef) (path string, ok bool) {
 	installedPlugins := InstalledPluginsList()
 	for _, p := range installedPlugins {
 		if (def.Src == PluginSrcLocal || def.Src == PluginSrcSystem) && p.Def.LocalPath == def.LocalPath {

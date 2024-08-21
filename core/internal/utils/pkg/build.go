@@ -30,7 +30,7 @@ func BuildFromLocal(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, error)
 
 	// TODO: remove logs
 	log.Println("Marking plugins..")
-	if err := MarkPluginAsInstalled(def, GetInstallPath(info.Package)); err != nil {
+	if err := WriteMetadata(def, GetInstallPath(info.Package)); err != nil {
 		return sdkplugin.PluginInfo{}, err
 	}
 
@@ -69,7 +69,7 @@ func BuildFromGit(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, error) {
 	}
 
 	installPath := GetInstallPath(info.Package)
-	if err := MarkPluginAsInstalled(def, installPath); err != nil {
+	if err := WriteMetadata(def, installPath); err != nil {
 		return sdkplugin.PluginInfo{}, err
 	}
 
@@ -189,6 +189,7 @@ func BuildGoModule(gofile string, outfile string, params *GoBuildArgs) error {
 }
 
 type InstallOpts struct {
+	Def       PluginSrcDef
 	RemoveSrc bool
 	Encrypt   bool
 }

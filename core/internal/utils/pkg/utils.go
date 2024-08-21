@@ -8,10 +8,8 @@ import (
 	"path/filepath"
 	"sdk/libs/go-json"
 
-	fs "sdk/utils/fs"
 	sdkfs "sdk/utils/fs"
 	paths "sdk/utils/paths"
-	sdkpaths "sdk/utils/paths"
 )
 
 var (
@@ -53,15 +51,24 @@ func PluginsUserList() PluginDefList {
 	return userJson
 }
 
-func AllPluginDef() PluginDefList {
-	// defaultPlugins, err := PluginsDefaultList()
-	// if err != nil {
-	// 	log.Println("Failed to load default plugins:", err)
-	// }
+func IsDefInList(defs PluginDefList, def PluginSrcDef) bool {
+	for _, i := range defs {
+		if i.Equal(def) {
+			return true
+		}
+	}
+	return false
+}
 
+func AllPluginDef() PluginDefList {
+	list := InsalledPluginsDef()
 	localPlugins := LocalPlugins()
-	return localPlugins
-	// return append(defaultPlugins, userPlugins...)
+	for _, loc := range localPlugins {
+		if !IsDefInList(list, loc) {
+			list = append(list, loc)
+		}
+	}
+	return list
 }
 
 func LocalPlugins() PluginDefList {
@@ -71,6 +78,21 @@ func LocalPlugins() PluginDefList {
 		list = append(list, PluginSrcDef{Src: PluginSrcLocal, LocalPath: p})
 	}
 	log.Println("local plugins list: ", list)
+	return list
+}
+
+func InsalledPluginsDef() PluginDefList {
+	var list PluginDefList
+	paths := InstalledDirList()
+	for _, p := range paths {
+		info, err := GetSrcInfo(p)
+		if err != nil {
+			log.Println("Error reading plugin info: ", err)
+			continue
+		}
+		metadata, err := ReadMetadata(info.Package)
+		list = append(list, metadata.Def)
+	}
 	return list
 }
 
@@ -107,42 +129,56 @@ func InstalledDirList() []string {
 	installedPluginsPath := filepath.Join(paths.PluginsDir, "installed")
 
 	// check if plugins/installed directory exists before traversing
-	if !(fs.Exists(installedPluginsPath)) {
+	if !(sdkfs.Exists(installedPluginsPath)) {
 		return pluginList
 	}
 
 	// this lists all directories inside paths.PluginsDir/installed
-	if err := fs.LsDirs(installedPluginsPath, &pluginList, false); err != nil {
+	if err := sdkfs.LsDirs(installedPluginsPath, &pluginList, false); err != nil {
 		panic(err)
-	}
-
-	log.Println("Plugin List: ")
-	for _, p := range pluginList {
-		log.Println("\t" + p)
 	}
 
 	return pluginList
 }
 
-func MarkPluginAsInstalled(def PluginSrcDef, installPath string) error {
+func WriteMetadata(def PluginSrcDef, installPath string) error {
 	metapath := filepath.Join(installPath, "metadata.json")
 	metadata := PluginMetadata{
 		Def: def,
 	}
 
+	if err := sdkfs.EnsureDir(installPath); err != nil {
+		return err
+	}
+
 	return sdkfs.WriteJson(metapath, metadata)
 }
 
-func IsPluginInstalled(def PluginSrcDef) bool {
-	_, ok := FindPluginInstallPath(def)
-	return ok
+func IsPackageInstalled(pkg string) bool {
+	installPath := GetInstallPath(pkg)
+	err := ValidateSrcPath(installPath)
+	return err == nil
+}
+
+func IsSrcDefInstalled(def PluginSrcDef) bool {
+	installPath, ok := FindDefInstallPath(def)
+	if !ok {
+		return false
+	}
+	err := ValidateSrcPath(installPath)
+	return err == nil
 }
 
 func InstalledPluginsList() []PluginInstalledMark {
 	marks := []PluginInstalledMark{}
 	list := InstalledDirList()
 	for _, p := range list {
-		metadata, err := ReadMetadata(p)
+		info, err := GetSrcInfo(p)
+		if err != nil {
+			log.Println("Error reading plugin info: ", err)
+			continue
+		}
+		metadata, err := ReadMetadata(info.Package)
 		if err != nil {
 			log.Println("Error reading plugin metadata: ", err)
 			continue
@@ -164,7 +200,7 @@ func NeedsRecompile(def PluginSrcDef) bool {
 		return true
 	}
 
-	path, ok := FindPluginInstallPath(def)
+	path, ok := FindDefInstallPath(def)
 	if !ok {
 		log.Println("Plugin is not installed: ", def.LocalPath)
 		return true
@@ -185,7 +221,8 @@ func NeedsRecompile(def PluginSrcDef) bool {
 }
 
 func HasPendingUpdate(pkg string) bool {
-	return sdkfs.Exists(filepath.Join(sdkpaths.PluginsDir, "update", pkg))
+	updatepath := GetPendingUpdatePath(pkg)
+	return ValidateSrcPath(updatepath) == nil
 }
 
 func MovePendingUpdate(pkg string) error {
@@ -194,6 +231,9 @@ func MovePendingUpdate(pkg string) error {
 		return err
 	}
 	if err := sdkfs.Copy(updatePath, GetInstallPath(pkg)); err != nil {
+		if err := RestoreBackup(pkg); err != nil {
+			return err
+		}
 		return err
 	}
 	if err := os.RemoveAll(updatePath); err != nil {
@@ -209,7 +249,9 @@ func CreateBackup(pkg string) error {
 }
 
 func HasBackup(pkg string) bool {
-	return sdkfs.Exists(GetBackupPath(pkg))
+	backup := GetBackupPath(pkg)
+	err := ValidateSrcPath(backup)
+	return err == nil
 }
 
 func RestoreBackup(pkg string) error {
@@ -227,9 +269,24 @@ func RemoveBackup(pkg string) error {
 	return os.RemoveAll(GetBackupPath(pkg))
 }
 
+func RemovePendingUpdate(pkg string) error {
+	return os.RemoveAll(GetPendingUpdatePath(pkg))
+}
+
 func ReadMetadata(pkg string) (PluginMetadata, error) {
 	var metadata PluginMetadata
 	installPath := GetInstallPath(pkg)
 	err := sdkfs.ReadJson(filepath.Join(installPath, "metadata.json"), &metadata)
 	return metadata, err
+}
+
+func ValidateSrcPath(src string) error {
+	requiredFiles := []string{"plugin.json", "plugin.so", "go.mod"}
+
+	for _, f := range requiredFiles {
+		if !sdkfs.Exists(filepath.Join(src, f)) {
+			return errors.New(f + " not found in source path")
+		}
+	}
+	return nil
 }
