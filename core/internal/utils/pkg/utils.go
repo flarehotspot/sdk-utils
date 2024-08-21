@@ -155,7 +155,7 @@ func WriteMetadata(def PluginSrcDef, installPath string) error {
 
 func IsPackageInstalled(pkg string) bool {
 	installPath := GetInstallPath(pkg)
-	err := ValidateSrcPath(installPath)
+	err := ValidateInstallPath(installPath)
 	return err == nil
 }
 
@@ -164,7 +164,7 @@ func IsSrcDefInstalled(def PluginSrcDef) bool {
 	if !ok {
 		return false
 	}
-	err := ValidateSrcPath(installPath)
+	err := ValidateInstallPath(installPath)
 	return err == nil
 }
 
@@ -220,7 +220,7 @@ func NeedsRecompile(def PluginSrcDef) bool {
 
 func HasPendingUpdate(pkg string) bool {
 	updatepath := GetPendingUpdatePath(pkg)
-	return ValidateSrcPath(updatepath) == nil
+	return ValidateInstallPath(updatepath) == nil
 }
 
 func MovePendingUpdate(pkg string) error {
@@ -258,7 +258,7 @@ func CreateBackup(pkg string) error {
 
 func HasBackup(pkg string) bool {
 	backup := GetBackupPath(pkg)
-	err := ValidateSrcPath(backup)
+	err := ValidateInstallPath(backup)
 	return err == nil
 }
 
@@ -289,7 +289,18 @@ func ReadMetadata(pkg string) (PluginMetadata, error) {
 }
 
 func ValidateSrcPath(src string) error {
-	requiredFiles := []string{"plugin.json", "plugin.so", "go.mod"}
+	requiredFiles := []string{"plugin.json", "go.mod", "main.go"}
+
+	for _, f := range requiredFiles {
+		if !sdkfs.Exists(filepath.Join(src, f)) {
+			return errors.New(f + " not found in source path")
+		}
+	}
+	return nil
+}
+
+func ValidateInstallPath(src string) error {
+	requiredFiles := []string{"plugin.json", "go.mod", "plugin.so"}
 
 	for _, f := range requiredFiles {
 		if !sdkfs.Exists(filepath.Join(src, f)) {

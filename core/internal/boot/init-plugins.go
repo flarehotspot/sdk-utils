@@ -31,12 +31,10 @@ func InitPlugins(g *plugins.CoreGlobals) {
 		var info sdkplugin.PluginInfo
 		path, installed := pkg.FindDefInstallPath(def)
 		recompile := pkg.NeedsRecompile(def)
-		installed = installed && (pkg.ValidateSrcPath(path) == nil)
+		installed = installed && (pkg.ValidateInstallPath(path) == nil)
 		if installed {
 			info, _ = pkg.GetSrcInfo(path)
 		}
-
-		log.Println(fmt.Sprintf("Is plugin %s installed? %t", info.Package, installed))
 
 		if pkg.HasPendingUpdate(info.Package) {
 			bp.AppendLog(fmt.Sprintf("%s: Plugin has a pending update, installing...", info.Package))
