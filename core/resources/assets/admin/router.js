@@ -36,8 +36,6 @@
     }
   ];
 
-  console.log('Routes: ', routes);
-
   var router = new VueRouter({ routes: routes });
   $flare.router = router;
 
