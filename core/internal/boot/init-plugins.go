@@ -44,6 +44,7 @@ func InitPlugins(g *plugins.CoreGlobals) {
 			if err != nil {
 				bp.AppendLog(fmt.Sprintf("%s: Error installing pending update: %s", info.Package, err.Error()))
 			} else {
+				bp.AppendLog(fmt.Sprintf("%s: Successfully installed update", info.Package))
 				continue
 			}
 		}

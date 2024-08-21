@@ -239,12 +239,22 @@ func MovePendingUpdate(pkg string) error {
 	if err := os.RemoveAll(updatePath); err != nil {
 		return err
 	}
+	if HasBackup(pkg) {
+		if err := RemoveBackup(pkg); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
 func CreateBackup(pkg string) error {
 	installPath := GetInstallPath(pkg)
 	backupPath := GetBackupPath(pkg)
+	if sdkfs.Exists(backupPath) {
+		if err := os.RemoveAll(backupPath); err != nil {
+			return err
+		}
+	}
 	return sdkfs.Copy(installPath, backupPath)
 }
 
