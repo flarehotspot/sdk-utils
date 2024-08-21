@@ -1,6 +1,7 @@
 package tools
 
 import (
+	"core/internal/utils/pkg"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -18,7 +19,7 @@ use (
     ./sdk
     ./main`, goVersion)
 
-	pluginSearchPaths := []string{"plugins/local"}
+	pluginSearchPaths := []string{"plugins/system", "plugins/local"}
 
 	for _, searchPath := range pluginSearchPaths {
 		if sdkfs.Exists(searchPath) {
@@ -29,9 +30,7 @@ use (
 
 			for _, entry := range entries {
 				pluginDir := filepath.Join(searchPath, entry.Name())
-				// pluginDir := searchPath + "/" + entry.Name()
-				jsonFile := filepath.Join(pluginDir, "plugin.json")
-				if entry.IsDir() && sdkfs.Exists(jsonFile) {
+				if pkg.ValidateSrcPath(pluginDir) == nil {
 					goWork += "\n    ./" + pluginDir
 				}
 			}
