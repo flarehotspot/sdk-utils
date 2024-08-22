@@ -15,6 +15,7 @@ func PluginsIndexCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 		Info             sdkplugin.PluginInfo
 		Src              pkg.PluginInstallData
 		HasPendingUpdate bool
+		ToBeRemoved      bool
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -33,6 +34,7 @@ func PluginsIndexCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 				Info:             info,
 				Src:              src,
 				HasPendingUpdate: pkg.HasPendingUpdate(info.Package),
+				ToBeRemoved:      pkg.IsToBeRemoved(info.Package),
 			}
 
 			plugins = append(plugins, p)
@@ -61,5 +63,27 @@ func PluginsInstallCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 		}
 
 		res.Json(w, info, http.StatusOK)
+	}
+}
+
+func UninstallPluginCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		res := g.CoreAPI.HttpAPI.VueResponse()
+		// read post body as json
+		var data struct {
+			Pkg string `json:"pkg"`
+		}
+
+		err := json.NewDecoder(r.Body).Decode(&data)
+		if err != nil {
+			res.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		err = pkg.MarkToRemove(data.Pkg)
+		if err != nil {
+			res.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		res.Json(w, nil, http.StatusOK)
 	}
 }

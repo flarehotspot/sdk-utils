@@ -36,6 +36,16 @@ func InitPlugins(g *plugins.CoreGlobals) {
 			info, _ = pkg.GetSrcInfo(path)
 		}
 
+		if pkg.IsToBeRemoved(info.Package) {
+			bp.AppendLog(fmt.Sprintf("%s: Plugin is marked for removal, uninstalling...", info.Package))
+			if err := pkg.RemovePlugin(info.Package); err != nil {
+				bp.AppendLog(fmt.Sprintf("%s: Error removing plugin: %s", info.Package, err.Error()))
+			} else {
+				bp.AppendLog(fmt.Sprintf("%s: Successfully removed plugin", info.Package))
+				continue
+			}
+		}
+
 		if pkg.HasPendingUpdate(info.Package) {
 			bp.AppendLog(fmt.Sprintf("%s: Plugin has a pending update, installing...", info.Package))
 			err := pkg.MovePendingUpdate(info.Package)

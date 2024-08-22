@@ -30,8 +30,14 @@ func AdminRoutes(g *plugins.CoreGlobals) {
 	})
 
 	adminR.Group("/plugins", func(subrouter sdkhttp.HttpRouterInstance) {
-		subrouter.Get("/index", adminctrl.PluginsIndexCtrl(g)).Name("admin:plugins:index")
-		subrouter.Post("/install", adminctrl.PluginsInstallCtrl(g)).Name("admin:plugins:install")
+		subrouter.Get("/index", adminctrl.PluginsIndexCtrl(g)).
+			Name("admin:plugins:index")
+
+		subrouter.Post("/install", adminctrl.PluginsInstallCtrl(g)).
+			Name("admin:plugins:install")
+
+		subrouter.Post("/uninstall", adminctrl.UninstallPluginCtrl(g)).
+			Name("admin:plugins:uninstall")
 	})
 
 	g.CoreAPI.HttpAPI.VueRouter().RegisterAdminRoutes([]sdkhttp.VueAdminRoute{

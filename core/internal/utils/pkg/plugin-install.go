@@ -179,3 +179,32 @@ func InstallPlugin(src string, opts InstallOpts) error {
 
 	return nil
 }
+
+func MarkToRemove(pkg string) error {
+	installPath := GetInstallPath(pkg)
+	if !sdkfs.Exists(installPath) {
+		return errors.New("Plugin not installed: " + pkg)
+	}
+	uninstallFile := filepath.Join(installPath, "uninstall")
+	return os.WriteFile(uninstallFile, []byte(""), sdkfs.PermFile)
+}
+
+func IsToBeRemoved(pkg string) bool {
+	uninstallFile := filepath.Join(GetInstallPath(pkg), "uninstall")
+	return sdkfs.Exists(uninstallFile)
+}
+
+func RemovePlugin(pack string) error {
+	metadata, err := ReadMetadata(pack)
+	if err != nil {
+		return err
+	}
+	def := metadata.Def
+	if def.Src == PluginSrcLocal || def.Src == PluginSrcSystem {
+		return os.RemoveAll(def.LocalPath)
+	}
+	if err := os.RemoveAll(GetInstallPath(pack)); err != nil {
+		return err
+	}
+	return nil
+}
