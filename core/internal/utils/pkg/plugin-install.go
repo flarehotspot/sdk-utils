@@ -194,6 +194,17 @@ func IsToBeRemoved(pkg string) bool {
 	return sdkfs.Exists(uninstallFile)
 }
 
-func RemovePlugin(pkg string) error {
-	return os.RemoveAll(GetInstallPath(pkg))
+func RemovePlugin(pack string) error {
+	metadata, err := ReadMetadata(pack)
+	if err != nil {
+		return err
+	}
+	def := metadata.Def
+	if def.Src == PluginSrcLocal || def.Src == PluginSrcSystem {
+		return os.RemoveAll(def.LocalPath)
+	}
+	if err := os.RemoveAll(GetInstallPath(pack)); err != nil {
+		return err
+	}
+	return nil
 }
