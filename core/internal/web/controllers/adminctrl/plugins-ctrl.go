@@ -3,10 +3,14 @@ package adminctrl
 import (
 	"core/internal/plugins"
 	"core/internal/utils/pkg"
+	"log"
 	"net/http"
 	sdkplugin "sdk/api/plugin"
 	"sdk/libs/go-json"
 	"strings"
+
+	coremachine_v0_0_1 "core/internal/rpc/machines/coremachines/v0_0_1"
+	"core/internal/rpc/twirp"
 )
 
 func PluginsIndexCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
@@ -38,6 +42,12 @@ func PluginsIndexCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 			}
 
 			plugins = append(plugins, p)
+		}
+
+		srv, ctx := twirp.GetCoreMachineTwirpServiceAndCtx()
+		_, err := srv.FetchPlugins(ctx, &coremachine_v0_0_1.FetchPluginsRequest{})
+		if err != nil {
+			log.Println("Error:", err)
 		}
 
 		res.Json(w, plugins, http.StatusOK)
