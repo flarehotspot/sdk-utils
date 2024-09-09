@@ -22,7 +22,6 @@ func GetCoreMachineTwirpServiceAndCtx() (core_machine_v0_0_1.CoreMachineService,
 	}
 
 	baseUrl := subdomain + "." + domain
-
 	url := proto + "://" + baseUrl + "/" + prefix
 
 	srv := core_machine_v0_0_1.NewCoreMachineServiceProtobufClient(url, &http.Client{})

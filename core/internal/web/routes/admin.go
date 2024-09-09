@@ -66,8 +66,8 @@ func AdminRoutes(g *plugins.CoreGlobals) {
 		},
 		{
 			RouteName: "plugins-store",
-			RoutePath: "/plugins/new",
-			Component: "admin/plugins/NewInstall.vue",
+			RoutePath: "/plugins/store",
+			Component: "admin/plugins/PluginStore.vue",
 		},
 	}...)
 

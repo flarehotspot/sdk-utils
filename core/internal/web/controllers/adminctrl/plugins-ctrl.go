@@ -67,10 +67,22 @@ func PluginsIndexCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 func PluginsStoreCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		res := g.CoreAPI.HttpAPI.VueResponse()
-		plugins := map[string]string{
-			"name": "vince",
+
+		// TODO: remove after testing
+		log.Println("Fetching plugins..")
+		srv, ctx := twirp.GetCoreMachineTwirpServiceAndCtx()
+		qPlugins, err := srv.FetchPlugins(ctx, &coremachine_v0_0_1.FetchPluginsRequest{})
+		if err != nil {
+			log.Println("Error:", err)
+			return
 		}
-		res.Json(w, plugins, http.StatusOK)
+
+		if qPlugins == nil {
+			log.Println("Fetched plugins: ", qPlugins)
+			return
+		}
+
+		res.Json(w, qPlugins, http.StatusOK)
 	}
 }
 

@@ -32,8 +32,6 @@ services:
       retries: 30
     networks:
       shared_network:
-        aliases:
-          - rpc-machines.flarehotspot-dev.com
 
   phpmyadmin:
     image: phpmyadmin
@@ -50,8 +48,6 @@ services:
       - PMA_PASSWORD=root
     networks:
       shared_network:
-        aliases:
-          - rpc-machines.flarehotspot-dev.com
 
 volumes:
   mariadb:
