@@ -12,6 +12,10 @@ services:
         condition: service_healthy
     ports:
       - 3000:3000
+    networks:
+      shared_network:
+        aliases:
+          - rpc-machines.flarehotspot-dev.com
 
   mariadb:
     image: mariadb:latest
@@ -26,6 +30,10 @@ services:
       interval: 30s
       timeout: 5s
       retries: 30
+    networks:
+      shared_network:
+        aliases:
+          - rpc-machines.flarehotspot-dev.com
 
   phpmyadmin:
     image: phpmyadmin
@@ -40,6 +48,14 @@ services:
       - PMA_HOST=mariadb
       - PMA_USER=root
       - PMA_PASSWORD=root
+    networks:
+      shared_network:
+        aliases:
+          - rpc-machines.flarehotspot-dev.com
 
 volumes:
   mariadb:
+
+networks:
+  shared_network:
+    external: true

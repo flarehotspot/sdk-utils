@@ -33,6 +33,9 @@ func AdminRoutes(g *plugins.CoreGlobals) {
 		subrouter.Get("/index", adminctrl.PluginsIndexCtrl(g)).
 			Name("admin:plugins:index")
 
+		subrouter.Get("/store", adminctrl.PluginsStoreCtrl(g)).
+			Name("admin:plugins:store")
+
 		subrouter.Post("/install", adminctrl.PluginsInstallCtrl(g)).
 			Name("admin:plugins:install")
 
@@ -58,6 +61,11 @@ func AdminRoutes(g *plugins.CoreGlobals) {
 		},
 		{
 			RouteName: "plugins-new",
+			RoutePath: "/plugins/new",
+			Component: "admin/plugins/NewInstall.vue",
+		},
+		{
+			RouteName: "plugins-store",
 			RoutePath: "/plugins/new",
 			Component: "admin/plugins/NewInstall.vue",
 		},
