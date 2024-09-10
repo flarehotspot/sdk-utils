@@ -1,19 +1,21 @@
 <template>
   <div>
-    <h1>Install Plugins</h1>
+    <h1>Installed Plugins</h1>
     <hr />
 
-    <router-link
-      class="btn btn-primary"
-      to='<% .Helpers.VueRoutePath "plugins-new" %>'
-      >Install a Plugin</router-link
-    >
+    <div class="mb-2">
+      <router-link
+        class="btn btn-primary"
+        to='<% .Helpers.VueRoutePath "plugins-new" %>'
+        >Install a Plugin</router-link
+      >
 
-    <router-link
-      class="btn btn-primary"
-      to='<% .Helpers.VueRoutePath "plugins-new" %>'
-      >Visit Flare Plugins</router-link
-    >
+      <router-link
+        class="btn btn-primary"
+        to='<% .Helpers.VueRoutePath "plugins-store" %>'
+        >Visit Flare Plugins</router-link
+      >
+    </div>
 
     <table class="table table-bordered table-striped">
       <thead>

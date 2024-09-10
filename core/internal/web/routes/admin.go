@@ -33,8 +33,13 @@ func AdminRoutes(g *plugins.CoreGlobals) {
 		subrouter.Get("/index", adminctrl.PluginsIndexCtrl(g)).
 			Name("admin:plugins:index")
 
-		subrouter.Get("/store", adminctrl.PluginsStoreCtrl(g)).
-			Name("admin:plugins:store")
+		subrouter.Group("/store", func(storeSubrouter sdkhttp.HttpRouterInstance) {
+			storeSubrouter.Get("/index", adminctrl.PluginsStoreCtrl(g)).
+				Name("admin:plugins:store:index")
+
+			storeSubrouter.Get("/plugin", adminctrl.ViewPluginCtrl(g)).
+				Name("admin:plugins:store:plugin")
+		})
 
 		subrouter.Post("/install", adminctrl.PluginsInstallCtrl(g)).
 			Name("admin:plugins:install")
@@ -55,11 +60,6 @@ func AdminRoutes(g *plugins.CoreGlobals) {
 			Component: "admin/LogViewer.vue",
 		},
 		{
-			RouteName: "plugins-store",
-			RoutePath: "/plugins/store",
-			Component: "admin/plugins/PluginStore.vue",
-		},
-		{
 			RouteName: "plugins-index",
 			RoutePath: "/plugins",
 			Component: "admin/plugins/Index.vue",
@@ -68,6 +68,16 @@ func AdminRoutes(g *plugins.CoreGlobals) {
 			RouteName: "plugins-new",
 			RoutePath: "/plugins/new",
 			Component: "admin/plugins/NewInstall.vue",
+		},
+		{
+			RouteName: "plugins-store",
+			RoutePath: "/plugins/store",
+			Component: "admin/plugins/PluginsStore.vue",
+		},
+		{
+			RouteName: "plugin",
+			RoutePath: "/plugins/store/plugin",
+			Component: "admin/plugins/PluginDetail.vue",
 		},
 	}...)
 

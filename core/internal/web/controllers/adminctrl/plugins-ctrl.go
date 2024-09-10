@@ -2,18 +2,19 @@ package adminctrl
 
 import (
 	"core/internal/plugins"
-	// coremachine_v0_0_1 "core/internal/rpc/machines/coremachines/v0_0_1"
-	// "core/internal/rpc/twirp"
+	coremachine_v0_0_1 "core/internal/rpc/machines/coremachines/v0_0_1"
+	"core/internal/rpc/twirp"
 	"core/internal/utils/pkg"
+	"errors"
 	"log"
 	"net/http"
 	sdkplugin "sdk/api/plugin"
 	"sdk/libs/go-json"
+	sdkstr "sdk/utils/strings"
 	"strings"
 )
 
 func PluginsIndexCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
-
 	type PluginData struct {
 		Info             sdkplugin.PluginInfo
 		Src              pkg.PluginInstallData
@@ -22,7 +23,6 @@ func PluginsIndexCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		log.Println("Running inside the PluginsIndexCtrl  handler function")
 		res := g.CoreAPI.HttpAPI.VueResponse()
 		sources := pkg.InstalledPluginsList()
 		plugins := []PluginData{}
@@ -45,33 +45,116 @@ func PluginsIndexCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 		}
 
 		res.Json(w, plugins, http.StatusOK)
-
-		// TODO: remove after testing
-		// log.Println("Fetching plugins..")
-		// srv, ctx := twirp.GetCoreMachineTwirpServiceAndCtx()
-		// qPlugins, err := srv.FetchPlugins(ctx, &coremachine_v0_0_1.FetchPluginsRequest{})
-		// if err != nil {
-		// 	log.Println("Error:", err)
-		// 	return
-		// }
-
-		// if qPlugins == nil {
-		// 	log.Println("Fetched plugins: ", qPlugins)
-		// 	return
-		// }
-
-		// log.Println("Fetched plugins: ", qPlugins)
 	}
 }
 
 func PluginsStoreCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 	log.Println("Running plugins store controller..")
 
+	type Plugin struct {
+		Id      int
+		Name    string
+		Package string
+	}
+
 	return func(w http.ResponseWriter, r *http.Request) {
 		log.Println("Running inside the PluginsStoreCtrl handler function")
-
 		res := g.CoreAPI.HttpAPI.VueResponse()
-		res.Json(w, "Frustrated", http.StatusOK)
+
+		// TODO: remove after testing
+		log.Println("Fetching plugins..")
+		srv, ctx := twirp.GetCoreMachineTwirpServiceAndCtx()
+		qPlugins, err := srv.FetchPlugins(ctx, &coremachine_v0_0_1.FetchPluginsRequest{})
+		if err != nil {
+			log.Println("Error:", err)
+			res.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		if qPlugins == nil {
+			err := errors.New("queried plugins is nil")
+			log.Println("Error:", err)
+			res.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		log.Println("Fetched plugins: ", qPlugins)
+
+		// parse plugins
+		var plugins []Plugin
+		for _, qP := range qPlugins.Plugins {
+			plugins = append(plugins, Plugin{
+				Id:      int(qP.PluginId),
+				Name:    qP.Name,
+				Package: qP.Package,
+			})
+		}
+
+		res.Json(w, plugins, http.StatusOK)
+	}
+}
+
+func ViewPluginCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
+	type PluginRelease struct {
+		Id         int
+		Major      int
+		Minor      int
+		Patch      int
+		ZipFileUrl string
+	}
+
+	type Plugin struct {
+		Id       int
+		Name     string
+		Package  string
+		Releases []PluginRelease
+	}
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		res := g.CoreAPI.HttpAPI.VueResponse()
+
+        // parse query
+		pluginId := sdkstr.AtoiOrDefault(r.URL.Query().Get("id"), 0)
+
+        log.Println(pluginId)
+
+		// TODO: remove after testing
+		log.Println("Fetching plugin..")
+		srv, ctx := twirp.GetCoreMachineTwirpServiceAndCtx()
+		qPlugin, err := srv.FetchPlugin(ctx, &coremachine_v0_0_1.FetchPluginRequest{
+			PluginId: int32(pluginId),
+		})
+		if err != nil {
+			log.Println("Error:", err)
+			res.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		if qPlugin == nil {
+			err := errors.New("queried plugin is nil")
+			log.Println("Error:", err)
+			res.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		log.Println("Fetched plugin: ", qPlugin)
+
+		// pase plugin
+		var pluginReleases []PluginRelease
+		for _, qpr := range qPlugin.Releases {
+			pluginReleases = append(pluginReleases, PluginRelease{
+				Id:         int(qpr.PluginReleaseId),
+				Major:      int(qpr.Major),
+				Minor:      int(qpr.Minor),
+				Patch:      int(qpr.Patch),
+				ZipFileUrl: qpr.ZipFileUrl,
+			})
+		}
+
+		plugin := Plugin{
+			Id:       int(qPlugin.Plugin.PluginId),
+			Name:     qPlugin.Plugin.Name,
+			Package:  qPlugin.Plugin.Package,
+			Releases: pluginReleases,
+		}
+
+		res.Json(w, plugin, http.StatusOK)
 	}
 }
 
