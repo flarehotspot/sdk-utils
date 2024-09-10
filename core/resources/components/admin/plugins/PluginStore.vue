@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>Plugins</h1>
+    <h1>Flarehotspot Plugins Store</h1>
     <hr />
   </div>
 </template>

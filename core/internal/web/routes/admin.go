@@ -55,6 +55,11 @@ func AdminRoutes(g *plugins.CoreGlobals) {
 			Component: "admin/LogViewer.vue",
 		},
 		{
+			RouteName: "plugins-store",
+			RoutePath: "/plugins/store",
+			Component: "admin/plugins/PluginStore.vue",
+		},
+		{
 			RouteName: "plugins-index",
 			RoutePath: "/plugins",
 			Component: "admin/plugins/Index.vue",
@@ -63,11 +68,6 @@ func AdminRoutes(g *plugins.CoreGlobals) {
 			RouteName: "plugins-new",
 			RoutePath: "/plugins/new",
 			Component: "admin/plugins/NewInstall.vue",
-		},
-		{
-			RouteName: "plugins-store",
-			RoutePath: "/plugins/store",
-			Component: "admin/plugins/PluginStore.vue",
 		},
 	}...)
 

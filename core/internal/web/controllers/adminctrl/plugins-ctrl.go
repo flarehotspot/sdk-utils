@@ -2,8 +2,8 @@ package adminctrl
 
 import (
 	"core/internal/plugins"
-	coremachine_v0_0_1 "core/internal/rpc/machines/coremachines/v0_0_1"
-	"core/internal/rpc/twirp"
+	// coremachine_v0_0_1 "core/internal/rpc/machines/coremachines/v0_0_1"
+	// "core/internal/rpc/twirp"
 	"core/internal/utils/pkg"
 	"log"
 	"net/http"
@@ -22,6 +22,7 @@ func PluginsIndexCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
+		log.Println("Running inside the PluginsIndexCtrl  handler function")
 		res := g.CoreAPI.HttpAPI.VueResponse()
 		sources := pkg.InstalledPluginsList()
 		plugins := []PluginData{}
@@ -46,43 +47,31 @@ func PluginsIndexCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 		res.Json(w, plugins, http.StatusOK)
 
 		// TODO: remove after testing
-		log.Println("Fetching plugins..")
-		srv, ctx := twirp.GetCoreMachineTwirpServiceAndCtx()
-		qPlugins, err := srv.FetchPlugins(ctx, &coremachine_v0_0_1.FetchPluginsRequest{})
-		if err != nil {
-			log.Println("Error:", err)
-			return
-		}
+		// log.Println("Fetching plugins..")
+		// srv, ctx := twirp.GetCoreMachineTwirpServiceAndCtx()
+		// qPlugins, err := srv.FetchPlugins(ctx, &coremachine_v0_0_1.FetchPluginsRequest{})
+		// if err != nil {
+		// 	log.Println("Error:", err)
+		// 	return
+		// }
 
-		if qPlugins == nil {
-			log.Println("Fetched plugins: ", qPlugins)
-			return
-		}
+		// if qPlugins == nil {
+		// 	log.Println("Fetched plugins: ", qPlugins)
+		// 	return
+		// }
 
-		log.Println("Fetched plugins: ", qPlugins)
-
+		// log.Println("Fetched plugins: ", qPlugins)
 	}
 }
 
 func PluginsStoreCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
+	log.Println("Running plugins store controller..")
+
 	return func(w http.ResponseWriter, r *http.Request) {
+		log.Println("Running inside the PluginsStoreCtrl handler function")
+
 		res := g.CoreAPI.HttpAPI.VueResponse()
-
-		// TODO: remove after testing
-		log.Println("Fetching plugins..")
-		srv, ctx := twirp.GetCoreMachineTwirpServiceAndCtx()
-		qPlugins, err := srv.FetchPlugins(ctx, &coremachine_v0_0_1.FetchPluginsRequest{})
-		if err != nil {
-			log.Println("Error:", err)
-			return
-		}
-
-		if qPlugins == nil {
-			log.Println("Fetched plugins: ", qPlugins)
-			return
-		}
-
-		res.Json(w, qPlugins, http.StatusOK)
+		res.Json(w, "Frustrated", http.StatusOK)
 	}
 }
 
