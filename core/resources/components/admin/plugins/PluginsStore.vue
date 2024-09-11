@@ -1,10 +1,14 @@
 <template>
   <div>
-    <div class="d-flex p-2">
-      <h3>Flare Plugins Store</h3>
-      <p>s</p>
+    <div class="d-flex p-2 align-items-center">
+      <router-link
+        to='<% .Helpers.VueRoutePath "plugins-index" %>'
+        class="btn btn-secondary mr-2"
+      >
+        back
+      </router-link>
+      <h3>Flare Plugins Storeeee</h3>
     </div>
-
     <hr />
 
     <div v-for="p in plugins">
