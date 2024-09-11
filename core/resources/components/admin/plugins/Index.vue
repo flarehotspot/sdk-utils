@@ -1,22 +1,26 @@
 <template>
   <div>
-    <h1>Installed Plugins</h1>
+    <h1>Plugins Manager</h1>
     <hr />
 
+    <h2>Install Plugins</h2>
     <div class="mb-2">
-      <router-link
-        class="btn btn-primary"
-        to='<% .Helpers.VueRoutePath "plugins-new" %>'
-        >Install a Plugin</router-link
+      <router-link class="" to='<% .Helpers.VueRoutePath "plugins-new" %>'
+        >Install a plugin locally</router-link
       >
+
+      or
 
       <router-link
         class="btn btn-primary"
         to='<% .Helpers.VueRoutePath "plugins-store" %>'
-        >Visit Flare Plugins</router-link
+        >Visit plugins store</router-link
       >
     </div>
 
+    <br />
+
+    <h2>Installed Plugins</h2>
     <table class="table table-bordered table-striped">
       <thead>
         <tr>
@@ -52,7 +56,7 @@ define(function () {
     template: template,
     data: function () {
       return {
-        plugins: [],
+        plugins: []
       };
     },
     mounted: function () {
