@@ -3,9 +3,10 @@ package pkg
 import "core/internal/utils/git"
 
 type PluginSrcDef struct {
-	Src          string // git | strore | system | local
+	Src          string // git | store | system | local
 	StorePackage string // if src is "store"
 	StoreVersion string // if src is "store"
+	StoreZipFile string // if src is "store"
 	GitURL       string // if src is "git"
 	GitRef       string // can be a branch, tag or commit hash
 	LocalPath    string // if src is "local or system"
