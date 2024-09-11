@@ -95,7 +95,7 @@ func AdminRoutes(g *plugins.CoreGlobals) {
 			},
 			{
 				Category:  sdkhttp.NavCategorySystem,
-				Label:     "Plugins",
+				Label:     "Manage Plugins",
 				RouteName: "plugins-index",
 			},
 		}
