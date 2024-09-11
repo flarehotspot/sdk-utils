@@ -12,10 +12,9 @@
 
     <hr />
 
-    <div v-for="pr in data.Releases" :key="pr.Id">
-      <a :href="pr.ZipFileUrl">
-        <p>{{ pr.Major + '.' + pr.Minor + '.' + pr.Patch }}</p>
-      </a>
+    <div class="d-flex" v-for="pr in data.Releases" :key="pr.Id">
+      <p>{{ pr.Major + '.' + pr.Minor + '.' + pr.Patch }}</p>
+      <button @click="installRelease(pr)">install</button>
     </div>
   </div>
 </template>
@@ -28,7 +27,12 @@ define(function () {
       var self = this;
       return {
         data: [],
-        pluginId: parseInt(self.$route.query.id) || 1
+        pluginId: parseInt(self.$route.query.id) || 1,
+        def: {
+          Src: 'store',
+          GitURL: '',
+          GitRef: ''
+        }
       };
     },
     mounted: function () {
@@ -57,6 +61,18 @@ define(function () {
             self.data = data;
             console.log(data);
           });
+      },
+      installRelease: function (pluginRelease) {
+          var params = {
+              Src: "store",
+              StorePackage: pluginRelease.Package,
+              StoreZipFile: pluginRelease.ZipFileUrl,
+          };
+
+        $flare.http.post(
+          '<% .Helpers.UrlForRoute "admin:plugins:install" %>',
+            params
+        );
       }
     }
   };
