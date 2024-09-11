@@ -52,7 +52,7 @@ define(function () {
     template: template,
     data: function () {
       return {
-        plugins: []
+        plugins: [],
       };
     },
     mounted: function () {

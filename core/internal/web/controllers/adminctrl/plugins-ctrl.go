@@ -111,10 +111,17 @@ func ViewPluginCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		res := g.CoreAPI.HttpAPI.VueResponse()
 
-        // parse query
+		// parse query
 		pluginId := sdkstr.AtoiOrDefault(r.URL.Query().Get("id"), 0)
 
-        log.Println(pluginId)
+		if pluginId == 0 {
+			err := errors.New("invalid plugin id")
+			log.Println("Error:", err)
+			res.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		log.Println(pluginId)
 
 		// TODO: remove after testing
 		log.Println("Fetching plugin..")

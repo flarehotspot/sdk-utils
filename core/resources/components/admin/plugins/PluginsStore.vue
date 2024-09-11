@@ -29,14 +29,19 @@ define(function () {
     },
     mounted: function () {
       var self = this;
-      $flare.http
-        .get('<% .Helpers.UrlForRoute "admin:plugins:store:index"  %>')
-        .then(function (plugins) {
-          self.plugins = plugins;
-          console.log(plugins);
-        });
+      self.load();
     },
     methods: {
+      load: function () {
+        var self = this;
+
+        $flare.http
+          .get('<% .Helpers.UrlForRoute "admin:plugins:store:index" %>')
+          .then(function (plugins) {
+            self.plugins = plugins;
+            console.log(self.plugins);
+          });
+      },
       viewPlugin: function (pluginId) {
         var self = this;
 
