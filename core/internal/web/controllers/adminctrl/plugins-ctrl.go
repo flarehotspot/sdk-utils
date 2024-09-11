@@ -49,8 +49,6 @@ func PluginsIndexCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 }
 
 func PluginsStoreCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
-	log.Println("Running plugins store controller..")
-
 	type Plugin struct {
 		Id      int
 		Name    string
@@ -58,11 +56,8 @@ func PluginsStoreCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		log.Println("Running inside the PluginsStoreCtrl handler function")
 		res := g.CoreAPI.HttpAPI.VueResponse()
 
-		// TODO: remove logs
-		log.Println("Fetching plugins..")
 		srv, ctx := twirp.GetCoreMachineTwirpServiceAndCtx()
 		qPlugins, err := srv.FetchPlugins(ctx, &coremachine_v0_0_1.FetchPluginsRequest{})
 		if err != nil {
@@ -76,7 +71,6 @@ func PluginsStoreCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 			res.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		log.Println("Fetched plugins: ", qPlugins)
 
 		// parse plugins
 		var plugins []Plugin
@@ -121,10 +115,6 @@ func ViewPluginCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 			return
 		}
 
-		log.Println(pluginId)
-
-		// TODO: remove logs
-		log.Println("Fetching plugin..")
 		srv, ctx := twirp.GetCoreMachineTwirpServiceAndCtx()
 		qPlugin, err := srv.FetchPlugin(ctx, &coremachine_v0_0_1.FetchPluginRequest{
 			PluginId: int32(pluginId),
@@ -140,9 +130,8 @@ func ViewPluginCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 			res.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		log.Println("Fetched plugin: ", qPlugin)
 
-		// pase plugin
+		// parse plugin
 		var pluginReleases []PluginRelease
 		for _, qpr := range qPlugin.Releases {
 			pluginReleases = append(pluginReleases, PluginRelease{
@@ -176,6 +165,12 @@ func PluginsInstallCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 			res.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
+
+		// TODO: remove logs
+		log.Println("data: ")
+		log.Println(data.Src)
+		log.Println(data.StorePackage)
+		log.Println(data.StoreZipFile)
 
 		var result strings.Builder
 		info, err := pkg.InstallSrcDef(&result, data)
