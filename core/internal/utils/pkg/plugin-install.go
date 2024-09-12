@@ -113,13 +113,14 @@ func InstallFromPluginStore(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo
 	// unzip plugin release
 	sdktargz.UntarGz(clonePath, workPath)
 
-	info, err := GetSrcInfo(workPath)
+	newWorkPath := filepath.Join(workPath, def.StorePackage)
+	info, err := GetSrcInfo(newWorkPath)
 	if err != nil {
 		log.Println("Error getting plugin info: ", err)
 		return sdkplugin.PluginInfo{}, err
 	}
 
-	if err := InstallPlugin(workPath, InstallOpts{Def: def, RemoveSrc: false}); err != nil {
+	if err := InstallPlugin(newWorkPath, InstallOpts{Def: def, RemoveSrc: false}); err != nil {
 		return sdkplugin.PluginInfo{}, err
 	}
 
@@ -222,6 +223,8 @@ func InstallPlugin(src string, opts InstallOpts) error {
 			return err
 		}
 	}
+
+	log.Println("Plugin installed")
 
 	return nil
 }
