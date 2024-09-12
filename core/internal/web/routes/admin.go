@@ -34,7 +34,7 @@ func AdminRoutes(g *plugins.CoreGlobals) {
 			Name("admin:plugins:index")
 
 		subrouter.Group("/store", func(storeSubrouter sdkhttp.HttpRouterInstance) {
-			storeSubrouter.Get("/index", adminctrl.PluginsStoreCtrl(g)).
+			storeSubrouter.Get("/index", adminctrl.PluginsStoreIndexCtrl(g)).
 				Name("admin:plugins:store:index")
 
 			storeSubrouter.Get("/plugins/plugin", adminctrl.ViewPluginCtrl(g)).

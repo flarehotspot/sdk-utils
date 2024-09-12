@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="d-flex p-2 align-items-center">
+    <div class="d-flex flex-row p-2 align-items-center">
       <router-link
         to='<% .Helpers.VueRoutePath "plugins-index" %>'
         class="btn btn-secondary mr-2"
@@ -8,16 +8,21 @@
         back
       </router-link>
       <h3>Flare Plugins Store</h3>
+      <div class="w-100"></div>
+      <p>search</p>
     </div>
     <hr />
 
-    <div v-for="p in plugins">
-      <button class="border" @click="viewPlugin(p.Id)">
-        <div class="">
-          <p>{{ p.Name }}</p>
+    <div class="row">
+      <div v-for="p in plugins" :key="p.Id" class="col-md-4 col-3 mb-2">
+        <div
+          class="bg-light border rounded rounded-4 p-2 cursor-pointer mb-2"
+          @click="viewPlugin(p.Id)"
+        >
+          <h3>{{ p.Name }}</h3>
           <p>{{ p.Package }}</p>
         </div>
-      </button>
+      </div>
     </div>
   </div>
 </template>

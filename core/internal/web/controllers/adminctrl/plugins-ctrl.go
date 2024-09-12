@@ -48,7 +48,7 @@ func PluginsIndexCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 	}
 }
 
-func PluginsStoreCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
+func PluginsStoreIndexCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 	type Plugin struct {
 		Id      int
 		Name    string

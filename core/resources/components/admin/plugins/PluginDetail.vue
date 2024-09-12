@@ -2,19 +2,21 @@
   <div>
     <div class="d-flex p-2 align-items-center">
       <router-link
-        class="mr-3"
+        class="mr-3 btn btn-secondary"
         to='<% .Helpers.VueRoutePath "plugins-store" %>'
       >
         back
       </router-link>
-      <h3>Plugin {{ data.Name }}</h3>
+      <h3>{{ data.Name }}</h3>
     </div>
 
     <hr />
 
     <div class="d-flex" v-for="pr in data.Releases" :key="pr.Id">
       <p>{{ pr.Major + '.' + pr.Minor + '.' + pr.Patch }}</p>
-      <button @click="installRelease($event, pr)">install</button>
+      <div @click="installRelease($event, pr)" class="btn btn-primary">
+        install
+      </div>
     </div>
   </div>
 </template>
@@ -43,12 +45,8 @@ define(function () {
     methods: {
       load: function () {
         var self = this;
-        console.log(self.$route.query);
 
         self.pluginId = parseInt(self.$route.query.id);
-
-        console.log(self.pluginId);
-
         var params = {
           id: self.pluginId
         };
@@ -66,26 +64,22 @@ define(function () {
               Name: self.data.Name,
               Package: self.data.Package
             };
-            console.log('plugin: ', self.plugin);
           });
       },
       installRelease: function (e, pr) {
         e.preventDefault();
-
+          
         var self = this;
-        console.log('pr: ', pr);
-
         var params = {
           Src: 'store',
           StorePackage: self.plugin.Package,
           StoreZipFile: pr.ZipFileUrl
         };
-        console.log('params: ', params);
 
         $flare.http
           .post('<% .Helpers.UrlForRoute "admin:plugins:install" %>', params)
           .then(function (response) {
-            console.log('response: ', response);
+            $flare.notify.success(`Plugin ${response.Name} installed`);
           });
       }
     }
