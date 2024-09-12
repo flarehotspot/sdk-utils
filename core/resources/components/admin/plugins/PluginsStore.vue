@@ -7,7 +7,7 @@
       >
         back
       </router-link>
-      <h3>Flare Plugins Storeeee</h3>
+      <h3>Flare Plugins Store</h3>
     </div>
     <hr />
 
