@@ -5,19 +5,48 @@
         class="mr-3 btn btn-secondary"
         to='<% .Helpers.VueRoutePath "plugins-store" %>'
       >
-        back
+        back to store
       </router-link>
-      <h3>{{ data.Name }}</h3>
     </div>
 
     <hr />
 
-    <div class="d-flex" v-for="pr in data.Releases" :key="pr.Id">
-      <p>{{ pr.Major + '.' + pr.Minor + '.' + pr.Patch }}</p>
-      <div @click="installRelease($event, pr)" class="btn btn-primary">
-        install
-      </div>
+    <h3>{{ data.Name }}</h3>
+
+    <div
+      class="btn btn-primary w-100"
+      @click="installRelease($event, data.Releases[0])"
+    >
+      Install Plugin
     </div>
+
+    <hr />
+    <h4>Description</h4>
+    <hr />
+
+    <h4>Other Versions</h4>
+    <table class="table table-bordered table-striped">
+      <thead>
+        <tr>
+          <th>Version</th>
+          <th>Option</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="pr in data.Releases" :key="pr.Id">
+          <td>{{ pr.Major + '.' + pr.Minor + '.' + pr.Patch }}</td>
+          <td>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              @click="installRelease($event, pr)"
+            >
+              Install
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </template>
 
@@ -68,7 +97,7 @@ define(function () {
       },
       installRelease: function (e, pr) {
         e.preventDefault();
-          
+
         var self = this;
         var params = {
           Src: 'store',
@@ -79,7 +108,7 @@ define(function () {
         $flare.http
           .post('<% .Helpers.UrlForRoute "admin:plugins:install" %>', params)
           .then(function (response) {
-            $flare.notify.success(`Plugin ${response.Name} installed`);
+            $flare.notify.success(`${response.Name} installed`);
           });
       }
     }
