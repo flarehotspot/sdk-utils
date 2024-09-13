@@ -7,7 +7,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"sdk/utils/targz"
+	sdktargz "sdk/utils/targz"
 
 	"core/internal/utils/encdisk"
 	"core/internal/utils/git"
@@ -113,7 +113,11 @@ func InstallFromPluginStore(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo
 	// unzip plugin release
 	sdktargz.UntarGz(clonePath, workPath)
 
-	newWorkPath := filepath.Join(workPath, def.StorePackage)
+	newWorkPath, err := FindPluginSrc(workPath)
+	if err != nil {
+		log.Println("Unable to find plugin source in: ", workPath)
+		return sdkplugin.PluginInfo{}, errors.New("Unable to find plugin source in: " + workPath)
+	}
 	info, err := GetSrcInfo(newWorkPath)
 	if err != nil {
 		log.Println("Error getting plugin info: ", err)
