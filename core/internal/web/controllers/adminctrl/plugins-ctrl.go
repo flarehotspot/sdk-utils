@@ -166,12 +166,6 @@ func PluginsInstallCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 			return
 		}
 
-		// TODO: remove logs
-		log.Println("data: ")
-		log.Println(data.Src)
-		log.Println(data.StorePackage)
-		log.Println(data.StoreZipFile)
-
 		var result strings.Builder
 		info, err := pkg.InstallSrcDef(&result, data)
 		if err != nil {
