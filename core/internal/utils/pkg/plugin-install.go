@@ -115,8 +115,9 @@ func InstallFromPluginStore(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo
 
 	newWorkPath, err := FindPluginSrc(workPath)
 	if err != nil {
-		log.Println("Unable to find plugin source in: ", workPath)
-		return sdkplugin.PluginInfo{}, errors.New("Unable to find plugin source in: " + workPath)
+		err = errors.New("Unable to find plugin source in: " + workPath)
+		log.Println("Error: ", err)
+		return sdkplugin.PluginInfo{}, err
 	}
 	info, err := GetSrcInfo(newWorkPath)
 	if err != nil {
