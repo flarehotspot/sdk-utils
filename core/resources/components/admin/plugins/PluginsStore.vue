@@ -7,7 +7,7 @@
       >
         back
       </router-link>
-      <h3>Flare Plugins Store</h3>
+      <h3>Flare Plugins</h3>
       <div class="w-100"></div>
       <p>search</p>
     </div>
@@ -18,9 +18,19 @@
         <div
           class="bg-light border rounded rounded-4 p-2 cursor-pointer mb-2"
           @click="viewPlugin(p.Id)"
+          role="button"
         >
-          <h3>{{ p.Name }}</h3>
-          <p>{{ p.Package }}</p>
+          <div class="d-flex">
+            <h3 class="w-100">{{ p.Info.Name }}</h3>
+
+            <p
+              class="text-light bg-success p-2 rounded-pill"
+              v-if="p.IsInstalled"
+            >
+              installed
+            </p>
+          </div>
+          <p>{{ p.Info.Package }}</p>
         </div>
       </div>
     </div>
@@ -46,9 +56,8 @@ define(function () {
 
         $flare.http
           .get('<% .Helpers.UrlForRoute "admin:plugins:store:index" %>')
-          .then(function (plugins) {
-            self.plugins = plugins;
-            console.log(self.plugins);
+          .then(function (pluginsData) {
+            self.plugins = pluginsData;
           });
       },
       viewPlugin: function (pluginId) {

@@ -14,47 +14,35 @@ import (
 	"strings"
 )
 
+type PluginRelease struct {
+	Id         int
+	Major      int
+	Minor      int
+	Patch      int
+	ZipFileUrl string
+}
+
+type PluginData struct {
+	Id               int
+	Info             sdkplugin.PluginInfo
+	Src              pkg.PluginInstallData
+	HasPendingUpdate bool
+	ToBeRemoved      bool
+	IsInstalled      bool
+	Releases         []PluginRelease
+}
+
 func PluginsIndexCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
-	type PluginData struct {
-		Info             sdkplugin.PluginInfo
-		Src              pkg.PluginInstallData
-		HasPendingUpdate bool
-		ToBeRemoved      bool
-	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		res := g.CoreAPI.HttpAPI.VueResponse()
-		sources := pkg.InstalledPluginsList()
-		plugins := []PluginData{}
-
-		for _, src := range sources {
-			info, err := pkg.GetPluginInfo(src.Def)
-			if err != nil {
-				res.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
-
-			p := PluginData{
-				Info:             info,
-				Src:              src,
-				HasPendingUpdate: pkg.HasPendingUpdate(info.Package),
-				ToBeRemoved:      pkg.IsToBeRemoved(info.Package),
-			}
-
-			plugins = append(plugins, p)
-		}
+		plugins := getInstalledPlugins()
 
 		res.Json(w, plugins, http.StatusOK)
 	}
 }
 
 func PluginsStoreIndexCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
-	type Plugin struct {
-		Id      int
-		Name    string
-		Package string
-	}
-
 	return func(w http.ResponseWriter, r *http.Request) {
 		res := g.CoreAPI.HttpAPI.VueResponse()
 
@@ -72,36 +60,36 @@ func PluginsStoreIndexCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 			return
 		}
 
-		// parse plugins
-		var plugins []Plugin
+		installedPlugins := getInstalledPlugins()
+
+		// parse pluginsData
+		var pluginsData []PluginData
 		for _, qP := range qPlugins.Plugins {
-			plugins = append(plugins, Plugin{
-				Id:      int(qP.PluginId),
-				Name:    qP.Name,
-				Package: qP.Package,
+			pluginsData = append(pluginsData, PluginData{
+				Id: int(qP.PluginId),
+				Info: sdkplugin.PluginInfo{
+					Name:        qP.Name,
+					Package:     qP.Package,
+					Description: "",
+				},
+				IsInstalled: isPluginInstalled(qP.Package, &installedPlugins),
 			})
 		}
 
-		res.Json(w, plugins, http.StatusOK)
+		res.Json(w, pluginsData, http.StatusOK)
 	}
 }
 
+func isPluginInstalled(pluginPkg string, installedPlugins *[]PluginData) bool {
+	for _, p := range *installedPlugins {
+		if pluginPkg == p.Info.Package {
+			return true
+		}
+	}
+	return false
+}
+
 func ViewPluginCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
-	type PluginRelease struct {
-		Id         int
-		Major      int
-		Minor      int
-		Patch      int
-		ZipFileUrl string
-	}
-
-	type Plugin struct {
-		Id       int
-		Name     string
-		Package  string
-		Releases []PluginRelease
-	}
-
 	return func(w http.ResponseWriter, r *http.Request) {
 		res := g.CoreAPI.HttpAPI.VueResponse()
 
@@ -143,10 +131,13 @@ func ViewPluginCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 			})
 		}
 
-		plugin := Plugin{
-			Id:       int(qPlugin.Plugin.PluginId),
-			Name:     qPlugin.Plugin.Name,
-			Package:  qPlugin.Plugin.Package,
+		plugin := PluginData{
+			Id: int(qPlugin.Plugin.PluginId),
+			Info: sdkplugin.PluginInfo{
+				Name:        qPlugin.Plugin.Name,
+				Package:     qPlugin.Plugin.Package,
+				Description: "", // TODO: add the description
+			},
 			Releases: pluginReleases,
 		}
 
@@ -166,12 +157,6 @@ func PluginsInstallCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 			return
 		}
 
-		// TODO: remove logs
-		log.Println("data: ")
-		log.Println(data.Src)
-		log.Println(data.StorePackage)
-		log.Println(data.StoreZipFile)
-
 		var result strings.Builder
 		info, err := pkg.InstallSrcDef(&result, data)
 		if err != nil {
@@ -181,6 +166,29 @@ func PluginsInstallCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 
 		res.Json(w, info, http.StatusOK)
 	}
+}
+
+func getInstalledPlugins() []PluginData {
+	sources := pkg.InstalledPluginsList()
+	plugins := []PluginData{}
+
+	for _, src := range sources {
+		info, err := pkg.GetPluginInfo(src.Def)
+		if err != nil {
+			return nil
+		}
+
+		p := PluginData{
+			Info:             info,
+			Src:              src,
+			HasPendingUpdate: pkg.HasPendingUpdate(info.Package),
+			ToBeRemoved:      pkg.IsToBeRemoved(info.Package),
+		}
+
+		plugins = append(plugins, p)
+	}
+
+	return plugins
 }
 
 func UninstallPluginCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
