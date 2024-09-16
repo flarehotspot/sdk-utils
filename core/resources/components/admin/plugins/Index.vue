@@ -1,14 +1,26 @@
 <template>
   <div>
-    <h1>Plugins</h1>
+    <h1>Plugins Manager</h1>
     <hr />
 
-    <router-link
-      class="btn btn-primary"
-      to='<% .Helpers.VueRoutePath "plugins-new" %>'
-      >Install Plugin</router-link
-    >
+    <h2>Install Plugins</h2>
+    <div class="mb-2">
+      <router-link class="" to='<% .Helpers.VueRoutePath "plugins-new" %>'
+        >Install a plugin locally</router-link
+      >
 
+      or
+
+      <router-link
+        class="btn btn-primary"
+        to='<% .Helpers.VueRoutePath "plugins-store" %>'
+        >Visit plugins store</router-link
+      >
+    </div>
+
+    <br />
+
+    <h2>Installed Plugins</h2>
     <table class="table table-bordered table-striped">
       <thead>
         <tr>

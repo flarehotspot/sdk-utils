@@ -33,6 +33,14 @@ func AdminRoutes(g *plugins.CoreGlobals) {
 		subrouter.Get("/index", adminctrl.PluginsIndexCtrl(g)).
 			Name("admin:plugins:index")
 
+		subrouter.Group("/store", func(storeSubrouter sdkhttp.HttpRouterInstance) {
+			storeSubrouter.Get("/index", adminctrl.PluginsStoreIndexCtrl(g)).
+				Name("admin:plugins:store:index")
+
+			storeSubrouter.Get("/plugins/plugin", adminctrl.ViewPluginCtrl(g)).
+				Name("admin:plugins:store:plugin")
+		})
+
 		subrouter.Post("/install", adminctrl.PluginsInstallCtrl(g)).
 			Name("admin:plugins:install")
 
@@ -61,6 +69,16 @@ func AdminRoutes(g *plugins.CoreGlobals) {
 			RoutePath: "/plugins/new",
 			Component: "admin/plugins/NewInstall.vue",
 		},
+		{
+			RouteName: "plugins-store",
+			RoutePath: "/plugins/store",
+			Component: "admin/plugins/PluginsStore.vue",
+		},
+		{
+			RouteName: "plugin",
+			RoutePath: "/plugins/store/plugin",
+			Component: "admin/plugins/PluginDetail.vue",
+		},
 	}...)
 
 	g.CoreAPI.HttpAPI.VueRouter().AdminNavsFunc(func(acct sdkacct.Account) []sdkhttp.VueAdminNav {
@@ -77,7 +95,7 @@ func AdminRoutes(g *plugins.CoreGlobals) {
 			},
 			{
 				Category:  sdkhttp.NavCategorySystem,
-				Label:     "Plugins",
+				Label:     "Manage Plugins",
 				RouteName: "plugins-index",
 			},
 		}

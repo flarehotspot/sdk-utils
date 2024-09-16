@@ -1,11 +1,13 @@
 package pkg
 
 import (
+	"core/internal/utils/download"
 	"errors"
 	"io"
 	"log"
 	"os"
 	"path/filepath"
+	sdktargz "sdk/utils/targz"
 
 	"core/internal/utils/encdisk"
 	"core/internal/utils/git"
@@ -57,6 +59,8 @@ func InstallSrcDef(w io.Writer, def PluginSrcDef) (info sdkplugin.PluginInfo, er
 		info, err = InstallFromGitSrc(w, def)
 	case PluginSrcLocal, PluginSrcSystem:
 		info, err = InstallFromLocalPath(w, def)
+	case PluginSrcStore:
+		info, err = InstallFromPluginStore(w, def)
 	default:
 		return sdkplugin.PluginInfo{}, errors.New("Invalid plugin source: " + def.Src)
 	}
@@ -74,6 +78,54 @@ func InstallFromLocalPath(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, 
 
 	err = InstallPlugin(def.LocalPath, InstallOpts{Def: def, RemoveSrc: false})
 	if err != nil {
+		return sdkplugin.PluginInfo{}, err
+	}
+
+	return info, nil
+}
+
+func InstallFromPluginStore(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, error) {
+	log.Println("Installing plugin from plugins store source: " + def.String())
+
+	// prepare path
+	randomPath := RandomPluginPath()
+	diskfile := filepath.Join(randomPath, "disk")
+	mountpath := filepath.Join(randomPath, "mount")
+	clonePath := filepath.Join(mountpath, "clone", "0") // need extra sub dir
+	workPath := filepath.Join(mountpath, "clone", "1")  // need extra sub dir
+
+	// prepare encrypted virtual disk path
+	dev := sdkstr.Rand(8)
+	mnt := encdisk.NewEncrypedDisk(diskfile, mountpath, dev)
+	if err := mnt.Mount(); err != nil {
+		log.Println("Error mounting disk: ", err)
+		return sdkplugin.PluginInfo{}, err
+	}
+	defer mnt.Unmount()
+
+	// download plugin release zip file
+	downloader := download.NewDownloader(def.StoreZipFile, clonePath)
+	if err := downloader.Download(); err != nil {
+		log.Println("Error: ", err)
+		return sdkplugin.PluginInfo{}, err
+	}
+
+	// unzip plugin release
+	sdktargz.UntarGz(clonePath, workPath)
+
+	newWorkPath, err := FindPluginSrc(workPath)
+	if err != nil {
+		err = errors.New("Unable to find plugin source in: " + workPath)
+		log.Println("Error: ", err)
+		return sdkplugin.PluginInfo{}, err
+	}
+	info, err := GetSrcInfo(newWorkPath)
+	if err != nil {
+		log.Println("Error getting plugin info: ", err)
+		return sdkplugin.PluginInfo{}, err
+	}
+
+	if err := InstallPlugin(newWorkPath, InstallOpts{Def: def, RemoveSrc: false}); err != nil {
 		return sdkplugin.PluginInfo{}, err
 	}
 
@@ -176,6 +228,8 @@ func InstallPlugin(src string, opts InstallOpts) error {
 			return err
 		}
 	}
+
+	log.Println("Plugin installed")
 
 	return nil
 }
