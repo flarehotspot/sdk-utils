@@ -2,8 +2,7 @@ package adminctrl
 
 import (
 	"core/internal/plugins"
-	coremachine_v0_0_1 "core/internal/rpc/machines/coremachines/v0_0_1"
-	"core/internal/rpc/twirp"
+	rpc "core/internal/rpc"
 	"core/internal/utils/pkg"
 	"errors"
 	"log"
@@ -46,8 +45,8 @@ func PluginsStoreIndexCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		res := g.CoreAPI.HttpAPI.VueResponse()
 
-		srv, ctx := twirp.GetCoreMachineTwirpServiceAndCtx()
-		qPlugins, err := srv.FetchPlugins(ctx, &coremachine_v0_0_1.FetchPluginsRequest{})
+		srv, ctx := rpc.GetCoreMachineTwirpServiceAndCtx()
+		qPlugins, err := srv.FetchPlugins(ctx, &rpc.FetchPluginsRequest{})
 		if err != nil {
 			log.Println("Error:", err)
 			res.Error(w, err.Error(), http.StatusInternalServerError)
@@ -103,8 +102,8 @@ func ViewPluginCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 			return
 		}
 
-		srv, ctx := twirp.GetCoreMachineTwirpServiceAndCtx()
-		qPlugin, err := srv.FetchPlugin(ctx, &coremachine_v0_0_1.FetchPluginRequest{
+		srv, ctx := rpc.GetCoreMachineTwirpServiceAndCtx()
+		qPlugin, err := srv.FetchPlugin(ctx, &rpc.FetchPluginRequest{
 			PluginId: int32(pluginId),
 		})
 		if err != nil {

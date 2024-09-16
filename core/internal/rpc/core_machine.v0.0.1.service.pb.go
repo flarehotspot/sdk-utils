@@ -4,7 +4,7 @@
 // 	protoc        v3.21.12
 // source: rpc/proto/machines/coremachines/core_machine.v0.0.1.service.proto
 
-package v0_0_1
+package rpc
 
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"

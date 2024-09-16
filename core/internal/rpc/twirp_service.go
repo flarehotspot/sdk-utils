@@ -1,15 +1,15 @@
-package twirp
+package rpc
 
 import (
 	"context"
-	core_machine_v0_0_1 "core/internal/rpc/machines/coremachines/v0_0_1"
+	"core/env"
 	"log"
 	"net/http"
 
 	"github.com/twitchtv/twirp"
 )
 
-func GetCoreMachineTwirpServiceAndCtx() (core_machine_v0_0_1.CoreMachineService, context.Context) {
+func GetCoreMachineTwirpServiceAndCtx() (CoreMachineService, context.Context) {
 	isDev := true
 
 	proto := "http"
@@ -24,9 +24,9 @@ func GetCoreMachineTwirpServiceAndCtx() (core_machine_v0_0_1.CoreMachineService,
 	baseUrl := subdomain + "." + domain
 	url := proto + "://" + baseUrl + "/" + prefix
 
-	srv := core_machine_v0_0_1.NewCoreMachineServiceProtobufClient(url, &http.Client{})
+	srv := NewCoreMachineServiceProtobufClient(url, &http.Client{})
 	header := make(http.Header)
-	header.Set("Authorization", "Bearer "+"xxxxxxxxxx")
+	header.Set("Authorization", "Bearer "+env.RPC_TOKEN)
 
 	ctx := context.Background()
 	ctx, err := twirp.WithHTTPRequestHeaders(ctx, header)
