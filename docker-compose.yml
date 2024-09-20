@@ -13,7 +13,7 @@ services:
     ports:
       - 3000:3000
     networks:
-      shared_network:
+      flare_network:
         aliases:
           - rpc-machines.flarehotspot-dev.com
 
@@ -31,7 +31,7 @@ services:
       timeout: 5s
       retries: 30
     networks:
-      shared_network:
+      flare_network:
 
   phpmyadmin:
     image: phpmyadmin
@@ -47,11 +47,11 @@ services:
       - PMA_USER=root
       - PMA_PASSWORD=root
     networks:
-      shared_network:
+      flare_network:
 
 volumes:
   mariadb:
 
 networks:
-  shared_network:
+  flare_network:
     external: true
