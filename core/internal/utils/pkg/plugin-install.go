@@ -7,7 +7,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	sdktargz "sdk/utils/targz"
+	sdkextract "sdk/utils/extract"
 
 	"core/internal/utils/encdisk"
 	"core/internal/utils/git"
@@ -104,14 +104,15 @@ func InstallFromPluginStore(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo
 	defer mnt.Unmount()
 
 	// download plugin release zip file
+	log.Println("downloading plugin release: ", def.StoreZipFile)
 	downloader := download.NewDownloader(def.StoreZipFile, clonePath)
 	if err := downloader.Download(); err != nil {
 		log.Println("Error: ", err)
 		return sdkplugin.PluginInfo{}, err
 	}
 
-	// unzip plugin release
-	sdktargz.UntarGz(clonePath, workPath)
+	// extract compressed plugin release
+	sdkextract.Extract(clonePath, workPath)
 
 	newWorkPath, err := FindPluginSrc(workPath)
 	if err != nil {
