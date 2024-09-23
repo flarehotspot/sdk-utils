@@ -22,20 +22,17 @@ type CompressionFormat struct {
 }
 
 var (
-	UnknownCompressionFormatError = errors.New("unknown compression format")
+	ErrUnknownCompressionFormat = errors.New("unknown compression format")
 )
 
 var (
-	compressionFormats = map[string]CompressionFormat{
-		// targz
-		"gzip": {
-			Format:   "gzip",
-			MagicNum: []byte{0x1F, 0x8B},
-		},
-		"zip": {
-			Format:   "zip",
-			MagicNum: []byte{0x50, 0x4B, 0x03, 0x04},
-		},
+	ZipCompressionFormat = CompressionFormat{
+		Format:   "zip",
+		MagicNum: []byte{0x50, 0x4B, 0x03, 0x04},
+	}
+	GzipCompressionFormat = CompressionFormat{
+		Format:   "gzip",
+		MagicNum: []byte{0x1F, 0x8B},
 	}
 )
 
@@ -47,7 +44,7 @@ func Extract(filePath string, destPath string) error {
 		DestPath: destPath,
 	}
 
-	setCompressionFormat(&fileExtract)
+	setCompFormat(&fileExtract)
 
 	err := fileExtract.extract()
 	if err != nil {
@@ -59,8 +56,8 @@ func Extract(filePath string, destPath string) error {
 }
 
 // identifies the compression format based on the specified file's magic number
-// and updates the FileExtract format
-func setCompressionFormat(fe *FileExtract) error {
+// and sets it compression format
+func setCompFormat(fe *FileExtract) error {
 	// open file
 	f, err := os.Open(fe.FilePath)
 	if err != nil {
@@ -75,26 +72,28 @@ func setCompressionFormat(fe *FileExtract) error {
 	}
 
 	// identify compression format
-	for _, cf := range compressionFormats {
-		if bytes.HasPrefix(buf, cf.MagicNum) {
-			fe.CompFormat = cf
-			return nil
-		}
+	switch {
+	case bytes.HasPrefix(buf, ZipCompressionFormat.MagicNum):
+		fe.CompFormat = ZipCompressionFormat
+		return nil
+	case bytes.HasPrefix(buf, GzipCompressionFormat.MagicNum):
+		fe.CompFormat = GzipCompressionFormat
+		return nil
 	}
 
-	return UnknownCompressionFormatError
+	return ErrUnknownCompressionFormat
 }
 
 func (f *FileExtract) extract() error {
 	switch f.CompFormat.Format {
-	case compressionFormats["gzip"].Format:
+	case GzipCompressionFormat.Format:
 		err := sdktargz.UntarGz(f.FilePath, f.DestPath)
 		if err != nil {
 			log.Println("Error:", err)
 			return err
 		}
 		return nil
-	case compressionFormats["zip"].Format:
+	case ZipCompressionFormat.Format:
 		err := sdkunzip.Unzip(f.FilePath, f.DestPath)
 		if err != nil {
 			log.Println("Error:", err)
@@ -103,5 +102,5 @@ func (f *FileExtract) extract() error {
 		return nil
 	}
 
-	return UnknownCompressionFormatError
+	return ErrUnknownCompressionFormat
 }
