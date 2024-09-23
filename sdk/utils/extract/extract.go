@@ -6,8 +6,8 @@ import (
 	"log"
 	"os"
 
-	"sdk/utils/targz"
-	"sdk/utils/unzip"
+	sdktargz "sdk/utils/targz"
+	sdkunzip "sdk/utils/unzip"
 )
 
 type FileExtract struct {
@@ -26,11 +26,11 @@ var (
 )
 
 var (
-	ZipCompressionFormat = CompressionFormat{
+	CompressionZip = CompressionFormat{
 		Format:   "zip",
 		MagicNum: []byte{0x50, 0x4B, 0x03, 0x04},
 	}
-	GzipCompressionFormat = CompressionFormat{
+	CompressionGzip = CompressionFormat{
 		Format:   "gzip",
 		MagicNum: []byte{0x1F, 0x8B},
 	}
@@ -73,11 +73,11 @@ func setCompFormat(fe *FileExtract) error {
 
 	// identify compression format
 	switch {
-	case bytes.HasPrefix(buf, ZipCompressionFormat.MagicNum):
-		fe.CompFormat = ZipCompressionFormat
+	case bytes.HasPrefix(buf, CompressionZip.MagicNum):
+		fe.CompFormat = CompressionZip
 		return nil
-	case bytes.HasPrefix(buf, GzipCompressionFormat.MagicNum):
-		fe.CompFormat = GzipCompressionFormat
+	case bytes.HasPrefix(buf, CompressionGzip.MagicNum):
+		fe.CompFormat = CompressionGzip
 		return nil
 	}
 
@@ -86,14 +86,14 @@ func setCompFormat(fe *FileExtract) error {
 
 func (f *FileExtract) extract() error {
 	switch f.CompFormat.Format {
-	case GzipCompressionFormat.Format:
+	case CompressionGzip.Format:
 		err := sdktargz.UntarGz(f.FilePath, f.DestPath)
 		if err != nil {
 			log.Println("Error:", err)
 			return err
 		}
 		return nil
-	case ZipCompressionFormat.Format:
+	case CompressionZip.Format:
 		err := sdkunzip.Unzip(f.FilePath, f.DestPath)
 		if err != nil {
 			log.Println("Error:", err)
