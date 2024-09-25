@@ -9,6 +9,7 @@ type PluginSrcDef struct {
 	StoreZipFile string // if src is "store"
 	GitURL       string // if src is "git"
 	GitRef       string // can be a branch, tag or commit hash
+	LocalZipFile string // if src is "local or system"
 	LocalPath    string // if src is "local or system"
 }
 

@@ -28,6 +28,7 @@ var (
 	SdkDir      = filepath.Join(AppDir, "sdk")
 	TmpDir      = filepath.Join(AppDir, ".tmp")
 	CacheDir    = filepath.Join(TmpDir, "cache")
+	UploadsDir  = filepath.Join(TmpDir, "uploads")
 )
 
 // StripRoot removes the project root directory prefix from absolute paths
