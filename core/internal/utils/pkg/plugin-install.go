@@ -73,18 +73,7 @@ func InstallFromLocalPath(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, 
 
 	// prepare path
 	randomPath := RandomPluginPath()
-	diskfile := filepath.Join(randomPath, "disk")
-	mountpath := filepath.Join(randomPath, "mount")
-	workPath := filepath.Join(mountpath, "clone", "1") // need extra sub dir
-
-	// prepare encrypted virtual disk path
-	dev := sdkstr.Rand(8)
-	mnt := encdisk.NewEncrypedDisk(diskfile, mountpath, dev)
-	if err := mnt.Mount(); err != nil {
-		log.Println("Error mounting disk: ", err)
-		return sdkplugin.PluginInfo{}, err
-	}
-	defer mnt.Unmount()
+	workPath := filepath.Join(randomPath, "workpath")
 
 	// extract compressed plugin release
 	sdkextract.Extract(def.LocalZipFile, workPath)
