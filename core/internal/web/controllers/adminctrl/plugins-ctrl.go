@@ -5,10 +5,14 @@ import (
 	rpc "core/internal/rpc"
 	"core/internal/utils/pkg"
 	"errors"
+	"io"
 	"log"
 	"net/http"
+	"os"
+	"path/filepath"
 	sdkplugin "sdk/api/plugin"
 	"sdk/libs/go-json"
+	sdkpaths "sdk/utils/paths"
 	sdkstr "sdk/utils/strings"
 	"strings"
 )
@@ -141,6 +145,69 @@ func ViewPluginCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 		}
 
 		res.Json(w, plugin, http.StatusOK)
+	}
+}
+
+func UploadFileCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		res := g.CoreAPI.HttpAPI.HttpResponse()
+
+		// limit file upload size 10 * (2 ** 20) = 10MB
+		if err := r.ParseMultipartForm(10 << 20); err != nil {
+			log.Println("Error in parsing multi part form:", err)
+			res.Json(w, "", http.StatusInternalServerError)
+			return
+		}
+
+		// get uploaded file
+		uploadedFile, handler, err := r.FormFile("file")
+		if err != nil {
+			log.Println("Error in opening form file: ", err)
+			res.Json(w, "Error: invalid multipart file", http.StatusInternalServerError)
+			return
+		}
+		defer uploadedFile.Close()
+
+		// prepare parent path
+		parentPath := filepath.Join(sdkpaths.UploadsDir, sdkstr.Rand(6))
+
+		// ensure parent directory exists
+		if err := os.MkdirAll(parentPath, 0755); err != nil {
+			log.Println("Error creating parent dir:", err)
+			res.Json(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		// create destination file
+		filePath := filepath.Join(parentPath, handler.Filename)
+		prZipFile, err := os.Create(filePath)
+		if err != nil {
+			log.Println("Error creating pr zip file:", err)
+			res.Json(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		defer prZipFile.Close()
+
+		// copy the contents of the uploaded file on to the created destination file
+		if _, err := io.Copy(prZipFile, uploadedFile); err != nil {
+			log.Println("Error copying file:", err)
+			res.Json(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		log.Printf("%s successfully uploaded", filePath)
+		res.Json(w, filePath, http.StatusOK)
+	}
+}
+
+// TODO: update for multiple files for future use-case
+func UploadFilesCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		res := g.CoreAPI.HttpAPI.HttpResponse()
+
+		// TODO: implementation of multiple file uploads
+
+		res.Json(w, "", http.StatusOK)
 	}
 }
 

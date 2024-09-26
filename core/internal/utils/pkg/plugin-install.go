@@ -59,6 +59,8 @@ func InstallSrcDef(w io.Writer, def PluginSrcDef) (info sdkplugin.PluginInfo, er
 		info, err = InstallFromGitSrc(w, def)
 	case PluginSrcLocal, PluginSrcSystem:
 		info, err = InstallFromLocalPath(w, def)
+	case PluginSrcZip:
+		info, err = InstallFromZipFile(w, def)
 	case PluginSrcStore:
 		info, err = InstallFromPluginStore(w, def)
 	default:
@@ -84,8 +86,44 @@ func InstallFromLocalPath(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, 
 	return info, nil
 }
 
+func InstallFromZipFile(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, error) {
+	w.Write([]byte("Installing zipped plugin from local path: " + def.LocalPath))
+
+	// prepare path
+	randomPath := RandomPluginPath()
+	workPath := filepath.Join(randomPath, "workpath")
+
+	// extract compressed plugin release
+	sdkextract.Extract(def.LocalZipFile, workPath)
+
+	os.RemoveAll(filepath.Dir(def.LocalZipFile))
+
+	// gets the plugin release source path
+	newWorkPath, err := FindPluginSrc(workPath)
+	if err != nil {
+		err = errors.New("Unable to find plugin source in: " + workPath)
+		log.Println("Error: ", err)
+		return sdkplugin.PluginInfo{}, err
+	}
+
+	// read the plugin.json
+	info, err := GetSrcInfo(newWorkPath)
+	if err != nil {
+		log.Println("Error getting plugin info: ", err)
+		return sdkplugin.PluginInfo{}, err
+	}
+
+	def.LocalPath = filepath.Join(GetInstallPath(info.Package))
+
+	if err := InstallPlugin(newWorkPath, InstallOpts{Def: def, RemoveSrc: false}); err != nil {
+		return sdkplugin.PluginInfo{}, err
+	}
+
+	return info, nil
+}
+
 func InstallFromPluginStore(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, error) {
-	log.Println("Installing plugin from plugins store source: " + def.String())
+	w.Write([]byte("Installing plugin from store: " + def.StoreZipFile))
 
 	// prepare path
 	randomPath := RandomPluginPath()

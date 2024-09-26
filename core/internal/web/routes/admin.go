@@ -48,6 +48,15 @@ func AdminRoutes(g *plugins.CoreGlobals) {
 			Name("admin:plugins:uninstall")
 	})
 
+	adminR.Group("/upload", func(subrouter sdkhttp.HttpRouterInstance) {
+		subrouter.Post("/file", adminctrl.UploadFileCtrl(g)).
+			Name("admin:upload:file")
+
+		// TODO: for future use-case
+		// subrouter.Post("/files", adminctrl.UploadFilesCtrl(g)).
+		// Name("admin:upload:files")
+	})
+
 	g.CoreAPI.HttpAPI.VueRouter().RegisterAdminRoutes([]sdkhttp.VueAdminRoute{
 		{
 			RouteName: "theme-picker",
