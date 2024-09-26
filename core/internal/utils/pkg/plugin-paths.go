@@ -29,6 +29,9 @@ func FindDefInstallPath(def PluginSrcDef) (path string, ok bool) {
 		if def.Src == PluginSrcStore && p.Def.StoreZipFile == def.StoreZipFile {
 			return p.InstallPath, true
 		}
+		if def.Src == PluginSrcZip && p.Def.LocalPath == def.LocalPath {
+			return p.InstallPath, true
+		}
 	}
 	return "", false
 }

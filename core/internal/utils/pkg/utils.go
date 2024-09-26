@@ -21,6 +21,7 @@ const (
 	PluginSrcStore        string = "store"
 	PluginSrcSystem       string = "system"
 	PluginSrcLocal        string = "local"
+	PluginSrcZip          string = "zip"
 	pluginsConfigJsonFile string = "plugins.json"
 )
 

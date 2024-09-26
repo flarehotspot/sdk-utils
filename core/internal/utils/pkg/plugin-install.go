@@ -59,6 +59,8 @@ func InstallSrcDef(w io.Writer, def PluginSrcDef) (info sdkplugin.PluginInfo, er
 		info, err = InstallFromGitSrc(w, def)
 	case PluginSrcLocal, PluginSrcSystem:
 		info, err = InstallFromLocalPath(w, def)
+	case PluginSrcZip:
+		info, err = InstallFromZipFile(w, def)
 	case PluginSrcStore:
 		info, err = InstallFromPluginStore(w, def)
 	default:
@@ -71,12 +73,30 @@ func InstallSrcDef(w io.Writer, def PluginSrcDef) (info sdkplugin.PluginInfo, er
 func InstallFromLocalPath(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, error) {
 	w.Write([]byte("Installing plugin from local path: " + def.LocalPath))
 
+	info, err := GetSrcInfo(def.LocalPath)
+	if err != nil {
+		return sdkplugin.PluginInfo{}, err
+	}
+
+	err = InstallPlugin(def.LocalPath, InstallOpts{Def: def, RemoveSrc: false})
+	if err != nil {
+		return sdkplugin.PluginInfo{}, err
+	}
+
+	return info, nil
+}
+
+func InstallFromZipFile(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, error) {
+	w.Write([]byte("Installing zipped plugin from local path: " + def.LocalPath))
+
 	// prepare path
 	randomPath := RandomPluginPath()
 	workPath := filepath.Join(randomPath, "workpath")
 
 	// extract compressed plugin release
 	sdkextract.Extract(def.LocalZipFile, workPath)
+
+	os.RemoveAll(filepath.Dir(def.LocalZipFile))
 
 	// gets the plugin release source path
 	newWorkPath, err := FindPluginSrc(workPath)
@@ -92,6 +112,8 @@ func InstallFromLocalPath(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, 
 		log.Println("Error getting plugin info: ", err)
 		return sdkplugin.PluginInfo{}, err
 	}
+
+	def.LocalPath = filepath.Join(GetInstallPath(info.Package))
 
 	if err := InstallPlugin(newWorkPath, InstallOpts{Def: def, RemoveSrc: false}); err != nil {
 		return sdkplugin.PluginInfo{}, err

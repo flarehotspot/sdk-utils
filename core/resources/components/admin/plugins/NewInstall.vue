@@ -61,8 +61,8 @@ define(function () {
                     Src: 'zip',
                     GitURL: '',
                     GitRef: '',
+                    LocalZipFile: '',
                 },
-                serverZipFilePath: '',
             };
         },
         methods: {
@@ -87,7 +87,7 @@ define(function () {
                         return responseJson;
                     })
                     .then(function (data) {
-                        self.serverZipFilePath = data;
+                        self.def.LocalZipFile = data;
                     })
                     .catch(function (error) {
                         console.log(error);
@@ -97,15 +97,12 @@ define(function () {
                 e.preventDefault();
                 var self = this;
 
-                if (self.def.Src == 'zip') {
-                    var pluginDef = {
-                        Src: 'local',
-                        LocalZipFile: self.serverZipFilePath,
-                    };
+                console.log("installing plugin");
 
+                if (self.def.Src == 'zip') {
                     $flare.http.post(
                         '<% .Helpers.UrlForRoute "admin:plugins:install" %>',
-                        pluginDef
+                        self.def
                     ).then(function (data) {
                         $flare.notify.success(`${data.Name} installed`);
                     }).catch(function (error) {
