@@ -18,7 +18,7 @@ git submodule update --init --recursive
 
 Pull the latest changes for all the submodules.
 ```sh
-for p in $(ls ./plugins); do cd ./plugins/${p}; git checkout development; git pull; cd ../..; done
+for p in $(ls plugins); do echo plugins/$p; for subp in $(ls plugins/${p}); do echo plugins/$p/$subp; cd plugins/$p/$subp; git checkout development && git pull; cd ../../..; done; done
 ```
 
 Install node modules.
