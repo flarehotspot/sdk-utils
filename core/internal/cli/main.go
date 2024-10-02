@@ -154,7 +154,7 @@ func CreateMigration() {
 func BuildPlugin() {
 	var err error
 	if len(os.Args) < 3 {
-		err = tools.BuildLocalPlugins()
+		err = pkg.BuildLocalPlugins()
 	} else {
 		pluginPath := os.Args[2]
 		workdir := filepath.Join(sdkpaths.TmpDir, "builds", filepath.Base(pluginPath))
