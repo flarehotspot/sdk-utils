@@ -120,14 +120,19 @@ module github.com/marcbentoy/go-utils
 go 1.22.0
 ```
 
-4. Push the `go-utils` branch to a remote git repo. 
+4. Add the remote url of `flarehotspot/go-utils`
 
+```sh
+git remote add go-utils git@github.com:flarehotspot/go-utils.git
+```
+
+5. Push the `go-utils` branch to a remote git repo. 
 ```sh
 # command guide
 # git push <go-utils remote repo url> <branch name to push>:<desired branch>
 
 # actual command
-git push go-utils:main
+git push go-utils go-utils:main
 ```
 
 # Pushing changes to `go-utils`
