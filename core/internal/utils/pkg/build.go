@@ -117,12 +117,17 @@ func BuildPlugin(pluginSrcDir string, workdir string) error {
 		return err
 	}
 
+	if err := sdkfs.CopyDir(filepath.Join(sdkpaths.AppDir, "utils"), filepath.Join(workdir, "utils"), nil); err != nil {
+		return err
+	}
+
 	goWork := fmt.Sprintf(`
 go %s
 
 use (
     ./sdk
     ./plugins/%s
+    ./utils
 )
     `, sdkruntime.GO_VERSION, info.Package)
 
