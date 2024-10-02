@@ -9,8 +9,8 @@ package assets
 // 	"strings"
 
 // 	"core/internal/env"
-// 	sdkfs "sdk/utils/fs"
-// 	sdkpaths "sdk/utils/paths"
+// 	sdkfs "github.com/flarehotspot/go-utils/fs"
+// 	sdkpaths "github.com/flarehotspot/go-utils/paths"
 // 	"core/internal/utils/crypt"
 // 	jobque "core/internal/utils/job-que"
 // 	minifyv2 "github.com/tdewolff/minify/v2"

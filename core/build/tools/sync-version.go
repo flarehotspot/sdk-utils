@@ -3,7 +3,8 @@ package tools
 import (
 	"core/internal/utils/pkg"
 	"fmt"
-	sdkfs "sdk/utils/fs"
+
+	sdkfs "github.com/flarehotspot/go-utils/fs"
 )
 
 func SyncVersion() {

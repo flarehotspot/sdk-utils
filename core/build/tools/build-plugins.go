@@ -5,8 +5,8 @@ import (
 	"os"
 	"path/filepath"
 
-	sdkfs "sdk/utils/fs"
-	sdkpaths "sdk/utils/paths"
+	sdkfs "github.com/flarehotspot/go-utils/fs"
+	sdkpaths "github.com/flarehotspot/go-utils/paths"
 )
 
 func BuildLocalPlugins() error {

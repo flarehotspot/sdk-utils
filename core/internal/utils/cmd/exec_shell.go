@@ -5,8 +5,9 @@ import (
 	"io"
 	"log"
 	"os/exec"
-	sdkfs "sdk/utils/fs"
 	"strings"
+
+	sdkfs "github.com/flarehotspot/go-utils/fs"
 )
 
 type ExecOpts struct {

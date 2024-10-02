@@ -4,7 +4,7 @@ import (
 	"path/filepath"
 	"runtime"
 
-	sdkpaths "sdk/utils/paths"
+	sdkpaths "github.com/flarehotspot/go-utils/paths"
 )
 
 func MainFile() string {

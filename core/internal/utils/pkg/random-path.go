@@ -5,7 +5,8 @@ package pkg
 import (
 	"math/rand"
 	"path/filepath"
-	sdkstr "sdk/utils/strings"
+
+	sdkstr "github.com/flarehotspot/go-utils/strings"
 )
 
 func RandomPluginPath() string {

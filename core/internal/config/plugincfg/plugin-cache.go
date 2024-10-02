@@ -9,9 +9,9 @@ package plugincfg
 // 	"core/internal/config"
 // 	jobque "core/internal/utils/job-que"
 // 	sdkplugin "sdk/api/plugin"
-// 	fs "sdk/utils/fs"
-// 	paths "sdk/utils/paths"
-// 	strings "sdk/utils/strings"
+// 	fs "github.com/flarehotspot/go-utils/fs"
+// 	paths "github.com/flarehotspot/go-utils/paths"
+// 	strings "github.com/flarehotspot/go-utils/strings"
 // )
 
 // var (

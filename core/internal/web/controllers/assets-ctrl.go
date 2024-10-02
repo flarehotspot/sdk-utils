@@ -7,7 +7,8 @@ import (
 
 	"core/internal/plugins"
 	"core/internal/web/response"
-	sdkfs "sdk/utils/fs"
+
+	sdkfs "github.com/flarehotspot/go-utils/fs"
 	"github.com/gorilla/mux"
 )
 

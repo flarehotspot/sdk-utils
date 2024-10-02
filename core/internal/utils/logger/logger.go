@@ -19,11 +19,12 @@ import (
 
 	jobque "core/internal/utils/job-que"
 	sdkplugin "sdk/api/plugin"
-	sdkfs "sdk/utils/fs"
-	sdkpaths "sdk/utils/paths"
-	sdkstr "sdk/utils/strings"
 
-	"sdk/utils/wsv"
+	sdkfs "github.com/flarehotspot/go-utils/fs"
+	sdkpaths "github.com/flarehotspot/go-utils/paths"
+	sdkstr "github.com/flarehotspot/go-utils/strings"
+
+	"github.com/flarehotspot/go-utils/wsv"
 )
 
 const (

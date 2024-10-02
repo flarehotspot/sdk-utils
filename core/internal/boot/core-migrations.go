@@ -6,7 +6,8 @@ import (
 
 	"core/internal/plugins"
 	"core/internal/utils/migrate"
-	sdkpaths "sdk/utils/paths"
+
+	sdkpaths "github.com/flarehotspot/go-utils/paths"
 )
 
 func RunCoreMigrations(g *plugins.CoreGlobals) {

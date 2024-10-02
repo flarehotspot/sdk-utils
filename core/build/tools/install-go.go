@@ -10,10 +10,10 @@ import (
 	"path/filepath"
 	"strings"
 
-	sdkfs "sdk/utils/fs"
-	sdkpaths "sdk/utils/paths"
-	sdkruntime "sdk/utils/runtime"
-	sdkstr "sdk/utils/strings"
+	sdkfs "github.com/flarehotspot/go-utils/fs"
+	sdkpaths "github.com/flarehotspot/go-utils/paths"
+	sdkruntime "github.com/flarehotspot/go-utils/runtime"
+	sdkstr "github.com/flarehotspot/go-utils/strings"
 )
 
 func InstallGo(installPath string) {

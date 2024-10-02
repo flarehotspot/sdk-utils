@@ -5,8 +5,9 @@ import (
 	"os"
 	"path/filepath"
 	"sdk/libs/go-json"
-	fs "sdk/utils/fs"
-	paths "sdk/utils/paths"
+
+	fs "github.com/flarehotspot/go-utils/fs"
+	paths "github.com/flarehotspot/go-utils/paths"
 )
 
 var manifestDir = filepath.Join(paths.CacheDir, "assets/manifest")

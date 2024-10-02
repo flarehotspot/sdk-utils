@@ -7,14 +7,16 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	sdkextract "sdk/utils/extract"
+
+	sdkextract "github.com/flarehotspot/go-utils/extract"
 
 	"core/internal/utils/encdisk"
 	"core/internal/utils/git"
 	sdkplugin "sdk/api/plugin"
-	sdkfs "sdk/utils/fs"
-	sdkpaths "sdk/utils/paths"
-	sdkstr "sdk/utils/strings"
+
+	sdkfs "github.com/flarehotspot/go-utils/fs"
+	sdkpaths "github.com/flarehotspot/go-utils/paths"
+	sdkstr "github.com/flarehotspot/go-utils/strings"
 )
 
 type PluginMetadata struct {

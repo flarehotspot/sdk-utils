@@ -7,7 +7,8 @@ import (
 
 	"core/internal/plugins"
 	"core/internal/utils/logger"
-	sdkstr "sdk/utils/strings"
+
+	sdkstr "github.com/flarehotspot/go-utils/strings"
 )
 
 type LogViewerData struct {

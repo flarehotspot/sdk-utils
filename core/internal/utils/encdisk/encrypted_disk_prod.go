@@ -7,7 +7,8 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	sdkfs "sdk/utils/fs"
+
+	sdkfs "github.com/flarehotspot/go-utils/fs"
 )
 
 func (d *EncryptedDisk) Mount() error {

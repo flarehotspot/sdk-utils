@@ -5,8 +5,9 @@ import (
 	"core/internal/db"
 	"core/internal/db/models"
 	"core/internal/network"
-	sdkpaths "sdk/utils/paths"
 	"sync/atomic"
+
+	sdkpaths "github.com/flarehotspot/go-utils/paths"
 )
 
 type AppState struct {

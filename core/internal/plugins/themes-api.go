@@ -3,8 +3,9 @@ package plugins
 import (
 	"net/http"
 
-	"sdk/api/themes"
-	"sdk/utils/fs"
+	sdkthemes "sdk/api/themes"
+
+	sdkfs "github.com/flarehotspot/go-utils/fs"
 )
 
 func NewThemesApi(api *PluginApi) *ThemesApi {

@@ -6,9 +6,10 @@ import (
 	"path/filepath"
 
 	sdkplugin "sdk/api/plugin"
-	sdkfs "sdk/utils/fs"
-	sdkruntime "sdk/utils/runtime"
-	sdkstr "sdk/utils/strings"
+
+	sdkfs "github.com/flarehotspot/go-utils/fs"
+	sdkruntime "github.com/flarehotspot/go-utils/runtime"
+	sdkstr "github.com/flarehotspot/go-utils/strings"
 )
 
 func CreatePlugin(pack string, name string, desc string) {

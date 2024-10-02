@@ -12,7 +12,8 @@ import (
 	tools "core/build/tools"
 	"core/env"
 	"core/internal/utils/pkg"
-	sdkpaths "sdk/utils/paths"
+
+	sdkpaths "github.com/flarehotspot/go-utils/paths"
 )
 
 var (

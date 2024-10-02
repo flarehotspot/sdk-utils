@@ -12,8 +12,9 @@ import (
 
 	"core/internal/utils/cmd"
 	"sdk/libs/go-uci"
-	fs "sdk/utils/fs"
-	paths "sdk/utils/paths"
+
+	fs "github.com/flarehotspot/go-utils/fs"
+	paths "github.com/flarehotspot/go-utils/paths"
 )
 
 var (

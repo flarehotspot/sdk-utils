@@ -9,7 +9,8 @@ import (
 	"core/internal/web/middlewares"
 	"core/internal/web/router"
 	routenames "core/internal/web/routes/names"
-	paths "sdk/utils/paths"
+
+	paths "github.com/flarehotspot/go-utils/paths"
 )
 
 func AssetsRoutes(g *plugins.CoreGlobals) {

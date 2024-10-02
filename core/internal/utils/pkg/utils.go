@@ -8,8 +8,8 @@ import (
 	"path/filepath"
 	"sdk/libs/go-json"
 
-	sdkfs "sdk/utils/fs"
-	paths "sdk/utils/paths"
+	sdkfs "github.com/flarehotspot/go-utils/fs"
+	paths "github.com/flarehotspot/go-utils/paths"
 )
 
 var (

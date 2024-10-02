@@ -8,8 +8,9 @@ import (
 
 	"core/internal/utils/events"
 	sse "core/internal/utils/sse"
-	sdkfs "sdk/utils/fs"
-	paths "sdk/utils/paths"
+
+	sdkfs "github.com/flarehotspot/go-utils/fs"
+	paths "github.com/flarehotspot/go-utils/paths"
 )
 
 var (
