@@ -1,7 +1,6 @@
-package tools
+package pkg
 
 import (
-	"core/internal/utils/pkg"
 	"os"
 	"path/filepath"
 
@@ -10,14 +9,14 @@ import (
 )
 
 func BuildLocalPlugins() error {
-	pluginPaths := pkg.LocalPluginPaths()
+	pluginPaths := LocalPluginPaths()
 	for _, pluginPath := range pluginPaths {
 		workdir := filepath.Join(sdkpaths.TmpDir, "builds", filepath.Base(pluginPath))
-		if err := pkg.BuildPlugin(pluginPath, workdir); err != nil {
+		if err := BuildPlugin(pluginPath, workdir); err != nil {
 			return err
 		}
 
-		info, err := pkg.GetSrcInfo(pluginPath)
+		info, err := GetSrcInfo(pluginPath)
 		if err != nil {
 			return err
 		}
@@ -28,7 +27,7 @@ func BuildLocalPlugins() error {
 			return err
 		}
 
-		for _, f := range pkg.PLuginFiles {
+		for _, f := range PLuginFiles {
 			if err := sdkfs.Copy(filepath.Join(pluginPath, f.File), filepath.Join(pluginInstallDir, f.File)); err != nil && !f.Optional {
 				return err
 			}
