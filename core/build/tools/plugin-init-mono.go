@@ -8,8 +8,8 @@ import (
 	"regexp"
 	"strings"
 
-	sdkfs "sdk/utils/fs"
-	sdkstr "sdk/utils/strings"
+	sdkfs "github.com/flarehotspot/go-utils/fs"
+	sdkstr "github.com/flarehotspot/go-utils/strings"
 )
 
 type PluginModule struct {

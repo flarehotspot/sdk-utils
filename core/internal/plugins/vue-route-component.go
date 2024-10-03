@@ -4,7 +4,8 @@ import (
 	"path/filepath"
 
 	"core/internal/utils/crypt"
-	sdkstr "sdk/utils/strings"
+
+	sdkstr "github.com/flarehotspot/go-utils/strings"
 )
 
 func NewVueRouteComponent(api *PluginApi, name string, path string, file string, permsReq []string, permsAny []string) *VueRouteComponent {

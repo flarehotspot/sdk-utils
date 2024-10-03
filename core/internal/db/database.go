@@ -9,7 +9,8 @@ import (
 
 	"core/internal/config"
 	"core/internal/utils/mysql"
-	sdkstr "sdk/utils/strings"
+
+	sdkstr "github.com/flarehotspot/go-utils/strings"
 	//
 	// UNCOMMENT BELOW LINES WHEN DEBUGGING SQL QUERIES:
 	//

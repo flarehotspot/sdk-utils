@@ -6,7 +6,8 @@ import (
 	"path/filepath"
 
 	"sdk/libs/go-uci"
-	paths "sdk/utils/paths"
+
+	paths "github.com/flarehotspot/go-utils/paths"
 )
 
 var treeRoot = filepath.Join(paths.AppDir, "openwrt-files/etc/config")

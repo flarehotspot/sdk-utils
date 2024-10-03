@@ -12,9 +12,10 @@ import (
 	"path/filepath"
 	sdkplugin "sdk/api/plugin"
 	"sdk/libs/go-json"
-	sdkpaths "sdk/utils/paths"
-	sdkstr "sdk/utils/strings"
 	"strings"
+
+	sdkpaths "github.com/flarehotspot/go-utils/paths"
+	sdkstr "github.com/flarehotspot/go-utils/strings"
 )
 
 type PluginRelease struct {

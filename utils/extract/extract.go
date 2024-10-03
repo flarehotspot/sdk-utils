@@ -6,8 +6,8 @@ import (
 	"log"
 	"os"
 
-	sdktargz "sdk/utils/targz"
-	sdkunzip "sdk/utils/unzip"
+	sdktargz "github.com/flarehotspot/go-utils/targz"
+	sdkunzip "github.com/flarehotspot/go-utils/unzip"
 )
 
 type FileExtract struct {

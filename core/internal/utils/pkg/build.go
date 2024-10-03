@@ -11,10 +11,11 @@ import (
 	"os"
 	"path/filepath"
 	sdkplugin "sdk/api/plugin"
-	sdkfs "sdk/utils/fs"
-	sdkpaths "sdk/utils/paths"
-	sdkruntime "sdk/utils/runtime"
-	sdkstr "sdk/utils/strings"
+
+	sdkfs "github.com/flarehotspot/go-utils/fs"
+	sdkpaths "github.com/flarehotspot/go-utils/paths"
+	sdkruntime "github.com/flarehotspot/go-utils/runtime"
+	sdkstr "github.com/flarehotspot/go-utils/strings"
 )
 
 func BuildFromLocal(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, error) {
@@ -116,12 +117,17 @@ func BuildPlugin(pluginSrcDir string, workdir string) error {
 		return err
 	}
 
+	if err := sdkfs.CopyDir(filepath.Join(sdkpaths.AppDir, "utils"), filepath.Join(workdir, "utils"), nil); err != nil {
+		return err
+	}
+
 	goWork := fmt.Sprintf(`
 go %s
 
 use (
     ./sdk
     ./plugins/%s
+    ./utils
 )
     `, sdkruntime.GO_VERSION, info.Package)
 

@@ -7,7 +7,8 @@ import (
 	"strings"
 
 	uci "sdk/api/uci"
-	sdkstr "sdk/utils/strings"
+
+	sdkstr "github.com/flarehotspot/go-utils/strings"
 )
 
 // bridge-vlan

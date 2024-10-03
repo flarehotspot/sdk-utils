@@ -7,14 +7,14 @@ import (
 	"strings"
 	"time"
 
-	sdkfs "sdk/utils/fs"
-	sdkstr "sdk/utils/strings"
+	sdkfs "github.com/flarehotspot/go-utils/fs"
+	sdkstr "github.com/flarehotspot/go-utils/strings"
 )
 
 func MigrationCreate(pluginDir string, name string) {
 	currentTime := time.Now()
 	timestamp := currentTime.Format("20060102150405.000000")
-    timestamp = strings.Replace(timestamp, ".", "", 1)
+	timestamp = strings.Replace(timestamp, ".", "", 1)
 	migrationsDir := filepath.Join(pluginDir, "resources/migrations")
 
 	name = sdkstr.Slugify(name, "_")
@@ -26,8 +26,8 @@ func MigrationCreate(pluginDir string, name string) {
 		panic(err)
 	}
 
-    contentUp := "-- Write your sql for up migration here\n"
-    contentDown := "-- Write your sql for down migration here\n"
+	contentUp := "-- Write your sql for up migration here\n"
+	contentDown := "-- Write your sql for down migration here\n"
 
 	if err := os.WriteFile(migrationUpPath, []byte(contentUp), sdkfs.PermFile); err != nil {
 		panic(err)

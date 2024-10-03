@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"sdk/libs/go-json"
 
-	sdkpaths "sdk/utils/paths"
+	sdkpaths "github.com/flarehotspot/go-utils/paths"
 )
 
 func readConfigFile(f string, out interface{}) error {

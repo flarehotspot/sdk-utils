@@ -10,9 +10,10 @@ import (
 	"sdk/libs/go-json"
 
 	accounts "sdk/api/accounts"
-	fs "sdk/utils/fs"
-	sdkfs "sdk/utils/fs"
-	paths "sdk/utils/paths"
+
+	fs "github.com/flarehotspot/go-utils/fs"
+	sdkfs "github.com/flarehotspot/go-utils/fs"
+	paths "github.com/flarehotspot/go-utils/paths"
 )
 
 const (

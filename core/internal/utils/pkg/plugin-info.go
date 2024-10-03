@@ -3,8 +3,9 @@ package pkg
 import (
 	"path/filepath"
 	sdkplugin "sdk/api/plugin"
-	sdkfs "sdk/utils/fs"
-	sdkpaths "sdk/utils/paths"
+
+	sdkfs "github.com/flarehotspot/go-utils/fs"
+	sdkpaths "github.com/flarehotspot/go-utils/paths"
 )
 
 func GetPluginInfo(def PluginSrcDef) (sdkplugin.PluginInfo, error) {

@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"sync"
 
-	sdkfs "sdk/utils/fs"
-	paths "sdk/utils/paths"
+	sdkfs "github.com/flarehotspot/go-utils/fs"
+	paths "github.com/flarehotspot/go-utils/paths"
 )
 
 func InitDirs() {

@@ -8,10 +8,11 @@ import (
 	"log"
 	"os/exec"
 	"path/filepath"
-	sdkfs "sdk/utils/fs"
-	sdkpaths "sdk/utils/paths"
-	sdkstr "sdk/utils/strings"
 	"strings"
+
+	sdkfs "github.com/flarehotspot/go-utils/fs"
+	sdkpaths "github.com/flarehotspot/go-utils/paths"
+	sdkstr "github.com/flarehotspot/go-utils/strings"
 )
 
 var (

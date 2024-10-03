@@ -6,7 +6,8 @@ import (
 
 	"core/internal/web/response"
 	resp "core/internal/web/response"
-	paths "sdk/utils/paths"
+
+	paths "github.com/flarehotspot/go-utils/paths"
 )
 
 type HttpResponse struct {

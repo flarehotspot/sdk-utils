@@ -2,7 +2,7 @@ package plugincfg
 
 // import (
 // 	"sdk/libs/go-json"
-// 	paths "sdk/utils/paths"
+// 	paths "github.com/flarehotspot/go-utils/paths"
 // 	"log"
 // 	"os"
 // 	"path/filepath"

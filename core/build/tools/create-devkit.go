@@ -10,11 +10,12 @@ import (
 	"core/env"
 	"core/internal/utils/pkg"
 	sdkcfg "sdk/api/config"
-	sdkfs "sdk/utils/fs"
-	sdkpaths "sdk/utils/paths"
-	sdkruntime "sdk/utils/runtime"
-	sdkstr "sdk/utils/strings"
-	sdkzip "sdk/utils/zip"
+
+	sdkfs "github.com/flarehotspot/go-utils/fs"
+	sdkpaths "github.com/flarehotspot/go-utils/paths"
+	sdkruntime "github.com/flarehotspot/go-utils/runtime"
+	sdkstr "github.com/flarehotspot/go-utils/strings"
+	sdkzip "github.com/flarehotspot/go-utils/zip"
 )
 
 var (

@@ -2,7 +2,8 @@ package pkg
 
 import (
 	"path/filepath"
-	sdkpaths "sdk/utils/paths"
+
+	sdkpaths "github.com/flarehotspot/go-utils/paths"
 )
 
 func GetInstallPath(pkg string) string {

@@ -6,12 +6,13 @@ import (
 	"os"
 	"path/filepath"
 	"sdk/libs/go-json"
-	sdkfs "sdk/utils/fs"
-	sdkpaths "sdk/utils/paths"
-	sdkruntime "sdk/utils/runtime"
 
-	// sdkzip "sdk/utils/zip"
-	sdktargz "sdk/utils/targz"
+	sdkfs "github.com/flarehotspot/go-utils/fs"
+	sdkpaths "github.com/flarehotspot/go-utils/paths"
+	sdkruntime "github.com/flarehotspot/go-utils/runtime"
+
+	// sdkzip "github.com/flarehotspot/go-utils/zip"
+	sdktargz "github.com/flarehotspot/go-utils/targz"
 )
 
 type BuildOutput struct {

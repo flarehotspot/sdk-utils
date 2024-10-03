@@ -5,9 +5,10 @@ import (
 	"core/internal/utils/pkg"
 	"fmt"
 	"path/filepath"
-	sdkpaths "sdk/utils/paths"
-	sdkruntime "sdk/utils/runtime"
-	sdkstr "sdk/utils/strings"
+
+	sdkpaths "github.com/flarehotspot/go-utils/paths"
+	sdkruntime "github.com/flarehotspot/go-utils/runtime"
+	sdkstr "github.com/flarehotspot/go-utils/strings"
 )
 
 func BuildCoreBins() {

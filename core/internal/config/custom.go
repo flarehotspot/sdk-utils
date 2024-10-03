@@ -6,10 +6,11 @@ import (
 	"sdk/libs/go-json"
 
 	sdkcfg "sdk/api/config"
-	fs "sdk/utils/fs"
-	sdkfs "sdk/utils/fs"
-	paths "sdk/utils/paths"
-	sdkstr "sdk/utils/strings"
+
+	fs "github.com/flarehotspot/go-utils/fs"
+	sdkfs "github.com/flarehotspot/go-utils/fs"
+	paths "github.com/flarehotspot/go-utils/paths"
+	sdkstr "github.com/flarehotspot/go-utils/strings"
 )
 
 func NewCustomConfig(key string, pkg string) *CustomConfig {

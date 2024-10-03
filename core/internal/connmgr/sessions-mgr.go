@@ -11,9 +11,10 @@ import (
 	"core/internal/db/models"
 	"core/internal/network"
 	"core/internal/utils/nftables"
-	"sdk/api/connmgr"
-	"sdk/api/network"
-	"sdk/utils/slices"
+	sdkconnmgr "sdk/api/connmgr"
+	sdknet "sdk/api/network"
+
+	sdkslices "github.com/flarehotspot/go-utils/slices"
 )
 
 const (
