@@ -19,6 +19,13 @@ func AdminRoutes(g *plugins.CoreGlobals) {
 	rootR.Handle("/admin", adminIndexCtrl).Methods("GET").Name("admin:index")
 	adminR.Get("/events", adminSseCtrl).Name("admin:sse")
 
+	adminR.Group("/core", func(subrouter sdkhttp.HttpRouterInstance) {
+		subrouter.Get("/fetch", adminctrl.FetchLatestCoreReleaseCtrl(g)).Name("admin:core:fetch")
+		subrouter.Get("/current", adminctrl.GetCurrentCoreVersionCtrl(g)).Name("admin:core:current")
+		subrouter.Post("/download", adminctrl.DownloadCoreReleaseCtrl(g)).Name("admin:core:download")
+		subrouter.Post("/update", adminctrl.UpateCoreCtrl(g)).Name("admin:core:update")
+	})
+
 	adminR.Group("/themes", func(subrouter sdkhttp.HttpRouterInstance) {
 		subrouter.Get("/index", adminctrl.GetAvailableThemes(g)).Name("admin:themes:list")
 		subrouter.Post("/save", adminctrl.SaveThemeSettings(g)).Name("admin:themes:save")
@@ -88,6 +95,11 @@ func AdminRoutes(g *plugins.CoreGlobals) {
 			RoutePath: "/plugins/store/plugin",
 			Component: "admin/plugins/PluginDetail.vue",
 		},
+		{
+			RouteName: "core-updates",
+			RoutePath: "/system-updates",
+			Component: "admin/CoreUpdates.vue",
+		},
 	}...)
 
 	g.CoreAPI.HttpAPI.VueRouter().AdminNavsFunc(func(acct sdkacct.Account) []sdkhttp.VueAdminNav {
@@ -106,6 +118,11 @@ func AdminRoutes(g *plugins.CoreGlobals) {
 				Category:  sdkhttp.NavCategorySystem,
 				Label:     "Manage Plugins",
 				RouteName: "plugins-index",
+			},
+			{
+				Category:  sdkhttp.NavCategorySystem,
+				Label:     "System Updates",
+				RouteName: "core-updates",
 			},
 		}
 	})
