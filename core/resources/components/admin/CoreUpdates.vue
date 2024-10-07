@@ -6,7 +6,7 @@
 
     <div class="" v-if="shouldUpdate(current, latest)">
       <h1>Update Available</h1>
-      <div class="btn btn-primary">Install Update</div>
+      <div class="btn btn-primary" @click="installUpdate">Install Update</div>
     </div>
     <div v-else>
       <h1>Latest</h1>
@@ -29,13 +29,16 @@ define(function () {
         current: {},
         isUpToDate: false,
         localCoreFilesPath: '',
-        localArchBinFilePath: ''
+        localArchBinFilesPath: ''
       };
     },
-    mounted: function () {
+    mounted: async function () {
       var self = this;
-      self.fetchLatest();
-      self.getCurrent();
+
+      await self.getCurrent();
+      await self.fetchLatest();
+
+      console.log('latest: ', self.latest);
     },
     methods: {
       fetchLatest: async function () {
@@ -59,6 +62,43 @@ define(function () {
           .then(function (response) {
             console.log(response);
             self.current = response;
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+      },
+      downloadUpdate: async function () {
+        var self = this;
+        await $flare.http
+          .post('<% .Helpers.UrlForRoute "admin:core:download" %>', {
+            CoreZipFileUrl: self.latest.CoreZipFileUrl,
+            ArchBinFileUrl: self.latest.ArchBinFileUrl
+          })
+          .then(function (response) {
+            console.log(response);
+            self.current = response;
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+      },
+      installUpdate: async function () {
+        var self = this;
+
+        if (
+          self.latest.ZipFileUrl == '' ||
+          self.latest.ZipFileUrl === undefined
+        ) {
+          await self.downloadUpdate();
+        }
+
+        await $flare.http
+          .post('<% .Helpers.UrlForRoute "admin:core:update" %>', {
+            LocalCoreFilesPath: self.localCoreFilesPath,
+            LocalArchBinFilesPath: self.localArchBinFilesPath
+          })
+          .then(function (response) {
+            console.log('update response: ', response);
           })
           .catch(function (error) {
             console.log(error);
