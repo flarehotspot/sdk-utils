@@ -71,6 +71,9 @@ define(function () {
         var self = this;
         await $flare.http
           .post('<% .Helpers.UrlForRoute "admin:core:download" %>', {
+            Major: self.latest.Major,
+            Minor: self.latest.Minor,
+            Patch: self.latest.Patch,
             CoreZipFileUrl: self.latest.CoreZipFileUrl,
             ArchBinFileUrl: self.latest.ArchBinFileUrl
           })

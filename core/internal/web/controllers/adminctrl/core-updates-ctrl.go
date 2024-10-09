@@ -4,6 +4,7 @@ import (
 	"core/internal/plugins"
 	rpc "core/internal/rpc"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -141,6 +142,8 @@ func DownloadUpdatesCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 			log.Println("Erro:", err)
 			return
 		}
+
+		fmt.Printf("data: %v\n", data)
 
 		coreFilesPath := filepath.Join(sdkpaths.TmpDir, sdkstr.Rand(6))
 		err = downloadCoreFiles(data.CoreZipFileUrl, coreFilesPath)
