@@ -14,6 +14,7 @@ import (
 func BuildCoreBins() {
 	BuildFlareCLI()
 	BuildCore()
+	BuildSysUp()
 
 	goversion := sdkruntime.GO_VERSION
 	tags := sdkstr.Slugify(env.BuildTags, "-")
@@ -22,6 +23,7 @@ func BuildCoreBins() {
 		OutputDirName: filepath.Join("core-binaries", fmt.Sprintf("%s-%s-go%s-%s", pkg.CoreInfo().Version, sdkruntime.GOARCH, goversion, tags)),
 		Files: []string{
 			"bin/flare",
+			"bin/update",
 			"core/plugin.so",
 		},
 	}
