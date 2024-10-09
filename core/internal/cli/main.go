@@ -167,6 +167,12 @@ func BuildPlugin() {
 }
 
 func Server() {
+	// TODO: kill sysup if running
+	if err := killSysUp(); err != nil {
+		log.Println("Error:", err)
+		return
+	}
+
 	corePath := filepath.Join(sdkpaths.AppDir, "core/plugin.so")
 	p, err := plugin.Open(corePath)
 	if err != nil {
@@ -176,6 +182,10 @@ func Server() {
 	symInit, _ := p.Lookup("Init")
 	initFn := symInit.(func())
 	initFn()
+}
+
+func killSysUp() error {
+	return nil
 }
 
 func GoEnvToString(e int8) string {
