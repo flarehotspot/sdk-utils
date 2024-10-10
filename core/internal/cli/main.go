@@ -8,6 +8,7 @@ import (
 	"plugin"
 	"strconv"
 	"strings"
+	"syscall"
 
 	tools "core/build/tools"
 	"core/env"
@@ -169,7 +170,7 @@ func BuildPlugin() {
 func Server() {
 	// TODO: kill sysup if running
 	if err := killSysUp(); err != nil {
-		log.Println("Error:", err)
+		log.Println("Error killing sysup:", err)
 		return
 	}
 
@@ -185,9 +186,43 @@ func Server() {
 }
 
 func killSysUp() error {
-    // read env
+	// read env
+	fromSysUp := os.Getenv("FROM_SYSUP")
+	if strings.ToLower(fromSysUp) == "true" {
+		fmt.Println("flare cli spawned from updater")
+
+		// check if sysup is still running
+		ppid := os.Getppid()
+		pproc, err := os.FindProcess(ppid)
+		if err != nil {
+			log.Println("Error finding sysup process: ", err)
+			return err
+		}
+
+		if isProcRunning(pproc) {
+			// kill sysup
+			fmt.Println("Killing sysup..")
+			if err = pproc.Kill(); err != nil {
+				log.Println("Error killing sysup proc:", err)
+				return err
+			}
+
+		} else {
+			fmt.Println("Updater is not running")
+		}
+	}
 
 	return nil
+}
+
+// checks if the proc is running
+func isProcRunning(proc *os.Process) bool {
+	if err := proc.Signal(syscall.Signal(0)); err != nil {
+		log.Println("Error:", err)
+		return false
+	}
+
+	return true
 }
 
 func GoEnvToString(e int8) string {
