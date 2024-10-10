@@ -24,7 +24,7 @@ func main() {
 		ppid := os.Getppid()
 		pproc, err := os.FindProcess(ppid)
 		if err != nil {
-			log.Println("Error:", err)
+			log.Println("Error finding parent procces id:", err)
 			return
 		}
 
@@ -32,7 +32,7 @@ func main() {
 		if isProcRunning(pproc) {
 			err := pproc.Kill()
 			if err != nil {
-				log.Println("Error:", err)
+				log.Println("Error finding :", err)
 				return
 			}
 
@@ -57,15 +57,24 @@ func main() {
 	}
 
 	// TODO: replace old files with the latest ones
+	fmt.Println("Replacing old files..")
 
 	// TODO: start the new flare CLI server
+	fmt.Println("Starting the new flare cli..")
+	wd, err := os.Getwd()
+	if err != nil {
+		log.Println("Error getting cwd: ", err)
+		return
+	}
+	fmt.Printf("wd: %v\n", wd)
+
 	newFlareCliCmd := exec.Command("./bin/flare", "server")
 	if err := newFlareCliCmd.Start(); err != nil {
-		log.Println("Error:", err)
+		log.Println("Error running new flare cli:", err)
 		return
 	}
 
-	fmt.Println("Flare System Updated Successful")
+	fmt.Println("Flare system updated successfully")
 }
 
 func isProcRunning(proc *os.Process) bool {
