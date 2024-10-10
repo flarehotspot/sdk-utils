@@ -168,12 +168,6 @@ func BuildPlugin() {
 }
 
 func Server() {
-	// TODO: kill sysup if running
-	if err := killSysUp(); err != nil {
-		log.Println("Error killing sysup:", err)
-		return
-	}
-
 	corePath := filepath.Join(sdkpaths.AppDir, "core/plugin.so")
 	p, err := plugin.Open(corePath)
 	if err != nil {
