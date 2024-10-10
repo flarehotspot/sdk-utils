@@ -16,7 +16,7 @@ func main() {
 	fmt.Println("Updating flare system's core")
 
 	// check if updater was spawned by the flare cli using env
-	fromFlareEnv := os.Getenv("FROM_FLARE")
+	fromFlareEnv := os.Getenv("RUN_BY_FLARE")
 	if strings.ToLower(fromFlareEnv) == "true" {
 		fmt.Println("Updater spawned by flare cli")
 
@@ -40,8 +40,21 @@ func main() {
 		}
 	}
 
-	// TODO: ensure core and arch bin files exist
-	sdkfs.Exists("")
+	// ensure core and arch bin files exist
+	coreAndArchBinFiles := []string{}
+	for _, f := range coreAndArchBinFiles {
+		// TODO: find out proper file path
+		if sdkfs.Exists("") {
+			fmt.Println(f, " exists")
+			continue
+		}
+
+		// do not proceed the update
+		fmt.Println(f, " does not exist")
+		log.Println("Core files not complete.")
+		log.Println("Aborting update..")
+		return
+	}
 
 	// TODO: replace old files with the latest ones
 
@@ -52,7 +65,7 @@ func main() {
 		return
 	}
 
-	fmt.Println("Flare System Update Successful")
+	fmt.Println("Flare System Updated Successful")
 }
 
 func isProcRunning(proc *os.Process) bool {

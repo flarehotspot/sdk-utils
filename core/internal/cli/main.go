@@ -185,6 +185,8 @@ func Server() {
 }
 
 func killSysUp() error {
+    // read env
+
 	return nil
 }
 

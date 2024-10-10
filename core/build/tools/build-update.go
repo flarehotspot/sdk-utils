@@ -1,38 +1,47 @@
 package tools
 
 import (
+	"core/internal/utils/pkg"
 	"fmt"
-	"log"
 	"os"
-	"os/exec"
+	"runtime"
 )
 
-func BuildUpdate() {
-	fmt.Println("Updating flare system")
+type FlareUpdateBuild struct {
+	GOOS   string
+	GOARCH string
+	File   string
+}
 
-	// TODO: stop the flare cli, if running
-	flareCliPid := os.Getppid()
-	fmt.Printf("pidFlareCli: %v\n", flareCliPid)
-	flareCliProcess, err := os.FindProcess(flareCliPid)
-	if err != nil {
-		log.Println("Error", err)
-		return
+// Builds the flare system updater
+func BuildSysUp() {
+	builds := []FlareUpdateBuild{
+		{
+			GOOS:   "windows",
+			GOARCH: runtime.GOARCH,
+			File:   "./bin/update.exe",
+		},
+		{
+			GOOS:   "linux",
+			GOARCH: runtime.GOARCH,
+			File:   "./bin/update",
+		},
 	}
 
-	err = flareCliProcess.Kill()
-	// add some delay
+	for _, b := range builds {
+		fmt.Println("Building flare system updater...")
+		sysupFile := "core/internal/sysup/main.go"
+		sysupPath := b.File
+		workDir, _ := os.Getwd()
+		args := &pkg.GoBuildArgs{
+			WorkDir: workDir,
+			Env:     []string{"GOOS=" + b.GOOS, "GOARCH=" + b.GOARCH},
+		}
+		err := pkg.BuildGoModule(sysupFile, sysupPath, args)
+		if err != nil {
+			panic(err)
+		}
 
-	// TODO: ensure core and arch bin files exist
-
-	// TODO: replace old files with the latest ones
-
-	// TODO: start the new flare CLI with an arg "server"
-	newFlareCliCmd := exec.Command("./bin/flare", "server")
-	if err := newFlareCliCmd.Start(); err != nil {
-		log.Println("Error:", err)
-		return
+		fmt.Printf("Flare System Updater built at: %s\n", sysupPath)
 	}
-
-	// Quit
-	fmt.Println("Update Successful\nExiting..")
 }
