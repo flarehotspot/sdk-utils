@@ -69,6 +69,10 @@ func main() {
 	fmt.Printf("wd: %v\n", wd)
 
 	newFlareCliCmd := exec.Command("./bin/flare", "server")
+	newFlareCliCmd.Stdout = os.Stdout
+	newFlareCliCmd.Stderr = os.Stderr
+	newFlareCliCmd.Env = append(os.Environ(), "FROM_SYSUP=true")
+
 	if err := newFlareCliCmd.Start(); err != nil {
 		log.Println("Error running new flare cli:", err)
 		return
