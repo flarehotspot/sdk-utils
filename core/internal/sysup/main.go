@@ -68,7 +68,7 @@ func main() {
 	}
 	fmt.Printf("wd: %v\n", wd)
 
-    // TODO:
+	// TODO:
 	// flare cli path should be dynamic depending on the current working directory of the updater
 	// or it would be better if the flare cli is added on to the system's path to easily run it anywhere
 	newFlareCliCmd := exec.Command("./bin/flare", "server")
