@@ -4,16 +4,19 @@ import (
 	"fmt"
 	"log"
 	"os"
+	// "os/exec"
 	"path/filepath"
 	"plugin"
 	"strconv"
 	"strings"
 	"syscall"
+	"time"
 
 	tools "core/build/tools"
 	"core/env"
 	"core/internal/utils/pkg"
 
+	sdkfs "github.com/flarehotspot/go-utils/fs"
 	sdkpaths "github.com/flarehotspot/go-utils/paths"
 )
 
@@ -64,6 +67,11 @@ func main() {
 			installPath = os.Args[2]
 		}
 		tools.InstallGo(installPath)
+		return
+
+	case "update":
+		// TODO: move the update feature here
+		Update()
 		return
 
 	case "help":
@@ -177,6 +185,81 @@ func Server() {
 	symInit, _ := p.Lookup("Init")
 	initFn := symInit.(func())
 	initFn()
+}
+
+func Update() {
+	fmt.Println("Updating flare system's core")
+
+	// check if was spawned by the flare cli
+	fromFlareEnv := os.Getenv("RUN_BY_FLARE")
+	if strings.ToLower(fromFlareEnv) == "true" {
+		fmt.Println("Spawned from flare cli")
+
+		// get flare cli pid
+		ppid := os.Getppid()
+		pproc, err := os.FindProcess(ppid)
+		if err != nil {
+			log.Println("Error finding parent procces id:", err)
+			return
+		}
+
+		// stop the flare cli, if running
+		if isProcRunning(pproc) {
+			err := pproc.Kill()
+			if err != nil {
+				log.Println("Error finding :", err)
+				return
+			}
+
+			fmt.Println("flare cli killed")
+			time.Sleep(1 * time.Second)
+		}
+	}
+
+	// ensure core and arch bin files exist
+	coreAndArchBinFiles := []string{
+		// "",
+	}
+	for _, f := range coreAndArchBinFiles {
+		// TODO: find out proper file path
+		if sdkfs.Exists("") {
+			fmt.Println(f, " exists")
+			continue
+		}
+
+		// do not proceed the update
+		fmt.Println(f, " does not exist")
+		log.Println("Core files not complete.")
+		log.Println("Aborting update..")
+		return
+	}
+
+	// TODO: replace old files with the latest ones
+	fmt.Println("Replacing old files..")
+
+	// TODO: start the new flare CLI server
+	fmt.Println("Starting the new flare cli..")
+	wd, err := os.Getwd()
+	if err != nil {
+		log.Println("Error getting cwd: ", err)
+		return
+	}
+	fmt.Printf("wd: %v\n", wd)
+
+	// TODO:
+	// flare cli path should be dynamic depending on the current working directory of the updater
+	// or it would be better if the flare cli is added on to the system's path to easily run it anywhere
+	// newFlareCliCmd := exec.Command("./bin/flare", "server")
+	// newFlareCliCmd.Stdout = os.Stdout
+	// newFlareCliCmd.Stderr = os.Stderr
+	// newFlareCliCmd.Env = append(os.Environ(), "FROM_SYSUP=true")
+
+	// if err := newFlareCliCmd.Start(); err != nil {
+	// 	log.Println("Error running new flare cli:", err)
+	// 	return
+	// }
+
+	fmt.Println("Flare system updated successfully")
 }
 
 func killSysUp() error {
