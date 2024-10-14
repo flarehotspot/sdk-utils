@@ -70,7 +70,6 @@ func main() {
 		return
 
 	case "update":
-		// TODO: move the update feature here
 		Update()
 		return
 
@@ -188,7 +187,7 @@ func Server() {
 }
 
 func Update() {
-	fmt.Println("Updating flare system's core")
+	fmt.Println("Updating flare system's core..")
 
 	// check if was spawned by the flare cli
 	fromFlareEnv := os.Getenv("RUN_BY_FLARE")
@@ -336,5 +335,7 @@ list of commands:
     install-go  <install path>          Install Go to the given path. If install path argument is not defined, then it will install in
                                         the "$GO_CUSTOM_PATH" if defined, else it will install in "go" directory under the
                                         current working directory.
+
+    update                              Updates the flare system
 `
 }
