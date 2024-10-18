@@ -14,6 +14,7 @@ import (
 	"strings"
 
 	sdkdownloader "github.com/flarehotspot/go-utils/downloader"
+	sdkextract "github.com/flarehotspot/go-utils/extract"
 	sdkpaths "github.com/flarehotspot/go-utils/paths"
 )
 
@@ -24,6 +25,20 @@ type Version struct {
 	CoreZipFileUrl string
 	ArchBinFileUrl string
 }
+
+type UpdateFiles struct {
+	LocalCoreFilesPath    string
+	LocalArchBinFilesPath string
+	Version
+}
+
+// core update files convention
+// core files
+// ./tmp/updates/core/<version>/core-files
+// arch-bin files
+// ./tmp/updates/core/<version>/arch-bin-files
+// extracted files
+// ./tmp/updates/core/<version>/extracted
 
 func FetchUpdatesCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -173,13 +188,15 @@ func DownloadUpdatesCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 			return
 		}
 
-		// return the downloaded local paths to clients
-		type UpdateFiles struct {
-			LocalCoreFilesPath    string
-			LocalArchBinFilesPath string
+		// TODO: verify downloaded files
+
+		// return downloaded local file paths
+		localUpdateFiles := UpdateFiles{
+			LocalCoreFilesPath:    coreFilesPath,
+			LocalArchBinFilesPath: archBinFilesPath,
 		}
 
-		res.Json(w, "downloaded (testing)", http.StatusOK)
+		res.Json(w, localUpdateFiles, http.StatusOK)
 	}
 }
 
@@ -201,11 +218,21 @@ func downloadFiles(src string, dest string) error {
 }
 
 // web controller for /core/update
-func UpateCoreCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
+func UpdateCoreCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		res := g.CoreAPI.HttpAPI.VueResponse()
 
-		if err := updateCore(); err != nil {
+		// TODO: read version from request body
+
+		var data UpdateFiles
+		err := json.NewDecoder(r.Body).Decode(&data)
+		if err != nil {
+			res.Error(w, err.Error(), http.StatusBadRequest)
+			log.Println("Error reading the request body:", err)
+			return
+		}
+
+		if err := updateCore(data); err != nil {
 			log.Println("Error:", err)
 			res.Error(w, err.Error(), http.StatusBadRequest)
 			return
@@ -215,18 +242,36 @@ func UpateCoreCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 	}
 }
 
-// actual implementation of update of the downloeded latest core release,
+// actual implementation of update of the downloaded latest core release,
 // by simply extracting the downloaded files and running the updater
-func updateCore() error {
+func updateCore(localUpdateFiles UpdateFiles) error {
 	// TODO: extract downloaded arch bin files
+	// extract path convention ./tmp/updates/core/<version>/extracted
+	// ./tmp/updates/core/<version>/core-files
+	// ./tmp/updates/core/<version>/archbin-files
+	extractPath := filepath.Join(sdkpaths.TmpDir, "updates", "core", stringifyVersion(localUpdateFiles.Version), "extracted")
+	fmt.Println("Extracting downloaded latest release to: ", extractPath)
+
+	// TODO: extract downloaded update files to extractPath
+	sdkextract.Extract(localUpdateFiles.LocalCoreFilesPath, extractPath)
+	sdkextract.Extract(localUpdateFiles.LocalArchBinFilesPath, extractPath)
+	// TODO: test and check if they will get extracted without any conflicts
 
 	// TODO: run flare system updater
-	sysup := exec.Command("")
-	sysup.Stdout = os.Stdout
-	sysup.Stderr = os.Stderr
+	fmt.Println("Running new flare cli updater..")
+	updater := exec.Command("./tmp/updates/core/v0.1.0/bin/flare", "update")
+	updater.Stdout = os.Stdout
+	updater.Stderr = os.Stderr
 
 	// add env to sysup to inform sysup that it was spawn from flare cli
-	sysup.Env = append(os.Environ(), "RUN_BY_FLARE=true")
+	updater.Env = append(os.Environ(), "RUN_BY_FLARE=true")
+
+	if err := updater.Start(); err != nil {
+		log.Println("Error starting the updater: ", err)
+		return err
+	}
+
+	// TODO: test and check if it will actually run
 
 	return nil
 }

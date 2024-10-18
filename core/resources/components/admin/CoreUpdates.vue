@@ -4,7 +4,7 @@
 
     <hr />
 
-    <div class="" v-if="shouldUpdate(current, latest)">
+    <div class="" v-if="hasUpdates(current, latest)">
       <h1>Update Available</h1>
       <div class="btn btn-primary" @click="installUpdate">Install Update</div>
     </div>
@@ -110,7 +110,7 @@ define(function () {
       stringifyVersion: function (version) {
         return 'v' + version.Major + '.' + version.Minor + '.' + version.Patch;
       },
-      shouldUpdate: function (current, latest) {
+      hasUpdates: function (current, latest) {
         if (current.Major < latest.Major) {
           return true;
         }

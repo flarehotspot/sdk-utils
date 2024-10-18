@@ -275,6 +275,11 @@ func Update() {
 	// }
 
 	fmt.Println("Flare system updated successfully")
+
+	// TODO: remove sleep
+	// sleep just for testing
+	fmt.Println("Sleeping..")
+	time.Sleep(time.Second * 200)
 }
 
 func killSysUp() error {

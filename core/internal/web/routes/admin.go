@@ -23,7 +23,7 @@ func AdminRoutes(g *plugins.CoreGlobals) {
 		subrouter.Get("/fetch", adminctrl.FetchUpdatesCtrl(g)).Name("admin:core:fetch")
 		subrouter.Get("/current", adminctrl.GetCurrentCoreVersionCtrl(g)).Name("admin:core:current")
 		subrouter.Post("/download", adminctrl.DownloadUpdatesCtrl(g)).Name("admin:core:download")
-		subrouter.Post("/update", adminctrl.UpateCoreCtrl(g)).Name("admin:core:update")
+		subrouter.Post("/update", adminctrl.UpdateCoreCtrl(g)).Name("admin:core:update")
 	})
 
 	adminR.Group("/themes", func(subrouter sdkhttp.HttpRouterInstance) {
