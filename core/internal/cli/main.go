@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	// "os/exec"
 	"path/filepath"
 	"plugin"
 	"strconv"
@@ -215,7 +214,7 @@ func Update() {
 		}
 	}
 
-	// ensure core and arch bin files exist
+	// TODO: ensure core and arch bin files exist
 	coreAndArchBinFiles := []string{
 		// "",
 	}
@@ -233,8 +232,25 @@ func Update() {
 		return
 	}
 
+	// TODO: remove dummy files
+	// dummy files for testing copy and replace
+	// create dummy files in old path
+	cwd, err := os.Getwd()
+	if err != nil {
+		log.Println("Error in getting cwd:", err)
+		return
+	}
+	// create dummy files in new path
+	fmt.Println("flare cli update, current wd: ", cwd)
+
+	// TODO: get path of latest version release
+	oldPath := ""
+	// TODO: get path of the currently installed binary
+	latestPath := ""
+
 	// TODO: replace old files with the latest ones
 	fmt.Println("Replacing old files..")
+	sdkfs.CopyAndReplaceDir(oldPath, latestPath)
 
 	// TODO: start the new flare CLI server
 	fmt.Println("Starting the new flare cli..")
