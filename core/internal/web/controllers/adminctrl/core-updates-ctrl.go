@@ -229,6 +229,10 @@ func updateCore(localUpdateFiles sysup.UpdateFiles) error {
 	extractPath := filepath.Join(sdkpaths.TmpDir, "updates", "core", sysup.StringifyVersion(localUpdateFiles.Version), "extracted")
 	fmt.Println("Extracting downloaded latest release to: ", extractPath)
 
+	// TODO: remove logs
+	fmt.Println("local core files path: ", localUpdateFiles.LocalCoreFilesPath)
+	fmt.Println("local arch bin files path: ", localUpdateFiles.LocalArchBinFilesPath)
+
 	// TODO: extract downloaded update files to extractPath
 	sdkextract.Extract(localUpdateFiles.LocalCoreFilesPath, extractPath)
 	sdkextract.Extract(localUpdateFiles.LocalArchBinFilesPath, extractPath)

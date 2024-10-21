@@ -6,7 +6,7 @@
 
         <div class="" v-if="hasUpdates(current, latest)">
             <h1>Update Available</h1>
-            <div class="btn btn-primary" @click="installUpdate">Install Update</div>
+            <div class="btn btn-primary" @click="downloadUpdate">Download Update</div>
         </div>
         <div v-else>
             <h1>Latest</h1>
@@ -78,8 +78,7 @@ define(function () {
                         ArchBinFileUrl: self.latest.ArchBinFileUrl
                     })
                     .then(function (response) {
-                        console.log(response);
-                        self.current = response;
+                        console.log("local core files path: ", response);
                     })
                     .catch(function (error) {
                         console.log(error);
@@ -98,7 +97,10 @@ define(function () {
                 await $flare.http
                     .post('<% .Helpers.UrlForRoute "admin:core:update" %>', {
                         LocalCoreFilesPath: self.localCoreFilesPath,
-                        LocalArchBinFilesPath: self.localArchBinFilesPath
+                        LocalArchBinFilesPath: self.localArchBinFilesPath,
+                        Major: self.latest.Major,
+                        Minor: self.latest.Minor,
+                        Patch: self.latest.Patch,
                     })
                     .then(function (response) {
                         console.log('update response: ', response);
