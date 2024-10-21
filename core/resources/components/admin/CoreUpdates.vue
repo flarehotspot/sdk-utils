@@ -6,7 +6,7 @@
 
         <div class="" v-if="hasUpdates(current, latest)">
             <h1>Update Available</h1>
-            <div class="btn btn-primary" @click="downloadUpdate">Download Update</div>
+            <div class="btn btn-primary" @click="installUpdate">Install Update</div>
         </div>
         <div v-else>
             <h1>Latest</h1>
@@ -79,6 +79,11 @@ define(function () {
                     })
                     .then(function (response) {
                         console.log("local core files path: ", response);
+                        self.localCoreFilesPath = response.LocalCoreFilesPath;
+                        self.localArchBinFilesPath = response.LocalArchBinFilesPath;
+
+                        console.log(self.localCoreFilesPath);
+                        console.log(self.localArchBinFilesPath);
                     })
                     .catch(function (error) {
                         console.log(error);
