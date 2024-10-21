@@ -3,12 +3,12 @@ package adminctrl
 import (
 	"core/internal/plugins"
 	rpc "core/internal/rpc"
+	"core/internal/utils/sysup"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -17,28 +17,6 @@ import (
 	sdkextract "github.com/flarehotspot/go-utils/extract"
 	sdkpaths "github.com/flarehotspot/go-utils/paths"
 )
-
-type Version struct {
-	Major          int
-	Minor          int
-	Patch          int
-	CoreZipFileUrl string
-	ArchBinFileUrl string
-}
-
-type UpdateFiles struct {
-	LocalCoreFilesPath    string
-	LocalArchBinFilesPath string
-	Version
-}
-
-// core update files convention
-// core files
-// ./tmp/updates/core/<version>/core-files
-// arch-bin files
-// ./tmp/updates/core/<version>/arch-bin-files
-// extracted files
-// ./tmp/updates/core/<version>/extracted
 
 func FetchUpdatesCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -55,15 +33,15 @@ func FetchUpdatesCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 	}
 }
 
-func fetchLatestCoreRelease() (Version, error) {
+func fetchLatestCoreRelease() (sysup.Version, error) {
 	srv, ctx := rpc.GetCoreMachineTwirpServiceAndCtx()
 	latestCoreRelease, err := srv.FetchLatestCoreRelease(ctx, &rpc.FetchLatestCoreReleaseRequest{})
 	if err != nil {
 		log.Println("Error: ", err)
-		return Version{}, err
+		return sysup.Version{}, err
 	}
 
-	return Version{
+	return sysup.Version{
 		Major:          int(latestCoreRelease.Major),
 		Minor:          int(latestCoreRelease.Minor),
 		Patch:          int(latestCoreRelease.Patch),
@@ -88,7 +66,7 @@ func GetCurrentCoreVersionCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 }
 
 // returns the installed core release version
-func getCurrentCoreVersion() (Version, error) {
+func getCurrentCoreVersion() (sysup.Version, error) {
 	// get file content
 	var meta struct {
 		Name        string `json:"Name"`
@@ -99,13 +77,13 @@ func getCurrentCoreVersion() (Version, error) {
 	pluginJsonFilePath := filepath.Join(sdkpaths.CoreDir, "plugin.json")
 	if err := readPluginReleaseData(&meta, pluginJsonFilePath); err != nil {
 		log.Printf("Error reading %v: %v", pluginJsonFilePath, err)
-		return Version{}, err
+		return sysup.Version{}, err
 	}
 
 	coreVersion, err := parseVersion(meta.Version)
 	if err != nil {
 		log.Println("Error parsing plugin version:", err)
-		return Version{}, err
+		return sysup.Version{}, err
 	}
 
 	return coreVersion, nil
@@ -127,25 +105,25 @@ func readPluginReleaseData(meta interface{}, pluginJsonFilePath string) error {
 }
 
 // parses the string versions into a Version struct
-func parseVersion(rawVersion string) (Version, error) {
+func parseVersion(rawVersion string) (sysup.Version, error) {
 	prVersion := strings.Split(rawVersion, ".")
 	majorVersion, err := strconv.Atoi(prVersion[0])
 	if err != nil {
 		log.Println("Error parsing major version: ", err)
-		return Version{}, err
+		return sysup.Version{}, err
 	}
 	minorVersion, err := strconv.Atoi(prVersion[1])
 	if err != nil {
 		log.Println("Error parsing minor version: ", err)
-		return Version{}, err
+		return sysup.Version{}, err
 	}
 	patchVersion, err := strconv.Atoi(strings.Split(prVersion[2], "-")[0])
 	if err != nil {
 		log.Println("Error parsing patch version: ", err)
-		return Version{}, err
+		return sysup.Version{}, err
 	}
 
-	return Version{
+	return sysup.Version{
 		Major: majorVersion,
 		Minor: minorVersion,
 		Patch: patchVersion,
@@ -157,7 +135,7 @@ func DownloadUpdatesCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		res := g.CoreAPI.HttpAPI.VueResponse()
 
-		var data Version
+		var data sysup.Version
 		err := json.NewDecoder(r.Body).Decode(&data)
 		if err != nil {
 			res.Error(w, err.Error(), http.StatusBadRequest)
@@ -168,7 +146,7 @@ func DownloadUpdatesCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 		// TODO: remove logs
 		fmt.Printf("data: %v\n", data)
 
-		stringedVersion := stringifyVersion(data)
+		stringedVersion := sysup.StringifyVersion(data)
 		updatesPath := filepath.Join(sdkpaths.CacheDir, "updates", "core", stringedVersion)
 		coreFilesPath := filepath.Join(updatesPath, "core-files")
 		archBinFilesPath := filepath.Join(updatesPath, "arch-bin-files")
@@ -191,18 +169,13 @@ func DownloadUpdatesCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 		// TODO: verify downloaded files
 
 		// return downloaded local file paths
-		localUpdateFiles := UpdateFiles{
+		localUpdateFiles := sysup.UpdateFiles{
 			LocalCoreFilesPath:    coreFilesPath,
 			LocalArchBinFilesPath: archBinFilesPath,
 		}
 
 		res.Json(w, localUpdateFiles, http.StatusOK)
 	}
-}
-
-// retuns a stringed version
-func stringifyVersion(data Version) string {
-	return fmt.Sprintf("v%v.%v.%v", data.Major, data.Minor, data.Patch)
 }
 
 // download the files specified from the src and puts on to the dest
@@ -224,13 +197,17 @@ func UpdateCoreCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 
 		// TODO: read version from request body
 
-		var data UpdateFiles
+		var data sysup.UpdateFiles
 		err := json.NewDecoder(r.Body).Decode(&data)
 		if err != nil {
 			res.Error(w, err.Error(), http.StatusBadRequest)
 			log.Println("Error reading the request body:", err)
 			return
 		}
+
+		// TODO: remove logs
+		fmt.Printf("data: %v\n", data)
+		fmt.Println("data versions: ", data.Major, data.Minor, data.Patch)
 
 		if err := updateCore(data); err != nil {
 			log.Println("Error:", err)
@@ -244,34 +221,22 @@ func UpdateCoreCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 
 // actual implementation of update of the downloaded latest core release,
 // by simply extracting the downloaded files and running the updater
-func updateCore(localUpdateFiles UpdateFiles) error {
-	// TODO: extract downloaded arch bin files
-	// extract path convention ./tmp/updates/core/<version>/extracted
-	// ./tmp/updates/core/<version>/core-files
-	// ./tmp/updates/core/<version>/archbin-files
-	extractPath := filepath.Join(sdkpaths.TmpDir, "updates", "core", stringifyVersion(localUpdateFiles.Version), "extracted")
+func updateCore(localUpdateFiles sysup.UpdateFiles) error {
+	// extract downloaded arch bin files
+	// extract path convention .tmp/updates/core/<version>/extracted
+	// .tmp/updates/core/<version>/core-files
+	// .tmp/updates/core/<version>/archbin-files
+	extractPath := filepath.Join(sdkpaths.TmpDir, "updates", "core", sysup.StringifyVersion(localUpdateFiles.Version), "extracted")
 	fmt.Println("Extracting downloaded latest release to: ", extractPath)
 
 	// TODO: extract downloaded update files to extractPath
 	sdkextract.Extract(localUpdateFiles.LocalCoreFilesPath, extractPath)
 	sdkextract.Extract(localUpdateFiles.LocalArchBinFilesPath, extractPath)
-	// TODO: test and check if they will get extracted without any conflicts
 
-	// TODO: run flare system updater
-	fmt.Println("Running new flare cli updater..")
-	updater := exec.Command("./tmp/updates/core/v0.1.0/bin/flare", "update")
-	updater.Stdout = os.Stdout
-	updater.Stderr = os.Stderr
-
-	// add env to sysup to inform sysup that it was spawn from flare cli
-	updater.Env = append(os.Environ(), "RUN_BY_FLARE=true")
-
-	if err := updater.Start(); err != nil {
-		log.Println("Error starting the updater: ", err)
+	if err := sysup.ExecuteUpdater(localUpdateFiles.Version); err != nil {
+		log.Println("Error executing updater: ", err)
 		return err
 	}
-
-	// TODO: test and check if it will actually run
 
 	return nil
 }

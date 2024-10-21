@@ -8,14 +8,13 @@ import (
 	"plugin"
 	"strconv"
 	"strings"
-	"syscall"
 	"time"
 
 	tools "core/build/tools"
 	"core/env"
 	"core/internal/utils/pkg"
+	"core/internal/utils/sysup"
 
-	sdkfs "github.com/flarehotspot/go-utils/fs"
 	sdkpaths "github.com/flarehotspot/go-utils/paths"
 )
 
@@ -188,10 +187,9 @@ func Server() {
 func Update() {
 	fmt.Println("Updating flare system's core..")
 
-	// check if was spawned by the flare cli
-	fromFlareEnv := os.Getenv("RUN_BY_FLARE")
-	if strings.ToLower(fromFlareEnv) == "true" {
-		fmt.Println("Spawned from flare cli")
+	if sysup.IsSpawnedFromFlare() {
+		fmt.Println("Spawned from flare")
+		fmt.Println("killing spawner..")
 
 		// get flare cli pid
 		ppid := os.Getppid()
@@ -202,124 +200,42 @@ func Update() {
 		}
 
 		// stop the flare cli, if running
-		if isProcRunning(pproc) {
+		if sysup.IsProcRunning(pproc) {
+			// kill the spawner
 			err := pproc.Kill()
 			if err != nil {
 				log.Println("Error finding :", err)
 				return
 			}
 
-			fmt.Println("flare cli killed")
+			fmt.Println("flare cli (spawner) killed")
 			time.Sleep(1 * time.Second)
 		}
 	}
 
-	// TODO: ensure core and arch bin files exist
-	coreAndArchBinFiles := []string{
-		// "",
-	}
-	for _, f := range coreAndArchBinFiles {
-		// TODO: find out proper file path
-		if sdkfs.Exists("") {
-			fmt.Println(f, " exists")
-			continue
-		}
-
-		// do not proceed the update
-		fmt.Println(f, " does not exist")
-		log.Println("Core files not complete.")
-		log.Println("Aborting update..")
-		return
+	// TODO: implement file checking
+	if err := sysup.EnsureUpdateFiles(); err != nil {
+		log.Println("Error in ensuring core release files exist: ", err)
+		os.Exit(1)
 	}
 
-	// TODO: remove dummy files
-	// dummy files for testing copy and replace
-	// create dummy files in old path
-	cwd, err := os.Getwd()
-	if err != nil {
-		log.Println("Error in getting cwd:", err)
-		return
-	}
-	// create dummy files in new path
-	fmt.Println("flare cli update, current wd: ", cwd)
-
-	// TODO: get path of latest version release
-	oldPath := ""
-	// TODO: get path of the currently installed binary
-	latestPath := ""
-
-	// TODO: replace old files with the latest ones
-	fmt.Println("Replacing old files..")
-	sdkfs.CopyAndReplaceDir(oldPath, latestPath)
-
-	// TODO: start the new flare CLI server
-	fmt.Println("Starting the new flare cli..")
-	wd, err := os.Getwd()
-	if err != nil {
-		log.Println("Error getting cwd: ", err)
-		return
-	}
-	fmt.Printf("wd: %v\n", wd)
-
-	// TODO:
-	// flare cli path should be dynamic depending on the current working directory of the updater
-	// or it would be better if the flare cli is added on to the system's path to easily run it anywhere
-	// newFlareCliCmd := exec.Command("./bin/flare", "server")
-	// newFlareCliCmd.Stdout = os.Stdout
-	// newFlareCliCmd.Stderr = os.Stderr
-	// newFlareCliCmd.Env = append(os.Environ(), "FROM_SYSUP=true")
-
-	// if err := newFlareCliCmd.Start(); err != nil {
-	// 	log.Println("Error running new flare cli:", err)
-	// 	return
-	// }
-
-	fmt.Println("Flare system updated successfully")
-
-	// TODO: remove sleep
-	// sleep just for testing
-	fmt.Println("Sleeping..")
-	time.Sleep(time.Second * 200)
-}
-
-func killSysUp() error {
-	// read env
-	fromSysUp := os.Getenv("FROM_SYSUP")
-	if strings.ToLower(fromSysUp) == "true" {
-		fmt.Println("flare cli spawned from updater")
-
-		// check if sysup is still running
-		ppid := os.Getppid()
-		pproc, err := os.FindProcess(ppid)
-		if err != nil {
-			log.Println("Error finding sysup process: ", err)
-			return err
-		}
-
-		if isProcRunning(pproc) {
-			// kill sysup
-			fmt.Println("Killing sysup..")
-			if err = pproc.Kill(); err != nil {
-				log.Println("Error killing sysup proc:", err)
-				return err
-			}
-
-		} else {
-			fmt.Println("Updater is not running")
-		}
+	// update the system by copying and replacing
+	fmt.Println("updating system..")
+	if err := sysup.Update(); err != nil {
+		log.Println("Error updating system:", err)
+		os.Exit(1)
 	}
 
-	return nil
-}
-
-// checks if the proc is running
-func isProcRunning(proc *os.Process) bool {
-	if err := proc.Signal(syscall.Signal(0)); err != nil {
-		log.Println("Error:", err)
-		return false
+	// run the copied flare
+	fmt.Println("running new flare..")
+	if err := sysup.ExecuteFlare(); err != nil {
+		log.Println("Error executing new flare cli:", err)
+		os.Exit(1)
 	}
 
-	return true
+	// finish update
+	fmt.Println("Core System Updated Successfully!")
+	os.Exit(0)
 }
 
 func GoEnvToString(e int8) string {
