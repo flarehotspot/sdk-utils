@@ -12,10 +12,10 @@ ENV PATH=${PATH}:/opt/go/bin
 
 WORKDIR /build
 
-RUN go install github.com/cespare/reflex@latest
-
 CMD cp go.work.default go.work && \
     go run --tags=dev ./core/internal/cli/main.go install-go && \
+    go run --tags=dev ./core/cmd/sync-versions/main.go && \
+    cd tools && ./install.sh && cd .. && \
     reflex \
         -r '\.go$' \
         -R '\.tmp\/*.' \
@@ -26,4 +26,5 @@ CMD cp go.work.default go.work && \
         -R 'plugins\/update\/.*\/main\.go' \
         -R 'plugins\/backup\/.*\/main\.go' \
         -R '(.*)mono\.go' \
+        -R 'tools' \
         -s -- sh -c './start.sh' -v

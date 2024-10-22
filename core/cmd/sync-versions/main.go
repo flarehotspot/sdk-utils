@@ -11,7 +11,8 @@ import (
 )
 
 func main() {
-	tools.SyncVersion()
+	tools.SyncCoreVersion()
+	tools.SyncGoVersion()
 	version := pkg.CoreInfo().Version
 	releaseNotePath := filepath.Join(sdkpaths.CoreDir, "build", "release-notes", version+".md")
 	if !sdkfs.Exists(releaseNotePath) {
