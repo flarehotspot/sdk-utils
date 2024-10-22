@@ -1,7 +1,6 @@
 <template>
     <div>
         <h1>System Updates</h1>
-        <h1>VINCE GWAPO</h1>
 
         <hr />
 

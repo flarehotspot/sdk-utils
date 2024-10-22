@@ -34,7 +34,7 @@ type UpdateFiles struct {
 	Version
 }
 
-// helper function to check if the process is spawned by flare cli
+// Helper function to check if the process is spawned by flare cli
 func IsSpawnedFromFlare() bool {
 	spawnedFromFlareEnv := os.Getenv(EnvSpawner)
 	if strings.ToLower(spawnedFromFlareEnv) == EnvValFlare {
@@ -43,7 +43,7 @@ func IsSpawnedFromFlare() bool {
 	return false
 }
 
-// updates the core plugin from a the extracted latest core release
+// Updates the core plugin from a the extracted latest core release
 func Update() error {
 	// get cwd as the destination for the copying
 	cwd, err := os.Getwd()
@@ -65,7 +65,7 @@ func Update() error {
 	return nil
 }
 
-// executes the copied latest core release
+// Executes the copied latest core release
 func ExecuteFlare() error {
 	// get the latest path
 	flarePath := filepath.Join("bin", "flare")
@@ -89,7 +89,7 @@ func ExecuteFlare() error {
 
 }
 
-// checks if the process id is running
+// Helper function to check if the process id is running
 func IsProcRunning(proc *os.Process) bool {
 	if err := proc.Signal(syscall.Signal(0)); err != nil {
 		log.Println("Error:", err)
@@ -99,7 +99,7 @@ func IsProcRunning(proc *os.Process) bool {
 	return true
 }
 
-// checks if all the necessary core release files exist
+// Checks if all the necessary core release files exist
 func EnsureUpdateFiles() error {
 	// TODO: ensure core and arch bin files exist
 	coreAndArchBinFiles := []string{
@@ -122,6 +122,7 @@ func EnsureUpdateFiles() error {
 	return nil
 }
 
+// Executes the new flare cli with update params
 func ExecuteUpdater(version Version) error {
 	// get the latest path
 	// convention -> ./tmp/udpates/core/<version>/extracted/
@@ -147,6 +148,7 @@ func ExecuteUpdater(version Version) error {
 	return nil
 }
 
+// Returns a string version with format v<major>.<minor>.<patch>
 func StringifyVersion(data Version) string {
 	return fmt.Sprintf("v%v.%v.%v", data.Major, data.Minor, data.Patch)
 }

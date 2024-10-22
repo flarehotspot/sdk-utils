@@ -130,7 +130,6 @@ func parseVersion(rawVersion string) (sysup.Version, error) {
 	}, nil
 }
 
-// web controller for /core/download
 func DownloadUpdatesCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		res := g.CoreAPI.HttpAPI.VueResponse()
@@ -142,9 +141,6 @@ func DownloadUpdatesCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 			log.Println("Error reading the request body:", err)
 			return
 		}
-
-		// TODO: remove logs
-		fmt.Printf("data: %v\n", data)
 
 		stringedVersion := sysup.StringifyVersion(data)
 		updatesPath := filepath.Join(sdkpaths.CacheDir, "updates", "core", stringedVersion)
@@ -166,7 +162,7 @@ func DownloadUpdatesCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 			return
 		}
 
-		// TODO: verify downloaded files
+		// TODO: verify downloaded files by checking its checksum
 
 		// return downloaded local file paths
 		localUpdateFiles := sysup.UpdateFiles{
@@ -190,12 +186,9 @@ func downloadFiles(src string, dest string) error {
 	return nil
 }
 
-// web controller for /core/update
 func UpdateCoreCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		res := g.CoreAPI.HttpAPI.VueResponse()
-
-		// TODO: read version from request body
 
 		var data sysup.UpdateFiles
 		err := json.NewDecoder(r.Body).Decode(&data)
@@ -204,10 +197,6 @@ func UpdateCoreCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 			log.Println("Error reading the request body:", err)
 			return
 		}
-
-		// TODO: remove logs
-		fmt.Printf("data: %v\n", data)
-		fmt.Println("data versions: ", data.Major, data.Minor, data.Patch)
 
 		if err := updateCore(data); err != nil {
 			log.Println("Error:", err)
@@ -219,21 +208,12 @@ func UpdateCoreCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 	}
 }
 
-// actual implementation of update of the downloaded latest core release,
-// by simply extracting the downloaded files and running the updater
+// Extracts and runs the downloaded core release, flare, with update params
 func updateCore(localUpdateFiles sysup.UpdateFiles) error {
-	// extract downloaded arch bin files
 	// extract path convention .tmp/updates/core/<version>/extracted
-	// .tmp/updates/core/<version>/core-files
-	// .tmp/updates/core/<version>/archbin-files
 	extractPath := filepath.Join(sdkpaths.TmpDir, "updates", "core", sysup.StringifyVersion(localUpdateFiles.Version), "extracted")
 	fmt.Println("Extracting downloaded latest release to: ", extractPath)
 
-	// TODO: remove logs
-	fmt.Println("local core files path: ", localUpdateFiles.LocalCoreFilesPath)
-	fmt.Println("local arch bin files path: ", localUpdateFiles.LocalArchBinFilesPath)
-
-	// TODO: extract downloaded update files to extractPath
 	sdkextract.Extract(localUpdateFiles.LocalCoreFilesPath, extractPath)
 	sdkextract.Extract(localUpdateFiles.LocalArchBinFilesPath, extractPath)
 
