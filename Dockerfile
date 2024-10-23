@@ -4,11 +4,11 @@ RUN apt-get update && \
         apt-get install -y \
         wget curl gcc golang-go git ca-certificates
 
-ENV GOPATH=/opt/go
+ENV GOPATH=/build/.tmp/gopath
 ENV GOCACHE=/build/.tmp/gocache
-ENV GO_CUSTOM_PATH=/build/go
+ENV GO_CUSTOM_PATH=/build/.tmp/go
 ENV PATH=${GO_CUSTOM_PATH}/bin:${PATH}
-ENV PATH=${PATH}:/opt/go/bin
+ENV PATH=${PATH}:/build/.tmp/gopath/bin
 
 WORKDIR /build
 
