@@ -41,6 +41,7 @@ func SyncGoVersion() {
 	files := []string{
 		"core/go.mod",
 		"sdk/go.mod",
+		"go.work.default",
 	}
 
 	for _, f := range files {
