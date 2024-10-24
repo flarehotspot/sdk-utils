@@ -13,7 +13,7 @@ import (
 	tools "core/build/tools"
 	"core/env"
 	"core/internal/utils/pkg"
-	"core/internal/utils/sysup"
+	"core/internal/utils/updates"
 
 	sdkpaths "github.com/flarehotspot/go-utils/paths"
 )
@@ -187,7 +187,7 @@ func Server() {
 func Update() {
 	fmt.Println("Updating flare system's core..")
 
-	if sysup.IsSpawnedFromFlare() {
+	if updates.IsSpawnedFromFlare() {
 		fmt.Println("Spawned from flare")
 		fmt.Println("killing spawner..")
 
@@ -200,7 +200,7 @@ func Update() {
 		}
 
 		// stop the flare cli, if running
-		if sysup.IsProcRunning(pproc) {
+		if updates.IsProcRunning(pproc) {
 			// kill the spawner
 			err := pproc.Kill()
 			if err != nil {
@@ -214,21 +214,21 @@ func Update() {
 	}
 
 	// TODO: implement file checking
-	if err := sysup.EnsureUpdateFiles(); err != nil {
+	if err := updates.EnsureUpdateFilesExist(); err != nil {
 		log.Println("Error in ensuring core release files exist: ", err)
 		os.Exit(1)
 	}
 
 	// update the system by copying and replacing
 	fmt.Println("updating system..")
-	if err := sysup.Update(); err != nil {
+	if err := updates.Update(); err != nil {
 		log.Println("Error updating system:", err)
 		os.Exit(1)
 	}
 
 	// run the copied flare
 	fmt.Println("running new flare..")
-	if err := sysup.ExecuteFlare(); err != nil {
+	if err := updates.ExecuteFlare(); err != nil {
 		log.Println("Error executing new flare cli:", err)
 		os.Exit(1)
 	}
