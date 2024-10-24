@@ -1,6 +1,7 @@
-package sysup
+package updates
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
@@ -10,7 +11,11 @@ import (
 	"strings"
 	"syscall"
 
+	rpc "core/internal/rpc"
+	sdkextract "github.com/flarehotspot/go-utils/extract"
 	sdkfs "github.com/flarehotspot/go-utils/fs"
+	sdkpaths "github.com/flarehotspot/go-utils/paths"
+	sdksemver "github.com/flarehotspot/go-utils/semver"
 )
 
 const (
@@ -20,10 +25,8 @@ const (
 	EnvValUpdater  = "updater"
 )
 
-type Version struct {
-	Major          int
-	Minor          int
-	Patch          int
+type CoreReleaseUpdate struct {
+	Version        sdksemver.Version
 	CoreZipFileUrl string
 	ArchBinFileUrl string
 }
@@ -31,7 +34,7 @@ type Version struct {
 type UpdateFiles struct {
 	LocalCoreFilesPath    string
 	LocalArchBinFilesPath string
-	Version
+	CoreReleaseUpdate
 }
 
 // Helper function to check if the process is spawned by flare cli
@@ -123,10 +126,10 @@ func EnsureUpdateFiles() error {
 }
 
 // Executes the new flare cli with update params
-func ExecuteUpdater(version Version) error {
+func ExecuteUpdater(version sdksemver.Version) error {
 	// get the latest path
 	// convention -> ./tmp/udpates/core/<version>/extracted/
-	cliPath := filepath.Join(".tmp", "updates", "core", StringifyVersion(version), "extracted")
+	cliPath := filepath.Join(".tmp", "updates", "core", sdksemver.StringifyVersion(version), "extracted")
 	flarePath := filepath.Join(cliPath, "bin", "flare")
 	flareCmd := fmt.Sprintf("./%s", flarePath)
 
@@ -137,7 +140,7 @@ func ExecuteUpdater(version Version) error {
 
 	// set env vars
 	updater.Env = append(updater.Env, fmt.Sprintf("%s=%s", EnvSpawner, EnvValFlare))
-	updater.Env = append(updater.Env, fmt.Sprintf("CORE_VERSION=%s", StringifyVersion(version)))
+	updater.Env = append(updater.Env, fmt.Sprintf("CORE_VERSION=%s", sdksemver.StringifyVersion(version)))
 
 	// start
 	if err := updater.Start(); err != nil {
@@ -148,7 +151,74 @@ func ExecuteUpdater(version Version) error {
 	return nil
 }
 
-// Returns a string version with format v<major>.<minor>.<patch>
-func StringifyVersion(data Version) string {
-	return fmt.Sprintf("v%v.%v.%v", data.Major, data.Minor, data.Patch)
+// Fetches the latest core release from flare-server
+func FetchLatestCoreRelease() (sdksemver.Version, error) {
+	srv, ctx := rpc.GetCoreMachineTwirpServiceAndCtx()
+	latestCoreRelease, err := srv.FetchLatestCoreRelease(ctx, &rpc.FetchLatestCoreReleaseRequest{})
+	if err != nil {
+		log.Println("Error: ", err)
+		return sdksemver.Version{}, err
+	}
+
+	return sdksemver.Version{
+		Major: int(latestCoreRelease.Major),
+		Minor: int(latestCoreRelease.Minor),
+		Patch: int(latestCoreRelease.Patch),
+	}, nil
+}
+
+// Returns the installed core release version
+func GetCurrentCoreVersion() (sdksemver.Version, error) {
+	// get file content
+	var meta struct {
+		Name        string `json:"Name"`
+		Package     string `json:"Package"`
+		Description string `json:"Description"`
+		Version     string `json:"Version"`
+	}
+	pluginJsonFilePath := filepath.Join(sdkpaths.CoreDir, "plugin.json")
+	if err := readPluginReleaseData(&meta, pluginJsonFilePath); err != nil {
+		log.Printf("Error reading %v: %v", pluginJsonFilePath, err)
+		return sdksemver.Version{}, err
+	}
+
+	coreVersion, err := sdksemver.ParseVersion(meta.Version)
+	if err != nil {
+		log.Println("Error parsing plugin version:", err)
+		return sdksemver.Version{}, err
+	}
+
+	return coreVersion, nil
+}
+
+// reads the plugin.json from the specified path and populates the meta interface
+func readPluginReleaseData(meta interface{}, pluginJsonFilePath string) error {
+	b, err := os.ReadFile(pluginJsonFilePath)
+	if err != nil {
+		return err
+	}
+
+	if err := json.Unmarshal(b, meta); err != nil {
+		log.Println("Error unmarshaling the json: ", err)
+		return err
+	}
+
+	return nil
+}
+
+// Extracts and runs the downloaded core release, flare, with update params
+func UpdateCore(localUpdateFiles UpdateFiles) error {
+	// extract path convention .tmp/updates/core/<version>/extracted
+	extractPath := filepath.Join(sdkpaths.TmpDir, "updates", "core", sdksemver.StringifyVersion(localUpdateFiles.Version), "extracted")
+	fmt.Println("Extracting downloaded latest release to: ", extractPath)
+
+	sdkextract.Extract(localUpdateFiles.LocalCoreFilesPath, extractPath)
+	sdkextract.Extract(localUpdateFiles.LocalArchBinFilesPath, extractPath)
+
+	if err := ExecuteUpdater(localUpdateFiles.Version); err != nil {
+		log.Println("Error executing updater: ", err)
+		return err
+	}
+
+	return nil
 }
