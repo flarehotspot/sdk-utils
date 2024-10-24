@@ -103,7 +103,7 @@ func IsProcRunning(proc *os.Process) bool {
 }
 
 // Checks if all the necessary core release files exist
-func EnsureUpdateFiles() error {
+func EnsureUpdateFilesExist() error {
 	// TODO: ensure core and arch bin files exist
 	coreAndArchBinFiles := []string{
 		// "",
