@@ -152,18 +152,22 @@ func ExecuteUpdater(version sdksemver.Version) error {
 }
 
 // Fetches the latest core release from flare-server
-func FetchLatestCoreRelease() (sdksemver.Version, error) {
+func FetchLatestCoreRelease() (CoreReleaseUpdate, error) {
 	srv, ctx := rpc.GetCoreMachineTwirpServiceAndCtx()
 	latestCoreRelease, err := srv.FetchLatestCoreRelease(ctx, &rpc.FetchLatestCoreReleaseRequest{})
 	if err != nil {
 		log.Println("Error: ", err)
-		return sdksemver.Version{}, err
+		return CoreReleaseUpdate{}, err
 	}
 
-	return sdksemver.Version{
-		Major: int(latestCoreRelease.Major),
-		Minor: int(latestCoreRelease.Minor),
-		Patch: int(latestCoreRelease.Patch),
+	return CoreReleaseUpdate{
+		Version: sdksemver.Version{
+			Major: int(latestCoreRelease.Major),
+			Minor: int(latestCoreRelease.Minor),
+			Patch: int(latestCoreRelease.Patch),
+		},
+		CoreZipFileUrl: latestCoreRelease.CoreZipFileUrl,
+		ArchBinFileUrl: latestCoreRelease.ArchBinFileUrl,
 	}, nil
 }
 
