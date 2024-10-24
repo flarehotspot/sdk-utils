@@ -5,6 +5,7 @@ import (
 	rpc "core/internal/rpc"
 	"core/internal/utils/pkg"
 	"errors"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -31,6 +32,7 @@ type PluginData struct {
 	Info             sdkplugin.PluginInfo
 	Src              pkg.PluginInstallData
 	HasPendingUpdate bool
+	HasUpdate        bool
 	ToBeRemoved      bool
 	IsInstalled      bool
 	Releases         []PluginRelease
@@ -276,6 +278,32 @@ func UninstallPluginCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 			res.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
+		res.Json(w, nil, http.StatusOK)
+	}
+}
+
+func UpdatePluginCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		res := g.CoreAPI.HttpAPI.VueResponse()
+		// read post body as json
+		var data struct {
+			Pkg string `json:"pkg"`
+		}
+
+		err := json.NewDecoder(r.Body).Decode(&data)
+		if err != nil {
+			res.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		// TODO: remove logs
+		fmt.Printf("data from update ctrl: %v\n", data)
+
+		// TODO: handle different sources
+		// TODO: from github
+		// TODO: from local
+		// TODO: from flare plugins store
+
 		res.Json(w, nil, http.StatusOK)
 	}
 }
