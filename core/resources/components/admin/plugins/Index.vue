@@ -26,6 +26,7 @@
                     <th>Name</th>
                     <th>Description</th>
                     <th>Version</th>
+                    <th>Source</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -34,12 +35,12 @@
                     <td>{{ p.Info.Name }}</td>
                     <td>{{ p.Info.Description }}</td>
                     <td>{{ p.Info.Version }}</td>
+                    <td>{{ p.Src.Def.Src }}</td>
                     <td>
                         <button type="button" class="btn btn-danger" v-on:click="uninstall(p.Info.Package)">
                             Uninstall
                         </button>
-                        <button type="button" class="btn btn-info" v-on:click="update(p.Info.Package)"
-                            v-if="p.HasUpdates">
+                        <button type="button" class="btn btn-info" v-on:click="update(p)" v-if="p.HasUpdates">
                             Update
                         </button>
                     </td>
@@ -82,19 +83,13 @@ define(function () {
                         console.log('Uninstalled plugin: ' + pkg);
                     });
             },
-            update: function (pkg) {
+            update: function (plugin) {
                 var self = this;
-                var yes = confirm('Are you sure you want to update this plugin?');
-                if (!yes) {
-                    return;
-                }
 
                 $flare.http
-                    .post('<% .Helpers.UrlForRoute "admin:plugins:update" %>', {
-                        pkg: pkg
-                    })
-                    .then(function () {
-                        console.log('Updated plugin: ' + pkg);
+                    .post('<% .Helpers.UrlForRoute "admin:plugins:update" %>', plugin.Src.Def)
+                    .then(function (response) {
+                        $flare.notify.info(`${response.Name} updated`);
                     });
             },
             checkUpdates: async function () {
