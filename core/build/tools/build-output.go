@@ -3,9 +3,7 @@ package tools
 import (
 	"errors"
 	"fmt"
-	"os"
 	"path/filepath"
-	"sdk/libs/go-json"
 
 	sdkfs "github.com/flarehotspot/go-utils/fs"
 	sdkpaths "github.com/flarehotspot/go-utils/paths"
@@ -71,14 +69,7 @@ func (b *BuildOutput) Run() error {
 		Files:     contentList,
 	}
 
-	metadata, err := json.MarshalIndent(&md, "", "  ")
-	if err != nil {
-		return err
-	}
-
-	fmt.Printf("Metadata: %s\n", metadata)
-
-	if err := os.WriteFile(b.metadataPath(), metadata, sdkfs.PermFile); err != nil {
+	if err := sdkfs.WriteJson(b.metadataPath(), md); err != nil {
 		return err
 	}
 
