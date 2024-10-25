@@ -39,7 +39,7 @@
                             Uninstall
                         </button>
                         <button type="button" class="btn btn-info" v-on:click="update(p.Info.Package)"
-                            v-if="p.HasUpdate">
+                            v-if="p.HasUpdates">
                             Update
                         </button>
                     </td>
@@ -97,8 +97,15 @@ define(function () {
                         console.log('Updated plugin: ' + pkg);
                     });
             },
-            checkUpdates: function () {
+            checkUpdates: async function () {
+                var self = this;
                 console.log("Checking plugin updates..");
+
+                await $flare.http.get(
+                    '<% .Helpers.UrlForRoute "admin:plugins:checkupdates" %>'
+                ).then(function (response) {
+                    self.plugins = response;
+                });
 
                 console.log("Checking plugin updates complete!");
             }

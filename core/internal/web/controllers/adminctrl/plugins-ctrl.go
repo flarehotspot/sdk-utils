@@ -4,6 +4,7 @@ import (
 	"core/internal/plugins"
 	rpc "core/internal/rpc"
 	"core/internal/utils/pkg"
+	"core/internal/utils/updates"
 	"errors"
 	"fmt"
 	"io"
@@ -32,7 +33,7 @@ type PluginData struct {
 	Info             sdkplugin.PluginInfo
 	Src              pkg.PluginInstallData
 	HasPendingUpdate bool
-	HasUpdate        bool
+	HasUpdates       bool
 	ToBeRemoved      bool
 	IsInstalled      bool
 	Releases         []PluginRelease
@@ -66,8 +67,6 @@ func PluginsStoreIndexCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 			return
 		}
 
-		installedPlugins := getInstalledPlugins()
-
 		// parse pluginsData
 		var pluginsData []PluginData
 		for _, qP := range qPlugins.Plugins {
@@ -78,21 +77,12 @@ func PluginsStoreIndexCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 					Package:     qP.Package,
 					Description: "",
 				},
-				IsInstalled: isPluginInstalled(qP.Package, &installedPlugins),
+				IsInstalled: pkg.IsPackageInstalled(qP.Package),
 			})
 		}
 
 		res.Json(w, pluginsData, http.StatusOK)
 	}
-}
-
-func isPluginInstalled(pluginPkg string, installedPlugins *[]PluginData) bool {
-	for _, p := range *installedPlugins {
-		if pluginPkg == p.Info.Package {
-			return true
-		}
-	}
-	return false
 }
 
 func ViewPluginCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
@@ -226,6 +216,11 @@ func PluginsInstallCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 			return
 		}
 
+		// TODO: remove logs
+		fmt.Printf("data: %v\n", data)
+		fmt.Printf("data source: %v\n", data.Src)
+		fmt.Printf("data store plugin release id: %v\n", data.StorePluginReleaseId)
+
 		var result strings.Builder
 		info, err := pkg.InstallSrcDef(&result, data)
 		if err != nil {
@@ -285,11 +280,11 @@ func UninstallPluginCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 func UpdatePluginCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		res := g.CoreAPI.HttpAPI.VueResponse()
+
 		// read post body as json
 		var data struct {
 			Pkg string `json:"pkg"`
 		}
-
 		err := json.NewDecoder(r.Body).Decode(&data)
 		if err != nil {
 			res.Error(w, err.Error(), http.StatusBadRequest)
@@ -305,5 +300,46 @@ func UpdatePluginCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 		// TODO: from flare plugins store
 
 		res.Json(w, nil, http.StatusOK)
+	}
+}
+
+func CheckPluginUpdatesCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		res := g.CoreAPI.HttpAPI.VueResponse()
+
+		pluginsInstallData := pkg.InstalledPluginsList()
+		var pluginsResponseData []PluginData
+
+		for i, pInstallDatum := range pluginsInstallData {
+			pInfo, err := pkg.GetPluginInfo(pInstallDatum.Def)
+			if err != nil {
+				log.Println("Error reading plugin info:", err)
+				res.Error(w, err.Error(), http.StatusBadRequest)
+				return
+			}
+
+			hasUpdates, err := updates.CheckForPluginUpdates(pInstallDatum, pInfo)
+			if err != nil {
+				log.Println("Error checking updates:", err)
+				res.Error(w, err.Error(), http.StatusBadRequest)
+				return
+			}
+
+			// TODO: remove logs
+			fmt.Printf("hasUpdates: %v\n", hasUpdates)
+
+			pluginsResponseData = append(pluginsResponseData, PluginData{
+				Id:               i,
+				Info:             pInfo,
+				Src:              pInstallDatum,
+				HasPendingUpdate: false,
+				HasUpdates:       hasUpdates,
+				ToBeRemoved:      false,
+				IsInstalled:      true,
+				Releases:         []PluginRelease{},
+			})
+		}
+
+		res.Json(w, pluginsResponseData, http.StatusOK)
 	}
 }
