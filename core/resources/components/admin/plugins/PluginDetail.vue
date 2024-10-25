@@ -99,9 +99,6 @@ define(function () {
       installRelease: function (e, pr) {
         e.preventDefault();
 
-          // TODO: remove logs
-          console.log("selected pr to install: ", pr);
-
         var self = this;
         var params = {
           Src: 'store',
@@ -109,9 +106,6 @@ define(function () {
           StoreZipFile: pr.ZipFileUrl,
           StorePluginReleaseId: pr.Id
         };
-
-          // TODO: remove logs
-          console.log("install release params: ", params);
 
         $flare.http
           .post('<% .Helpers.UrlForRoute "admin:plugins:install" %>', params)
