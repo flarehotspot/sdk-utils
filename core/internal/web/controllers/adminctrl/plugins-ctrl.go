@@ -6,7 +6,6 @@ import (
 	"core/internal/utils/pkg"
 	"core/internal/utils/updates"
 	"errors"
-	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -216,11 +215,6 @@ func PluginsInstallCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 			return
 		}
 
-		// TODO: remove logs
-		fmt.Printf("data: %v\n", data)
-		fmt.Printf("data source: %v\n", data.Src)
-		fmt.Printf("data store plugin release id: %v\n", data.StorePluginReleaseId)
-
 		var result strings.Builder
 		info, err := pkg.InstallSrcDef(&result, data)
 		if err != nil {
@@ -282,24 +276,27 @@ func UpdatePluginCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 		res := g.CoreAPI.HttpAPI.VueResponse()
 
 		// read post body as json
-		var data struct {
-			Pkg string `json:"pkg"`
-		}
-		err := json.NewDecoder(r.Body).Decode(&data)
+		var def pkg.PluginSrcDef
+		err := json.NewDecoder(r.Body).Decode(&def)
 		if err != nil {
 			res.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 
-		// TODO: remove logs
-		fmt.Printf("data from update ctrl: %v\n", data)
+		// get latest release id before installing
+		if def.Src == "store" {
+			def, err = updates.GetLatestReleaseFromStore(def)
+		}
 
-		// TODO: handle different sources
-		// TODO: from github
-		// TODO: from local
-		// TODO: from flare plugins store
+		var result strings.Builder
+		info, err := pkg.InstallSrcDef(&result, def)
+		if err != nil {
+			log.Println("Error updating/installing source from def:", err)
+			res.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 
-		res.Json(w, nil, http.StatusOK)
+		res.Json(w, info, http.StatusOK)
 	}
 }
 
@@ -324,9 +321,6 @@ func CheckPluginUpdatesCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 				res.Error(w, err.Error(), http.StatusBadRequest)
 				return
 			}
-
-			// TODO: remove logs
-			fmt.Printf("hasUpdates: %v\n", hasUpdates)
 
 			pluginsResponseData = append(pluginsResponseData, PluginData{
 				Id:               i,
