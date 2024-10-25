@@ -326,7 +326,7 @@ func CheckPluginUpdatesCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 				Id:               i,
 				Info:             pInfo,
 				Src:              pInstallDatum,
-				HasPendingUpdate: false,
+				HasPendingUpdate: pkg.HasPendingUpdate(pInfo.Package),
 				HasUpdates:       hasUpdates,
 				ToBeRemoved:      false,
 				IsInstalled:      true,

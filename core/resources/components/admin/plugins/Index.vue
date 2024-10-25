@@ -40,7 +40,10 @@
                         <button type="button" class="btn btn-danger" v-on:click="uninstall(p.Info.Package)">
                             Uninstall
                         </button>
-                        <button type="button" class="btn btn-info" v-on:click="update(p)" v-if="p.HasUpdates">
+                        <div v-if="p.HasPendingUpdate">
+                            Waiting for restart to update
+                        </div>
+                        <button type="button" class="btn btn-info" v-on:click="update(p)" v-else-if="p.HasUpdates">
                             Update
                         </button>
                     </td>
@@ -89,6 +92,7 @@ define(function () {
                 $flare.http
                     .post('<% .Helpers.UrlForRoute "admin:plugins:update" %>', plugin.Src.Def)
                     .then(function (response) {
+                        plugin.HasPendingUpdate = true;
                         $flare.notify.info(`${response.Name} updated`);
                     });
             },
