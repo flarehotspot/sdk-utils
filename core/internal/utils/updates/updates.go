@@ -266,9 +266,6 @@ func CheckUpdatesFromGithub(pDatum pkg.PluginInstallData, pInfo sdkplugin.Plugin
 	// https://api.github.com/repos/<author>/<repo>/releases/latest
 	gitApiUrl := fmt.Sprintf("https://api.github.com/repos/%s/%s/releases/latest", author, repo)
 
-	// TODO: remove logs
-	fmt.Printf("gitApiUrl: %v\n", gitApiUrl)
-
 	// fetch latest release from github
 	resp, err := http.Get(gitApiUrl)
 	if err != nil {
@@ -331,4 +328,22 @@ func CheckUpdatesFromStore(p pkg.PluginSrcDef, pinfo sdkplugin.PluginInfo) (bool
 	}
 
 	return sdksemver.HasUpdates(currVersion, latestVersion), nil
+}
+
+func GetLatestReleaseFromStore(def pkg.PluginSrcDef) (pkg.PluginSrcDef, error) {
+	// fetch latest plugin release from flare-server rpc
+	srv, ctx := rpc.GetCoreMachineTwirpServiceAndCtx()
+	qPlugins, err := srv.FetchLatestPluginRelease(ctx, &rpc.FetchLatestPluginReleaseRequest{
+		PluginReleaseId: int32(def.StorePluginReleaseId),
+	})
+	if err != nil {
+		log.Println("Error fetching latest plugin release: ", err)
+		return pkg.PluginSrcDef{}, err
+	}
+
+	return pkg.PluginSrcDef{
+		Src:                  "store",
+		StorePluginReleaseId: int(qPlugins.PluginRelease.PluginReleaseId),
+		StoreZipFile:         qPlugins.PluginRelease.ZipFileUrl,
+	}, nil
 }
