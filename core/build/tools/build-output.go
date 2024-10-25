@@ -39,14 +39,14 @@ func (b *BuildOutput) Run() error {
 		return err
 	}
 
-	files := []string{}
+	contentList := []string{}
 	for _, entry := range b.Files {
 		srcPath := filepath.Join(sdkpaths.AppDir, entry)
 		destPath := filepath.Join(b.outputPath(), entry)
 		if err := b.copy(srcPath, destPath); err != nil {
 			panic(err)
 		}
-		files = append(files, entry)
+		contentList = append(contentList, entry)
 	}
 
 	for _, entry := range b.ExtraFiles {
@@ -55,13 +55,8 @@ func (b *BuildOutput) Run() error {
 		if err := b.copy(srcPath, destPath); err != nil {
 			panic(err)
 		}
-		files = append(files, entry.Dest)
+		contentList = append(contentList, entry.Dest)
 	}
-
-	// previous implementation of zipping
-	// if err := sdkzip.Zip(b.outputPath(), b.zipFilePath()); err != nil {
-	// 	return err
-	// }
 
 	// new implementation using tar.gz
 	if err := sdktargz.TarGz(b.outputPath(), b.targzFilePath()); err != nil {
@@ -73,7 +68,7 @@ func (b *BuildOutput) Run() error {
 		GoArch:    sdkruntime.GOARCH,
 		OutputDir: b.outputPath(),
 		OutputZip: b.targzFilePath(),
-		Files:     files,
+		Files:     contentList,
 	}
 
 	metadata, err := json.MarshalIndent(&md, "", "  ")
