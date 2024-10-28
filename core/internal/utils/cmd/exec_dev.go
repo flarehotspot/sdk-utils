@@ -5,29 +5,30 @@ package cmd
 import (
 	"fmt"
 	"io"
-	// "log"
+	"log"
 	"math/rand"
-	// "strings"
+	"strings"
 )
 
 var (
-	packetsCounter = 0
-	bytesCounter   = 0
+	packetsCounter  = 0
+	bytesCounter    = 0
+	ignoreCmdsStart = []string{
+		"modprobe",
+		"ip",
+		"tc",
+	}
 )
 
-func Exec(command string) error {
-	// cmdarr := strings.Fields(command)
-	// bin := cmdarr[0]
-	// args := cmdarr[1:]
-	// log.Println(bin, strings.Join(args, " "))
-	return nil
-}
+func Exec(command string, opts *ExecOpts) error {
+	log.Println("Executing:", command)
+	for _, ignoreCmd := range ignoreCmdsStart {
+		if strings.HasPrefix(command, ignoreCmd) {
+			return nil
+		}
+	}
 
-func ExecAll(commands []string) error {
-	// for _, c := range commands {
-	// 	log.Println(c)
-	// }
-	return nil
+	return execShell(command, opts)
 }
 
 func ExecOutput(command string, out io.Writer) error {
@@ -75,5 +76,5 @@ func ExecOutput(command string, out io.Writer) error {
 		return nil
 	}
 
-	return nil
+	return execShell(command, &ExecOpts{Stdout: out})
 }

@@ -1,9 +1,9 @@
 package routes
 
 import (
-	"github.com/flarehotspot/core/internal/plugins"
-	"github.com/flarehotspot/core/internal/web/controllers"
-	"github.com/flarehotspot/core/internal/web/router"
+	"core/internal/plugins"
+	"core/internal/web/controllers"
+	"core/internal/web/router"
 )
 
 func PortalRoutes(g *plugins.CoreGlobals) {

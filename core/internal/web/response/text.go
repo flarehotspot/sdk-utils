@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"strings"
 
-	httpI "github.com/flarehotspot/sdk/api/http"
-	tmplcache "github.com/flarehotspot/core/internal/utils/flaretmpl"
+	httpI "sdk/api/http"
+	tmplcache "core/internal/utils/flaretmpl"
 )
 
 func Text(w http.ResponseWriter, file string, helpers httpI.HttpHelpers, data any) {

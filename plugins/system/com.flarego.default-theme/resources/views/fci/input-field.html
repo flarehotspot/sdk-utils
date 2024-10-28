@@ -1,0 +1,3 @@
+<label>{{ .Label }}</label>
+<input {{ range $attr := .Attrs }} {{ $attr }} {{ end }} />
+<span class="help-block">{{ .Help }}</span>

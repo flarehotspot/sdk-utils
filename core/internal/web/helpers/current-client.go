@@ -4,10 +4,10 @@ import (
 	"net"
 	"net/http"
 
-	"github.com/flarehotspot/core/internal/connmgr"
-	"github.com/flarehotspot/sdk/api/connmgr"
-	"github.com/flarehotspot/sdk/api/http"
-	"github.com/flarehotspot/core/internal/utils/hostfinder"
+	"core/internal/connmgr"
+	"sdk/api/connmgr"
+	"sdk/api/http"
+	"core/internal/utils/hostfinder"
 )
 
 func CurrentClient(clntMgr *connmgr.ClientRegister, r *http.Request) (sdkconnmgr.ClientDevice, error) {

@@ -32,7 +32,6 @@
     mounted: function () {
       var self = this;
       self.load();
-      console.log('heyyy');
 
       reloadListener = $flare.events.on(
         'portal:items:reload',
@@ -52,12 +51,10 @@
         $flare.http
           .get('<% .Helpers.UrlForRoute "portal:navs:items" %>')
           .then(function (data) {
-            console.log('nav items', data);
             self.data.portalItems = data;
           })
           .finally(function () {
             self.data.loading = false;
-            console.log(self.data);
           });
       }
     }
@@ -83,8 +80,6 @@
       }
     }
   ];
-
-  console.log('Routes:', routes);
 
   var router = new VueRouter({ routes: routes });
   $flare.router = router;

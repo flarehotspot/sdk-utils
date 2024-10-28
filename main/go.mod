@@ -1,3 +1,3 @@
-module github.com/flarehotspot/main
+module adopisoft
 
 go 1.19

@@ -1,12 +1,13 @@
 package assets
 
 import (
-	"encoding/json"
-	fs "github.com/flarehotspot/sdk/utils/fs"
-	paths "github.com/flarehotspot/sdk/utils/paths"
 	"log"
 	"os"
 	"path/filepath"
+	"sdk/libs/go-json"
+
+	fs "github.com/flarehotspot/go-utils/fs"
+	paths "github.com/flarehotspot/go-utils/paths"
 )
 
 var manifestDir = filepath.Join(paths.CacheDir, "assets/manifest")

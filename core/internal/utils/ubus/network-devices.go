@@ -4,11 +4,11 @@ package ubus
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"log"
+	"sdk/libs/go-json"
 
-	"github.com/flarehotspot/core/internal/utils/cmd"
+	"core/internal/utils/cmd"
 )
 
 func GetNetworkDevices() ([]*NetworkDevice, error) {

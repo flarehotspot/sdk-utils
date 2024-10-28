@@ -7,12 +7,13 @@ import (
 	"path/filepath"
 	"sync"
 
-	"encoding/json"
+	"sdk/libs/go-json"
 
-	accounts "github.com/flarehotspot/sdk/api/accounts"
-	fs "github.com/flarehotspot/sdk/utils/fs"
-	sdkfs "github.com/flarehotspot/sdk/utils/fs"
-	paths "github.com/flarehotspot/sdk/utils/paths"
+	accounts "sdk/api/accounts"
+
+	fs "github.com/flarehotspot/go-utils/fs"
+	sdkfs "github.com/flarehotspot/go-utils/fs"
+	paths "github.com/flarehotspot/go-utils/paths"
 )
 
 const (
@@ -166,23 +167,19 @@ func Update(prevName string, newName string, pass string, perms []string) (*Acco
 		perms = prevAcct.Perms
 	}
 
-	acct := &Account{
+	acct := Account{
 		Uname:  newName,
 		Passwd: pass,
 		Perms:  perms,
 	}
 
-	if acct.Uname == AdminUsername && !HasAllPerms(acct, PermAdmin) {
+	if acct.Uname == AdminUsername && !HasAllPerms(&acct, PermAdmin) {
 		return nil, errors.New("Super admin account must have manage users permission.")
 	}
 
-	b, err := json.Marshal(&acct)
-	if err != nil {
-		return nil, err
-	}
-
 	f := FilepathForUser(newName)
-	err = os.WriteFile(f, b, sdkfs.PermFile)
+
+	err = sdkfs.WriteJson(f, acct)
 	if err != nil {
 		return nil, err
 	}
@@ -190,10 +187,10 @@ func Update(prevName string, newName string, pass string, perms []string) (*Acco
 	if prevName != newName {
 		f = FilepathForUser(prevName)
 		err = os.Remove(f)
-		return acct, err
+		return &acct, err
 	}
 
-	return acct, nil
+	return &acct, nil
 }
 
 func Delete(uname string) error {

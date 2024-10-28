@@ -7,8 +7,8 @@ import (
 )
 
 func Print() {
-  log.Println(lineComment)
+	log.Println(lineComment)
 	log.Println("Mode: ", "Production/Staging")
-	log.Println("Http Port: ", HttpPort)
-  log.Println(lineComment)
+	log.Println("Http Port: ", HTTP_PORT)
+	log.Println(lineComment)
 }

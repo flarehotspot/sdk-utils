@@ -1,15 +1,22 @@
 package plugins
 
 import (
-	"github.com/flarehotspot/core/internal/connmgr"
-	"github.com/flarehotspot/core/internal/db"
-	"github.com/flarehotspot/core/internal/db/models"
-	"github.com/flarehotspot/core/internal/network"
-	paths "github.com/flarehotspot/sdk/utils/paths"
+	"core/internal/connmgr"
+	"core/internal/db"
+	"core/internal/db/models"
+	"core/internal/network"
+	"sync/atomic"
+
+	sdkpaths "github.com/flarehotspot/go-utils/paths"
 )
+
+type AppState struct {
+	NeedsRestart atomic.Bool
+}
 
 type CoreGlobals struct {
 	Db             *db.Database
+	State          *AppState
 	CoreAPI        *PluginApi
 	ClientRegister *connmgr.ClientRegister
 	ClientMgr      *connmgr.SessionsMgr
@@ -21,6 +28,7 @@ type CoreGlobals struct {
 }
 
 func NewGlobals() *CoreGlobals {
+	state := &AppState{}
 	db, _ := db.NewDatabase()
 	bp := NewBootProgress()
 	mdls := models.New(db)
@@ -33,8 +41,19 @@ func NewGlobals() *CoreGlobals {
 	clntMgr.ListenTraffic(trfcMgr)
 
 	plgnMgr := NewPluginMgr(db, mdls, pmtMgr, clntReg, clntMgr, trfcMgr)
-	coreApi := NewPluginApi(paths.CoreDir, plgnMgr, trfcMgr)
+	coreApi := NewPluginApi(sdkpaths.CoreDir, plgnMgr, trfcMgr)
 	plgnMgr.InitCoreApi(coreApi)
 
-	return &CoreGlobals{db, coreApi, clntReg, clntMgr, trfcMgr, bp, mdls, plgnMgr, pmtMgr}
+	return &CoreGlobals{
+		db,
+		state,
+		coreApi,
+		clntReg,
+		clntMgr,
+		trfcMgr,
+		bp,
+		mdls,
+		plgnMgr,
+		pmtMgr,
+	}
 }

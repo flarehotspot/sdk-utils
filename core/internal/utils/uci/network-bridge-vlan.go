@@ -6,8 +6,9 @@ import (
 	"strconv"
 	"strings"
 
-	uci "github.com/flarehotspot/sdk/api/uci"
-	sdkstr "github.com/flarehotspot/sdk/utils/strings"
+	uci "sdk/api/uci"
+
+	sdkstr "github.com/flarehotspot/go-utils/strings"
 )
 
 // bridge-vlan

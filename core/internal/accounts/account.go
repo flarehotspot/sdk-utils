@@ -4,12 +4,13 @@ import (
 	"os"
 	"path/filepath"
 
-	"encoding/json"
+	"sdk/libs/go-json"
 
-	"github.com/flarehotspot/core/internal/utils/events"
-	sse "github.com/flarehotspot/core/internal/utils/sse"
-	sdkfs "github.com/flarehotspot/sdk/utils/fs"
-	paths "github.com/flarehotspot/sdk/utils/paths"
+	"core/internal/utils/events"
+	sse "core/internal/utils/sse"
+
+	sdkfs "github.com/flarehotspot/go-utils/fs"
+	paths "github.com/flarehotspot/go-utils/paths"
 )
 
 var (

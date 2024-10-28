@@ -6,10 +6,10 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/flarehotspot/core/internal/config"
-	"github.com/flarehotspot/core/internal/utils/assets"
-	"github.com/flarehotspot/core/internal/utils/flaretmpl"
-	"github.com/flarehotspot/core/internal/web/response"
+	"core/internal/config"
+	"core/internal/utils/assets"
+	"core/internal/utils/flaretmpl"
+	"core/internal/web/response"
 )
 
 func NewPluginUtils(api *PluginApi) *PluginUtils {
@@ -49,7 +49,9 @@ func (self *PluginUtils) Translate(msgtype string, msgk string, pairs ...interfa
 		log.Println("Error executing translation template "+f, err)
 		return msgk
 	}
-	return output.String()
+
+	s := output.String()
+	return strings.TrimSpace(s)
 }
 
 func (self *PluginUtils) Resource(path string) string {

@@ -6,16 +6,16 @@ import (
 	"sync"
 	"time"
 
-	"github.com/flarehotspot/core/internal/db/models"
-	"github.com/flarehotspot/core/internal/network"
-	jobque "github.com/flarehotspot/core/internal/utils/job-que"
-	"github.com/flarehotspot/core/internal/utils/tc"
-	connmgr "github.com/flarehotspot/sdk/api/connmgr"
-	sdkconnmgr "github.com/flarehotspot/sdk/api/connmgr"
-	"github.com/flarehotspot/sdk/api/network"
+	"core/internal/db/models"
+	"core/internal/network"
+	jobque "core/internal/utils/job-que"
+	"core/internal/utils/tc"
+	connmgr "sdk/api/connmgr"
+	sdkconnmgr "sdk/api/connmgr"
+	sdknet "sdk/api/network"
 )
 
-var sessionQ *jobque.JobQues = jobque.NewJobQues()
+var sessionQ *jobque.JobQue = jobque.NewJobQue()
 
 func NewRunningSession(clnt sdkconnmgr.ClientDevice, s connmgr.ClientSession) (*RunningSession, error) {
 	lan, err := network.FindByIp(clnt.IpAddr())

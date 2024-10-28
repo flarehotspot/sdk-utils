@@ -3,12 +3,12 @@ package ubus
 import (
 	"bufio"
 	"bytes"
-	"encoding/json"
 	"errors"
 	"log"
+	"sdk/libs/go-json"
 	"strings"
 
-	"github.com/flarehotspot/core/internal/utils/cmd"
+	"core/internal/utils/cmd"
 )
 
 type IpV4Addr struct {

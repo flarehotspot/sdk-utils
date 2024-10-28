@@ -1,11 +1,11 @@
 package adminctrl
 
 import (
-	"encoding/json"
 	"net/http"
+	"sdk/libs/go-json"
 
-	"github.com/flarehotspot/core/internal/config"
-	"github.com/flarehotspot/core/internal/plugins"
+	"core/internal/config"
+	"core/internal/plugins"
 )
 
 func GetAvailableThemes(g *plugins.CoreGlobals) http.HandlerFunc {

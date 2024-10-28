@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"sort"
 
-	jobque "github.com/flarehotspot/core/internal/utils/job-que"
+	jobque "core/internal/utils/job-que"
 )
 
 const (
@@ -17,7 +17,7 @@ const (
 var (
 	usedClassIds []TcClassId
 	tmpClassIds  []TcClassId
-	q            *jobque.JobQues = jobque.NewJobQues()
+	q            *jobque.JobQue = jobque.NewJobQue()
 )
 
 type TcClassId uint

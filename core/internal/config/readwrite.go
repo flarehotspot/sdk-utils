@@ -1,11 +1,11 @@
 package config
 
 import (
-	"encoding/json"
 	"os"
 	"path/filepath"
+	"sdk/libs/go-json"
 
-	sdkpaths "github.com/flarehotspot/sdk/utils/paths"
+	sdkpaths "github.com/flarehotspot/go-utils/paths"
 )
 
 func readConfigFile(f string, out interface{}) error {

@@ -1,14 +1,14 @@
 package ubus
 
 import (
-	"encoding/json"
+	"sdk/libs/go-json"
 	"strings"
 
-	"github.com/flarehotspot/core/internal/utils/cmd"
-	jobque "github.com/flarehotspot/core/internal/utils/job-que"
+	"core/internal/utils/cmd"
+	jobque "core/internal/utils/job-que"
 )
 
-var jobQue *jobque.JobQues = jobque.NewJobQues()
+var jobQue *jobque.JobQue = jobque.NewJobQue()
 var interfaceListeners map[string][]chan InterfaceEvent
 
 func init() {

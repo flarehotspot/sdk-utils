@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/flarehotspot/core/internal/plugins"
+	"core/internal/plugins"
 )
 
 func Init(g *plugins.CoreGlobals) {
@@ -15,39 +15,42 @@ func Init(g *plugins.CoreGlobals) {
 	InitDirs()
 
 	go func() {
-		bp.SetStatus("Initializing plugins...")
-		err := InitPlugins(g)
-		if err != nil {
-			bp.SetDone(err)
-			return
-		}
+		bp.AppendLog("Initializing plugins...")
+		time.Sleep(1000 * 3 * time.Millisecond)
+		InitPlugins(g)
 
 		// delay boot
-		// time.Sleep(1000 * 3 * time.Millisecond)
+		time.Sleep(1000 * 3 * time.Millisecond)
 
-		bp.SetStatus("Initializing storage...")
+		bp.AppendLog("Initializing storage...")
 		InitStorage()
 
 		// delay boot
 		// time.Sleep(1000 * 3 * time.Millisecond)
 
-		bp.SetStatus("Initializing admin accounts...")
+		bp.AppendLog("Running core migrations...")
+		RunCoreMigrations(g)
+
+		// delay boot
+		// time.Sleep(1000 * 3 * time.Millisecond)
+
+		bp.AppendLog("Initializing admin accounts...")
 		InitAccounts()
 
 		// delay boot
 		// time.Sleep(1000 * 3 * time.Millisecond)
 
-		bp.SetStatus("Setting up network interfaces...")
+		bp.AppendLog("Setting up network interfaces...")
 		InitNetwork()
 
 		// delay boot
 		// time.Sleep(1000 * 3 * time.Millisecond)
 
 		s := fmt.Sprintf("Done booting in %v", time.Since(now))
-		bp.SetStatus(s)
+		bp.AppendLog(s)
 
 		// time.Sleep(1000 * 1 * time.Millisecond)
-		bp.SetDone(nil)
+		bp.Done(nil)
 
 		log.Println("Done booting in", time.Since(now))
 	}()

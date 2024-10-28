@@ -7,15 +7,16 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/flarehotspot/core/internal/utils/crypt"
-	"github.com/flarehotspot/core/internal/utils/flaretmpl"
-	jobque "github.com/flarehotspot/core/internal/utils/job-que"
-	fs "github.com/flarehotspot/sdk/utils/fs"
-	paths "github.com/flarehotspot/sdk/utils/paths"
+	"core/internal/utils/crypt"
+	"core/internal/utils/flaretmpl"
+	jobque "core/internal/utils/job-que"
+
+	fs "github.com/flarehotspot/go-utils/fs"
+	paths "github.com/flarehotspot/go-utils/paths"
 )
 
 var cacheWithHelpers = sync.Map{}
-var bundleWithHelpersQue = jobque.NewJobQues()
+var bundleWithHelpersQue = jobque.NewJobQue()
 
 type AssetWithData struct {
 	File string

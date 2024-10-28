@@ -5,11 +5,11 @@ import (
 	"net"
 	"net/http"
 
-	"github.com/flarehotspot/core/internal/connmgr"
-	"github.com/flarehotspot/core/internal/db"
-	"github.com/flarehotspot/sdk/api/http"
-	"github.com/flarehotspot/core/internal/utils/hostfinder"
-	"github.com/flarehotspot/core/internal/web/response"
+	"core/internal/connmgr"
+	"core/internal/db"
+	"sdk/api/http"
+	"core/internal/utils/hostfinder"
+	"core/internal/web/response"
 )
 
 func DeviceMiddleware(dtb *db.Database, clntMgr *connmgr.ClientRegister) func(next http.Handler) http.Handler {

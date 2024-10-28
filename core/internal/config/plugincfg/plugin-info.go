@@ -1,19 +1,17 @@
 package plugincfg
 
 import (
-	"errors"
+	"core/internal/utils/pkg"
 	"log"
 	"os"
 	"path/filepath"
 
-	"encoding/json"
-	sdkplugin "github.com/flarehotspot/sdk/api/plugin"
-	fs "github.com/flarehotspot/sdk/utils/fs"
-	paths "github.com/flarehotspot/sdk/utils/paths"
+	sdkplugin "sdk/api/plugin"
+	"sdk/libs/go-json"
 )
 
 func GetPluginInfo(pluginPath string) (*sdkplugin.PluginInfo, error) {
-	dir, err := FindPluginSrc(pluginPath)
+	dir, err := pkg.FindPluginSrc(pluginPath)
 	if err != nil {
 		return nil, err
 	}
@@ -35,25 +33,4 @@ func GetPluginInfo(pluginPath string) (*sdkplugin.PluginInfo, error) {
 	}
 
 	return &info, nil
-}
-
-func FindPluginSrc(dir string) (string, error) {
-	files := []string{}
-	err := fs.LsFiles(dir, &files, true)
-	if err != nil {
-		return dir, err
-	}
-
-	for _, f := range files {
-		if filepath.Base(f) == "plugin.json" {
-			return filepath.Dir(f), nil
-		}
-	}
-
-	return "", errors.New("Can't find plugin.json in " + paths.StripRoot(dir))
-}
-
-func GetInstallInfo(pkg string) (*sdkplugin.PluginInfo, error) {
-	installPath := filepath.Join(paths.PluginsDir, pkg)
-	return GetPluginInfo(installPath)
 }

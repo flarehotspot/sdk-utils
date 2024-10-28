@@ -1,7 +1,7 @@
 package config
 
 import (
-	"github.com/flarehotspot/sdk/utils/strings"
+	sdkstr "github.com/flarehotspot/go-utils/strings"
 )
 
 const applicationJsonFile = "application.json"

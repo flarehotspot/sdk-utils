@@ -8,12 +8,13 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/flarehotspot/core/env"
+	"core/env"
+
 	"github.com/gorilla/mux"
 )
 
 func StartServer(r *mux.Router, forever bool) *http.Server {
-	addr := fmt.Sprintf(":%d", env.HttpPort)
+	addr := fmt.Sprintf(":%d", env.HTTP_PORT)
 	log.Println("Listening on port", addr)
 	// log.Fatal(http.ListenAndServe(port, router.RootRouter()))
 

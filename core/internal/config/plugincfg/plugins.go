@@ -1,8 +1,8 @@
 package plugincfg
 
 // import (
-// 	"encoding/json"
-// 	paths "github.com/flarehotspot/sdk/utils/paths"
+// 	"sdk/libs/go-json"
+// 	paths "github.com/flarehotspot/go-utils/paths"
 // 	"log"
 // 	"os"
 // 	"path/filepath"

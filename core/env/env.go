@@ -3,9 +3,10 @@
 package env
 
 const (
-	GoEnv     int8   = ENV_PRODUCTION
-	BaseURL   string = "http://api.adopisoft.com"
-	HttpPort  int    = 80
+	GO_ENV    int8   = ENV_PRODUCTION
+	HTTP_PORT int    = 80
+	BASE_URL  string = "http://api.adopisoft.com"
+	RPC_TOKEN        = "xxxxxxxxxx"
 )
 
 var (

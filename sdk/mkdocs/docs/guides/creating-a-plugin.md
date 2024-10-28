@@ -41,7 +41,7 @@ package main
 import (
 	"net/http"
 
-	sdkplugin "github.com/flarehotspot/sdk/api/plugin"
+	sdkplugin "sdk/api/plugin"
 )
 
 func main() {}

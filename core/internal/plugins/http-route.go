@@ -1,7 +1,7 @@
 package plugins
 
 import (
-	"github.com/flarehotspot/sdk/api/http"
+	"sdk/api/http"
 	"github.com/gorilla/mux"
 )
 

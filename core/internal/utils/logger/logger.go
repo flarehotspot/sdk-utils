@@ -17,13 +17,14 @@ import (
 	"sync/atomic"
 	"time"
 
-	jobque "github.com/flarehotspot/core/internal/utils/job-que"
-	sdkplugin "github.com/flarehotspot/sdk/api/plugin"
-	sdkfs "github.com/flarehotspot/sdk/utils/fs"
-	sdkpaths "github.com/flarehotspot/sdk/utils/paths"
-	sdkstr "github.com/flarehotspot/sdk/utils/strings"
+	jobque "core/internal/utils/job-que"
+	sdkplugin "sdk/api/plugin"
 
-	"github.com/flarehotspot/sdk/utils/wsv"
+	sdkfs "github.com/flarehotspot/go-utils/fs"
+	sdkpaths "github.com/flarehotspot/go-utils/paths"
+	sdkstr "github.com/flarehotspot/go-utils/strings"
+
+	"github.com/flarehotspot/go-utils/wsv"
 )
 
 const (
@@ -64,7 +65,7 @@ type LogLine struct {
 var (
 	LineCount   atomic.Int64
 	logFilePath = filepath.Join(sdkpaths.TmpDir, "logs", logFilename)
-	que         = jobque.NewJobQues()
+	que         = jobque.NewJobQue()
 )
 
 func init() {

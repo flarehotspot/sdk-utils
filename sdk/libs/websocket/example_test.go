@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/flarehotspot/sdk/libs/websocket"
+	"sdk/libs/websocket"
 )
 
 var (

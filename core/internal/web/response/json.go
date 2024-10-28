@@ -1,8 +1,8 @@
 package response
 
 import (
-	"encoding/json"
 	"net/http"
+	json "sdk/libs/go-json"
 )
 
 func Json(w http.ResponseWriter, data any, status int) {
@@ -12,7 +12,7 @@ func Json(w http.ResponseWriter, data any, status int) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
+	w.Header().Set("Content-Type", "application/json")
 	w.Write(jsonBytes)
 }

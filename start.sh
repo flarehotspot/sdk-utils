@@ -1,9 +1,11 @@
-#!/bin/env bash
+#!/usr/bin/env bash
 
-BUILD_TAGS="dev mono"
-FLARECLI="./core/internal/cli/flare-internal.go"
+GO="./go/bin/go"
+BUILD_TAGS="dev"
+BUILD_CORE="./core/cmd/build-core/main.go"
+BUILD_CLI="./core/cmd/build-cli/main.go"
+FLARE_BIN="./bin/flare"
 
-go run -tags="${BUILD_TAGS}" $FLARECLI make-mono && \
-    go run -tags="${BUILD_TAGS}" $FLARECLI server
-
-
+$GO run -tags="${BUILD_TAGS}" $BUILD_CORE && \
+    $GO run -tags="${BUILD_TAGS}" $BUILD_CLI && \
+    sh -c "$FLARE_BIN server"

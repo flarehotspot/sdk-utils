@@ -3,14 +3,14 @@ package storage
 import (
 	"fmt"
 
-	"github.com/flarehotspot/core/internal/utils/cmd"
+	"core/internal/utils/cmd"
 )
 
 func Expand(dev string, part string, partnum int) error {
-	err := cmd.ExecAsh(fmt.Sprintf("parted /dev/%s resizepart %d 100%%", dev, partnum))
+	err := cmd.Exec(fmt.Sprintf("parted /dev/%s resizepart %d 100%%", dev, partnum), nil)
 	if err != nil {
 		return err
 	}
 
-	return cmd.ExecAsh(fmt.Sprintf("resize2fs %s", part))
+	return cmd.Exec(fmt.Sprintf("resize2fs %s", part), nil)
 }

@@ -3,7 +3,7 @@ package ifbutil
 import (
 	"sync/atomic"
 
-	"github.com/flarehotspot/core/internal/utils/cmd"
+	"core/internal/utils/cmd"
 )
 
 var (
@@ -11,7 +11,7 @@ var (
 )
 
 func init() {
-	err := cmd.Exec("modprobe ifb")
+	err := cmd.Exec("modprobe ifb", nil)
 	supported.Store(err == nil)
 }
 

@@ -1,4 +1,4 @@
 package env
 
-var ActivationURL = BaseURL + "/activate"
-var PingURL = BaseURL + "/ping"
+var ActivationURL = BASE_URL + "/activate"
+var PingURL = BASE_URL + "/ping"

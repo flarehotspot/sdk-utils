@@ -6,13 +6,13 @@ import (
 	"sync"
 	texttemplate "text/template"
 
-	"github.com/flarehotspot/core/env"
+	"core/env"
 )
 
 var (
 	htmlTmplCache = sync.Map{}
 	textTmplCache = sync.Map{}
-	useCache = env.GoEnv != env.ENV_DEV
+	useCache      = env.GO_ENV != env.ENV_DEV
 )
 
 func GetHtmlTemplate(path string) (*htmltemplate.Template, error) {

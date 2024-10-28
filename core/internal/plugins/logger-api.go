@@ -1,7 +1,7 @@
 package plugins
 
 import (
-	"github.com/flarehotspot/core/internal/utils/logger"
+	"core/internal/utils/logger"
 )
 
 type LoggerApi struct{}

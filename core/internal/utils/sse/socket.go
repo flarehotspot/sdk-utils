@@ -7,14 +7,15 @@
 package sse
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
 	"net/http"
+	"sdk/libs/go-json"
+
 	// "time"
 
-	sdkstr "github.com/flarehotspot/sdk/utils/strings"
+	sdkstr "github.com/flarehotspot/go-utils/strings"
 )
 
 func NewSocket(w http.ResponseWriter, r *http.Request) (s *SseSocket, err error) {

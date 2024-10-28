@@ -11,10 +11,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
-window.addEventListener("load", function () {
+window.addEventListener('load', function () {
   function checkStatus(callback) {
     var xhr = new XMLHttpRequest();
-    xhr.open("GET", "/", true);
+    xhr.open('GET', '/', true);
 
     xhr.onreadystatechange = function () {
       if (xhr.readyState === 4) {
@@ -28,7 +28,7 @@ window.addEventListener("load", function () {
   function redirectHome() {
     checkStatus(function (status) {
       if (status === 200) {
-        window.location.href = "/";
+        window.location.href = '/';
       } else {
         setTimeout(redirectHome, 1000); // Check again after 1 second
       }
@@ -36,12 +36,17 @@ window.addEventListener("load", function () {
   }
 
   function callBackHook(data) {
-    document.getElementById("status-text").innerText = data.status;
+    var logsEl = '<ul>';
+    for (var i = 0; i < data.logs.length; i++) {
+      logsEl += '<li>' + data.logs[i] + '</li>';
+    }
+    logsEl += '</ul>';
+    document.getElementById('status-text').innerHTML = logsEl;
   }
 
-  var evt = new EventSource("/boot/status");
+  var evt = new EventSource('<% .Data %>');
 
-  evt.addEventListener("boot:progress", function (res) {
+  evt.addEventListener('boot:progress', function (res) {
     var data = JSON.parse(res.data);
     console.log(data);
     callBackHook(data);

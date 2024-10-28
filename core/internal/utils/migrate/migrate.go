@@ -3,11 +3,17 @@ package migrate
 import (
 	"context"
 	"database/sql"
+	"errors"
+	"os"
 	"strings"
 )
 
 func MigrateUp(db *sql.DB, dir string) error {
 	files, err := listFiles(dir, migration_Up)
+	if err != nil && errors.Is(err, os.ErrNotExist) {
+		return nil
+	}
+
 	if err != nil {
 		return err
 	}

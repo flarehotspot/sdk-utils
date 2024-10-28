@@ -7,9 +7,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/flarehotspot/core/internal/config"
-	"github.com/flarehotspot/sdk/utils/strings"
-	"github.com/flarehotspot/core/internal/utils/mysql"
+	"core/internal/config"
+	"core/internal/utils/mysql"
+
+	sdkstr "github.com/flarehotspot/go-utils/strings"
 	//
 	// UNCOMMENT BELOW LINES WHEN DEBUGGING SQL QUERIES:
 	//
@@ -41,14 +42,16 @@ func NewDatabase() (*Database, error) {
 		return nil, err
 	}
 
-	url := cfg.UrlString()
+	url := cfg.DbUrlString()
 	log.Println("DB URL: ", url)
-	if err != nil {
-		return nil, err
-	}
 
+	// Ensure mysql starts up during boot before returning err
+	openErrorCountThreshold := 5
 	conn, err := sql.Open("mysql", url)
-
+	for openErrorCount := 0; err != nil && openErrorCount < openErrorCountThreshold; openErrorCount++ {
+		conn, err = sql.Open("mysql", url)
+		time.Sleep(time.Second * 2)
+	}
 	if err != nil {
 		return nil, err
 	}

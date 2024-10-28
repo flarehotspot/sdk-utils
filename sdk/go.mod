@@ -1,3 +1,3 @@
-module github.com/flarehotspot/sdk
+module sdk
 
 go 1.19

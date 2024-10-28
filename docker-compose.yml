@@ -6,12 +6,16 @@ services:
       context: .
     volumes:
       - ./:/build
-      - ./build/devkit/extras/config/database.json:/build/config/database.json
+      - ./core/build/devkit/extras/config/database.json:/build/config/database.json
     depends_on:
       mariadb:
         condition: service_healthy
     ports:
       - 3000:3000
+    networks:
+      flare_network:
+        aliases:
+          - rpc-machines.flarehotspot-dev.com
 
   mariadb:
     image: mariadb:latest
@@ -26,13 +30,15 @@ services:
       interval: 30s
       timeout: 5s
       retries: 30
+    networks:
+      flare_network:
 
   phpmyadmin:
     image: phpmyadmin
     volumes:
       - ./phpmyadmin/config.user.inc.php:/etc/phpmyadmin/config.user.inc.php
     ports:
-      - 8080:80
+      - 8081:80
     depends_on:
       - mariadb
     environment:
@@ -40,6 +46,12 @@ services:
       - PMA_HOST=mariadb
       - PMA_USER=root
       - PMA_PASSWORD=root
+    networks:
+      flare_network:
 
 volumes:
   mariadb:
+
+networks:
+  flare_network:
+    external: true

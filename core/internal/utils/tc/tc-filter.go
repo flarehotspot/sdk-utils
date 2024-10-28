@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/flarehotspot/core/internal/utils/cmd"
-	"github.com/flarehotspot/core/internal/utils/ifbutil"
+	"core/internal/utils/cmd"
+	"core/internal/utils/ifbutil"
 )
 
 type TcIpField string
@@ -94,7 +94,7 @@ func (self *TcFilter) create(clientIp string, classid string) (err error) {
 		return err
 	}
 	for _, dev := range self.devs() {
-		err = cmd.Exec(fmt.Sprintf("tc filter add dev %s parent 1:0 protocol ip prio 10 u32 ht %s match ip %s %s flowid %s", dev, htBkt, self.tcpField(dev), clientIp, classid))
+		err = cmd.Exec(fmt.Sprintf("tc filter add dev %s parent 1:0 protocol ip prio 10 u32 ht %s match ip %s %s flowid %s", dev, htBkt, self.tcpField(dev), clientIp, classid), nil)
 		if err != nil {
 			return err
 		}
@@ -108,7 +108,7 @@ func (self *TcFilter) delete(clientIp string) (err error) {
 		return err
 	}
 	for _, dev := range self.devs() {
-		err = cmd.Exec(fmt.Sprintf("tc filter del dev %s parent 1:0 handle %s prio 10 u32", dev, htBkt))
+		err = cmd.Exec(fmt.Sprintf("tc filter del dev %s parent 1:0 handle %s prio 10 u32", dev, htBkt), nil)
 		if err != nil {
 			return err
 		}
@@ -124,23 +124,23 @@ func (self *TcFilter) Setup() error {
 			ht := 1
 
 			// clean up old filters
-			cmd.Exec(fmt.Sprintf("tc filter add dev %s parent 1:0 prio 10 protocol ip u32", dev))
-			cmd.Exec(fmt.Sprintf("tc filter add dev %s parent 1:0 prio 100 protocol ip u32", dev))
+			cmd.Exec(fmt.Sprintf("tc filter add dev %s parent 1:0 prio 10 protocol ip u32", dev), nil)
+			cmd.Exec(fmt.Sprintf("tc filter add dev %s parent 1:0 prio 100 protocol ip u32", dev), nil)
 
 			for segIndex := 0; segIndex < count; segIndex++ {
 				if self.ipsegmt.hostMasked(segIndex) {
 					divisor := self.ipsegmt.segMaxVal(segIndex) + 1
 					pos := self.maskPosition(dev)
 					mask := self.ipsegmt.segMaskHex(segIndex)
-					base := self.ipsegmt.baseIp()
-					prfx := self.ipsegmt.netmask
+					netip := self.ipsegmt.baseIp()
+					netmask := self.ipsegmt.netmask
 					f := self.tcpField(dev)
 
 					if ht == 1 {
 						cmds = append(cmds, []string{
 							fmt.Sprintf("tc filter add dev %s parent 1:0 prio 10 protocol ip u32", dev),
 							fmt.Sprintf("tc filter add dev %s parent 1:0 protocol ip prio 10 handle %x: u32 divisor %d", dev, ht, divisor),
-							fmt.Sprintf("tc filter add dev %s parent 1:0 protocol ip prio 100 u32 ht 800:: match ip %s %s/%d hashkey mask %s at %d link %x:", dev, f, base, prfx, mask, pos, ht),
+							fmt.Sprintf("tc filter add dev %s parent 1:0 protocol ip prio 100 u32 ht 800:: match ip %s %s/%d hashkey mask %s at %d link %x:", dev, f, netip, netmask, mask, pos, ht),
 						}...)
 						ht += 1
 					} else {
@@ -152,7 +152,7 @@ func (self *TcFilter) Setup() error {
 							for i := listIndex; i <= maxIndex; i++ {
 								cmds = append(cmds, []string{
 									fmt.Sprintf("tc filter add dev %s parent 1:0 protocol ip prio 10 handle %x: u32 divisor %d", dev, ht, 256),
-									fmt.Sprintf("tc filter add dev %s parent 1:0 protocol ip prio 10 u32 ht %x:%x: match ip %s %s/%d hashkey mask %s at %d link %x:", dev, parentHt, i, self.tcpField(dev), base, prfx, mask, pos, ht),
+									fmt.Sprintf("tc filter add dev %s parent 1:0 protocol ip prio 10 u32 ht %x:%x: match ip %s %s/%d hashkey mask %s at %d link %x:", dev, parentHt, i, self.tcpField(dev), netip, netmask, mask, pos, ht),
 								}...)
 								ht += 1
 							}
@@ -162,7 +162,7 @@ func (self *TcFilter) Setup() error {
 			}
 
 			for _, c := range cmds {
-				err := cmd.Exec(c)
+				err := cmd.Exec(c, nil)
 				if err != nil {
 					log.Println("Error in tc filter setup: ", err)
 					return nil, err
@@ -222,14 +222,14 @@ func (self *TcFilter) DeleteFilter(clientIp string) error {
 
 func (self *TcFilter) CleanUp() error {
 	_, err := filterQue.Exec(func() (interface{}, error) {
-		err := cmd.Exec(fmt.Sprintf("tc filter add dev %s parent 1:0 prio 10 protocol ip u32", self.dev))
+		err := cmd.Exec(fmt.Sprintf("tc filter add dev %s parent 1:0 prio 10 protocol ip u32", self.dev), nil)
 		if err != nil {
 			return nil, err
 		}
 
 		if ifbutil.IsIfbSupported() {
 			ifb := ifbName(self.dev)
-			err = cmd.Exec(fmt.Sprintf("tc filter add dev %s parent 1:0 prio 10 protocol ip u32", ifb))
+			err = cmd.Exec(fmt.Sprintf("tc filter add dev %s parent 1:0 prio 10 protocol ip u32", ifb), nil)
 			if err != nil {
 				return nil, err
 			}

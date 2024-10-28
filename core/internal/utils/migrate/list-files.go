@@ -1,10 +1,11 @@
 package migrate
 
 import (
-	fs "github.com/flarehotspot/sdk/utils/fs"
-	slices "github.com/flarehotspot/sdk/utils/slices"
 	"sort"
 	"strings"
+
+	fs "github.com/flarehotspot/go-utils/fs"
+	slices "github.com/flarehotspot/go-utils/slices"
 )
 
 type MigDirection int

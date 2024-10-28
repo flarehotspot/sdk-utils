@@ -1,21 +1,23 @@
 package plugins
 
 import (
+	"fmt"
 	"log"
 	"sync"
 	"sync/atomic"
+	"time"
 
-	sse "github.com/flarehotspot/core/internal/utils/sse"
+	sse "core/internal/utils/sse"
 )
 
 type BootProgData struct {
-	Status string `json:"status"`
-	Done   bool   `json:"done"`
+	Logs []string `json:"logs"`
+	Done bool     `json:"done"`
 }
 
 type BootProgress struct {
 	mu      sync.RWMutex
-	status  string
+	logs    []string
 	done    atomic.Bool
 	sockets []*sse.SseSocket
 	DONE_C  chan error // should only be used once
@@ -28,32 +30,34 @@ func NewBootProgress() *BootProgress {
 	}
 }
 
-func (bp *BootProgress) SetStatus(s string) {
+func (bp *BootProgress) AppendLog(s string) {
 	go func() {
 		bp.mu.Lock()
 		defer bp.mu.Unlock()
-		bp.status = s
+		// add timestamp to log
+		s = fmt.Sprintf("%s %s", time.Now().Format("2006-01-02 15:04:05"), s)
+		bp.logs = append(bp.logs, s)
 		bp.emit()
 	}()
 }
 
-func (bp *BootProgress) Status() string {
+func (bp *BootProgress) Logs() []string {
 	bp.mu.RLock()
 	defer bp.mu.RUnlock()
-	return bp.status
+	return bp.logs
 }
 
 func (bp *BootProgress) IsDone() bool {
 	return bp.done.Load()
 }
 
-func (bp *BootProgress) SetDone(err error) {
+func (bp *BootProgress) Done(err error) {
 	log.Println("Setting boot progress to done...")
 	bp.done.Store(true)
 
 	bp.mu.Lock()
 	if err != nil {
-		bp.status = err.Error()
+		bp.logs = append(bp.logs, err.Error())
 	}
 	bp.emit()
 	bp.mu.Unlock()
@@ -88,8 +92,8 @@ func (bp *BootProgress) AddSocket(s *sse.SseSocket) {
 }
 
 func (bp *BootProgress) emit() {
-	data := BootProgData{bp.status, bp.done.Load()}
-	log.Println(data)
+	data := BootProgData{bp.logs, bp.done.Load()}
+	// log.Println(data)
 
 	for _, s := range bp.sockets {
 		err := s.Emit("boot:progress", data)

@@ -1,12 +1,13 @@
 package routes
 
 import (
+	"log"
 	"net/http"
 
-	"github.com/flarehotspot/core/internal/plugins"
-	"github.com/flarehotspot/core/internal/web/controllers"
-	"github.com/flarehotspot/core/internal/web/router"
-	"github.com/flarehotspot/core/internal/web/routes/urls"
+	"core/internal/plugins"
+	"core/internal/web/controllers"
+	"core/internal/web/router"
+	"core/internal/web/routes/urls"
 )
 
 func BootRoutes(g *plugins.CoreGlobals) {
@@ -17,6 +18,7 @@ func BootRoutes(g *plugins.CoreGlobals) {
 	r.HandleFunc(urls.BOOT_STATUS_URL, bootCtrl.SseHandler).Methods("GET")
 
 	r.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        log.Println("Location not found: ", r.URL.Path)
 		http.Redirect(w, r, urls.BOOT_URL, http.StatusFound)
 	})
 }

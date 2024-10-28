@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	sdkconnmgr "github.com/flarehotspot/sdk/api/connmgr"
+	sdkconnmgr "sdk/api/connmgr"
 )
 
 func NewClientSession(src sdkconnmgr.SessionSource) *ClientSession {

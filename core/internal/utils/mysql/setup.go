@@ -5,15 +5,16 @@ package mysql
 import (
 	"fmt"
 	"os"
-    "encoding/json"
 	"path/filepath"
+	"sdk/libs/go-json"
 	stdstr "strings"
 	"time"
 
-	"github.com/flarehotspot/core/internal/utils/cmd"
-	"github.com/flarehotspot/sdk/libs/go-uci"
-fs	"github.com/flarehotspot/sdk/utils/fs"
-paths	"github.com/flarehotspot/sdk/utils/paths"
+	"core/internal/utils/cmd"
+	"sdk/libs/go-uci"
+
+	fs "github.com/flarehotspot/go-utils/fs"
+	paths "github.com/flarehotspot/go-utils/paths"
 )
 
 var (
@@ -92,7 +93,7 @@ func prepareSrvMysqlDir() error {
 	}
 
 	for _, c := range commands {
-		err := cmd.Exec(c)
+		err := cmd.Exec(c, nil)
 		if err != nil {
 			return err
 		}
@@ -120,7 +121,7 @@ func mysqlInstall() error {
 	}
 
 	for _, c := range commands {
-		err := cmd.Exec(c)
+		err := cmd.Exec(c, nil)
 		if err != nil {
 			return err
 		}
@@ -135,11 +136,11 @@ func mysqlInstall() error {
 
 func setRootPass(dbpass string) error {
 	command := "mysqladmin -u root password " + dbpass
-	return cmd.ExecAsh(command)
+	return cmd.Exec(command, nil)
 }
 
 func createDb(dbname string) error {
-	return cmd.ExecAsh("mysqladmin create " + dbname)
+	return cmd.Exec("mysqladmin create "+dbname, nil)
 }
 
 func writeConfig(dbpass string, dbname string) error {
@@ -159,10 +160,10 @@ func writeConfig(dbpass string, dbname string) error {
 }
 
 func rmSrvMysqlDir() {
-	cmd.Exec("rm -rf " + srvMysqlDir)
+	cmd.Exec("rm -rf "+srvMysqlDir, nil)
 }
 
 func stopDb() {
-	cmd.Exec("service mysqld stop")
-	cmd.Exec("service mysqld disable")
+	cmd.Exec("service mysqld stop", nil)
+	cmd.Exec("service mysqld disable", nil)
 }

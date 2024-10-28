@@ -1,137 +1,339 @@
 package adminctrl
 
-// import (
-// 	"fmt"
-// 	"io"
-// 	"log"
-// 	"net/http"
-// 	"os"
-// 	"os/exec"
-// 	"path/filepath"
-// 	"sync"
+import (
+	"core/internal/plugins"
+	rpc "core/internal/rpc"
+	"core/internal/utils/pkg"
+	"core/internal/utils/updates"
+	"errors"
+	"io"
+	"log"
+	"net/http"
+	"os"
+	"path/filepath"
+	sdkplugin "sdk/api/plugin"
+	"sdk/libs/go-json"
+	"strings"
 
-// 	"github.com/flarehotspot/core/internal/accounts"
-// 	"github.com/flarehotspot/core/internal/plugins"
-// 	"github.com/flarehotspot/sdk/utils/contexts"
-// 	"github.com/flarehotspot/sdk/utils/paths"
-// 	"github.com/flarehotspot/sdk/utils/strings"
-// 	"github.com/flarehotspot/core/internal/web/response"
-// 	"github.com/flarehotspot/core/internal/web/router"
-// 	"github.com/flarehotspot/core/internal/web/routes/names"
-// )
+	sdkpaths "github.com/flarehotspot/go-utils/paths"
+	sdkstr "github.com/flarehotspot/go-utils/strings"
+)
 
-// type InstallOut struct{ acct *accounts.Account }
+type PluginRelease struct {
+	Id         int
+	Major      int
+	Minor      int
+	Patch      int
+	ZipFileUrl string
+}
 
-// func (i *InstallOut) Write(p []byte) (n int, err error) {
-// 	status := map[string]any{"msg": string(p)}
-// 	i.acct.Emit("plugin:install:progress", status)
-// 	return len(p), nil
-// }
+type PluginData struct {
+	Id               int
+	Info             sdkplugin.PluginInfo
+	Src              pkg.PluginInstallData
+	HasPendingUpdate bool
+	HasUpdates       bool
+	ToBeRemoved      bool
+	IsInstalled      bool
+	Releases         []PluginRelease
+}
 
-// type PluginCtrl struct {
-// 	mu     sync.RWMutex
-// 	pmgr   *plugins.PluginsMgr
-// 	result *plugins.InstPrgrs
-// 	capi   *plugins.PluginApi
-// }
+func PluginsIndexCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 
-// func NewPluginsCtrl(pmgr *plugins.PluginsMgr, capi *plugins.PluginApi) *PluginCtrl {
-// 	return &PluginCtrl{
-// 		mu:   sync.RWMutex{},
-// 		pmgr: pmgr,
-// 		capi: capi,
-// 	}
-// }
+	return func(w http.ResponseWriter, r *http.Request) {
+		res := g.CoreAPI.HttpAPI.VueResponse()
+		plugins := getInstalledPlugins()
 
-// func (self *PluginCtrl) Index(w http.ResponseWriter, r *http.Request) {
-// 	plugins := self.pmgr.All()
-// 	newPluginUrl, _ := router.UrlForRoute(routenames.RouteAdminPluginsNew)
+		res.Json(w, plugins, http.StatusOK)
+	}
+}
 
-// 	data := map[string]any{
-// 		"newPluginUrl": newPluginUrl,
-// 		"plugins":      plugins,
-// 	}
+func PluginsStoreIndexCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		res := g.CoreAPI.HttpAPI.VueResponse()
 
-// 	self.capi.HttpApi().Respond().AdminView(w, r, "plugins/index.html", data)
-// }
+		srv, ctx := rpc.GetCoreMachineTwirpServiceAndCtx()
+		qPlugins, err := srv.FetchPlugins(ctx, &rpc.FetchPluginsRequest{})
+		if err != nil {
+			log.Println("Error:", err)
+			res.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		if qPlugins == nil {
+			err := errors.New("queried plugins is nil")
+			log.Println("Error:", err)
+			res.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 
-// func (self *PluginCtrl) New(w http.ResponseWriter, r *http.Request) {
-// 	uploadUrl, _ := router.UrlForRoute(routenames.RouteAdminPluginUpload)
-// 	data := map[string]any{"uploadUrl": uploadUrl}
-// 	self.capi.HttpApi().Respond().AdminView(w, r, "plugins/upload.html", data)
-// }
+		// parse pluginsData
+		var pluginsData []PluginData
+		for _, qP := range qPlugins.Plugins {
+			pluginsData = append(pluginsData, PluginData{
+				Id: int(qP.PluginId),
+				Info: sdkplugin.PluginInfo{
+					Name:        qP.Name,
+					Package:     qP.Package,
+					Description: "",
+				},
+				IsInstalled: pkg.IsPackageInstalled(qP.Package),
+			})
+		}
 
-// func (self *PluginCtrl) Upload(w http.ResponseWriter, r *http.Request) {
-// 	self.mu.Lock()
-// 	defer self.mu.Unlock()
+		res.Json(w, pluginsData, http.StatusOK)
+	}
+}
 
-// 	// Parse our multipart form, 10 << 20 specifies a maximum
-// 	// upload of 10 MB files.
-// 	r.ParseMultipartForm(10 << 20)
-// 	file, _, err := r.FormFile("plugin_zip")
-// 	if err != nil {
-// 		fmt.Println("Error Retrieving the File")
-// 		fmt.Println(err)
-// 		self.uploadErr(w, r, err)
-// 		return
-// 	}
-// 	defer file.Close()
+func ViewPluginCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		res := g.CoreAPI.HttpAPI.VueResponse()
 
-// 	uploadDir := filepath.Join(paths.TmpDir, "uploads/plugins")
-// 	os.MkdirAll(uploadDir, os.ModePerm)
+		// parse query
+		pluginId := sdkstr.AtoiOrDefault(r.URL.Query().Get("id"), 0)
 
-// 	tempFile, err := os.CreateTemp(uploadDir, "plugin-*.zip")
-// 	if err != nil {
-// 		fmt.Println(err)
-// 		self.uploadErr(w, r, err)
-// 		return
-// 	}
-// 	defer tempFile.Close()
+		if pluginId == 0 {
+			err := errors.New("invalid plugin id")
+			log.Println("Error:", err)
+			res.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 
-// 	// read all of the contents of our uploaded file into a
-// 	// byte array
-// 	fileBytes, err := io.ReadAll(file)
-// 	if err != nil {
-// 		fmt.Println(err)
-// 		self.uploadErr(w, r, err)
-// 		return
-// 	}
-// 	// write this byte array to our temporary file
-// 	_, err = tempFile.Write(fileBytes)
-// 	if err != nil {
-// 		log.Println(err)
-// 		self.uploadErr(w, r, err)
-// 		return
-// 	}
+		srv, ctx := rpc.GetCoreMachineTwirpServiceAndCtx()
+		qPlugin, err := srv.FetchPlugin(ctx, &rpc.FetchPluginRequest{
+			PluginId: int32(pluginId),
+		})
+		if err != nil {
+			log.Println("Error:", err)
+			res.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		if qPlugin == nil {
+			err := errors.New("queried plugin is nil")
+			log.Println("Error:", err)
+			res.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 
-// 	log.Println("Zip file written to: ", tempFile.Name())
+		// parse plugin
+		var pluginReleases []PluginRelease
+		for _, qpr := range qPlugin.Releases {
+			pluginReleases = append(pluginReleases, PluginRelease{
+				Id:         int(qpr.PluginReleaseId),
+				Major:      int(qpr.Major),
+				Minor:      int(qpr.Minor),
+				Patch:      int(qpr.Patch),
+				ZipFileUrl: qpr.ZipFileUrl,
+			})
+		}
 
-// 	extDir := filepath.Join(paths.TmpDir, strings.Rand(32))
+		plugin := PluginData{
+			Id: int(qPlugin.Plugin.PluginId),
+			Info: sdkplugin.PluginInfo{
+				Name:        qPlugin.Plugin.Name,
+				Package:     qPlugin.Plugin.Package,
+				Description: "", // TODO: add the description
+			},
+			Releases: pluginReleases,
+		}
 
-// 	unzipCmd := exec.Command("unzip", tempFile.Name(), "-d", extDir)
-// 	err = unzipCmd.Run()
-// 	if err != nil {
-// 		self.uploadErr(w, r, err)
-// 		return
-// 	}
+		res.Json(w, plugin, http.StatusOK)
+	}
+}
 
-// 	go func() {
-// 		tags := r.PostFormValue("tags")
-// 		log.Println("tags: ", tags)
-// 		acctSym := r.Context().Value(contexts.SysAcctCtxKey)
-// 		acct := acctSym.(*accounts.Account)
-// 		out := &InstallOut{acct: acct}
-// 		err = plugins.Build(out, extDir, "-tags", tags)
-// 		if err != nil {
-// 			self.uploadErr(w, r, err)
-// 			return
-// 		}
-// 	}()
+func UploadFileCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		res := g.CoreAPI.HttpAPI.HttpResponse()
 
-// 	w.WriteHeader(http.StatusOK)
-// }
+		// limit file upload size 10 * (2 ** 20) = 10MB
+		if err := r.ParseMultipartForm(10 << 20); err != nil {
+			log.Println("Error in parsing multi part form:", err)
+			res.Json(w, "", http.StatusInternalServerError)
+			return
+		}
 
-// func (self *PluginCtrl) uploadErr(w http.ResponseWriter, r *http.Request, err error) {
-// 	w.WriteHeader(http.StatusInternalServerError)
-// 	response.Json(w, map[string]any{"error": err.Error()}, 500)
-// }
+		// get uploaded file
+		uploadedFile, handler, err := r.FormFile("file")
+		if err != nil {
+			log.Println("Error in opening form file: ", err)
+			res.Json(w, "Error: invalid multipart file", http.StatusInternalServerError)
+			return
+		}
+		defer uploadedFile.Close()
+
+		// prepare parent path
+		parentPath := filepath.Join(sdkpaths.UploadsDir, sdkstr.Rand(6))
+
+		// ensure parent directory exists
+		if err := os.MkdirAll(parentPath, 0755); err != nil {
+			log.Println("Error creating parent dir:", err)
+			res.Json(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		// create destination file
+		filePath := filepath.Join(parentPath, handler.Filename)
+		prZipFile, err := os.Create(filePath)
+		if err != nil {
+			log.Println("Error creating pr zip file:", err)
+			res.Json(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		defer prZipFile.Close()
+
+		// copy the contents of the uploaded file on to the created destination file
+		if _, err := io.Copy(prZipFile, uploadedFile); err != nil {
+			log.Println("Error copying file:", err)
+			res.Json(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		log.Printf("%s successfully uploaded", filePath)
+		res.Json(w, filePath, http.StatusOK)
+	}
+}
+
+// TODO: update for multiple files for future use-case
+func UploadFilesCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		res := g.CoreAPI.HttpAPI.HttpResponse()
+
+		// TODO: implementation of multiple file uploads
+
+		res.Json(w, "", http.StatusOK)
+	}
+}
+
+func PluginsInstallCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		res := g.CoreAPI.HttpAPI.VueResponse()
+
+		// read post body as json
+		var data pkg.PluginSrcDef
+		err := json.NewDecoder(r.Body).Decode(&data)
+		if err != nil {
+			res.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		var result strings.Builder
+		info, err := pkg.InstallSrcDef(&result, data)
+		if err != nil {
+			res.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		res.Json(w, info, http.StatusOK)
+	}
+}
+
+func getInstalledPlugins() []PluginData {
+	sources := pkg.InstalledPluginsList()
+	plugins := []PluginData{}
+
+	for _, src := range sources {
+		info, err := pkg.GetPluginInfo(src.Def)
+		if err != nil {
+			return nil
+		}
+
+		p := PluginData{
+			Info:             info,
+			Src:              src,
+			HasPendingUpdate: pkg.HasPendingUpdate(info.Package),
+			ToBeRemoved:      pkg.IsToBeRemoved(info.Package),
+		}
+
+		plugins = append(plugins, p)
+	}
+
+	return plugins
+}
+
+func UninstallPluginCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		res := g.CoreAPI.HttpAPI.VueResponse()
+		// read post body as json
+		var data struct {
+			Pkg string `json:"pkg"`
+		}
+
+		err := json.NewDecoder(r.Body).Decode(&data)
+		if err != nil {
+			res.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		err = pkg.MarkToRemove(data.Pkg)
+		if err != nil {
+			res.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		res.Json(w, nil, http.StatusOK)
+	}
+}
+
+func UpdatePluginCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		res := g.CoreAPI.HttpAPI.VueResponse()
+
+		// read post body as json
+		var def pkg.PluginSrcDef
+		err := json.NewDecoder(r.Body).Decode(&def)
+		if err != nil {
+			res.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		// get latest release id before installing
+		if def.Src == "store" {
+			def, err = updates.GetLatestReleaseFromStore(def)
+		}
+
+		var result strings.Builder
+		info, err := pkg.InstallSrcDef(&result, def)
+		if err != nil {
+			log.Println("Error updating/installing source from def:", err)
+			res.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		res.Json(w, info, http.StatusOK)
+	}
+}
+
+func CheckPluginUpdatesCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		res := g.CoreAPI.HttpAPI.VueResponse()
+
+		pluginsInstallData := pkg.InstalledPluginsList()
+		var pluginsResponseData []PluginData
+
+		for i, pInstallDatum := range pluginsInstallData {
+			pInfo, err := pkg.GetPluginInfo(pInstallDatum.Def)
+			if err != nil {
+				log.Println("Error reading plugin info:", err)
+				res.Error(w, err.Error(), http.StatusBadRequest)
+				return
+			}
+
+			hasUpdates, err := updates.CheckForPluginUpdates(pInstallDatum, pInfo)
+			if err != nil {
+				log.Println("Error checking updates:", err)
+				res.Error(w, err.Error(), http.StatusBadRequest)
+				return
+			}
+
+			pluginsResponseData = append(pluginsResponseData, PluginData{
+				Id:               i,
+				Info:             pInfo,
+				Src:              pInstallDatum,
+				HasPendingUpdate: pkg.HasPendingUpdate(pInfo.Package),
+				HasUpdates:       hasUpdates,
+				ToBeRemoved:      false,
+				IsInstalled:      true,
+				Releases:         []PluginRelease{},
+			})
+		}
+
+		res.Json(w, pluginsResponseData, http.StatusOK)
+	}
+}

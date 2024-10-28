@@ -5,10 +5,10 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/flarehotspot/core/internal/db"
-	"github.com/flarehotspot/core/internal/db/models"
-	jobque "github.com/flarehotspot/core/internal/utils/job-que"
-	connmgr "github.com/flarehotspot/sdk/api/connmgr"
+	"core/internal/db"
+	"core/internal/db/models"
+	jobque "core/internal/utils/job-que"
+	connmgr "sdk/api/connmgr"
 )
 
 const (
@@ -17,7 +17,7 @@ const (
 )
 
 var (
-	regQue *jobque.JobQues = jobque.NewJobQues()
+	regQue *jobque.JobQue = jobque.NewJobQue()
 )
 
 func NewClientRegister(dtb *db.Database, mdls *models.Models) *ClientRegister {
@@ -81,7 +81,7 @@ func (reg *ClientRegister) Register(r *http.Request, mac string, ip string, host
 	if changed {
 		connected := reg.mgr.IsConnected(clnt)
 		if connected {
-            // disconnect temporarily
+			// disconnect temporarily
 			err = reg.mgr.Disconnect(ctx, clnt, "Device details changed, reconnecting...")
 			if err != nil {
 				return nil, err

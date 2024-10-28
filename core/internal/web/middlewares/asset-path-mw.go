@@ -1,8 +1,8 @@
 package middlewares
 
 import (
-	"github.com/flarehotspot/core/internal/web/helpers"
-	"github.com/flarehotspot/core/internal/web/response"
+	"core/internal/web/helpers"
+	"core/internal/web/response"
 	"net/http"
 )
 

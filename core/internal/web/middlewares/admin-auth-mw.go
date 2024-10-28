@@ -2,16 +2,16 @@ package middlewares
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"net/http"
+	"sdk/libs/go-json"
 	"strings"
 
-	"github.com/flarehotspot/core/internal/accounts"
-	"github.com/flarehotspot/core/internal/config"
-	"github.com/flarehotspot/sdk/api/http"
-	"github.com/flarehotspot/sdk/libs/jwt"
-	"github.com/flarehotspot/core/internal/utils/jsonwebtoken"
+	"core/internal/accounts"
+	"core/internal/config"
+	"core/internal/utils/jsonwebtoken"
+	sdkhttp "sdk/api/http"
+	"sdk/libs/jwt"
 )
 
 const (

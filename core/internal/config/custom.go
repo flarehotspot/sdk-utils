@@ -1,15 +1,16 @@
 package config
 
 import (
-	"encoding/json"
 	"os"
 	"path/filepath"
+	"sdk/libs/go-json"
 
-	sdkcfg "github.com/flarehotspot/sdk/api/config"
-	fs "github.com/flarehotspot/sdk/utils/fs"
-	sdkfs "github.com/flarehotspot/sdk/utils/fs"
-	paths "github.com/flarehotspot/sdk/utils/paths"
-	sdkstr "github.com/flarehotspot/sdk/utils/strings"
+	sdkcfg "sdk/api/config"
+
+	fs "github.com/flarehotspot/go-utils/fs"
+	sdkfs "github.com/flarehotspot/go-utils/fs"
+	paths "github.com/flarehotspot/go-utils/paths"
+	sdkstr "github.com/flarehotspot/go-utils/strings"
 )
 
 func NewCustomConfig(key string, pkg string) *CustomConfig {

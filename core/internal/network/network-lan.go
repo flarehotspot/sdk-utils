@@ -5,16 +5,16 @@ import (
 	"log"
 	"sync"
 
-	"github.com/flarehotspot/core/internal/config"
-	jobque "github.com/flarehotspot/core/internal/utils/job-que"
-	"github.com/flarehotspot/core/internal/utils/nftables"
-	"github.com/flarehotspot/core/internal/utils/tc"
-	"github.com/flarehotspot/core/internal/utils/ubus"
+	"core/internal/config"
+	jobque "core/internal/utils/job-que"
+	"core/internal/utils/nftables"
+	"core/internal/utils/tc"
+	"core/internal/utils/ubus"
 )
 
 type NetworkLan struct {
 	mu          sync.RWMutex
-	que         *jobque.JobQues
+	que         *jobque.JobQue
 	name        string
 	up          bool
 	tcClassMgr  *tc.TcClassMgr
@@ -25,7 +25,7 @@ func NewNetworkLan(ifname string) *NetworkLan {
 	return &NetworkLan{
 		name: ifname,
 		up:   true,
-		que:  jobque.NewJobQues(),
+		que:  jobque.NewJobQue(),
 	}
 }
 
