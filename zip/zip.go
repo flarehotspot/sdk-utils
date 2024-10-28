@@ -3,7 +3,8 @@ package sdkzip
 import (
 	"fmt"
 	"os/exec"
-	sdkpaths "sdk/utils/paths"
+
+	sdkpaths "github.com/flarehotspot/go-utils/paths"
 )
 
 func Zip(srcDir string, destFile string) error {
