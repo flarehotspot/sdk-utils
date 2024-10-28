@@ -3,7 +3,8 @@ package controllers
 import (
 	"net/http"
 	"path/filepath"
-	"sdk/libs/go-json"
+
+	"github.com/goccy/go-json"
 
 	"core/internal/config"
 	"core/internal/plugins"

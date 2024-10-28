@@ -2,8 +2,9 @@ package plugins
 
 import (
 	"core/internal/utils/uci"
-	"sdk/api/uci"
-	gouci "sdk/libs/go-uci"
+	sdkuci "sdk/api/uci"
+
+	gouci "github.com/digineo/go-uci"
 )
 
 type UciApi struct {

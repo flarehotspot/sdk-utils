@@ -6,7 +6,7 @@
 
 package sdkuci
 
-import "sdk/libs/go-uci"
+import "github.com/digineo/go-uci"
 
 type UciApi interface {
 	Uci() uci.Tree

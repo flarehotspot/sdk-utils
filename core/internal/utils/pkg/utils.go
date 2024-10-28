@@ -6,7 +6,8 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"sdk/libs/go-json"
+
+	"github.com/goccy/go-json"
 
 	sdkfs "github.com/flarehotspot/go-utils/fs"
 	paths "github.com/flarehotspot/go-utils/paths"
@@ -301,7 +302,7 @@ func ValidateSrcPath(src string) error {
 }
 
 func ValidateInstallPath(src string) error {
-	requiredFiles := []string{"plugin.json", "go.mod", "plugin.so"}
+	requiredFiles := []string{"plugin.json", "go.mod", "plugin.so", "metadata.json"}
 
 	for _, f := range requiredFiles {
 		if !sdkfs.Exists(filepath.Join(src, f)) {

@@ -5,7 +5,6 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
-	"sdk/libs/go-json"
 
 	"core/env"
 	"core/internal/utils/pkg"
@@ -16,6 +15,8 @@ import (
 	sdkruntime "github.com/flarehotspot/go-utils/runtime"
 	sdkstr "github.com/flarehotspot/go-utils/strings"
 	sdkzip "github.com/flarehotspot/go-utils/zip"
+
+	"github.com/goccy/go-json"
 )
 
 var (
