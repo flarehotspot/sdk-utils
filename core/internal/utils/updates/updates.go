@@ -277,6 +277,7 @@ func CheckUpdatesFromGithub(pDatum pkg.PluginInstallData, pInfo sdkplugin.Plugin
 	// handle non-200 status response code
 	if resp.StatusCode != 200 {
 		log.Printf("Fetching latest release unsuccessful: %d %s", resp.StatusCode, resp.Status)
+		return false, err
 	}
 
 	// decode body as json
