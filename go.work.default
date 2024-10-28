@@ -10,4 +10,6 @@ use (
     ./sdk/libs/go-json-0.10.3
     ./sdk/libs/websocket-1.5.3
     ./sdk/libs/templ-0.2.778
+    ./sdk/libs/sqlc-1.26.0
+    ./sdk/libs/reflex-0.3.1
 )

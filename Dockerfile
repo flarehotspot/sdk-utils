@@ -15,7 +15,7 @@ WORKDIR /build
 CMD cp go.work.default go.work && \
     go run --tags=dev ./core/internal/cli/main.go install-go && \
     go run --tags=dev ./core/cmd/sync-versions/main.go && \
-    cd tools && ./install.sh && cd .. && \
+    ./tools.sh && \
     reflex \
         -r '\.go$' \
         -R '\.tmp\/*.' \
