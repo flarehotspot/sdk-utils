@@ -40,7 +40,7 @@ func SyncGoVersion() {
 
 	files := []string{
 		"core/go.mod",
-		"sdk/go.mod",
+		"sdk/api/go.mod",
 		"go.work.default",
 	}
 

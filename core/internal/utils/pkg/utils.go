@@ -6,7 +6,8 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"sdk/libs/go-json"
+
+	"github.com/goccy/go-json"
 
 	sdkfs "github.com/flarehotspot/go-utils/fs"
 	paths "github.com/flarehotspot/go-utils/paths"

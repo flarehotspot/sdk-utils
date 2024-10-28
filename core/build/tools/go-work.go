@@ -16,10 +16,10 @@ func CreateGoWorkspace() {
 	goWork := fmt.Sprintf(`go %s
 
 use (
+    ./main
     ./core
-    ./sdk
-    ./utils
-    ./main`, goVersion)
+    ./sdk/api
+    ./sdk/utils`, goVersion)
 
 	pluginSearchPaths := []string{"plugins/system", "plugins/local"}
 
@@ -40,7 +40,7 @@ use (
 	}
 
 	libs := []string{}
-	if err := sdkfs.LsDirs("libs", &libs, false); err != nil {
+	if err := sdkfs.LsDirs("sdk/libs", &libs, false); err != nil {
 		log.Println(err)
 	}
 
