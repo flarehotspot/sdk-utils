@@ -3,6 +3,7 @@ package tools
 import (
 	"core/internal/utils/pkg"
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 
@@ -36,6 +37,15 @@ use (
 				}
 			}
 		}
+	}
+
+	libs := []string{}
+	if err := sdkfs.LsDirs("libs", &libs, false); err != nil {
+		log.Println(err)
+	}
+
+	for _, lib := range libs {
+		goWork += "\n    ./" + lib
 	}
 
 	goWork += "\n)"
