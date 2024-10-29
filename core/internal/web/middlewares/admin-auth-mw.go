@@ -4,14 +4,16 @@ import (
 	"context"
 	"errors"
 	"net/http"
-	"sdk/libs/go-json"
 	"strings"
+
+	"github.com/goccy/go-json"
 
 	"core/internal/accounts"
 	"core/internal/config"
 	"core/internal/utils/jsonwebtoken"
 	sdkhttp "sdk/api/http"
-	"sdk/libs/jwt"
+
+	"github.com/golang-jwt/jwt/v5"
 )
 
 const (

@@ -2,7 +2,8 @@ package adminctrl
 
 import (
 	"net/http"
-	"sdk/libs/go-json"
+
+	"github.com/goccy/go-json"
 
 	"core/internal/config"
 	"core/internal/plugins"

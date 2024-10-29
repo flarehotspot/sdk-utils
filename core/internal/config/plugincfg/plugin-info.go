@@ -7,7 +7,8 @@ import (
 	"path/filepath"
 
 	sdkplugin "sdk/api/plugin"
-	"sdk/libs/go-json"
+
+	"github.com/goccy/go-json"
 )
 
 func GetPluginInfo(pluginPath string) (*sdkplugin.PluginInfo, error) {

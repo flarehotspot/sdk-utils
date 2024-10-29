@@ -117,7 +117,9 @@ func BuildPlugin(pluginSrcDir string, workdir string) error {
 		return err
 	}
 
-	if err := sdkfs.CopyDir(filepath.Join(sdkpaths.AppDir, "utils"), filepath.Join(workdir, "utils"), nil); err != nil {
+	libs := []string{}
+	err := sdkfs.LsDirs("sdk/libs", &libs, false)
+	if err != nil {
 		return err
 	}
 
@@ -125,11 +127,15 @@ func BuildPlugin(pluginSrcDir string, workdir string) error {
 go %s
 
 use (
-    ./sdk
-    ./plugins/%s
-    ./utils
-)
-    `, sdkruntime.GO_VERSION, info.Package)
+    ./sdk/api
+    ./sdk/utils
+    `, sdkruntime.GO_VERSION)
+
+	for _, lib := range libs {
+		goWork += fmt.Sprintf("./sdk/libs/%s\n", filepath.Base(lib))
+	}
+
+	goWork += fmt.Sprintf("./plugins/%s\n)", info.Package)
 
 	goworkFile := filepath.Join(workdir, "go.work")
 	if err := os.WriteFile(goworkFile, []byte(goWork), sdkfs.PermFile); err != nil {
