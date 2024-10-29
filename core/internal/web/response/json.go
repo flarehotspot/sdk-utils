@@ -2,7 +2,8 @@ package response
 
 import (
 	"net/http"
-	json "sdk/libs/go-json"
+
+	json "github.com/goccy/go-json"
 )
 
 func Json(w http.ResponseWriter, data any, status int) {

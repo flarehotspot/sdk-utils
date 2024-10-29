@@ -12,8 +12,9 @@ import (
 	"os"
 	"path/filepath"
 	sdkplugin "sdk/api/plugin"
-	"sdk/libs/go-json"
 	"strings"
+
+	"github.com/goccy/go-json"
 
 	sdkpaths "github.com/flarehotspot/go-utils/paths"
 	sdkstr "github.com/flarehotspot/go-utils/strings"

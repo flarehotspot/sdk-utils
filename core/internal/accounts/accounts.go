@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"sync"
 
-	"sdk/libs/go-json"
+	"github.com/goccy/go-json"
 
 	accounts "sdk/api/accounts"
 
