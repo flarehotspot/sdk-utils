@@ -7,9 +7,11 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strconv"
 
 	sdkextract "github.com/flarehotspot/go-utils/extract"
 
+	rpc "core/internal/rpc"
 	"core/internal/utils/encdisk"
 	"core/internal/utils/git"
 	sdkplugin "sdk/api/plugin"
@@ -125,7 +127,7 @@ func InstallFromZipFile(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, er
 }
 
 func InstallFromPluginStore(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, error) {
-	w.Write([]byte("Installing plugin from store: " + def.StoreZipFile))
+	w.Write([]byte("Installing plugin from store: " + strconv.Itoa(def.StorePluginReleaseId)))
 
 	// prepare path
 	randomPath := RandomPluginPath()
@@ -144,8 +146,13 @@ func InstallFromPluginStore(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo
 	defer mnt.Unmount()
 
 	// download plugin release zip file
-	log.Println("downloading plugin release: ", def.StoreZipFile)
-	downloader := download.NewDownloader(def.StoreZipFile, clonePath)
+	log.Println("downloading plugin release: ", def.StorePluginReleaseId)
+	srv, ctx := rpc.GetCoreMachineTwirpServiceAndCtx()
+	qPlugins, err := srv.FetchLatestPluginRelease(ctx, &rpc.FetchLatestPluginReleaseRequest{
+		PluginReleaseId: int32(def.StorePluginReleaseId),
+	})
+
+	downloader := download.NewDownloader(qPlugins.PluginRelease.ZipFileUrl, clonePath)
 	if err := downloader.Download(); err != nil {
 		log.Println("Error: ", err)
 		return sdkplugin.PluginInfo{}, err

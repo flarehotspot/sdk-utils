@@ -345,6 +345,5 @@ func GetLatestReleaseFromStore(def pkg.PluginSrcDef) (pkg.PluginSrcDef, error) {
 	return pkg.PluginSrcDef{
 		Src:                  "store",
 		StorePluginReleaseId: int(qPlugins.PluginRelease.PluginReleaseId),
-		StoreZipFile:         qPlugins.PluginRelease.ZipFileUrl,
 	}, nil
 }
