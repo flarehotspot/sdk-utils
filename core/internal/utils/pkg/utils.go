@@ -3,9 +3,11 @@ package pkg
 import (
 	"core/internal/config"
 	"errors"
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/goccy/go-json"
 
@@ -326,4 +328,12 @@ func FindPluginSrc(dir string) (string, error) {
 	}
 
 	return "", errors.New("Can't find plugin.json in " + paths.StripRoot(dir))
+}
+
+func GetAuthorNameFromGitUrl(p PluginInstallData) string {
+	return strings.Split(strings.TrimPrefix(p.Def.GitURL, "https://github.com/"), "/")[0]
+}
+
+func GetRepoFromGitUrl(p PluginInstallData) string {
+	return strings.Split(strings.TrimPrefix(p.Def.GitURL, fmt.Sprintf("https://github.com/%s/", GetAuthorNameFromGitUrl(p))), "/")[0]
 }

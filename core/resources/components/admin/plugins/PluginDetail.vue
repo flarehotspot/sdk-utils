@@ -41,6 +41,7 @@
               class="btn btn-secondary"
               @click="installRelease($event, pr)"
             >
+            {{pr.Id}}
               Install
             </button>
           </td>
@@ -102,7 +103,8 @@ define(function () {
         var params = {
           Src: 'store',
           StorePackage: self.plugin.Package,
-          StoreZipFile: pr.ZipFileUrl
+          StoreZipFile: pr.ZipFileUrl,
+          StorePluginReleaseId: pr.Id
         };
 
         $flare.http

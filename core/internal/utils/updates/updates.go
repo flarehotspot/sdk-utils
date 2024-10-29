@@ -5,13 +5,17 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
+	sdkplugin "sdk/api/plugin"
 	"strings"
 	"syscall"
 
 	rpc "core/internal/rpc"
+	"core/internal/utils/pkg"
+
 	sdkextract "github.com/flarehotspot/go-utils/extract"
 	sdkfs "github.com/flarehotspot/go-utils/fs"
 	sdkpaths "github.com/flarehotspot/go-utils/paths"
@@ -35,6 +39,10 @@ type UpdateFiles struct {
 	LocalCoreFilesPath    string
 	LocalArchBinFilesPath string
 	CoreReleaseUpdate
+}
+
+type LatestGithubRelease struct {
+	TagName string `json:"tag_name"`
 }
 
 // Helper function to check if the process is spawned by flare cli
@@ -225,4 +233,118 @@ func UpdateCore(localUpdateFiles UpdateFiles) error {
 	}
 
 	return nil
+}
+
+func CheckForPluginUpdates(pDatum pkg.PluginInstallData, pInfo sdkplugin.PluginInfo) (bool, error) {
+	switch pDatum.Def.Src {
+	case "git":
+		hasUpdates, err := CheckUpdatesFromGithub(pDatum, pInfo)
+		if err != nil {
+			log.Println("Error checking plugin updates from github: ", err)
+			return false, err
+		}
+		return hasUpdates, nil
+	case "store":
+		hasUpdates, err := CheckUpdatesFromStore(pDatum.Def, pInfo)
+		if err != nil {
+			log.Println("Error checking plugin updates from store: ", err)
+			return false, err
+		}
+		return hasUpdates, nil
+	default:
+		return false, nil
+	}
+}
+
+func CheckUpdatesFromGithub(pDatum pkg.PluginInstallData, pInfo sdkplugin.PluginInfo) (bool, error) {
+	author := pkg.GetAuthorNameFromGitUrl(pDatum)
+	repo := pkg.GetRepoFromGitUrl(pDatum)
+
+	// NOTE: release tags should adhere to semver
+
+	// build github api url
+	// https://api.github.com/repos/<author>/<repo>/releases/latest
+	gitApiUrl := fmt.Sprintf("https://api.github.com/repos/%s/%s/releases/latest", author, repo)
+
+	// fetch latest release from github
+	resp, err := http.Get(gitApiUrl)
+	if err != nil {
+		log.Println("Error fetching plugin's latest from github api: ", err)
+		return false, err
+	}
+	defer resp.Body.Close()
+
+	// handle non-200 status response code
+	if resp.StatusCode != 200 {
+		log.Printf("Fetching latest release unsuccessful: %d %s", resp.StatusCode, resp.Status)
+		return false, err
+	}
+
+	// decode body as json
+	var latestPR LatestGithubRelease
+	if err := json.NewDecoder(resp.Body).Decode(&latestPR); err != nil {
+		log.Println("Error decoding JSON response: ", err)
+		return false, err
+	}
+	fmt.Printf("Latest plugin release: %v\n", latestPR)
+
+	// parse json to semver
+	latestPRVersion, err := sdksemver.ParseVersion(latestPR.TagName)
+	if err != nil {
+		log.Println("Error parsing latest pr version: ", err)
+		return false, err
+	}
+	fmt.Printf("Latest plugin release version: %v\n", latestPRVersion)
+
+	currentPRVersion, err := sdksemver.ParseVersion(pInfo.Version)
+	if err != nil {
+		log.Println("Error parsing string version to semver version: ", err)
+		return false, err
+	}
+
+	return sdksemver.HasUpdates(currentPRVersion, latestPRVersion), nil
+}
+
+func CheckUpdatesFromStore(p pkg.PluginSrcDef, pinfo sdkplugin.PluginInfo) (bool, error) {
+	// fetch latest plugin release from flare-server rpc
+	srv, ctx := rpc.GetCoreMachineTwirpServiceAndCtx()
+	qPlugins, err := srv.FetchLatestPluginRelease(ctx, &rpc.FetchLatestPluginReleaseRequest{
+		PluginReleaseId: int32(p.StorePluginReleaseId),
+	})
+	if err != nil {
+		log.Println("Error fetching latest plugin release: ", err)
+		return false, err
+	}
+
+	currVersion, err := sdksemver.ParseVersion(pinfo.Version)
+	if err != nil {
+		log.Printf("Error parsing raw version of plugin: %s: %s\n", pinfo.Package, err.Error())
+		return false, err
+	}
+
+	latestVersion := sdksemver.Version{
+		Major: int(qPlugins.PluginRelease.Major),
+		Minor: int(qPlugins.PluginRelease.Minor),
+		Patch: int(qPlugins.PluginRelease.Patch),
+	}
+
+	return sdksemver.HasUpdates(currVersion, latestVersion), nil
+}
+
+func GetLatestReleaseFromStore(def pkg.PluginSrcDef) (pkg.PluginSrcDef, error) {
+	// fetch latest plugin release from flare-server rpc
+	srv, ctx := rpc.GetCoreMachineTwirpServiceAndCtx()
+	qPlugins, err := srv.FetchLatestPluginRelease(ctx, &rpc.FetchLatestPluginReleaseRequest{
+		PluginReleaseId: int32(def.StorePluginReleaseId),
+	})
+	if err != nil {
+		log.Println("Error fetching latest plugin release: ", err)
+		return pkg.PluginSrcDef{}, err
+	}
+
+	return pkg.PluginSrcDef{
+		Src:                  "store",
+		StorePluginReleaseId: int(qPlugins.PluginRelease.PluginReleaseId),
+		StoreZipFile:         qPlugins.PluginRelease.ZipFileUrl,
+	}, nil
 }

@@ -53,6 +53,12 @@ func AdminRoutes(g *plugins.CoreGlobals) {
 
 		subrouter.Post("/uninstall", adminctrl.UninstallPluginCtrl(g)).
 			Name("admin:plugins:uninstall")
+
+		subrouter.Post("/update", adminctrl.UpdatePluginCtrl(g)).
+			Name("admin:plugins:update")
+
+		subrouter.Get("/checkupdates", adminctrl.CheckPluginUpdatesCtrl(g)).
+			Name("admin:plugins:checkupdates")
 	})
 
 	adminR.Group("/upload", func(subrouter sdkhttp.HttpRouterInstance) {
