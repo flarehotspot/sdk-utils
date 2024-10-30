@@ -21,11 +21,10 @@ import (
 )
 
 type PluginRelease struct {
-	Id         int
-	Major      int
-	Minor      int
-	Patch      int
-	ZipFileUrl string
+	Id    int
+	Major int
+	Minor int
+	Patch int
 }
 
 type PluginData struct {
@@ -36,6 +35,7 @@ type PluginData struct {
 	HasUpdates       bool
 	ToBeRemoved      bool
 	IsInstalled      bool
+	StoreVersion     string
 	Releases         []PluginRelease
 }
 
@@ -119,11 +119,10 @@ func ViewPluginCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 		var pluginReleases []PluginRelease
 		for _, qpr := range qPlugin.Releases {
 			pluginReleases = append(pluginReleases, PluginRelease{
-				Id:         int(qpr.PluginReleaseId),
-				Major:      int(qpr.Major),
-				Minor:      int(qpr.Minor),
-				Patch:      int(qpr.Patch),
-				ZipFileUrl: qpr.ZipFileUrl,
+				Id:    int(qpr.PluginReleaseId),
+				Major: int(qpr.Major),
+				Minor: int(qpr.Minor),
+				Patch: int(qpr.Patch),
 			})
 		}
 
@@ -134,7 +133,8 @@ func ViewPluginCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 				Package:     qPlugin.Plugin.Package,
 				Description: "", // TODO: add the description
 			},
-			Releases: pluginReleases,
+			Releases:     pluginReleases,
+			StoreVersion: qPlugin.StoreVersion.Version,
 		}
 
 		res.Json(w, plugin, http.StatusOK)
@@ -209,15 +209,15 @@ func PluginsInstallCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 		res := g.CoreAPI.HttpAPI.VueResponse()
 
 		// read post body as json
-		var data pkg.PluginSrcDef
-		err := json.NewDecoder(r.Body).Decode(&data)
+		var reqDef pkg.PluginSrcDef
+		err := json.NewDecoder(r.Body).Decode(&reqDef)
 		if err != nil {
 			res.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 
 		var result strings.Builder
-		info, err := pkg.InstallSrcDef(&result, data)
+		info, err := pkg.InstallSrcDef(&result, reqDef)
 		if err != nil {
 			res.Error(w, err.Error(), http.StatusInternalServerError)
 			return
