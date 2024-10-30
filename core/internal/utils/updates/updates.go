@@ -308,8 +308,8 @@ func CheckUpdatesFromGithub(pDatum pkg.PluginInstallData, pInfo sdkplugin.Plugin
 func CheckUpdatesFromStore(p pkg.PluginSrcDef, pinfo sdkplugin.PluginInfo) (bool, error) {
 	// fetch latest plugin release from flare-server rpc
 	srv, ctx := rpc.GetCoreMachineTwirpServiceAndCtx()
-	qPlugins, err := srv.FetchLatestPluginRelease(ctx, &rpc.FetchLatestPluginReleaseRequest{
-		PluginReleaseId: int32(p.StorePluginReleaseId),
+	qPlugins, err := srv.FetchLatestValidPRByPackage(ctx, &rpc.FetchLatestValidPRByPackageRequest{
+		PluginPackage: p.StorePackage,
 	})
 	if err != nil {
 		log.Println("Error fetching latest plugin release: ", err)
@@ -329,21 +329,4 @@ func CheckUpdatesFromStore(p pkg.PluginSrcDef, pinfo sdkplugin.PluginInfo) (bool
 	}
 
 	return sdksemver.HasUpdates(currVersion, latestVersion), nil
-}
-
-func GetLatestReleaseFromStore(def pkg.PluginSrcDef) (pkg.PluginSrcDef, error) {
-	// fetch latest plugin release from flare-server rpc
-	srv, ctx := rpc.GetCoreMachineTwirpServiceAndCtx()
-	qPlugins, err := srv.FetchLatestPluginRelease(ctx, &rpc.FetchLatestPluginReleaseRequest{
-		PluginReleaseId: int32(def.StorePluginReleaseId),
-	})
-	if err != nil {
-		log.Println("Error fetching latest plugin release: ", err)
-		return pkg.PluginSrcDef{}, err
-	}
-
-	return pkg.PluginSrcDef{
-		Src:                  "store",
-		StorePluginReleaseId: int(qPlugins.PluginRelease.PluginReleaseId),
-	}, nil
 }
