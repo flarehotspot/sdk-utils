@@ -31,7 +31,6 @@
                     <td>{{ pr.Major + '.' + pr.Minor + '.' + pr.Patch }}</td>
                     <td>
                         <button type="button" class="btn btn-secondary" @click="installRelease($event, pr)">
-                            {{ pr.Id }}
                             Install
                         </button>
                     </td>
@@ -51,7 +50,6 @@ define(function () {
                 data: [],
                 plugin: {},
                 pluginId: parseInt(self.$route.query.id) || 1,
-                storeVersion: '',
             };
         },
         mounted: function () {
@@ -80,7 +78,6 @@ define(function () {
                             Name: self.data.Info.Name,
                             Package: self.data.Info.Package
                         };
-                        self.storeVersion = self.data.StoreVersion;
                     });
             },
             installRelease: function (e, pr) {
@@ -92,8 +89,7 @@ define(function () {
                 var defParams = {
                     Src: 'store',
                     StorePackage: self.plugin.Package,
-                    StoreVersion: self.storeVersion,
-                    StorePluginReleaseId: pr.Id
+                    StorePluginVersion: self.stringifyVersion(self.data.Releases[0]),
                 };
 
                 $flare.http
@@ -101,6 +97,9 @@ define(function () {
                     .then(function (response) {
                         $flare.notify.success(`${response.Name} installed`);
                     });
+            },
+            stringifyVersion: function (pr) {
+                return `${pr.Major}.${pr.Minor}.${pr.Patch}`;
             }
         }
     };
