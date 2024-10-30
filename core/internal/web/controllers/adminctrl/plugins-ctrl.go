@@ -28,15 +28,15 @@ type PluginRelease struct {
 }
 
 type PluginData struct {
-	Id               int
-	Info             sdkplugin.PluginInfo
-	Src              pkg.PluginInstallData
-	HasPendingUpdate bool
-	HasUpdates       bool
-	ToBeRemoved      bool
-	IsInstalled      bool
-	StoreVersion     string
-	Releases         []PluginRelease
+	Id                 int
+	Info               sdkplugin.PluginInfo
+	Src                pkg.PluginInstallData
+	HasPendingUpdate   bool
+	HasUpdates         bool
+	ToBeRemoved        bool
+	IsInstalled        bool
+	StorePluginVersion string
+	Releases           []PluginRelease
 }
 
 func PluginsIndexCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
@@ -119,7 +119,6 @@ func ViewPluginCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 		var pluginReleases []PluginRelease
 		for _, qpr := range qPlugin.Releases {
 			pluginReleases = append(pluginReleases, PluginRelease{
-				Id:    int(qpr.PluginReleaseId),
 				Major: int(qpr.Major),
 				Minor: int(qpr.Minor),
 				Patch: int(qpr.Patch),
@@ -133,8 +132,7 @@ func ViewPluginCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 				Package:     qPlugin.Plugin.Package,
 				Description: "", // TODO: add the description
 			},
-			Releases:     pluginReleases,
-			StoreVersion: qPlugin.StoreVersion.Version,
+			Releases: pluginReleases,
 		}
 
 		res.Json(w, plugin, http.StatusOK)
@@ -282,11 +280,6 @@ func UpdatePluginCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 		if err != nil {
 			res.Error(w, err.Error(), http.StatusBadRequest)
 			return
-		}
-
-		// get latest release id before installing
-		if def.Src == "store" {
-			def, err = updates.GetLatestReleaseFromStore(def)
 		}
 
 		var result strings.Builder
