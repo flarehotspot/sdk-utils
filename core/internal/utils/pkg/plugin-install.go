@@ -147,29 +147,9 @@ func InstallFromPluginStore(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo
 
 	srv, ctx := rpc.GetCoreMachineTwirpServiceAndCtx()
 
-	// get plugin info
-	qPluginInfo, err := srv.FetchPluginByPRId(ctx, &rpc.FetchPluginByPRIdRequest{
-		PluginReleaseId: int32(def.StorePluginReleaseId),
-	})
-	if err != nil {
-		log.Println("Error fetching plugin by pr id: ", err)
-		return sdkplugin.PluginInfo{}, err
-	}
-
-	// get store info
-	qStoreInfo, err := srv.FetchStoreInfo(ctx, &rpc.FetchStoreInfoRequest{})
-	if err != nil {
-		log.Println("Error fetching store info: ", err)
-		return sdkplugin.PluginInfo{}, err
-	}
-
-	// update def
-	def.StorePackage = qPluginInfo.Plugin.Package
-	def.StoreVersion = qStoreInfo.Version
-
 	// download plugin release zip file
 	log.Println("downloading plugin release: ", def.StorePluginReleaseId)
-	qPlugins, err := srv.FetchLatestPluginRelease(ctx, &rpc.FetchLatestPluginReleaseRequest{
+	qPR, err := srv.FetchLatestPluginRelease(ctx, &rpc.FetchLatestPluginReleaseRequest{
 		PluginReleaseId: int32(def.StorePluginReleaseId),
 	})
 	if err != nil {
@@ -177,7 +157,7 @@ func InstallFromPluginStore(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo
 		return sdkplugin.PluginInfo{}, err
 	}
 
-	downloader := download.NewDownloader(qPlugins.PluginRelease.ZipFileUrl, clonePath)
+	downloader := download.NewDownloader(qPR.PluginRelease.ZipFileUrl, clonePath)
 	if err := downloader.Download(); err != nil {
 		log.Println("Error: ", err)
 		return sdkplugin.PluginInfo{}, err
