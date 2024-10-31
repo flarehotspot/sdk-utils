@@ -22,14 +22,15 @@ import (
 var (
 	devkitReleaseDir string
 	devkitFiles      = []string{
-		"go",
+		".tmp/go",
+		".go-version",
+		"tools.sh",
 		"bin",
 		"config/.defaults",
 		"core/go.mod",
 		"core/plugin.so",
 		"core/plugin.json",
 		"core/resources",
-		// "core/go-version",
 		"plugins/system",
 		"main/go.mod",
 		"sdk",
@@ -44,7 +45,7 @@ func init() {
 
 func CreateDevkit() {
 	PrepareCleanup()
-	InstallGo("./go")
+	InstallGo(".tmp/go")
 	BuildFlareCLI()
 	BuildCore()
 	CopyDevkitFiles()
