@@ -311,7 +311,7 @@ func CheckPluginUpdatesCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 				return
 			}
 
-			hasUpdates, err := updates.CheckForPluginUpdates(pInstallDatum, pInfo)
+			hasUpdates, err := updates.CheckForPluginUpdates(&pInstallDatum, pInfo)
 			if err != nil {
 				log.Println("Error checking updates:", err)
 				res.Error(w, err.Error(), http.StatusBadRequest)
