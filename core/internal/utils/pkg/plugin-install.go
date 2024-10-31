@@ -154,6 +154,9 @@ func InstallFromPluginStore(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo
 	// extract compressed plugin release
 	sdkextract.Extract(clonePath, workPath)
 
+	// clear StoreZipUrl def
+	def.StoreZipUrl = ""
+
 	newWorkPath, err := FindPluginSrc(workPath)
 	if err != nil {
 		err = errors.New("Unable to find plugin source in: " + workPath)
