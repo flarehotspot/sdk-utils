@@ -322,6 +322,9 @@ func CheckUpdatesFromStore(p *pkg.PluginSrcDef, pinfo sdkplugin.PluginInfo) (boo
 		return false, err
 	}
 
+	// update plugin release zip file url def temporarily
+	p.StoreZipUrl = qPlugins.PluginRelease.ZipFileUrl
+
 	latestVersion := sdksemver.Version{
 		Major: int(qPlugins.PluginRelease.Major),
 		Minor: int(qPlugins.PluginRelease.Minor),
