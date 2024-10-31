@@ -29,7 +29,7 @@ var (
 		"core/plugin.so",
 		"core/plugin.json",
 		"core/resources",
-		"core/go-version",
+		// "core/go-version",
 		"plugins/system",
 		"main/go.mod",
 		"sdk",

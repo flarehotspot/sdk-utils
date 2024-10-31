@@ -151,3 +151,11 @@ Then, update the `go-utils` library by specifying the version of the newly pushe
 go get -u github.com/flarehotspot/go-utils@vx.x.x
 ```
 
+## Building `dev-kit`
+
+Change owner to `$USER` the `flarehotspot` dir first:
+```shell
+sudo chown -R $USER <flarehotspot dir>
+```
+
+then, `make devkit`.
