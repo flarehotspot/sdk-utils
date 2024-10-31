@@ -21,10 +21,11 @@ import (
 )
 
 type PluginRelease struct {
-	Id    int
-	Major int
-	Minor int
-	Patch int
+	Id         int
+	Major      int
+	Minor      int
+	Patch      int
+	ZipFileUrl string
 }
 
 type PluginData struct {
@@ -119,9 +120,10 @@ func ViewPluginCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 		var pluginReleases []PluginRelease
 		for _, qpr := range qPlugin.Releases {
 			pluginReleases = append(pluginReleases, PluginRelease{
-				Major: int(qpr.Major),
-				Minor: int(qpr.Minor),
-				Patch: int(qpr.Patch),
+				Major:      int(qpr.Major),
+				Minor:      int(qpr.Minor),
+				Patch:      int(qpr.Patch),
+				ZipFileUrl: qpr.ZipFileUrl,
 			})
 		}
 

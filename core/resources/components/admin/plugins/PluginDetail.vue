@@ -89,6 +89,7 @@ define(function () {
                 var defParams = {
                     Src: 'store',
                     StorePackage: self.plugin.Package,
+                    StoreZipUrl: pr.ZipFileUrl,
                     StorePluginVersion: self.stringifyVersion(self.data.Releases[0]),
                 };
 
