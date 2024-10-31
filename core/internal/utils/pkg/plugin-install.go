@@ -158,6 +158,8 @@ func InstallFromPluginStore(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo
 	// download plugin release zip file
 	log.Println("downloading plugin release: ", def.StorePackage)
 	downloader := download.NewDownloader(qPR.PluginRelease.ZipFileUrl, clonePath)
+	log.Println("downloading plugin release: ", def.StoreZipUrl)
+	downloader := download.NewDownloader(def.StoreZipUrl, clonePath)
 	if err := downloader.Download(); err != nil {
 		log.Println("Error: ", err)
 		return sdkplugin.PluginInfo{}, err
