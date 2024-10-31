@@ -10,7 +10,6 @@ import (
 
 	sdkextract "github.com/flarehotspot/go-utils/extract"
 
-	rpc "core/internal/rpc"
 	"core/internal/utils/encdisk"
 	"core/internal/utils/git"
 	sdkplugin "sdk/api/plugin"
@@ -144,20 +143,7 @@ func InstallFromPluginStore(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo
 	}
 	defer mnt.Unmount()
 
-	srv, ctx := rpc.GetCoreMachineTwirpServiceAndCtx()
-
-	// fetch latest valid plugin release
-	qPR, err := srv.FetchLatestValidPRByPackage(ctx, &rpc.FetchLatestValidPRByPackageRequest{
-		PluginPackage: def.StorePackage,
-	})
-	if err != nil {
-		log.Println("Error fetching latest plugin release: ", err)
-		return sdkplugin.PluginInfo{}, err
-	}
-
 	// download plugin release zip file
-	log.Println("downloading plugin release: ", def.StorePackage)
-	downloader := download.NewDownloader(qPR.PluginRelease.ZipFileUrl, clonePath)
 	log.Println("downloading plugin release: ", def.StoreZipUrl)
 	downloader := download.NewDownloader(def.StoreZipUrl, clonePath)
 	if err := downloader.Download(); err != nil {
