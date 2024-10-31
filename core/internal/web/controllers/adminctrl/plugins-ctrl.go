@@ -29,14 +29,15 @@ type PluginRelease struct {
 }
 
 type PluginData struct {
-	Id               int
-	Info             sdkplugin.PluginInfo
-	Src              pkg.PluginInstallData
-	HasPendingUpdate bool
-	HasUpdates       bool
-	ToBeRemoved      bool
-	IsInstalled      bool
-	Releases         []PluginRelease
+	Id                 int
+	Info               sdkplugin.PluginInfo
+	Src                pkg.PluginInstallData
+	HasPendingUpdate   bool
+	HasUpdates         bool
+	ToBeRemoved        bool
+	IsInstalled        bool
+	StorePluginVersion string
+	Releases           []PluginRelease
 }
 
 func PluginsIndexCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
@@ -119,7 +120,6 @@ func ViewPluginCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 		var pluginReleases []PluginRelease
 		for _, qpr := range qPlugin.Releases {
 			pluginReleases = append(pluginReleases, PluginRelease{
-				Id:         int(qpr.PluginReleaseId),
 				Major:      int(qpr.Major),
 				Minor:      int(qpr.Minor),
 				Patch:      int(qpr.Patch),
@@ -209,15 +209,15 @@ func PluginsInstallCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 		res := g.CoreAPI.HttpAPI.VueResponse()
 
 		// read post body as json
-		var data pkg.PluginSrcDef
-		err := json.NewDecoder(r.Body).Decode(&data)
+		var reqDef pkg.PluginSrcDef
+		err := json.NewDecoder(r.Body).Decode(&reqDef)
 		if err != nil {
 			res.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 
 		var result strings.Builder
-		info, err := pkg.InstallSrcDef(&result, data)
+		info, err := pkg.InstallSrcDef(&result, reqDef)
 		if err != nil {
 			res.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -284,11 +284,6 @@ func UpdatePluginCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 			return
 		}
 
-		// get latest release id before installing
-		if def.Src == "store" {
-			def, err = updates.GetLatestReleaseFromStore(def)
-		}
-
 		var result strings.Builder
 		info, err := pkg.InstallSrcDef(&result, def)
 		if err != nil {
@@ -316,7 +311,7 @@ func CheckPluginUpdatesCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 				return
 			}
 
-			hasUpdates, err := updates.CheckForPluginUpdates(pInstallDatum, pInfo)
+			hasUpdates, err := updates.CheckForPluginUpdates(&pInstallDatum, pInfo)
 			if err != nil {
 				log.Println("Error checking updates:", err)
 				res.Error(w, err.Error(), http.StatusBadRequest)

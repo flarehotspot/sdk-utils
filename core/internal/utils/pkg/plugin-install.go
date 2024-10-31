@@ -125,7 +125,7 @@ func InstallFromZipFile(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, er
 }
 
 func InstallFromPluginStore(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, error) {
-	w.Write([]byte("Installing plugin from store: " + def.StoreZipFile))
+	w.Write([]byte("Installing plugin from store: " + def.StorePackage))
 
 	// prepare path
 	randomPath := RandomPluginPath()
@@ -144,8 +144,8 @@ func InstallFromPluginStore(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo
 	defer mnt.Unmount()
 
 	// download plugin release zip file
-	log.Println("downloading plugin release: ", def.StoreZipFile)
-	downloader := download.NewDownloader(def.StoreZipFile, clonePath)
+	log.Println("downloading plugin release: ", def.StoreZipUrl)
+	downloader := download.NewDownloader(def.StoreZipUrl, clonePath)
 	if err := downloader.Download(); err != nil {
 		log.Println("Error: ", err)
 		return sdkplugin.PluginInfo{}, err
@@ -153,6 +153,9 @@ func InstallFromPluginStore(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo
 
 	// extract compressed plugin release
 	sdkextract.Extract(clonePath, workPath)
+
+	// clear StoreZipUrl def
+	def.StoreZipUrl = ""
 
 	newWorkPath, err := FindPluginSrc(workPath)
 	if err != nil {
