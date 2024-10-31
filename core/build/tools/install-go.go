@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	sdkextract "github.com/flarehotspot/go-utils/extract"
 	sdkfs "github.com/flarehotspot/go-utils/fs"
 	sdkpaths "github.com/flarehotspot/go-utils/paths"
 	sdkruntime "github.com/flarehotspot/go-utils/runtime"
@@ -126,7 +127,7 @@ func downloadAndExtractGo(goos, goarch, version, extractPath string) error {
 
 	// Extract the tar.gz file to the specified path
 	fmt.Println("Extracting Go to: ", extractPath)
-	err = extractTarGz(tmpFile.Name(), extractPath)
+	err = sdkextract.Extract(tmpFile.Name(), extractPath)
 	if err != nil {
 		return err
 	}
