@@ -8,7 +8,6 @@ import (
 	"core/internal/web/controllers"
 	"core/internal/web/middlewares"
 	"core/internal/web/router"
-	routenames "core/internal/web/routes/names"
 
 	paths "github.com/flarehotspot/go-utils/paths"
 )
@@ -18,17 +17,6 @@ func AssetsRoutes(g *plugins.CoreGlobals) {
 	assetsCtrl := controllers.NewAssetsCtrl(g)
 
 	router.RootRouter.Handle("/favicon.ico", cacheMw(http.HandlerFunc(assetsCtrl.GetFavicon)))
-
-	vueR := router.AssetsRouter.PathPrefix("/vue-dynamic-components").Subrouter()
-	vueR.Use(cacheMw)
-
-	vueR.HandleFunc("/with-helper/{pkg}/{version}/{path:.*}", assetsCtrl.AssetWithHelpers).
-		Methods("GET").
-		Name(routenames.RouteAssetWithHelpers)
-
-	vueR.HandleFunc("/plugin-components/{pkg}/{version}/{path:.*}", assetsCtrl.VueComponent).
-		Methods("GET").
-		Name(routenames.RouteAssetVueComponent)
 
 	allPlugins := g.PluginMgr.All()
 	for _, p := range allPlugins {

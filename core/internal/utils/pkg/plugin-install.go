@@ -250,7 +250,7 @@ func InstallPlugin(src string, opts InstallOpts) error {
 	}
 
 	installPath := GetInstallPath(info.Package)
-	if sdkfs.Exists(installPath) {
+	if err := ValidateInstallPath(installPath); err == nil {
 		installPath = GetPendingUpdatePath(info.Package)
 	}
 

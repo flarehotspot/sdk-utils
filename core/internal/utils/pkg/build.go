@@ -136,13 +136,16 @@ use (
 	}
 
 	goWork += fmt.Sprintf("./plugins/%s\n)", info.Package)
-
 	goworkFile := filepath.Join(workdir, "go.work")
 	if err := os.WriteFile(goworkFile, []byte(goWork), sdkfs.PermFile); err != nil {
 		return err
 	}
 
 	if err := BuildTemplates(buildpath); err != nil {
+		return err
+	}
+
+	if err := BuildAssets(pluginSrcDir); err != nil {
 		return err
 	}
 

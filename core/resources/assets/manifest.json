@@ -1,0 +1,9 @@
+{
+  "portal": {
+    "js": {
+      "app.js": [
+        "./portal/main.js"
+      ]
+    }
+  }
+}

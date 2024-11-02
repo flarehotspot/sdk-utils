@@ -44,7 +44,8 @@ func Extract(filePath string, destPath string) error {
 		DestPath: destPath,
 	}
 
-	setCompFormat(&fileExtract)
+	fileExtract.setCompFormat()
+	// setCompFormat(&fileExtract)
 
 	err := fileExtract.extract()
 	if err != nil {
@@ -57,9 +58,9 @@ func Extract(filePath string, destPath string) error {
 
 // identifies the compression format based on the specified file's magic number
 // and sets it compression format
-func setCompFormat(fe *FileExtract) error {
+func (self *FileExtract) setCompFormat() error {
 	// open file
-	f, err := os.Open(fe.FilePath)
+	f, err := os.Open(self.FilePath)
 	if err != nil {
 		log.Fatal("Error:", err)
 		return err
@@ -74,27 +75,27 @@ func setCompFormat(fe *FileExtract) error {
 	// identify compression format
 	switch {
 	case bytes.HasPrefix(buf, CompressionZip.MagicNum):
-		fe.CompFormat = CompressionZip
+		self.CompFormat = CompressionZip
 		return nil
 	case bytes.HasPrefix(buf, CompressionGzip.MagicNum):
-		fe.CompFormat = CompressionGzip
+		self.CompFormat = CompressionGzip
 		return nil
 	}
 
 	return ErrUnknownCompressionFormat
 }
 
-func (f *FileExtract) extract() error {
-	switch f.CompFormat.Format {
+func (self *FileExtract) extract() error {
+	switch self.CompFormat.Format {
 	case CompressionGzip.Format:
-		err := sdktargz.UntarGz(f.FilePath, f.DestPath)
+		err := sdktargz.UntarGz(self.FilePath, self.DestPath)
 		if err != nil {
 			log.Println("Error:", err)
 			return err
 		}
 		return nil
 	case CompressionZip.Format:
-		err := sdkunzip.Unzip(f.FilePath, f.DestPath)
+		err := sdkunzip.Unzip(self.FilePath, self.DestPath)
 		if err != nil {
 			log.Println("Error:", err)
 			return err
