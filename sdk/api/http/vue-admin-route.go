@@ -6,9 +6,9 @@
 
 package sdkhttp
 
-type VueAdminRoute struct {
-	RouteName string
-	RoutePath string
-	Component string
-	PermitFn  func(perms []string) bool
-}
+// type VueAdminRoute struct {
+// 	RouteName string
+// 	RoutePath string
+// 	Component string
+// 	PermitFn  func(perms []string) bool
+// }

@@ -21,7 +21,6 @@ import (
 	sdknet "sdk/api/network"
 	sdkpayments "sdk/api/payments"
 	sdkplugin "sdk/api/plugin"
-	sdkthemes "sdk/api/themes"
 	sdkuci "sdk/api/uci"
 )
 
@@ -178,7 +177,7 @@ func (self *PluginApi) Uci() sdkuci.UciApi {
 	return self.UciAPI
 }
 
-func (self *PluginApi) Themes() sdkthemes.ThemesApi {
+func (self *PluginApi) Themes() sdkhttp.ThemesApi {
 	return self.ThemesAPI
 }
 

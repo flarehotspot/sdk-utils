@@ -18,7 +18,6 @@ import (
 	sdklogger "sdk/api/logger"
 	sdknet "sdk/api/network"
 	sdkpayments "sdk/api/payments"
-	sdktheme "sdk/api/themes"
 	sdkuci "sdk/api/uci"
 )
 
@@ -52,8 +51,8 @@ type PluginApi interface {
 	// Returns an instance of database/sql package from go standard library.
 	SqlDb() *sql.DB
 
-    // Run the plugin migration scripts in resources/migrations folder.
-    Migrate() error
+	// Run the plugin migration scripts in resources/migrations folder.
+	Migrate() error
 
 	// Returns an instance of accounts api.
 	Acct() sdkacct.AccountsApi
@@ -89,7 +88,7 @@ type PluginApi interface {
 	Uci() sdkuci.UciApi
 
 	// Returns an instance of the themes api.
-	Themes() sdktheme.ThemesApi
+	Themes() sdkhttp.ThemesApi
 
 	// Features returns a slice of strings representing the features supported by the plugin.
 	Features() []string

@@ -13,7 +13,8 @@ package sdkhttp
 // For example, if you rendered a view using AdminView(w, r "dashboard/index.html", data),
 // Then your custom data can be accessed in your view with: {{ .Data() }}.
 // The helpers can be accessed with: {{ .Helpers() }}.
-type IViewData interface {
-	Helpers() HttpHelpers
-	Data() any
-}
+
+// type IViewData interface {
+// 	Helpers() HttpHelpers
+// 	Data() any
+// }

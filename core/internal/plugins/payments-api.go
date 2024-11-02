@@ -31,7 +31,7 @@ func (self *PaymentsApi) Checkout(w http.ResponseWriter, r *http.Request, p sdkp
 		clnt, err := helpers.CurrentClient(self.api.ClntReg, r)
 		if err != nil {
 			log.Println("helpers.CurrentClient error:", err)
-			self.api.HttpAPI.VueResponse().Error(w, err.Error(), 500)
+			self.ErrorPage(w, err)
 			return
 		}
 
@@ -48,12 +48,12 @@ func (self *PaymentsApi) Checkout(w http.ResponseWriter, r *http.Request, p sdkp
 		)
 		if err != nil {
 			log.Println("self.api.models.Purchase().Create error:", err)
-			self.api.HttpAPI.VueResponse().Error(w, err.Error(), 500)
+			self.ErrorPage(w, err)
 			return
 		}
 
 		coreApi := self.api.CoreAPI
-		coreApi.HttpAPI.VueResponse().Redirect(w, "payments:customer:options")
+		coreApi.HttpAPI.HttpResponse().Redirect(w, r, "payments:customer:options")
 	}
 
 	purMw := self.api.HttpAPI.middlewares.PendingPurchase()
@@ -78,4 +78,10 @@ func (self *PaymentsApi) GetPendingPurchase(r *http.Request) (sdkpayments.Purcha
 	}
 	purchase := NewPurchase(self.api, r.Context(), clnt.Id(), p)
 	return purchase, nil
+}
+
+func (self *PaymentsApi) ErrorPage(w http.ResponseWriter, err error) {
+	// TODO: show error page
+	w.WriteHeader(500)
+	w.Write([]byte(err.Error()))
 }

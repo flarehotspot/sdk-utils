@@ -7,16 +7,16 @@ import (
 	"core/internal/db"
 	"core/internal/db/models"
 	"core/internal/web/helpers"
-	sdkacct "sdk/api/accounts"
 	sdkconnmgr "sdk/api/connmgr"
 	sdkhttp "sdk/api/http"
+
 	"github.com/gorilla/mux"
 )
 
 func NewHttpApi(api *PluginApi, db *db.Database, clnt *connmgr.ClientRegister, mdls *models.Models, dmgr *connmgr.ClientRegister, pmgr *PaymentsMgr) *HttpApi {
+	navs := NewNavsApi(api)
 	auth := NewHttpAuth(api)
 	httpRouter := NewHttpRouterApi(api, db, clnt)
-	vueRouter := NewVueRouterApi(api)
 	httpResp := NewHttpResponse(api)
 	middlewares := NewPluginMiddlewares(api, mdls, dmgr, pmgr)
 
@@ -24,7 +24,7 @@ func NewHttpApi(api *PluginApi, db *db.Database, clnt *connmgr.ClientRegister, m
 		api:         api,
 		auth:        auth,
 		httpRouter:  httpRouter,
-		vueRouter:   vueRouter,
+		navsApi:     navs,
 		httpResp:    httpResp,
 		middlewares: middlewares,
 	}
@@ -34,7 +34,7 @@ type HttpApi struct {
 	api         *PluginApi
 	auth        *HttpAuth
 	httpRouter  *HttpRouterApi
-	vueRouter   *VueRouterApi
+	navsApi     *HttpNavsApi
 	httpResp    *HttpResponse
 	middlewares *PluginMiddlewares
 }
@@ -51,10 +51,6 @@ func (self *HttpApi) HttpRouter() sdkhttp.HttpRouterApi {
 	return self.httpRouter
 }
 
-func (self *HttpApi) VueRouter() sdkhttp.VueRouterApi {
-	return self.vueRouter
-}
-
 func (self *HttpApi) Helpers() sdkhttp.HttpHelpers {
 	return NewHttpHelpers(self.api)
 }
@@ -67,18 +63,10 @@ func (self *HttpApi) HttpResponse() sdkhttp.HttpResponse {
 	return self.httpResp
 }
 
-func (self *HttpApi) VueResponse() sdkhttp.VueResponse {
-	return NewVueResponse(self.api.HttpAPI.vueRouter)
-}
-
 func (self *HttpApi) MuxVars(r *http.Request) map[string]string {
 	return mux.Vars(r)
 }
 
-func (self *HttpApi) GetAdminNavs(acct sdkacct.Account) []sdkhttp.AdminNavList {
-	return self.api.PluginsMgrApi.Utils().GetAdminNavs(acct)
-}
-
-func (self *HttpApi) GetPortalItems(clnt sdkconnmgr.ClientDevice) []sdkhttp.PortalItem {
-	return self.api.PluginsMgrApi.Utils().GetPortalItems(clnt)
+func (self *HttpApi) Navs() sdkhttp.NavsApi {
+	return self.navsApi
 }

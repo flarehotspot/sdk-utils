@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	httpI "sdk/api/http"
 	tmplcache "core/internal/utils/flaretmpl"
+	httpI "sdk/api/http"
 )
 
 func File(w http.ResponseWriter, file string, helpers httpI.HttpHelpers, data any) {

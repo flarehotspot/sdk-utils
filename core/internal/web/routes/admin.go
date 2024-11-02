@@ -5,7 +5,6 @@ import (
 	"core/internal/web/controllers"
 	"core/internal/web/controllers/adminctrl"
 	"core/internal/web/router"
-	sdkacct "sdk/api/accounts"
 	sdkhttp "sdk/api/http"
 )
 
@@ -70,66 +69,66 @@ func AdminRoutes(g *plugins.CoreGlobals) {
 		// Name("admin:upload:files")
 	})
 
-	g.CoreAPI.HttpAPI.VueRouter().RegisterAdminRoutes([]sdkhttp.VueAdminRoute{
-		{
-			RouteName: "theme-picker",
-			RoutePath: "/theme-picker",
-			Component: "admin/ThemePicker.vue",
-		},
-		{
-			RouteName: "log-viewer",
-			RoutePath: "/log-viewer",
-			Component: "admin/LogViewer.vue",
-		},
-		{
-			RouteName: "plugins-index",
-			RoutePath: "/plugins",
-			Component: "admin/plugins/Index.vue",
-		},
-		{
-			RouteName: "plugins-new",
-			RoutePath: "/plugins/new",
-			Component: "admin/plugins/NewInstall.vue",
-		},
-		{
-			RouteName: "plugins-store",
-			RoutePath: "/plugins/store",
-			Component: "admin/plugins/PluginsStore.vue",
-		},
-		{
-			RouteName: "plugin",
-			RoutePath: "/plugins/store/plugin",
-			Component: "admin/plugins/PluginDetail.vue",
-		},
-		{
-			RouteName: "core-updates",
-			RoutePath: "/system-updates",
-			Component: "admin/CoreUpdates.vue",
-		},
-	}...)
+	// g.CoreAPI.HttpAPI.VueRouter().RegisterAdminRoutes([]sdkhttp.VueAdminRoute{
+	// 	{
+	// 		RouteName: "theme-picker",
+	// 		RoutePath: "/theme-picker",
+	// 		Component: "admin/ThemePicker.vue",
+	// 	},
+	// 	{
+	// 		RouteName: "log-viewer",
+	// 		RoutePath: "/log-viewer",
+	// 		Component: "admin/LogViewer.vue",
+	// 	},
+	// 	{
+	// 		RouteName: "plugins-index",
+	// 		RoutePath: "/plugins",
+	// 		Component: "admin/plugins/Index.vue",
+	// 	},
+	// 	{
+	// 		RouteName: "plugins-new",
+	// 		RoutePath: "/plugins/new",
+	// 		Component: "admin/plugins/NewInstall.vue",
+	// 	},
+	// 	{
+	// 		RouteName: "plugins-store",
+	// 		RoutePath: "/plugins/store",
+	// 		Component: "admin/plugins/PluginsStore.vue",
+	// 	},
+	// 	{
+	// 		RouteName: "plugin",
+	// 		RoutePath: "/plugins/store/plugin",
+	// 		Component: "admin/plugins/PluginDetail.vue",
+	// 	},
+	// 	{
+	// 		RouteName: "core-updates",
+	// 		RoutePath: "/system-updates",
+	// 		Component: "admin/CoreUpdates.vue",
+	// 	},
+	// }...)
 
-	g.CoreAPI.HttpAPI.VueRouter().AdminNavsFunc(func(acct sdkacct.Account) []sdkhttp.VueAdminNav {
-		return []sdkhttp.VueAdminNav{
-			{
-				Category:  sdkhttp.NavCategoryThemes,
-				Label:     "Select Theme",
-				RouteName: "theme-picker",
-			},
-			{
-				Category:  sdkhttp.NavCategorySystem,
-				Label:     "View Logs",
-				RouteName: "log-viewer",
-			},
-			{
-				Category:  sdkhttp.NavCategorySystem,
-				Label:     "Manage Plugins",
-				RouteName: "plugins-index",
-			},
-			{
-				Category:  sdkhttp.NavCategorySystem,
-				Label:     "System Updates",
-				RouteName: "core-updates",
-			},
-		}
-	})
+	// g.CoreAPI.HttpAPI.VueRouter().AdminNavsFunc(func(acct sdkacct.Account) []sdkhttp.VueAdminNav {
+	// 	return []sdkhttp.VueAdminNav{
+	// 		{
+	// 			Category:  sdkhttp.NavCategoryThemes,
+	// 			Label:     "Select Theme",
+	// 			RouteName: "theme-picker",
+	// 		},
+	// 		{
+	// 			Category:  sdkhttp.NavCategorySystem,
+	// 			Label:     "View Logs",
+	// 			RouteName: "log-viewer",
+	// 		},
+	// 		{
+	// 			Category:  sdkhttp.NavCategorySystem,
+	// 			Label:     "Manage Plugins",
+	// 			RouteName: "plugins-index",
+	// 		},
+	// 		{
+	// 			Category:  sdkhttp.NavCategorySystem,
+	// 			Label:     "System Updates",
+	// 			RouteName: "core-updates",
+	// 		},
+	// 	}
+	// })
 }

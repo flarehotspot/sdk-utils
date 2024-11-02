@@ -142,6 +142,10 @@ use (
 		return err
 	}
 
+	if err := BuildTemplates(buildpath); err != nil {
+		return err
+	}
+
 	gofile := "main.go"
 	outfile := "plugin.so"
 	args := &GoBuildArgs{WorkDir: buildpath, ExtraArgs: []string{"-buildmode=plugin"}}

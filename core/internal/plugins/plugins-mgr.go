@@ -1,9 +1,11 @@
 package plugins
 
 import (
+	"fmt"
 	"log"
 	sdkplugin "sdk/api/plugin"
 
+	"core/internal/config"
 	"core/internal/connmgr"
 	"core/internal/db"
 	"core/internal/db/models"
@@ -31,12 +33,10 @@ type PluginsMgr struct {
 	clntMgr *connmgr.SessionsMgr
 	trfkMgr *network.TrafficMgr
 	plugins []*PluginApi
-	utils   *PluginsMgrUtils
 }
 
 func (self *PluginsMgr) InitCoreApi(coreApi *PluginApi) {
 	self.CoreAPI = coreApi
-	self.utils = NewPluginsMgrUtil(self, coreApi)
 	self.RegisterPlugin(coreApi)
 }
 
@@ -93,6 +93,42 @@ func (self *PluginsMgr) PaymentMethods() []sdkplugin.PluginApi {
 	return methods
 }
 
-func (self *PluginsMgr) Utils() *PluginsMgrUtils {
-	return self.utils
+func (self *PluginsMgr) GetAdminTheme() (*PluginApi, *ThemesApi, error) {
+	cfg, err := config.ReadThemesConfig()
+	if err != nil {
+		return nil, nil, err
+	}
+
+	pkg := cfg.Admin
+	p, ok := self.FindByPkg(pkg)
+	if !ok {
+		return nil, nil, fmt.Errorf("admin theme plugin '%s' is not installed", pkg)
+	}
+
+	themeApi := p.Themes().(*ThemesApi)
+	if themeApi.AdminTheme == nil {
+		return nil, nil, fmt.Errorf("plugin '%s' doesn't implement theme API", pkg)
+	}
+
+	return p.(*PluginApi), themeApi, nil
+}
+
+func (self *PluginsMgr) GetPortalTheme() (*PluginApi, *ThemesApi, error) {
+	cfg, err := config.ReadThemesConfig()
+	if err != nil {
+		return nil, nil, err
+	}
+
+	pkg := cfg.Portal
+	p, ok := self.FindByPkg(pkg)
+	if !ok {
+		return nil, nil, fmt.Errorf("portal theme plugin '%s' is not installed", pkg)
+	}
+
+	themeApi := p.Themes().(*ThemesApi)
+	if themeApi.PortalTheme == nil {
+		return nil, nil, fmt.Errorf("plugin '%s' doesn't implement theme API", pkg)
+	}
+
+	return p.(*PluginApi), themeApi, nil
 }

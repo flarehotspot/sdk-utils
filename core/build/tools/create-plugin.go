@@ -62,7 +62,13 @@ func Init(api sdkplugin.PluginApi) {
 	}
 
 	gitIgnorePath := filepath.Join(pluginDir, ".gitignore")
-	gitIgnore := "# Ignore main_mono.go\nmain_mono.go\n"
+	gitIgnore := `
+.DS_Store
+node_modules/
+*.so
+main_mono.go
+*_templ.go
+`
 	if err := os.WriteFile(gitIgnorePath, []byte(gitIgnore), 0644); err != nil {
 		panic(err)
 	}

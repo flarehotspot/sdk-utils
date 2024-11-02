@@ -2,3 +2,4 @@
 node_modules/
 *.so
 main_mono.go
+*_templ.go

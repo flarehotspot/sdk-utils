@@ -37,18 +37,4 @@ type HttpHelpers interface {
 
 	// Returns the url from other plugins.
 	UrlForPkgRoute(pkg string, name string, pairs ...string) (uri string)
-
-	// Returns the vue route name for a named route which can be used in vue router, e.g.
-	//   $this.push({name: '<% .Helpers.VueRouteName "login" %>'})
-	VueRouteName(name string) string
-
-	// Returns the vue route path for a named route
-	VueRoutePath(name string, pairs ...string) string
-
-	// Returns the vue route path for a named route from a third-party plugin
-	VuePkgRoutePath(pkg string, name string, pairs ...string) string
-
-	// Returns the uri path of a file in resources/components directory from your plugin.
-	// The file is parsed using text/template go module with access to <% .Helpers %> object.
-	VueComponentPath(path string) (uri string)
 }

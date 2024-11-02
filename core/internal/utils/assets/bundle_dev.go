@@ -10,7 +10,7 @@ var bundleQue = jobque.NewJobQue()
 func Bundle(files []string) (data CacheData, err error) {
 	result, err := bundleQue.Exec(func() (interface{}, error) {
 		if len(files) == 0 {
-			return "", ErrNoAssets
+			return data, ErrNoAssets
 		}
 
 		useCache := env.GO_ENV != env.ENV_DEV

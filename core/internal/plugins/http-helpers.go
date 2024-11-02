@@ -125,15 +125,3 @@ func (self *HttpHelpers) UrlForRoute(name string, pairs ...string) string {
 func (self *HttpHelpers) UrlForPkgRoute(pkg string, name string, pairs ...string) string {
 	return self.api.HttpAPI.httpRouter.UrlForPkgRoute(pkg, name, pairs...)
 }
-
-func (self *HttpHelpers) VueRouteName(name string) string {
-	return self.api.HttpAPI.vueRouter.VueRouteName(name)
-}
-
-func (self *HttpHelpers) VueRoutePath(name string, pairs ...string) string {
-	return self.api.HttpAPI.vueRouter.VueRoutePath(name, pairs...)
-}
-
-func (self *HttpHelpers) VuePkgRoutePath(pkg string, name string, pairs ...string) string {
-	return self.api.HttpAPI.vueRouter.VuePkgRoutePath(pkg, name, pairs...)
-}
