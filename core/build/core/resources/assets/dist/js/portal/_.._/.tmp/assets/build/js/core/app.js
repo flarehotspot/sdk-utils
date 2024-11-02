@@ -1,2 +1,0 @@
-(function(){var r=function(n,e){return function(){return e||n((e={exports:{}}).exports,e),e.exports}};var i=r(function(){(function(n){var e=n.$flare||{};var s=n.Vue;var o={view:{loading:false,data:{}}};define([],function(){var t=new s({router:e.router,data:function(){return o},mounted:function(){o.view.loading=false;e.events.on("session:connected",function(a){e.notify.success(a.message)});e.events.on("session:disconnected",function(a){e.notify.error(a.message)})}});t.$mount("#app");e.app=t})})(window)});i();})();
-//# sourceMappingURL=app.js.map

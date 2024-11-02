@@ -44,6 +44,12 @@ type OutputManifest struct {
 }
 
 func BuildAssets(pluginDir string) (err error) {
+	// Clean up dist folder
+	distPath := filepath.Join(pluginDir, "resources/assets/dist")
+	if err = os.RemoveAll(distPath); err != nil {
+		return
+	}
+
 	manifestPath := filepath.Join(pluginDir, ManifestJson)
 	if !sdkfs.Exists(manifestPath) {
 		fmt.Println("No manifest file found in: " + pluginDir)
@@ -79,15 +85,15 @@ func BuildAssets(pluginDir string) (err error) {
 }
 
 func compileManifest(pluginDir string, manifest Manifest, subdir string) (results CompileResults, err error) {
-	jsDist := filepath.Join(pluginDir, JsDist, subdir)
-	cssDist := filepath.Join(pluginDir, CssDist, subdir)
+	jsDistPath := filepath.Join(pluginDir, JsDist, subdir)
+	cssDistPath := filepath.Join(pluginDir, CssDist, subdir)
 	manifestFile := filepath.Join(pluginDir, ManifestJson)
 
 	if !sdkfs.Exists(manifestFile) {
 		return
 	}
 
-	if err = sdkfs.EnsureDir(jsDist, cssDist); err != nil {
+	if err = sdkfs.EnsureDir(jsDistPath, cssDistPath); err != nil {
 		return
 	}
 
@@ -96,33 +102,38 @@ func compileManifest(pluginDir string, manifest Manifest, subdir string) (result
 		Styles:  make(map[string]string),
 	}
 
-	for outname, jsfiles := range manifest.Scripts {
+	for k, files := range manifest.Scripts {
 		// TODO: check if scripts is directory and loadd all files inside it
-		jsfiles = append(jsfiles, manifest.GlobalScripts...)
+		files = append(files, manifest.GlobalScripts...)
+		outname := strings.TrimSuffix(k, ".js")
 
-		indexjs := ""
-		for _, f := range jsfiles {
+		fmt.Println("PluginDir: ", pluginDir)
+		indexFile := filepath.Join(jsDistPath, outname+"-index.js")
+
+		indexContent := ""
+		for _, f := range files {
 			f = filepath.Join(pluginDir, AssetsDir, f)
-			indexjs += fmt.Sprintf("require('%s');\n", f)
+			rel, err := sdkpaths.RelativeFromTo(indexFile, f)
+			if err != nil {
+				return results, err
+			}
+			indexContent += fmt.Sprintf("require('%s');\n", rel)
 		}
 
-		indexoutjs := filepath.Join(sdkpaths.TmpDir, "assets/build/js", filepath.Base(pluginDir), outname)
-		if err = sdkfs.EnsureDir(filepath.Dir(indexoutjs)); err != nil {
+		if err = sdkfs.EnsureDir(filepath.Dir(indexFile)); err != nil {
 			return
 		}
-		if err = os.WriteFile(indexoutjs, []byte(indexjs), sdkfs.PermFile); err != nil {
+		if err = os.WriteFile(indexFile, []byte(indexContent), sdkfs.PermFile); err != nil {
 			return
 		}
+		defer os.Remove(indexFile)
 
-		fmt.Printf("Compiling file: %s: %s\n", indexoutjs, indexjs)
+		fmt.Printf("Compiling file: %s: %s\n", indexFile, indexContent)
 
-		defer os.Remove(indexoutjs)
-
-		// outfile := filepath.Join(jsDist, outname)
+		outfile := filepath.Join(jsDistPath, outname+".js")
 		result := api.Build(api.BuildOptions{
-			EntryPoints:       []string{indexoutjs},
-			Outdir:            filepath.Join(pluginDir, jsDist),
-			Outbase:           pluginDir,
+			EntryPoints:       []string{indexFile},
+			Outfile:           outfile,
 			Platform:          api.PlatformBrowser,
 			Target:            api.ES5,
 			EntryNames:        "[name]-[hash]",
@@ -154,45 +165,55 @@ func compileManifest(pluginDir string, manifest Manifest, subdir string) (result
 			if filepath.Ext(out.Path) == ".js" {
 				outpath := strings.Replace(out.Path, pluginDir, "", 1)
 				outpath = strings.TrimPrefix(outpath, "/")
-				results.Scripts[outname] = outpath
+				results.Scripts[k] = outpath
 			}
 			fmt.Printf("Outputfile written to: %s\n", out.Path)
 		}
 	}
 
-	for outname, cssfiles := range manifest.Styles {
-		// TODO: check if styles is directory and loadd all files inside it
-		cssfiles := append(cssfiles, manifest.GlobalStyles...)
-		indexcss := ""
-		for _, f := range cssfiles {
-			f = filepath.Join(pluginDir, "resources/assets", f)
-			indexcss += fmt.Sprintf("\nimport '%s';", f)
+	for k, files := range manifest.Styles {
+		// TODO: check if scripts is directory and loadd all files inside it
+		files = append(files, manifest.GlobalStyles...)
+		outname := strings.TrimSuffix(k, ".css")
+
+		indexFile := filepath.Join(cssDistPath, outname+"-index.css")
+
+		indexContent := ""
+		for _, f := range files {
+			f = filepath.Join(pluginDir, AssetsDir, f)
+			rel, err := sdkpaths.RelativeFromTo(indexFile, f)
+			if err != nil {
+				return results, err
+			}
+			indexContent += fmt.Sprintf("@import '%s';\n", rel)
 		}
 
-		indexOutCss := filepath.Join(sdkpaths.TmpDir, "assets/build", pluginDir, cssDist, outname)
-		if err = sdkfs.EnsureDir(filepath.Dir(indexOutCss)); err != nil {
+		if err = sdkfs.EnsureDir(filepath.Dir(indexFile)); err != nil {
 			return
 		}
-		if err = os.WriteFile(indexOutCss, []byte(indexcss), sdkfs.PermFile); err != nil {
+		if err = os.WriteFile(indexFile, []byte(indexContent), sdkfs.PermFile); err != nil {
 			return
 		}
+		defer os.Remove(indexFile)
 
-		defer os.Remove(indexOutCss)
+		fmt.Printf("Compiling file: %s: %s\n", indexFile, indexContent)
 
-		outfile := filepath.Join(cssDist, outname)
+		outfile := filepath.Join(cssDistPath, outname+".css")
 		result := api.Build(api.BuildOptions{
-			EntryPoints:       []string{indexOutCss},
-			Loader:            map[string]api.Loader{"css": api.LoaderCSS},
+			EntryPoints:       []string{indexFile},
 			Outfile:           outfile,
-			AssetNames:        "[name]-[hash]",
+			Loader:            map[string]api.Loader{".css": api.LoaderCSS},
+			EntryNames:        "[name]-[hash]",
 			Sourcemap:         api.SourceMapLinked,
+			Bundle:            true,
+			AllowOverwrite:    true,
 			MinifyWhitespace:  true,
 			MinifyIdentifiers: true,
-			Write:             true,
+			Write:             false,
 		})
 
 		if len(result.Errors) > 0 {
-			err = fmt.Errorf("failed to compile css: %v", result.Errors)
+			err = fmt.Errorf("failed to compile CSS: %v", result.Errors)
 			return
 		}
 
@@ -211,7 +232,7 @@ func compileManifest(pluginDir string, manifest Manifest, subdir string) (result
 			if filepath.Ext(out.Path) == ".css" {
 				outpath := strings.Replace(out.Path, pluginDir, "", 1)
 				outpath = strings.TrimPrefix(outpath, "/")
-				results.Styles[outname] = outpath
+				results.Styles[k] = outpath
 			}
 			fmt.Printf("Outputfile written to: %s\n", out.Path)
 		}

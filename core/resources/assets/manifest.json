@@ -4,6 +4,11 @@
       "app.js": [
         "./portal/main.js"
       ]
+    },
+    "css": {
+      "app.css": [
+        "./portal/test.css"
+      ]
     }
   }
 }
