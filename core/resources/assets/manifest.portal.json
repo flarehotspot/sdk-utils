@@ -1,0 +1,8 @@
+{
+  "app.js": [
+    "./portal/main.js"
+  ],
+  "app.css": [
+    "./portal/test.css"
+  ]
+}

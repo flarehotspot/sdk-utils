@@ -1,6 +1,7 @@
 package pkg
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -9,29 +10,19 @@ import (
 	"github.com/evanw/esbuild/pkg/api"
 	sdkfs "github.com/flarehotspot/go-utils/fs"
 	sdkpaths "github.com/flarehotspot/go-utils/paths"
+	sdkslices "github.com/flarehotspot/go-utils/slices"
 )
 
 const (
-	AdminSubDir     = "admin"
-	PortalSubDir    = "portal"
-	AssetsDir       = "resources/assets"
-	JsDist          = "resources/assets/dist/js"
-	CssDist         = "resources/assets/dist/css"
-	ManifestJson    = "resources/assets/manifest.json"
-	OutManifestJson = "resources/assets/dist/manifest.json"
+	AdminSubDir        = "admin"
+	PortalSubDir       = "portal"
+	AssetsDir          = "resources/assets"
+	AdminManifestJson  = "resources/assets/manifest.admin.json"
+	PortalManifestJson = "resources/assets/manifest.portal.json"
+	OutManifestJson    = "resources/assets/dist/manifest.json"
 )
 
-type Manifest struct {
-	GlobalScripts []string            `json:"js_global"`
-	GlobalStyles  []string            `json:"css_global"`
-	Scripts       map[string][]string `json:"js"`
-	Styles        map[string][]string `json:"css"`
-}
-
-type PluginManifests struct {
-	PortalAssets Manifest `json:"portal"`
-	AdminAssets  Manifest `json:"admin"`
-}
+type Manifest map[string][]string
 
 type CompileResults struct {
 	Scripts map[string]string
@@ -50,34 +41,44 @@ func BuildAssets(pluginDir string) (err error) {
 		return
 	}
 
-	manifestPath := filepath.Join(pluginDir, ManifestJson)
-	if !sdkfs.Exists(manifestPath) {
-		fmt.Println("No manifest file found in: " + pluginDir)
-		return nil
-	}
-
-	var manifest PluginManifests
-	if err = sdkfs.ReadJson(manifestPath, &manifest); err != nil {
-		return err
-	}
-
-	fmt.Printf("Compiling assets manifest: %+v\n", manifest)
-
 	outManifest := OutputManifest{}
 
-	if results, err := compileManifest(pluginDir, manifest.PortalAssets, PortalSubDir); err != nil {
-		return err
-	} else {
-		outManifest.PortalAssets = results
+	adminManifestPath := filepath.Join(pluginDir, AdminManifestJson)
+	if sdkfs.Exists(adminManifestPath) {
+		var manifest Manifest
+		if err = sdkfs.ReadJson(adminManifestPath, &manifest); err != nil {
+			return err
+		}
+		fmt.Printf("Compiling assets manifest: %+v\n", manifest)
+
+		if results, err := compileManifest(pluginDir, manifest, AdminSubDir); err != nil {
+			return err
+		} else {
+			outManifest.AdminAssets = results
+		}
 	}
 
-	if results, err := compileManifest(pluginDir, manifest.AdminAssets, AdminSubDir); err != nil {
-		return err
-	} else {
-		outManifest.AdminAssets = results
+	portalManifestPath := filepath.Join(pluginDir, PortalManifestJson)
+	if sdkfs.Exists(portalManifestPath) {
+		var manifest Manifest
+		if err = sdkfs.ReadJson(portalManifestPath, &manifest); err != nil {
+			return err
+		}
+		fmt.Printf("Compiling assets manifest: %+v\n", manifest)
+
+		if results, err := compileManifest(pluginDir, manifest, PortalSubDir); err != nil {
+			return err
+		} else {
+			outManifest.PortalAssets = results
+		}
 	}
 
-	if err = sdkfs.WriteJson(filepath.Join(pluginDir, OutManifestJson), outManifest); err != nil {
+	outManifestFile := filepath.Join(pluginDir, OutManifestJson)
+	if err = sdkfs.EnsureDir(filepath.Dir(outManifestFile)); err != nil {
+		return err
+	}
+
+	if err = sdkfs.WriteJson(outManifestFile, outManifest); err != nil {
 		return err
 	}
 
@@ -85,30 +86,26 @@ func BuildAssets(pluginDir string) (err error) {
 }
 
 func compileManifest(pluginDir string, manifest Manifest, subdir string) (results CompileResults, err error) {
-	jsDistPath := filepath.Join(pluginDir, JsDist, subdir)
-	cssDistPath := filepath.Join(pluginDir, CssDist, subdir)
-	manifestFile := filepath.Join(pluginDir, ManifestJson)
-
-	if !sdkfs.Exists(manifestFile) {
-		return
-	}
-
-	if err = sdkfs.EnsureDir(jsDistPath, cssDistPath); err != nil {
-		return
-	}
-
 	results = CompileResults{
 		Scripts: make(map[string]string),
 		Styles:  make(map[string]string),
 	}
 
-	for k, files := range manifest.Scripts {
+	for k, files := range manifest {
 		// TODO: check if scripts is directory and loadd all files inside it
-		files = append(files, manifest.GlobalScripts...)
-		outname := strings.TrimSuffix(k, ".js")
+		ext := filepath.Ext(k)
 
-		fmt.Println("PluginDir: ", pluginDir)
-		indexFile := filepath.Join(jsDistPath, outname+"-index.js")
+		supportedExts := []string{".js", ".css"}
+		if !sdkslices.Contains(supportedExts, ext) {
+			err = errors.New("Unsupported asset format: " + ext)
+			return
+		}
+
+		distPath := filepath.Join(pluginDir, AssetsDir, "dist", strings.TrimPrefix(ext, "."))
+
+		files = append(files, manifest[k]...)
+		outname := strings.TrimSuffix(k, ext)
+		indexFile := filepath.Join(distPath, outname+"_index"+ext)
 
 		indexContent := ""
 		for _, f := range files {
@@ -117,7 +114,12 @@ func compileManifest(pluginDir string, manifest Manifest, subdir string) (result
 			if err != nil {
 				return results, err
 			}
-			indexContent += fmt.Sprintf("require('%s');\n", rel)
+
+			if ext == ".js" {
+				indexContent += fmt.Sprintf("require('%s');\n", rel)
+			} else if ext == ".css" {
+				indexContent += fmt.Sprintf("@import '%s';\n", rel)
+			}
 		}
 
 		if err = sdkfs.EnsureDir(filepath.Dir(indexFile)); err != nil {
@@ -130,28 +132,46 @@ func compileManifest(pluginDir string, manifest Manifest, subdir string) (result
 
 		fmt.Printf("Compiling file: %s: %s\n", indexFile, indexContent)
 
-		outfile := filepath.Join(jsDistPath, outname+".js")
-		result := api.Build(api.BuildOptions{
-			EntryPoints:       []string{indexFile},
-			Outfile:           outfile,
-			Platform:          api.PlatformBrowser,
-			Target:            api.ES5,
-			EntryNames:        "[name]-[hash]",
-			Sourcemap:         api.SourceMapLinked,
-			Bundle:            true,
-			AllowOverwrite:    true,
-			MinifyWhitespace:  true,
-			MinifyIdentifiers: true,
-			Write:             false,
-		})
+		outfile := filepath.Join(distPath, outname+ext)
+
+		var result api.BuildResult
+
+		if ext == ".js" {
+			result = api.Build(api.BuildOptions{
+				EntryPoints:       []string{indexFile},
+				Outfile:           outfile,
+				Platform:          api.PlatformBrowser,
+				Target:            api.ES5,
+				EntryNames:        "[name]-[hash]",
+				Sourcemap:         api.SourceMapLinked,
+				Bundle:            true,
+				AllowOverwrite:    true,
+				MinifyWhitespace:  true,
+				MinifyIdentifiers: true,
+				Write:             false,
+			})
+		} else if ext == ".css" {
+			result = api.Build(api.BuildOptions{
+				EntryPoints:       []string{indexFile},
+				Outfile:           outfile,
+				Loader:            map[string]api.Loader{".css": api.LoaderCSS},
+				EntryNames:        "[name]-[hash]",
+				Sourcemap:         api.SourceMapLinked,
+				Bundle:            true,
+				AllowOverwrite:    true,
+				MinifyWhitespace:  true,
+				MinifyIdentifiers: true,
+				Write:             false,
+			})
+		}
 
 		if len(result.Errors) > 0 {
-			err = fmt.Errorf("failed to compile js: %v", result.Errors)
+			err = fmt.Errorf("failed to compile %s %v", ext, result.Errors)
 			return
 		}
 
 		if len(result.Warnings) > 0 {
-			err = fmt.Errorf("js warnings: %v", result.Warnings)
+			err = fmt.Errorf("%s warnings: %v", ext, result.Warnings)
 			return
 		}
 
@@ -162,77 +182,10 @@ func compileManifest(pluginDir string, manifest Manifest, subdir string) (result
 			if err = os.WriteFile(out.Path, out.Contents, sdkfs.PermFile); err != nil {
 				return
 			}
-			if filepath.Ext(out.Path) == ".js" {
+			if filepath.Ext(out.Path) == ext {
 				outpath := strings.Replace(out.Path, pluginDir, "", 1)
 				outpath = strings.TrimPrefix(outpath, "/")
 				results.Scripts[k] = outpath
-			}
-			fmt.Printf("Outputfile written to: %s\n", out.Path)
-		}
-	}
-
-	for k, files := range manifest.Styles {
-		// TODO: check if scripts is directory and loadd all files inside it
-		files = append(files, manifest.GlobalStyles...)
-		outname := strings.TrimSuffix(k, ".css")
-
-		indexFile := filepath.Join(cssDistPath, outname+"-index.css")
-
-		indexContent := ""
-		for _, f := range files {
-			f = filepath.Join(pluginDir, AssetsDir, f)
-			rel, err := sdkpaths.RelativeFromTo(indexFile, f)
-			if err != nil {
-				return results, err
-			}
-			indexContent += fmt.Sprintf("@import '%s';\n", rel)
-		}
-
-		if err = sdkfs.EnsureDir(filepath.Dir(indexFile)); err != nil {
-			return
-		}
-		if err = os.WriteFile(indexFile, []byte(indexContent), sdkfs.PermFile); err != nil {
-			return
-		}
-		defer os.Remove(indexFile)
-
-		fmt.Printf("Compiling file: %s: %s\n", indexFile, indexContent)
-
-		outfile := filepath.Join(cssDistPath, outname+".css")
-		result := api.Build(api.BuildOptions{
-			EntryPoints:       []string{indexFile},
-			Outfile:           outfile,
-			Loader:            map[string]api.Loader{".css": api.LoaderCSS},
-			EntryNames:        "[name]-[hash]",
-			Sourcemap:         api.SourceMapLinked,
-			Bundle:            true,
-			AllowOverwrite:    true,
-			MinifyWhitespace:  true,
-			MinifyIdentifiers: true,
-			Write:             false,
-		})
-
-		if len(result.Errors) > 0 {
-			err = fmt.Errorf("failed to compile CSS: %v", result.Errors)
-			return
-		}
-
-		if len(result.Warnings) > 0 {
-			err = fmt.Errorf("css warnings: %v", result.Warnings)
-			return
-		}
-
-		for _, out := range result.OutputFiles {
-			if err = sdkfs.EnsureDir(filepath.Dir(out.Path)); err != nil {
-				return
-			}
-			if err = os.WriteFile(out.Path, out.Contents, sdkfs.PermFile); err != nil {
-				return
-			}
-			if filepath.Ext(out.Path) == ".css" {
-				outpath := strings.Replace(out.Path, pluginDir, "", 1)
-				outpath = strings.TrimPrefix(outpath, "/")
-				results.Styles[k] = outpath
 			}
 			fmt.Printf("Outputfile written to: %s\n", out.Path)
 		}
