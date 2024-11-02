@@ -10,12 +10,16 @@ import (
 	"os"
 )
 
-func EnsureDir(dir string) error {
-	if !Exists(dir) {
-		err := os.MkdirAll(dir, PermDir)
-		if err != nil {
-			return err
+func EnsureDir(dirs ...string) error {
+	for _, dir := range dirs {
+
+		if !Exists(dir) {
+			err := os.MkdirAll(dir, PermDir)
+			if err != nil {
+				return err
+			}
 		}
 	}
+
 	return nil
 }
