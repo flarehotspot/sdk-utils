@@ -1,6 +1,6 @@
 {
   "app.js": [
-    "./portal/main.js"
+    "./lib/kkk.js"
   ],
   "app.css": [
     "./portal/test.css"
