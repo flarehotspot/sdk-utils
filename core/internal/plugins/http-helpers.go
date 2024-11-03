@@ -30,7 +30,7 @@ func (self *HttpHelpers) Translate(msgtype string, msgk string, pairs ...interfa
 }
 
 func (self *HttpHelpers) AssetPath(p string) string {
-	return path.Join("/plugin", self.api.Pkg(), self.api.Version(), "assets", p)
+	return path.Join("/plugin", self.api.Pkg(), self.api.Version(), "assets/dist", p)
 }
 
 func (self *HttpHelpers) VueComponentPath(path string) string {
