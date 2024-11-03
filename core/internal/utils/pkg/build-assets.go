@@ -14,8 +14,6 @@ import (
 )
 
 const (
-	AdminSubDir        = "admin"
-	PortalSubDir       = "portal"
 	AssetsDir          = "resources/assets"
 	AdminManifestJson  = "resources/assets/manifest.admin.json"
 	PortalManifestJson = "resources/assets/manifest.portal.json"
@@ -32,6 +30,25 @@ type CompileResults struct {
 type OutputManifest struct {
 	AdminAssets  CompileResults `json:"admin"`
 	PortalAssets CompileResults `json:"portal"`
+}
+
+func ReadAssetManifest(pluginDir string) OutputManifest {
+	manifestFile := filepath.Join(pluginDir, OutManifestJson)
+	emptyRes := CompileResults{
+		Scripts: make(map[string]string),
+		Styles:  make(map[string]string),
+	}
+	emptyManifest := OutputManifest{
+		AdminAssets:  emptyRes,
+		PortalAssets: emptyRes,
+	}
+
+	var manifest OutputManifest
+	if err := sdkfs.ReadJson(manifestFile, &manifest); err != nil {
+		return emptyManifest
+	}
+
+	return manifest
 }
 
 func BuildAssets(pluginDir string) (err error) {
@@ -51,7 +68,7 @@ func BuildAssets(pluginDir string) (err error) {
 		}
 		fmt.Printf("Compiling assets manifest: %+v\n", manifest)
 
-		if results, err := compileManifest(pluginDir, manifest, AdminSubDir); err != nil {
+		if results, err := compileManifest(pluginDir, manifest); err != nil {
 			return err
 		} else {
 			outManifest.AdminAssets = results
@@ -66,7 +83,7 @@ func BuildAssets(pluginDir string) (err error) {
 		}
 		fmt.Printf("Compiling assets manifest: %+v\n", manifest)
 
-		if results, err := compileManifest(pluginDir, manifest, PortalSubDir); err != nil {
+		if results, err := compileManifest(pluginDir, manifest); err != nil {
 			return err
 		} else {
 			outManifest.PortalAssets = results
@@ -85,28 +102,51 @@ func BuildAssets(pluginDir string) (err error) {
 	return nil
 }
 
-func compileManifest(pluginDir string, manifest Manifest, subdir string) (results CompileResults, err error) {
+func compileManifest(pluginDir string, manifest Manifest) (results CompileResults, err error) {
 	results = CompileResults{
 		Scripts: make(map[string]string),
 		Styles:  make(map[string]string),
 	}
 
+	// Gather global files
+	var globalScrips, globalStyles []string
 	for k, files := range manifest {
-		// TODO: check if scripts is directory and loadd all files inside it
-		ext := filepath.Ext(k)
+		if k == "globals.js" {
+			globalScrips = append(globalScrips, files...)
+		} else if k == "globals.css" {
+			globalStyles = append(globalStyles, files...)
+		}
+	}
 
+	for filename, files := range manifest {
+		// Don't output global scripts and styles, they are already bundled in non-global files
+		if filename == "globals.js" || filename == "globals.css" {
+			continue
+		}
+
+		// TODO: check if scripts is directory and loadd all files inside it
+		ext := filepath.Ext(filename)
 		supportedExts := []string{".js", ".css"}
 		if !sdkslices.Contains(supportedExts, ext) {
 			err = errors.New("Unsupported asset format: " + ext)
 			return
 		}
 
-		distPath := filepath.Join(pluginDir, AssetsDir, "dist", strings.TrimPrefix(ext, "."))
+		var globalFiles []string
+		if ext == ".js" {
+			globalFiles = globalScrips
+		} else {
+			globalFiles = globalStyles
+		}
 
-		files = append(files, manifest[k]...)
-		outname := strings.TrimSuffix(k, ext)
+		// Bundle global files with files
+		files = append(globalFiles, files...)
+
+		distPath := filepath.Join(pluginDir, AssetsDir, "dist", strings.TrimPrefix(ext, "."))
+		outname := strings.TrimSuffix(filename, ext)
 		indexFile := filepath.Join(distPath, outname+"_index"+ext)
 
+		// Import all files into one file
 		indexContent := ""
 		for _, f := range files {
 			f = filepath.Join(pluginDir, AssetsDir, f)
@@ -130,12 +170,11 @@ func compileManifest(pluginDir string, manifest Manifest, subdir string) (result
 		}
 		defer os.Remove(indexFile)
 
-		fmt.Printf("Compiling file: %s: %s\n", indexFile, indexContent)
+		fmt.Printf("Compiling index file: %s: %s\n", indexFile, indexContent)
 
 		outfile := filepath.Join(distPath, outname+ext)
 
 		var result api.BuildResult
-
 		if ext == ".js" {
 			result = api.Build(api.BuildOptions{
 				EntryPoints:       []string{indexFile},
@@ -185,7 +224,11 @@ func compileManifest(pluginDir string, manifest Manifest, subdir string) (result
 			if filepath.Ext(out.Path) == ext {
 				outpath := strings.Replace(out.Path, pluginDir, "", 1)
 				outpath = strings.TrimPrefix(outpath, "/")
-				results.Scripts[k] = outpath
+				if ext == ".js" {
+					results.Scripts[filename] = outpath
+				} else if ext == ".css" {
+					results.Styles[filename] = outpath
+				}
 			}
 			fmt.Printf("Outputfile written to: %s\n", out.Path)
 		}
