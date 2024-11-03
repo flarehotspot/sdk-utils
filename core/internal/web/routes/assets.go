@@ -20,8 +20,8 @@ func AssetsRoutes(g *plugins.CoreGlobals) {
 
 	allPlugins := g.PluginMgr.All()
 	for _, p := range allPlugins {
-		assetsDir := filepath.Join(p.Resource("assets"))
-		fs := http.FileServer(http.Dir(assetsDir))
+		assetsDist := filepath.Join(p.Resource("assets/dist"))
+		fs := http.FileServer(http.Dir(assetsDist))
 		prefix := p.Http().Helpers().AssetPath("")
 		fileserver := middlewares.AssetPath(http.StripPrefix(prefix, fs))
 		router.RootRouter.PathPrefix(prefix).Handler(fileserver)

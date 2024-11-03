@@ -64,7 +64,8 @@ func Init(api sdkplugin.PluginApi) {
 	gitIgnorePath := filepath.Join(pluginDir, ".gitignore")
 	gitIgnore := `
 .DS_Store
-node_modules/
+/node_modules
+/resources/assets/dist
 *.so
 main_mono.go
 *_templ.go

@@ -1,7 +1,0 @@
-{
-  "portal": {
-    "js": {
-      "application": ["./portal/portal.js"]
-    }
-  }
-}

@@ -24,11 +24,17 @@ type FlashMsg struct {
 	Message string
 }
 
+type PageAssets struct {
+	ThemeJsSrc   string
+	ThemeCssHref string
+	PageJsSrc    string
+	PageCssHref  string
+}
+
 type LayoutData struct {
-	GlobalScriptSrc     string
-	GlobalStylesheetSrc string
-	FlashMsg            FlashMsg
-	PageContent         templ.Component
+	Assets      PageAssets
+	FlashMsg    FlashMsg
+	PageContent templ.Component
 }
 
 type AdminLayoutData struct {
@@ -42,17 +48,17 @@ type PortalLayoutData struct {
 }
 
 type AdminTheme struct {
-	IndexRoute        string
-	GlobalScripts     []string
-	GlobalStylesheets []string
-	CssLib            CssLib
-	LayoutFactory     func(data AdminLayoutData) templ.Component
+	IndexRoute    string
+	JsFile        string
+	CssFile       string
+	CssLib        CssLib
+	LayoutFactory func(data AdminLayoutData) templ.Component
 }
 
 type PortalTheme struct {
-	IndexRoute        string
-	GlobalScripts     []string
-	GlobalStylesheets []string
-	CssLib            CssLib
-	LayoutFactory     func(data PortalLayoutData) templ.Component
+	IndexRoute    string
+	JsFile        string
+	CssFile       string
+	CssLib        CssLib
+	LayoutFactory func(data PortalLayoutData) templ.Component
 }

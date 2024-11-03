@@ -45,14 +45,19 @@ func (self *PluginsMgr) Plugins() []*PluginApi {
 }
 
 func (self *PluginsMgr) RegisterPlugin(p *PluginApi) {
-	p.InitCoreApi(self.CoreAPI)
-	self.plugins = append(self.plugins, p)
 
 	if p.Pkg() != self.CoreAPI.Pkg() {
 		err := p.Init()
 		if err != nil {
 			log.Println("Error initializing plugin: "+p.Dir(), err)
 		}
+
+		p.InitCoreApi(self.CoreAPI)
+		p.LoadAssetsManifest()
+		self.plugins = append(self.plugins, p)
+	} else {
+		p.InitCoreApi(self.CoreAPI)
+		self.plugins = append(self.plugins, p)
 	}
 }
 

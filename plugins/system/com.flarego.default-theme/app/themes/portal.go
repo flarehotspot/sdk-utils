@@ -11,8 +11,10 @@ import (
 func SetPortalTheme(api sdkplugin.PluginApi) {
 
 	api.Themes().NewPortalTheme(sdkhttp.PortalTheme{
-		GlobalScripts:     []string{"test.js", "test-2.js"},
-		GlobalStylesheets: []string{"test.css"},
+		// GlobalScripts:     []string{"test.js", "test-2.js"},
+		// GlobalStylesheets: []string{"test.css"},
+		JsFile:  "theme.js",
+		CssFile: "theme.css",
 		LayoutFactory: func(data sdkhttp.PortalLayoutData) templ.Component {
 			layout := views.PortalLayout(data)
 			return layout

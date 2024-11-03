@@ -15,6 +15,7 @@ import (
 
 const (
 	AssetsDir          = "resources/assets"
+	DistDir            = "resources/assets/dist"
 	AdminManifestJson  = "resources/assets/manifest.admin.json"
 	PortalManifestJson = "resources/assets/manifest.portal.json"
 	OutManifestJson    = "resources/assets/dist/manifest.json"
@@ -32,7 +33,7 @@ type OutputManifest struct {
 	PortalAssets CompileResults `json:"portal"`
 }
 
-func ReadAssetManifest(pluginDir string) OutputManifest {
+func GetAssetManifest(pluginDir string) OutputManifest {
 	manifestFile := filepath.Join(pluginDir, OutManifestJson)
 	emptyRes := CompileResults{
 		Scripts: make(map[string]string),
@@ -215,19 +216,20 @@ func compileManifest(pluginDir string, manifest Manifest) (results CompileResult
 		}
 
 		for _, out := range result.OutputFiles {
-			if err = sdkfs.EnsureDir(filepath.Dir(out.Path)); err != nil {
+			f := filepath.Base(out.Path)
+			outpath := filepath.Join(distPath, f)
+			if err = sdkfs.EnsureDir(filepath.Dir(outpath)); err != nil {
 				return
 			}
-			if err = os.WriteFile(out.Path, out.Contents, sdkfs.PermFile); err != nil {
+			if err = os.WriteFile(outpath, out.Contents, sdkfs.PermFile); err != nil {
 				return
 			}
 			if filepath.Ext(out.Path) == ext {
-				outpath := strings.Replace(out.Path, pluginDir, "", 1)
-				outpath = strings.TrimPrefix(outpath, "/")
+				fileIndex := filepath.Join(strings.TrimPrefix(ext, "."), f)
 				if ext == ".js" {
-					results.Scripts[filename] = outpath
+					results.Scripts[filename] = fileIndex
 				} else if ext == ".css" {
-					results.Styles[filename] = outpath
+					results.Styles[filename] = fileIndex
 				}
 			}
 			fmt.Printf("Outputfile written to: %s\n", out.Path)

@@ -18,8 +18,10 @@ templ AdminLayout(data sdkhttp.AdminLayoutData) {
 templ PortalLayout(data sdkhttp.PortalLayoutData) {
 <html>
     <head>
-        <script src={data.Layout.GlobalScriptSrc}></script>
-        <link rel="stylesheet" href={data.Layout.GlobalStylesheetSrc}>
+        <script src={data.Layout.Assets.ThemeJsSrc}></script>
+        <script src={data.Layout.Assets.PageJsSrc}></script>
+        <link rel="stylesheet" href={data.Layout.Assets.ThemeCssHref}>
+        <link rel="stylesheet" href={data.Layout.Assets.PageCssHref}>
     </head>
     <body>
 	<div>

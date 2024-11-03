@@ -33,18 +33,6 @@ func (self *HttpHelpers) AssetPath(p string) string {
 	return path.Join("/plugin", self.api.Pkg(), self.api.Version(), "assets", p)
 }
 
-func (self *HttpHelpers) AssetWithHelpersPath(path string) string {
-	assetsR := router.AssetsRouter.Get(rnames.RouteAssetWithHelpers)
-	pluginApi := self.api
-	url, err := assetsR.URL("pkg", pluginApi.Pkg(), "version", pluginApi.Version(), "path", path)
-	if err != nil {
-		log.Println("Error generating URL: ", err.Error())
-		return ""
-	}
-
-	return url.String()
-}
-
 func (self *HttpHelpers) VueComponentPath(path string) string {
 	assetsR := router.AssetsRouter.Get(rnames.RouteAssetVueComponent)
 	if assetsR == nil {

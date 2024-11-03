@@ -18,10 +18,10 @@ const (
 	FlashWarning string = "warning"
 )
 
-// Scripts and styles search path starts at the root of plugin's resources directory.
+// Scripts and styles are the index filenames in assets manifest
 type ViewAssets struct {
-	Scripts     []string
-	Stylesheets []string
+	JsFile  string
+	CssFile string
 }
 
 type ViewPage struct {

@@ -11,6 +11,7 @@ import (
 	"core/internal/db/models"
 	"core/internal/network"
 	"core/internal/utils/migrate"
+	"core/internal/utils/pkg"
 	sdkacct "sdk/api/accounts"
 	sdkads "sdk/api/ads"
 	sdkcfg "sdk/api/config"
@@ -79,6 +80,7 @@ type PluginApi struct {
 	UciAPI           *UciApi
 	Utl              *PluginUtils
 	LoggerAPI        *LoggerApi
+	AssetsManifest   pkg.OutputManifest
 }
 
 func (self *PluginApi) InitCoreApi(coreApi *PluginApi) {
@@ -194,4 +196,8 @@ func (self *PluginApi) Features() []string {
 
 func (self *PluginApi) Logger() sdklogger.LoggerApi {
 	return self.LoggerAPI
+}
+
+func (self *PluginApi) LoadAssetsManifest() {
+	self.AssetsManifest = pkg.GetAssetManifest(self.dir)
 }
