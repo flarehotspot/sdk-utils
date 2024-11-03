@@ -5,25 +5,26 @@ import (
 	sdkhttp "sdk/api/http"
 )
 
-func NewThemesApi(api *PluginApi) *ThemesApi {
-	return &ThemesApi{api: api}
+func NewThemesApi(api *PluginApi) {
+	t := &HttpThemesApi{api: api}
+	api.ThemesAPI = t
 }
 
-type ThemesApi struct {
+type HttpThemesApi struct {
 	api         *PluginApi
-	AdminTheme  *sdkhttp.AdminTheme
-	PortalTheme *sdkhttp.PortalTheme
+	AdminTheme  *sdkhttp.AdminThemeOpts
+	PortalTheme *sdkhttp.PortalThemeOpts
 }
 
-func (self *ThemesApi) NewAdminTheme(theme sdkhttp.AdminTheme) {
+func (self *HttpThemesApi) NewAdminTheme(theme sdkhttp.AdminThemeOpts) {
 	self.AdminTheme = &theme
 }
 
-func (self *ThemesApi) NewPortalTheme(theme sdkhttp.PortalTheme) {
+func (self *HttpThemesApi) NewPortalTheme(theme sdkhttp.PortalThemeOpts) {
 	self.PortalTheme = &theme
 }
 
-func (self *ThemesApi) GetAdminAssets() (jsSrc string, cssHref string) {
+func (self *HttpThemesApi) GetAdminAssets() (jsSrc string, cssHref string) {
 	manifest := pkg.GetAssetManifest(self.api.dir)
 
 	if self.AdminTheme != nil {
@@ -41,7 +42,7 @@ func (self *ThemesApi) GetAdminAssets() (jsSrc string, cssHref string) {
 	return
 }
 
-func (self *ThemesApi) GetPortalAssets() (jsSrc string, cssHref string) {
+func (self *HttpThemesApi) GetPortalAssets() (jsSrc string, cssHref string) {
 	manifest := self.api.AssetsManifest
 
 	if self.PortalTheme != nil {

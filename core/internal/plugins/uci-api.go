@@ -13,8 +13,9 @@ type UciApi struct {
 	wirelessApi *uci.UciWirelessApi
 }
 
-func NewUciApi() *UciApi {
-	return &UciApi{}
+func NewUciApi(pluginApi *PluginApi) {
+	uciApi := &UciApi{}
+	pluginApi.UciAPI = uciApi
 }
 
 func (self *UciApi) Network() sdkuci.NetworkApi {

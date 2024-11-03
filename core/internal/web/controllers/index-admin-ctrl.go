@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"log"
 	"net/http"
 
 	"core/internal/plugins"
@@ -10,19 +9,13 @@ import (
 
 func AdminIndexPage(g *plugins.CoreGlobals) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		p, themeApi, err := g.PluginMgr.GetAdminTheme()
+		_, t, err := g.PluginMgr.GetAdminTheme()
 		if err != nil {
-			ErrorPage(w, err)
+			g.CoreAPI.HttpAPI.HttpResponse().ErrorPage(w, r, err, 500)
 			return
 		}
-
-		route := themeApi.AdminTheme.IndexRoute
-		log.Println("Theme:", p.Pkg())
-		log.Println("IndexRoute: ", route)
-		log.Printf("AdminTheme: %+v\n", themeApi.AdminTheme)
-
-		url := p.HttpAPI.Helpers().UrlForRoute(route)
-		http.Redirect(w, r, url, http.StatusSeeOther)
+		page := t.AdminTheme.IndexPageFactory(w, r)
+		g.CoreAPI.HttpAPI.HttpResponse().AdminView(w, r, page)
 	})
 }
 

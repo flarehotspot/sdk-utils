@@ -1,14 +1,18 @@
 package plugins
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"net/http"
+	sdkhttp "sdk/api/http"
 
 	"core/internal/connmgr"
 	"core/internal/db/models"
+	webutil "core/internal/utils/web"
 	"core/internal/web/helpers"
 	"core/internal/web/middlewares"
+	"core/internal/web/router"
 )
 
 func NewPluginMiddlewares(api *PluginApi, mdls *models.Models, dmgr *connmgr.ClientRegister, pmgr *PaymentsMgr) *PluginMiddlewares {
@@ -23,7 +27,20 @@ type PluginMiddlewares struct {
 }
 
 func (self *PluginMiddlewares) AdminAuth() func(http.Handler) http.Handler {
-	return middlewares.AdminAuth
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			acct, err := webutil.IsAdminAuthenticated(w, r)
+			if err != nil {
+				loginRoute := router.RootRouter.Get("admin:login")
+				loginUrl, _ := loginRoute.URL()
+				http.Redirect(w, r, loginUrl.String(), http.StatusSeeOther)
+				return
+			}
+
+			ctx := context.WithValue(r.Context(), sdkhttp.SysAcctCtxKey, acct)
+			next.ServeHTTP(w, r.WithContext(ctx))
+		})
+	}
 }
 
 func (self *PluginMiddlewares) Device() func(http.Handler) http.Handler {

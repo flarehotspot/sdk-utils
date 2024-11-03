@@ -1,23 +1,27 @@
 package themes
 
 import (
+	"net/http"
 	sdkhttp "sdk/api/http"
 	sdkplugin "sdk/api/plugin"
 
 	"com.flarego.default-theme/resources/views"
+	"com.flarego.default-theme/resources/views/portal"
 	"github.com/a-h/templ"
 )
 
 func SetPortalTheme(api sdkplugin.PluginApi) {
 
-	api.Themes().NewPortalTheme(sdkhttp.PortalTheme{
-		// GlobalScripts:     []string{"test.js", "test-2.js"},
-		// GlobalStylesheets: []string{"test.css"},
+	api.Themes().NewPortalTheme(sdkhttp.PortalThemeOpts{
 		JsFile:  "theme.js",
 		CssFile: "theme.css",
-		LayoutFactory: func(data sdkhttp.PortalLayoutData) templ.Component {
+		LayoutFactory: func(w http.ResponseWriter, r *http.Request, data sdkhttp.PortalLayoutData) templ.Component {
 			layout := views.PortalLayout(data)
 			return layout
+		},
+		IndexPageFactory: func(w http.ResponseWriter, r *http.Request, data sdkhttp.PortalIndexData) sdkhttp.ViewPage {
+			page := portal.PortalIndexPage()
+			return sdkhttp.ViewPage{PageContent: page}
 		},
 	})
 

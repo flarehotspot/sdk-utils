@@ -9,13 +9,16 @@ import (
 )
 
 func AdminRoutes(g *plugins.CoreGlobals) {
+	authMw := g.CoreAPI.HttpAPI.Middlewares().AdminAuth()
 	rootR := router.RootRouter
 	adminR := g.CoreAPI.HttpAPI.HttpRouter().AdminRouter()
 
 	adminIndexCtrl := controllers.AdminIndexPage(g)
+	adminLoginCtrl := controllers.AdminLoginCtrl(g)
 	adminSseCtrl := controllers.AdminSseHandler(g)
 
-	rootR.Handle("/admin", adminIndexCtrl).Methods("GET").Name("admin:index")
+	rootR.Handle("/admin", authMw(adminIndexCtrl)).Methods("GET").Name("admin:index")
+	rootR.Handle("/login", adminLoginCtrl).Methods("GET").Name("admin:login")
 	adminR.Get("/events", adminSseCtrl).Name("admin:sse")
 
 	adminR.Group("/core", func(subrouter sdkhttp.HttpRouterInstance) {

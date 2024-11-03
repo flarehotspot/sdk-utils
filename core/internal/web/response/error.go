@@ -14,8 +14,3 @@ func ErrorJson(w http.ResponseWriter, err string, status int) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(data)
 }
-
-func ErrorHtml(w http.ResponseWriter, err string) {
-	w.WriteHeader(http.StatusInternalServerError)
-	w.Write([]byte(err))
-}
