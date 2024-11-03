@@ -4,7 +4,8 @@ import (
 	"errors"
 	"fmt"
 
-	"sdk/api/http"
+	sdkhttp "sdk/api/http"
+
 	"github.com/gorilla/mux"
 )
 
@@ -22,7 +23,7 @@ var (
 func init() {
 	RootRouter = mux.NewRouter().StrictSlash(true)
 	BootingRouter = mux.NewRouter().StrictSlash(true)
-	PluginRouter = RootRouter.PathPrefix("/plugin").Subrouter()
+	PluginRouter = RootRouter.PathPrefix("/p").Subrouter()
 	AssetsRouter = RootRouter.PathPrefix("/assets").Subrouter()
 }
 

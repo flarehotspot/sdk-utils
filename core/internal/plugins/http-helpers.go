@@ -30,19 +30,7 @@ func (self *HttpHelpers) Translate(msgtype string, msgk string, pairs ...interfa
 }
 
 func (self *HttpHelpers) AssetPath(p string) string {
-	return path.Join("/plugin", self.api.Pkg(), self.api.Version(), "assets", p)
-}
-
-func (self *HttpHelpers) AssetWithHelpersPath(path string) string {
-	assetsR := router.AssetsRouter.Get(rnames.RouteAssetWithHelpers)
-	pluginApi := self.api
-	url, err := assetsR.URL("pkg", pluginApi.Pkg(), "version", pluginApi.Version(), "path", path)
-	if err != nil {
-		log.Println("Error generating URL: ", err.Error())
-		return ""
-	}
-
-	return url.String()
+	return path.Join("/plugin", self.api.Pkg(), self.api.Version(), "assets/dist", p)
 }
 
 func (self *HttpHelpers) VueComponentPath(path string) string {
@@ -124,16 +112,4 @@ func (self *HttpHelpers) UrlForRoute(name string, pairs ...string) string {
 
 func (self *HttpHelpers) UrlForPkgRoute(pkg string, name string, pairs ...string) string {
 	return self.api.HttpAPI.httpRouter.UrlForPkgRoute(pkg, name, pairs...)
-}
-
-func (self *HttpHelpers) VueRouteName(name string) string {
-	return self.api.HttpAPI.vueRouter.VueRouteName(name)
-}
-
-func (self *HttpHelpers) VueRoutePath(name string, pairs ...string) string {
-	return self.api.HttpAPI.vueRouter.VueRoutePath(name, pairs...)
-}
-
-func (self *HttpHelpers) VuePkgRoutePath(pkg string, name string, pairs ...string) string {
-	return self.api.HttpAPI.vueRouter.VuePkgRoutePath(pkg, name, pairs...)
 }

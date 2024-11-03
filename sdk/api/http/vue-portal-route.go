@@ -6,8 +6,8 @@
 
 package sdkhttp
 
-type VuePortalRoute struct {
-	RouteName string
-	RoutePath string
-	Component string
-}
+// type VuePortalRoute struct {
+// 	RouteName string
+// 	RoutePath string
+// 	Component string
+// }

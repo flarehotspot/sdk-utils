@@ -1,11 +1,8 @@
 package plugins
 
 import (
-	"net/http"
-
-	sdkthemes "sdk/api/themes"
-
-	sdkfs "github.com/flarehotspot/go-utils/fs"
+	"core/internal/utils/pkg"
+	sdkhttp "sdk/api/http"
 )
 
 func NewThemesApi(api *PluginApi) *ThemesApi {
@@ -14,82 +11,50 @@ func NewThemesApi(api *PluginApi) *ThemesApi {
 
 type ThemesApi struct {
 	api         *PluginApi
-	AdminTheme  *sdkthemes.AdminTheme
-	PortalTheme *sdkthemes.PortalTheme
-
-	AdminLayoutRoute    *VueRouteComponent
-	AdminDashboardRoute *VueRouteComponent
-	AdminLoginRoute     *VueRouteComponent
-
-	PortalLayoutRoute *VueRouteComponent
-	PortalIndexRoute  *VueRouteComponent
+	AdminTheme  *sdkhttp.AdminTheme
+	PortalTheme *sdkhttp.PortalTheme
 }
 
-func (self *ThemesApi) NewAdminTheme(theme sdkthemes.AdminTheme) {
-	layoutComp := NewVueRouteComponent(self.api, theme.LayoutComponent.RouteName, "/theme/layout", theme.LayoutComponent.Component, nil, nil)
-	loginComp := NewVueRouteComponent(self.api, theme.LoginComponent.RouteName, "/theme/login", theme.LoginComponent.Component, nil, nil)
-	dashComp := NewVueRouteComponent(self.api, theme.DashboardComponent.RouteName, "/theme/dashboard", theme.DashboardComponent.Component, nil, nil)
-
-	self.AdminLayoutRoute = layoutComp
-	self.AdminDashboardRoute = dashComp
-	self.AdminLoginRoute = loginComp
-	self.api.HttpAPI.vueRouter.AddAdminRoutes(dashComp)
+func (self *ThemesApi) NewAdminTheme(theme sdkhttp.AdminTheme) {
 	self.AdminTheme = &theme
 }
 
-func (self *ThemesApi) NewPortalTheme(theme sdkthemes.PortalTheme) {
-	layoutComp := NewVueRouteComponent(self.api, theme.LayoutComponent.RouteName, "/theme/layout", theme.LayoutComponent.Component, nil, nil)
-	indexComp := NewVueRouteComponent(self.api, theme.IndexComponent.RouteName, "/theme/index", theme.IndexComponent.Component, nil, nil)
-
-	self.PortalLayoutRoute = layoutComp
-	self.PortalIndexRoute = indexComp
+func (self *ThemesApi) NewPortalTheme(theme sdkhttp.PortalTheme) {
 	self.PortalTheme = &theme
 }
 
-func (self *ThemesApi) GetAdminThemeAssets() sdkthemes.ThemeAssets {
-	assets := sdkthemes.ThemeAssets{Scripts: []string{}, Styles: []string{}}
-	if self.AdminTheme.ThemeAssets != nil {
-		if self.AdminTheme.ThemeAssets.Scripts != nil {
-			assets.Scripts = self.AdminTheme.ThemeAssets.Scripts
+func (self *ThemesApi) GetAdminAssets() (jsSrc string, cssHref string) {
+	manifest := pkg.GetAssetManifest(self.api.dir)
+
+	if self.AdminTheme != nil {
+		scriptFile, ok := manifest.AdminAssets.Scripts[self.AdminTheme.JsFile]
+		if ok {
+			jsSrc = self.api.HttpAPI.Helpers().AssetPath(scriptFile)
 		}
-		if self.AdminTheme.ThemeAssets.Styles != nil {
-			assets.Styles = self.AdminTheme.ThemeAssets.Styles
+
+		cssFile, ok := manifest.AdminAssets.Styles[self.AdminTheme.CssFile]
+		if ok {
+			cssHref = self.api.HttpAPI.Helpers().AssetPath(cssFile)
 		}
 	}
-	return assets
+
+	return
 }
 
-func (self *ThemesApi) GetPortalThemeAssets() sdkthemes.ThemeAssets {
-	assets := sdkthemes.ThemeAssets{Scripts: []string{}, Styles: []string{}}
-	if self.PortalTheme.ThemeAssets != nil {
-		if self.PortalTheme.ThemeAssets.Scripts != nil {
-			assets.Scripts = self.PortalTheme.ThemeAssets.Scripts
-		}
-		if self.PortalTheme.ThemeAssets.Styles != nil {
-			assets.Styles = self.PortalTheme.ThemeAssets.Styles
-		}
-	}
-	return assets
-}
+func (self *ThemesApi) GetPortalAssets() (jsSrc string, cssHref string) {
+	manifest := self.api.AssetsManifest
 
-func (self *ThemesApi) GetFormFieldPath(vuefile string) (uri string) {
-	file := self.api.Utl.Resource("assets/components/forms/" + vuefile)
-	if sdkfs.IsFile(file) {
-		return self.api.HttpAPI.Helpers().VueComponentPath("forms/" + vuefile)
-	}
-	vuepath := "forms/" + string(self.AdminTheme.CssLib) + "/" + vuefile
-	return self.api.CoreAPI.HttpAPI.Helpers().VueComponentPath(vuepath)
-}
-
-func (self *ThemesApi) PortalItemsHandler() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		res := self.api.CoreAPI.HttpAPI.VueResponse()
-		clnt, err := self.api.HttpAPI.GetClientDevice(r)
-		if err != nil {
-			res.Error(w, err.Error(), http.StatusBadRequest)
-			return
+	if self.PortalTheme != nil {
+		scriptFile, ok := manifest.PortalAssets.Scripts[self.PortalTheme.JsFile]
+		if ok {
+			jsSrc = self.api.HttpAPI.Helpers().AssetPath(scriptFile)
 		}
-		items := self.api.HttpAPI.GetPortalItems(clnt)
-		res.Json(w, items, http.StatusOK)
+
+		cssFile, ok := manifest.PortalAssets.Styles[self.PortalTheme.CssFile]
+		if ok {
+			cssHref = self.api.HttpAPI.Helpers().AssetPath(cssFile)
+		}
 	}
+
+	return
 }

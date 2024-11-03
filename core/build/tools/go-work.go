@@ -21,8 +21,18 @@ use (
     ./sdk/api
     ./sdk/utils`, goVersion)
 
-	pluginSearchPaths := []string{"plugins/system", "plugins/local"}
+	// insert libs paths
+	libs := []string{}
+	if err := sdkfs.LsDirs("sdk/libs", &libs, false); err != nil {
+		log.Println(err)
+	}
 
+	for _, lib := range libs {
+		goWork += "\n    ./" + lib
+	}
+
+	// insert plugin paths
+	pluginSearchPaths := []string{"plugins/system", "plugins/local"}
 	for _, searchPath := range pluginSearchPaths {
 		if sdkfs.Exists(searchPath) {
 			entries, err := os.ReadDir(searchPath)
@@ -37,15 +47,6 @@ use (
 				}
 			}
 		}
-	}
-
-	libs := []string{}
-	if err := sdkfs.LsDirs("sdk/libs", &libs, false); err != nil {
-		log.Println(err)
-	}
-
-	for _, lib := range libs {
-		goWork += "\n    ./" + lib
 	}
 
 	goWork += "\n)"

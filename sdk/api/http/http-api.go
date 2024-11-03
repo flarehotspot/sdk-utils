@@ -9,7 +9,6 @@ package sdkhttp
 import (
 	"net/http"
 
-	sdkacct "sdk/api/accounts"
 	sdkconnmgr "sdk/api/connmgr"
 )
 
@@ -31,11 +30,8 @@ type HttpApi interface {
 	// Returns the http response writer API.
 	HttpResponse() HttpResponse
 
-	// Returns the router API for vue requests.
-	VueRouter() VueRouterApi
-
-	// Returns the http response writer API for vue requests
-	VueResponse() VueResponse
+	// Returns the navs API.
+	Navs() NavsApi
 
 	// Returns the current client device from http request.
 	GetClientDevice(r *http.Request) (clnt sdkconnmgr.ClientDevice, err error)
@@ -43,10 +39,4 @@ type HttpApi interface {
 	// Returns the http variables in your routes. For example, if your route path is "/some/path/{varname}",
 	// then you can get the value of "varname" by calling GetMuxVars(r)["varname"].
 	MuxVars(r *http.Request) map[string]string
-
-	// Returns the consolidated vue navigation list from all plugins for the admin dashboard.
-	GetAdminNavs(acct sdkacct.Account) []AdminNavList
-
-	// Returns the consolidated vue navigation list from all plugins for the portal.
-	GetPortalItems(clnt sdkconnmgr.ClientDevice) []PortalItem
 }

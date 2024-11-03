@@ -1,0 +1,8 @@
+{
+  "theme.js": [
+    "./portal/portal.js"
+  ],
+  "theme.css": [
+    "./vendor/bootstrap-4.6.1/bootstrap.min.css"
+  ]
+}

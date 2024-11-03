@@ -5,8 +5,10 @@
 /plugins/installed/*
 /plugins/update/*
 /plugins/backup/*
+/plugins/local/*
 /output
 /public
+/local
 /openwrt-files
 /.cache
 /.tmp

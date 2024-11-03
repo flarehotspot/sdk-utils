@@ -3,51 +3,48 @@ package adminctrl
 import (
 	"net/http"
 
-	"github.com/goccy/go-json"
-
-	"core/internal/config"
 	"core/internal/plugins"
 )
 
 func GetAvailableThemes(g *plugins.CoreGlobals) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		res := g.CoreAPI.HttpAPI.VueResponse()
-		allPlugins := g.PluginMgr.All()
-		adminThemes := []map[string]string{}
-		portalThemes := []map[string]string{}
+		// res := g.CoreAPI.HttpAPI.VueResponse()
+		// allPlugins := g.PluginMgr.All()
+		// adminThemes := []map[string]string{}
+		// portalThemes := []map[string]string{}
 
-		for _, p := range allPlugins {
-			features := p.Features()
-			for _, f := range features {
-				if f == "theme:admin" {
-					adminThemes = append(adminThemes, map[string]string{
-						"name": p.Name(),
-						"pkg":  p.Pkg(),
-					})
-				}
+		// for _, p := range allPlugins {
+		// 	features := p.Features()
+		// 	for _, f := range features {
+		// 		if f == "theme:admin" {
+		// 			adminThemes = append(adminThemes, map[string]string{
+		// 				"name": p.Name(),
+		// 				"pkg":  p.Pkg(),
+		// 			})
+		// 		}
 
-				if f == "theme:portal" {
-					portalThemes = append(portalThemes, map[string]string{
-						"name": p.Name(),
-						"pkg":  p.Pkg(),
-					})
-				}
-			}
-		}
+		// 		if f == "theme:portal" {
+		// 			portalThemes = append(portalThemes, map[string]string{
+		// 				"name": p.Name(),
+		// 				"pkg":  p.Pkg(),
+		// 			})
+		// 		}
+		// 	}
+		// }
 
-		cfg, err := config.ReadThemesConfig()
-		if err != nil {
-			res.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
+		// cfg, err := config.ReadThemesConfig()
+		// if err != nil {
+		// 	res.Error(w, err.Error(), http.StatusInternalServerError)
+		// 	return
+		// }
 
-		data := map[string]interface{}{
-			"admin_themes":  adminThemes,
-			"portal_themes": portalThemes,
-			"themes_config": cfg,
-		}
+		// data := map[string]interface{}{
+		// 	"admin_themes":  adminThemes,
+		// 	"portal_themes": portalThemes,
+		// 	"themes_config": cfg,
+		// }
 
-		res.Json(w, data, http.StatusOK)
+		// res.Json(w, data, http.StatusOK)
 	}
 }
 
@@ -59,25 +56,25 @@ func SaveThemeSettings(g *plugins.CoreGlobals) http.HandlerFunc {
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		res := g.CoreAPI.HttpAPI.VueResponse()
-		var thm ThemeSettings
-		err := json.NewDecoder(r.Body).Decode(&thm)
-		if err != nil {
-			res.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
+		// res := g.CoreAPI.HttpAPI.VueResponse()
+		// var thm ThemeSettings
+		// err := json.NewDecoder(r.Body).Decode(&thm)
+		// if err != nil {
+		// 	res.Error(w, err.Error(), http.StatusBadRequest)
+		// 	return
+		// }
 
-		cfg := config.ThemesConfig{
-			Portal: thm.PortalTheme,
-			Admin:  thm.AdminTheme,
-		}
+		// cfg := config.ThemesConfig{
+		// 	Portal: thm.PortalTheme,
+		// 	Admin:  thm.AdminTheme,
+		// }
 
-		err = config.WriteThemesConfig(cfg)
-		if err != nil {
-			res.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
+		// err = config.WriteThemesConfig(cfg)
+		// if err != nil {
+		// 	res.Error(w, err.Error(), http.StatusInternalServerError)
+		// 	return
+		// }
 
-		res.Json(w, cfg, http.StatusOK)
+		// res.Json(w, cfg, http.StatusOK)
 	}
 }

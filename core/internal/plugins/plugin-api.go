@@ -11,6 +11,7 @@ import (
 	"core/internal/db/models"
 	"core/internal/network"
 	"core/internal/utils/migrate"
+	"core/internal/utils/pkg"
 	sdkacct "sdk/api/accounts"
 	sdkads "sdk/api/ads"
 	sdkcfg "sdk/api/config"
@@ -21,7 +22,6 @@ import (
 	sdknet "sdk/api/network"
 	sdkpayments "sdk/api/payments"
 	sdkplugin "sdk/api/plugin"
-	sdkthemes "sdk/api/themes"
 	sdkuci "sdk/api/uci"
 )
 
@@ -80,6 +80,7 @@ type PluginApi struct {
 	UciAPI           *UciApi
 	Utl              *PluginUtils
 	LoggerAPI        *LoggerApi
+	AssetsManifest   pkg.OutputManifest
 }
 
 func (self *PluginApi) InitCoreApi(coreApi *PluginApi) {
@@ -178,7 +179,7 @@ func (self *PluginApi) Uci() sdkuci.UciApi {
 	return self.UciAPI
 }
 
-func (self *PluginApi) Themes() sdkthemes.ThemesApi {
+func (self *PluginApi) Themes() sdkhttp.ThemesApi {
 	return self.ThemesAPI
 }
 
@@ -195,4 +196,8 @@ func (self *PluginApi) Features() []string {
 
 func (self *PluginApi) Logger() sdklogger.LoggerApi {
 	return self.LoggerAPI
+}
+
+func (self *PluginApi) LoadAssetsManifest() {
+	self.AssetsManifest = pkg.GetAssetManifest(self.dir)
 }

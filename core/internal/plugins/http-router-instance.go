@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	sdkhttp "sdk/api/http"
+
 	"github.com/gorilla/mux"
 )
 
@@ -21,7 +22,6 @@ func (self *HttpRouterInstance) Router() *mux.Router {
 }
 
 func (self *HttpRouterInstance) Get(path string, h http.HandlerFunc, mw ...func(next http.Handler) http.Handler) sdkhttp.HttpRoute {
-	path = self.api.HttpAPI.vueRouter.VuePathToMuxPath(path)
 	finalHandler := http.Handler(h)
 	for i := len(mw) - 1; i >= 0; i-- {
 		finalHandler = mw[i](finalHandler)
@@ -31,7 +31,6 @@ func (self *HttpRouterInstance) Get(path string, h http.HandlerFunc, mw ...func(
 }
 
 func (self *HttpRouterInstance) Post(path string, h http.HandlerFunc, mw ...func(next http.Handler) http.Handler) sdkhttp.HttpRoute {
-	path = self.api.HttpAPI.vueRouter.VuePathToMuxPath(path)
 	finalHandler := http.Handler(h)
 	for i := len(mw) - 1; i >= 0; i-- {
 		finalHandler = mw[i](finalHandler)
@@ -41,7 +40,6 @@ func (self *HttpRouterInstance) Post(path string, h http.HandlerFunc, mw ...func
 }
 
 func (self *HttpRouterInstance) Group(path string, fn func(sdkhttp.HttpRouterInstance)) {
-	path = self.api.HttpAPI.vueRouter.VuePathToMuxPath(path)
 	router := self.mux.PathPrefix(path).Subrouter()
 	newrouter := NewHttpRouterInstance(self.api, router)
 	fn(newrouter)

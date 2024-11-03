@@ -39,29 +39,28 @@ func (self *PluginMiddlewares) PendingPurchase() func(http.Handler) http.Handler
 		handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			ctx := r.Context()
 			errCode := http.StatusInternalServerError
-			res := self.api.CoreAPI.HttpAPI.VueResponse()
 
 			client, err := helpers.CurrentClient(self.api.ClntReg, r)
 			if err != nil {
-				res.SendFlashMsg(w, "error", err.Error(), errCode)
+				self.ErrorPage(w, err, errCode)
 				return
 			}
 
 			mdls := self.api.models
 			device, err := mdls.Device().Find(ctx, client.Id())
 			if err != nil {
-				res.SendFlashMsg(w, "error", err.Error(), errCode)
+				self.ErrorPage(w, err, errCode)
 				return
 			}
 
 			purchase, err := mdls.Purchase().PendingPurchase(ctx, device.Id())
 			if err != nil && !errors.Is(err, sql.ErrNoRows) {
-				res.SendFlashMsg(w, "error", err.Error(), errCode)
+				self.ErrorPage(w, err, errCode)
 				return
 			}
 
 			if purchase != nil {
-				res.Redirect(w, "payments:customer:options")
+				self.api.HttpAPI.HttpResponse().Redirect(w, r, "payments:customer:options")
 				return
 			}
 
@@ -73,4 +72,10 @@ func (self *PluginMiddlewares) PendingPurchase() func(http.Handler) http.Handler
 		return deviceMw(handler)
 	}
 
+}
+
+func (self *PluginMiddlewares) ErrorPage(w http.ResponseWriter, err error, code int) {
+	// TODO: Display common error page
+	w.WriteHeader(code)
+	w.Write([]byte(err.Error()))
 }

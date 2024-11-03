@@ -6,7 +6,7 @@
 
 package sdkhttp
 
-type ILayoutData interface {
-	Helpers() HttpHelpers
-	ContentPath() string
-}
+// type ILayoutData interface {
+// 	Helpers() HttpHelpers
+// 	ContentPath() string
+// }

@@ -6,45 +6,45 @@
 
 package sdkhttp
 
-import (
-	sdkacct "sdk/api/accounts"
-	sdkconnmgr "sdk/api/connmgr"
-)
+// import (
+// 	sdkacct "sdk/api/accounts"
+// 	sdkconnmgr "sdk/api/connmgr"
+// )
 
-const (
-	VueNotFoundPath = "/404"
-)
+// const (
+// 	VueNotFoundPath = "/404"
+// )
 
-type VueAdminNavsFunc func(acct sdkacct.Account) []VueAdminNav
-type VuePortalItemsFunc func(clnt sdkconnmgr.ClientDevice) []VuePortalItem
+// type VueAdminNavsFunc func(acct sdkacct.Account) []VueAdminNav
+// type VuePortalItemsFunc func(clnt sdkconnmgr.ClientDevice) []VuePortalItem
 
-// VueRouterApi is used to create navigation items in the application.
-type VueRouterApi interface {
+// // VueRouterApi is used to create navigation items in the application.
+// type VueRouterApi interface {
 
-	// Set portal vue routes
-	RegisterPortalRoutes(routes ...VuePortalRoute)
+// 	// Set portal vue routes
+// 	RegisterPortalRoutes(routes ...VuePortalRoute)
 
-	// Set admin vue route
-	RegisterAdminRoutes(routes ...VueAdminRoute)
+// 	// Set admin vue route
+// 	RegisterAdminRoutes(routes ...VueAdminRoute)
 
-	// Used to register a function that returns a slice of admin navs.
-	// Items returned from this function is added to the admin navigation menu.
-	AdminNavsFunc(VueAdminNavsFunc)
+// 	// Used to register a function that returns a slice of admin navs.
+// 	// Items returned from this function is added to the admin navigation menu.
+// 	AdminNavsFunc(VueAdminNavsFunc)
 
-	// Used to register a function that returns a slice of *PortalNavItem.
-	// Items returned from this function is added to the captive portal navigation items.
-	PortalItemsFunc(VuePortalItemsFunc)
+// 	// Used to register a function that returns a slice of *PortalNavItem.
+// 	// Items returned from this function is added to the captive portal navigation items.
+// 	PortalItemsFunc(VuePortalItemsFunc)
 
-	// Returns the vue route name for a named route which can be used in vue router, e.g.
-	//   $this.push({name: '<% .Helpers.VueRouteName "login" %>'})
-	VueRouteName(name string) string
+// 	// Returns the vue route name for a named route which can be used in vue router, e.g.
+// 	//   $this.push({name: '<% .Helpers.VueRouteName "login" %>'})
+// 	VueRouteName(name string) string
 
-	// Returns the vue route path for a named route
-	VueRoutePath(name string, pairs ...string) string
+// 	// Returns the vue route path for a named route
+// 	VueRoutePath(name string, pairs ...string) string
 
-	// Returns the vue route from another plugin
-	VuePkgRoutePath(pkg string, name string, pairs ...string) string
+// 	// Returns the vue route from another plugin
+// 	VuePkgRoutePath(pkg string, name string, pairs ...string) string
 
-	// Reloads the captive portal navigation items for the given client device
-	ReloadPortalItems(clnt sdkconnmgr.ClientDevice)
-}
+// 	// Reloads the captive portal navigation items for the given client device
+// 	ReloadPortalItems(clnt sdkconnmgr.ClientDevice)
+// }

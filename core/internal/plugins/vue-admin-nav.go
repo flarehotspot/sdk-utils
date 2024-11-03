@@ -1,29 +1,29 @@
 package plugins
 
-import (
-	"sdk/api/accounts"
-	"sdk/api/http"
-)
+// import (
+// 	"sdk/api/accounts"
+// 	"sdk/api/http"
+// )
 
-func NewVueAdminNav(api *PluginApi, acct sdkacct.Account, nav sdkhttp.VueAdminNav) (sdkhttp.AdminNavItem, bool) {
-	var routename, routepath string
-	routepath = sdkhttp.VueNotFoundPath
+// func NewVueAdminNav(api *PluginApi, acct sdkacct.Account, nav sdkhttp.VueAdminNav) (sdkhttp.AdminNavItem, bool) {
+// 	var routename, routepath string
+// 	routepath = sdkhttp.VueNotFoundPath
 
-	if vueRoute, ok := api.HttpAPI.vueRouter.FindVueRoute(nav.RouteName); ok {
-		// nav.RouteParams is a map[string]string
-		pairs := []string{}
-		for k, v := range nav.RouteParams {
-			pairs = append(pairs, k, v)
-		}
-		routename = vueRoute.VueRouteName
-		routepath = vueRoute.VueRoutePath.URL(pairs...)
-	}
+// 	if vueRoute, ok := api.HttpAPI.vueRouter.FindVueRoute(nav.RouteName); ok {
+// 		// nav.RouteParams is a map[string]string
+// 		pairs := []string{}
+// 		for k, v := range nav.RouteParams {
+// 			pairs = append(pairs, k, v)
+// 		}
+// 		routename = vueRoute.VueRouteName
+// 		routepath = vueRoute.VueRoutePath.URL(pairs...)
+// 	}
 
-	return sdkhttp.AdminNavItem{
-		Category:       nav.Category,
-		Label:          nav.Label,
-		VueRouteName:   routename,
-		VueRoutePath:   routepath,
-		VueRouteParams: nav.RouteParams,
-	}, true
-}
+// 	return sdkhttp.AdminNavItem{
+// 		Category:       nav.Category,
+// 		Label:          nav.Label,
+// 		VueRouteName:   routename,
+// 		VueRoutePath:   routepath,
+// 		VueRouteParams: nav.RouteParams,
+// 	}, true
+// }

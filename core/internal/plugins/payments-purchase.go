@@ -2,6 +2,7 @@ package plugins
 
 import (
 	"context"
+	"errors"
 	"net/http"
 
 	"core/internal/db/models"
@@ -73,15 +74,14 @@ func (self *Purchase) State() (sdkpayments.PurchaseState, error) {
 }
 
 func (self *Purchase) Execute(w http.ResponseWriter) {
-	res := self.api.HttpAPI.VueResponse()
 	pmgr := self.api.PluginsMgr()
 	callbackPkg, ok := pmgr.FindByPkg(self.purchase.CallbackPluginPkg())
 	if !ok {
-		res.Error(w, "Unable to find plugin to receive the payment.", 500)
+		self.ErrorPage(w, errors.New("Unable to find plugin to receive the payment."))
 		return
 	}
 
-	callbackPkg.Http().VueResponse().Redirect(w, self.purchase.CallbackVueRouteName())
+	callbackPkg.Http().HttpResponse().Redirect(w, nil, self.purchase.CallbackVueRouteName())
 }
 
 func (self *Purchase) Confirm() error {
@@ -90,4 +90,10 @@ func (self *Purchase) Confirm() error {
 
 func (self *Purchase) Cancel() error {
 	return self.purchase.Cancel(self.ctx)
+}
+
+func (self *Purchase) ErrorPage(w http.ResponseWriter, err error) {
+	// TODO: show error page
+	w.WriteHeader(500)
+	w.Write([]byte(err.Error()))
 }

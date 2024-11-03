@@ -1,6 +1,7 @@
 package pkg
 
 import (
+	"core/env"
 	"core/internal/config"
 	"errors"
 	"fmt"
@@ -196,6 +197,10 @@ func InstalledPluginsList() []PluginInstallData {
 }
 
 func NeedsRecompile(def PluginSrcDef) bool {
+	if env.GO_ENV == env.ENV_DEV && (def.Src == PluginSrcLocal || def.Src == PluginSrcSystem) {
+		return true
+	}
+
 	cfg, err := config.ReadPluginsConfig()
 	if err != nil {
 		log.Println("Error reading plugins config: ", err)
