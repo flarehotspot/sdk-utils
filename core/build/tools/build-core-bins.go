@@ -4,6 +4,7 @@ import (
 	"core/env"
 	"core/internal/utils/pkg"
 	"fmt"
+	"os"
 	"path/filepath"
 
 	sdkpaths "github.com/flarehotspot/go-utils/paths"
@@ -32,8 +33,10 @@ func BuildCoreBins() {
 }
 
 func BuildCore() {
-	workdir := filepath.Join(sdkpaths.TmpDir, "builds/core")
-	if err := pkg.BuildPlugin(sdkpaths.CoreDir, workdir); err != nil {
+	workdir := filepath.Join(sdkpaths.TmpDir, "b/core", sdkstr.Rand(16))
+	defer os.RemoveAll(workdir)
+
+	if err := pkg.BuildPluginSo(sdkpaths.CoreDir, workdir); err != nil {
 		panic(err)
 	}
 }

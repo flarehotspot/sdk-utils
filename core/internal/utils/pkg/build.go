@@ -77,7 +77,7 @@ func BuildFromGit(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, error) {
 	return info, nil
 }
 
-func BuildPlugin(pluginSrcDir string, workdir string) error {
+func BuildPluginSo(pluginSrcDir string, workdir string) error {
 	if pluginSrcDir == "" {
 		return errors.New("Build plugin error: no plugin source path")
 	}

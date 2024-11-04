@@ -15,10 +15,13 @@ func AdminRoutes(g *plugins.CoreGlobals) {
 
 	adminIndexCtrl := controllers.AdminIndexPage(g)
 	adminLoginCtrl := controllers.AdminLoginCtrl(g)
+	adminAutCtrl := controllers.AdminAuthenticateCtrl(g)
 	adminSseCtrl := controllers.AdminSseHandler(g)
 
 	rootR.Handle("/admin", authMw(adminIndexCtrl)).Methods("GET").Name("admin:index")
 	rootR.Handle("/login", adminLoginCtrl).Methods("GET").Name("admin:login")
+	rootR.Handle("/login", adminAutCtrl).Methods("POST").Name("admin:authenticate")
+
 	adminR.Get("/events", adminSseCtrl).Name("admin:sse")
 
 	adminR.Group("/core", func(subrouter sdkhttp.HttpRouterInstance) {

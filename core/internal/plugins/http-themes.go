@@ -1,7 +1,6 @@
 package plugins
 
 import (
-	"core/internal/utils/pkg"
 	sdkhttp "sdk/api/http"
 )
 
@@ -25,7 +24,7 @@ func (self *HttpThemesApi) NewPortalTheme(theme sdkhttp.PortalThemeOpts) {
 }
 
 func (self *HttpThemesApi) GetAdminAssets() (jsSrc string, cssHref string) {
-	manifest := pkg.GetAssetManifest(self.api.dir)
+	manifest := self.api.AssetsManifest
 
 	if self.AdminTheme != nil {
 		scriptFile, ok := manifest.AdminAssets.Scripts[self.AdminTheme.JsFile]

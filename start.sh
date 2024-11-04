@@ -7,6 +7,5 @@ FLARE_BIN="./bin/flare"
 
 go run -tags="${BUILD_TAGS}" $BUILD_CLI_MAIN && \
     sh -c "$FLARE_BIN fix-workspace" && \
-    sh -c "$FLARE_BIN templates" && \
     go run -tags="${BUILD_TAGS}" $BUILD_CORE_MAIN && \
     sh -c "$FLARE_BIN server"

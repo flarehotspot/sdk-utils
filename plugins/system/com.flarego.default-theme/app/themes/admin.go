@@ -21,7 +21,7 @@ func SetAdminTheme(api plugin.PluginApi) {
 			return layout
 		},
 		LoginPageFactory: func(w http.ResponseWriter, r *http.Request, data sdkhttp.LoginPageData) sdkhttp.ViewPage {
-			page := auth.LoginPage()
+			page := auth.LoginPage(data)
 			return sdkhttp.ViewPage{PageContent: page}
 		},
 		IndexPageFactory: func(w http.ResponseWriter, r *http.Request) sdkhttp.ViewPage {
