@@ -43,4 +43,8 @@ func BuildCore() {
 	if err := pkg.BuildPluginSo(sdkpaths.CoreDir, workdir); err != nil {
 		panic(err)
 	}
+
+	if err := pkg.BuildGlobalAssets(); err != nil {
+		panic(err)
+	}
 }

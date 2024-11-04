@@ -8,6 +8,7 @@ import (
 
 	"core/internal/config"
 	"core/internal/utils/flaretmpl"
+	"core/internal/utils/pkg"
 )
 
 func NewPluginUtils(api *PluginApi) *PluginUtils {
@@ -66,6 +67,10 @@ func (self *PluginUtils) GetAdminAssetsForPage(v sdkhttp.ViewPage) (assets sdkht
 		assets.ThemeCssHref = themeCssHref
 	}
 
+	globals := pkg.ReadGlobalAssetsManifest()
+	assets.GlobalJsSrc = self.api.CoreAPI.Http().Helpers().AssetPath(globals.AdminJsFile)
+	assets.GlobalCssHref = self.api.CoreAPI.Http().Helpers().AssetPath(globals.AdminCssFile)
+
 	manifest := self.api.AssetsManifest
 
 	jsFile, ok := manifest.AdminAssets.Scripts[v.Assets.JsFile]
@@ -90,6 +95,10 @@ func (self *PluginUtils) GetPortalAssetsForPage(v sdkhttp.ViewPage) (assets sdkh
 		assets.ThemeJsSrc = themeJsSrc
 		assets.ThemeCssHref = themeCssHref
 	}
+
+	globals := pkg.ReadGlobalAssetsManifest()
+	assets.GlobalJsSrc = self.api.CoreAPI.Http().Helpers().AssetPath(globals.PortalJsFile)
+	assets.GlobalCssHref = self.api.CoreAPI.Http().Helpers().AssetPath(globals.PortalCssFile)
 
 	manifest := self.api.AssetsManifest
 
