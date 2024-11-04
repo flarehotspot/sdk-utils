@@ -22,7 +22,7 @@ func SetupAllRoutes(g *plugins.CoreGlobals) {
 	routes.PaymentRoutes(g)
 
 	router.RootRouter.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        log.Println("Warning: unknown route requested: ", r.URL.Path)
+		log.Println("Warning: unknown route requested: ", r.URL.Path)
 		http.Redirect(w, r, "/", http.StatusFound)
 	})
 }

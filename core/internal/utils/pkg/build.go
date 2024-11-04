@@ -1,6 +1,7 @@
 package pkg
 
 import (
+	"core/env"
 	"core/internal/utils/cmd"
 	"core/internal/utils/encdisk"
 	"core/internal/utils/git"
@@ -141,12 +142,15 @@ use (
 		return err
 	}
 
-	if err := BuildTemplates(buildpath); err != nil {
+	if err := BuildAssets(pluginSrcDir); err != nil {
 		return err
 	}
 
-	if err := BuildAssets(pluginSrcDir); err != nil {
-		return err
+	// Don't build templates in development since it is already watched and built by another script.
+	if env.GO_ENV != env.ENV_DEV {
+		if err := BuildTemplates(buildpath); err != nil {
+			return err
+		}
 	}
 
 	gofile := "main.go"

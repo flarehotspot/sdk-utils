@@ -55,6 +55,10 @@ func main() {
 		BuildPlugin()
 		return
 
+	case "build-templates":
+		tools.BuildTemplates()
+		return
+
 	case "fix-workspace":
 		tools.CreateGoWorkspace()
 		return
@@ -266,6 +270,8 @@ list of commands:
     build-plugin <plugin path>          Build plugin.so file. If no plugin path is provided, all plugins will be built.
 
     build-plugins                       Build plugin.so of all the local and system plugins. Similar to build-plugin command without arguments.
+
+    build-templates                     Compile templ files to golang.
 
     fix-workspace                       Re-generate the go.work file
 

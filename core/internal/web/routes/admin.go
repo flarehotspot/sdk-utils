@@ -6,21 +6,25 @@ import (
 	"core/internal/web/controllers/adminctrl"
 	"core/internal/web/router"
 	sdkhttp "sdk/api/http"
+
+	sdkstr "github.com/flarehotspot/go-utils/strings"
+	"github.com/gorilla/csrf"
 )
 
 func AdminRoutes(g *plugins.CoreGlobals) {
+	csrfMiddleware := csrf.Protect([]byte(sdkstr.Rand(16)))
 	authMw := g.CoreAPI.HttpAPI.Middlewares().AdminAuth()
 	rootR := router.RootRouter
 	adminR := g.CoreAPI.HttpAPI.HttpRouter().AdminRouter()
 
 	adminIndexCtrl := controllers.AdminIndexPage(g)
-	adminLoginCtrl := controllers.AdminLoginCtrl(g)
-	adminAutCtrl := controllers.AdminAuthenticateCtrl(g)
+	adminLoginCtrl := adminctrl.AdminLoginCtrl(g)
+	adminAuthCtrl := adminctrl.AdminAuthenticateCtrl(g)
 	adminSseCtrl := controllers.AdminSseHandler(g)
 
 	rootR.Handle("/admin", authMw(adminIndexCtrl)).Methods("GET").Name("admin:index")
-	rootR.Handle("/login", adminLoginCtrl).Methods("GET").Name("admin:login")
-	rootR.Handle("/login", adminAutCtrl).Methods("POST").Name("admin:authenticate")
+	rootR.Handle("/login", csrfMiddleware(adminLoginCtrl)).Methods("GET").Name("admin:login")
+	rootR.Handle("/login", adminAuthCtrl).Methods("POST").Name("admin:authenticate")
 
 	adminR.Get("/events", adminSseCtrl).Name("admin:sse")
 

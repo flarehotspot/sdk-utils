@@ -12,6 +12,7 @@ templ LoginPage(data sdkhttp.LoginPageData) {
 				<div id="login-con">
 					<h1>Login</h1>
 					<form id="login-form" method="POST" action={ templ.SafeURL(data.LoginUrl) }>
+                        @templ.Raw(data.CsrfHTML)
 						<div class="mb-3">
 							<label for="username" class="form-label">Username</label>
 							<input type="text" class="form-control" name="username" id="username" aria-describedby="username-help"/>

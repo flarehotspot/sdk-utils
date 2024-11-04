@@ -36,6 +36,10 @@ func BuildCore() {
 	workdir := filepath.Join(sdkpaths.TmpDir, "b/core", sdkstr.Rand(16))
 	defer os.RemoveAll(workdir)
 
+	if err := pkg.BuildTemplates(sdkpaths.CoreDir); err != nil {
+		panic(err)
+	}
+
 	if err := pkg.BuildPluginSo(sdkpaths.CoreDir, workdir); err != nil {
 		panic(err)
 	}

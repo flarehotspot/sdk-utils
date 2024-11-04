@@ -14,6 +14,10 @@ func BuildLocalPlugins() error {
 		workdir := filepath.Join(sdkpaths.TmpDir, "builds", filepath.Base(pluginPath))
 		defer os.RemoveAll(workdir)
 
+		if err := BuildTemplates(pluginPath); err != nil {
+			return err
+		}
+
 		if err := BuildPluginSo(pluginPath, workdir); err != nil {
 			return err
 		}

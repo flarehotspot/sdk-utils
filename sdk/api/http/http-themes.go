@@ -52,6 +52,7 @@ type PortalLayoutData struct {
 
 type LoginPageData struct {
 	FlashMsg    FlashMsg
+	CsrfHTML    string
 	LoginUrl    string
 	UsernameErr error
 	PasswordErr error
