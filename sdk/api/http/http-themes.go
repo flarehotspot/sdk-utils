@@ -29,10 +29,12 @@ type FlashMsg struct {
 }
 
 type PageAssets struct {
-	ThemeJsSrc   string
-	ThemeCssHref string
-	PageJsSrc    string
-	PageCssHref  string
+	GlobalJsSrc   string
+	GlobalCssHref string
+	ThemeJsSrc    string
+	ThemeCssHref  string
+	PageJsSrc     string
+	PageCssHref   string
 }
 
 type LayoutData struct {
