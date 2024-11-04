@@ -4,15 +4,13 @@ import (
 	"core/internal/plugins"
 	"core/internal/web/controllers"
 	"core/internal/web/controllers/adminctrl"
+	"core/internal/web/middlewares"
 	"core/internal/web/router"
 	sdkhttp "sdk/api/http"
-
-	sdkstr "github.com/flarehotspot/go-utils/strings"
-	"github.com/gorilla/csrf"
 )
 
 func AdminRoutes(g *plugins.CoreGlobals) {
-	csrfMiddleware := csrf.Protect([]byte(sdkstr.Rand(16)))
+	csrfMiddleware := middlewares.CsrfMiddleware
 	authMw := g.CoreAPI.HttpAPI.Middlewares().AdminAuth()
 	rootR := router.RootRouter
 	adminR := g.CoreAPI.HttpAPI.HttpRouter().AdminRouter()
