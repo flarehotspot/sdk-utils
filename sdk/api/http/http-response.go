@@ -65,5 +65,5 @@ type HttpResponse interface {
 	// You need to call Flash(w, r, msg, typ) and then call any view rendering function to send the html that includes the flash message.
 	FlashMsg(w http.ResponseWriter, r *http.Request, msg string, typ string)
 
-	ErrorPage(w http.ResponseWriter, r *http.Request, err error, status int)
+	Error(w http.ResponseWriter, r *http.Request, err error, status int)
 }

@@ -12,7 +12,7 @@ func PortalIndexPage(g *plugins.CoreGlobals) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		_, t, err := g.PluginMgr.GetPortalTheme()
 		if err != nil {
-			g.CoreAPI.HttpAPI.HttpResponse().ErrorPage(w, r, err, 500)
+			g.CoreAPI.HttpAPI.HttpResponse().Error(w, r, err, 500)
 			return
 		}
 

@@ -1,11 +1,11 @@
 package plugins
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	sdkhttp "sdk/api/http"
 
-	resp "core/internal/web/response"
 	"core/resources/views"
 
 	paths "github.com/flarehotspot/go-utils/paths"
@@ -24,7 +24,7 @@ func NewHttpResponse(api *PluginApi) *HttpResponse {
 func (self *HttpResponse) AdminView(w http.ResponseWriter, r *http.Request, v sdkhttp.ViewPage) {
 	_, themeApi, err := self.api.PluginsMgrApi.GetAdminTheme()
 	if err != nil {
-		self.ErrorPage(w, r, err, http.StatusInternalServerError)
+		self.Error(w, r, err, http.StatusInternalServerError)
 		return
 	}
 
@@ -44,7 +44,7 @@ func (self *HttpResponse) AdminView(w http.ResponseWriter, r *http.Request, v sd
 func (self *HttpResponse) PortalView(w http.ResponseWriter, r *http.Request, v sdkhttp.ViewPage) {
 	_, themeApi, err := self.api.PluginsMgrApi.GetPortalTheme()
 	if err != nil {
-		self.ErrorPage(w, r, err, http.StatusInternalServerError)
+		self.Error(w, r, err, http.StatusInternalServerError)
 		return
 	}
 
@@ -77,7 +77,9 @@ func (self *HttpResponse) File(w http.ResponseWriter, r *http.Request, file stri
 }
 
 func (self *HttpResponse) Json(w http.ResponseWriter, r *http.Request, data interface{}, status int) {
-	resp.Json(w, data, status)
+	if err := json.NewEncoder(w).Encode(data); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
 }
 
 func (self *HttpResponse) FlashMsg(w http.ResponseWriter, r *http.Request, msg string, t string) {
@@ -89,7 +91,7 @@ func (self *HttpResponse) Redirect(w http.ResponseWriter, r *http.Request, route
 	http.Redirect(w, r, url, http.StatusSeeOther)
 }
 
-func (self *HttpResponse) ErrorPage(w http.ResponseWriter, r *http.Request, err error, status int) {
+func (self *HttpResponse) Error(w http.ResponseWriter, r *http.Request, err error, status int) {
 	w.WriteHeader(status)
 	page := views.ErrorPage(err)
 	v := sdkhttp.ViewPage{PageContent: page}

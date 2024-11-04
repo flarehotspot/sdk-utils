@@ -7,9 +7,8 @@ import (
 
 	"core/internal/connmgr"
 	"core/internal/db"
-	"sdk/api/http"
 	"core/internal/utils/hostfinder"
-	"core/internal/web/response"
+	sdkhttp "sdk/api/http"
 )
 
 func DeviceMiddleware(dtb *db.Database, clntMgr *connmgr.ClientRegister) func(next http.Handler) http.Handler {
@@ -23,19 +22,19 @@ func DeviceMiddleware(dtb *db.Database, clntMgr *connmgr.ClientRegister) func(ne
 
 			ip, _, err := net.SplitHostPort(r.RemoteAddr)
 			if err != nil {
-				response.ErrorJson(w, err.Error(), 500)
+				w.WriteHeader(http.StatusBadRequest)
 				return
 			}
 
 			h, err := hostfinder.FindByIp(ip)
 			if err != nil {
-				response.ErrorJson(w, err.Error(), 500)
+				w.WriteHeader(http.StatusBadRequest)
 				return
 			}
 
 			clnt, err := clntMgr.Register(r, h.MacAddr, h.IpAddr, h.Hostname)
 			if err != nil {
-				response.ErrorJson(w, err.Error(), 500)
+				w.WriteHeader(http.StatusBadRequest)
 				return
 			}
 
