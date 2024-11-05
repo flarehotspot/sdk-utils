@@ -1,0 +1,41 @@
+package admin
+
+import "sdk/api/http"
+import "sdk/api/plugin"
+
+templ AdminLayout(api sdkplugin.PluginApi, data sdkhttp.AdminLayoutData) {
+	<html>
+		<head>
+			<script src={ data.Layout.Assets.GlobalJsSrc }></script>
+			<script src={ data.Layout.Assets.ThemeJsSrc }></script>
+			<script src={ data.Layout.Assets.PageJsSrc }></script>
+			<link rel="stylesheet" href={ data.Layout.Assets.GlobalCssHref }/>
+			<link rel="stylesheet" href={ data.Layout.Assets.ThemeCssHref }/>
+			<link rel="stylesheet" href={ data.Layout.Assets.PageCssHref }/>
+		</head>
+		<body>
+			<div>
+				<div>
+					<ul>
+						for _, nav := range data.Navs {
+							<li>
+								{ nav.Label }
+								<ul>
+									for _, subnav := range nav.Items {
+										<li>
+											<a href={ templ.SafeURL(subnav.RouteUrl) }>{ subnav.Label }</a>
+										</li>
+									}
+								</ul>
+							</li>
+						}
+					</ul>
+				</div>
+				<!-- PageContent -->
+				<div>
+					@data.Layout.PageContent
+				</div>
+			</div>
+		</body>
+	</html>
+}

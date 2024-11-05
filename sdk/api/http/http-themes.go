@@ -45,7 +45,7 @@ type LayoutData struct {
 
 type AdminLayoutData struct {
 	Layout LayoutData
-	Navs   AdminNavList
+	Navs   []AdminNavList
 }
 
 type PortalLayoutData struct {

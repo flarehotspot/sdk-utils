@@ -21,10 +21,17 @@ const (
 	NavCategoryTools    INavCategory = "tools"
 )
 
-// AdminNavItem represents an admin navigation menu item.
-type AdminNavItem struct {
+// AdminNavItemOpt represents an admin navigation menu item.
+type AdminNavItemOpt struct {
 	Category    INavCategory
 	Label       string
+	RouteName   string
+	RouteParams map[string]string
+}
+
+type PortalNavItemOpt struct {
+	Label       string
+	IconUrl     string
 	RouteName   string
 	RouteParams map[string]string
 }
@@ -34,21 +41,25 @@ type AdminNavList struct {
 	Items []AdminNavItem
 }
 
+type AdminNavItem struct {
+	Label    string
+	RouteUrl string
+}
+
 type PortalNavItem struct {
-	Label       string
-	IconUrl     string
-	RouteName   string
-	RouteParams map[string]string
+	Label    string
+	IconUrl  string
+	RouteUrl string
 }
 
 type NavsApi interface {
-	AdminNavsFactory(func(r *http.Request) []AdminNavItem)
+	AdminNavsFactory(func(r *http.Request) []AdminNavItemOpt)
 
-	PortalNavsFactory(func(r *http.Request) []PortalNavItem)
+	PortalNavsFactory(func(r *http.Request) []PortalNavItemOpt)
 
-	// Returns the consolidated vue navigation list from all plugins for the admin dashboard.
+	// Returns the consolidated navigation list from all plugins for the admin dashboard.
 	GetAdminNavs(r *http.Request) []AdminNavList
 
-	// Returns the consolidated vue navigation list from all plugins for the portal.
+	// Returns the consolidated navigation list from all plugins for the portal.
 	GetPortalItems(r *http.Request) []PortalNavItem
 }

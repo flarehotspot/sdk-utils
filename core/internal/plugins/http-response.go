@@ -28,12 +28,14 @@ func (self *HttpResponse) AdminView(w http.ResponseWriter, r *http.Request, v sd
 		return
 	}
 
+	navs := self.api.HttpAPI.navsApi.GetAdminNavs(r)
 	assets := self.api.Utl.GetAdminAssetsForPage(v)
 	data := sdkhttp.AdminLayoutData{
 		Layout: sdkhttp.LayoutData{
 			Assets:      assets,
 			PageContent: v.PageContent,
 		},
+		Navs: navs,
 	}
 
 	w.Header().Set("Content-Type", "text/html")

@@ -7,7 +7,6 @@ import (
 	sdkhttp "sdk/api/http"
 	plugin "sdk/api/plugin"
 
-	"com.flarego.default-theme/resources/views"
 	"com.flarego.default-theme/resources/views/admin"
 	"com.flarego.default-theme/resources/views/auth"
 	"github.com/a-h/templ"
@@ -17,7 +16,7 @@ func SetAdminTheme(api plugin.PluginApi) {
 
 	api.Themes().NewAdminTheme(sdkhttp.AdminThemeOpts{
 		LayoutFactory: func(w http.ResponseWriter, r *http.Request, data sdkhttp.AdminLayoutData) templ.Component {
-			layout := views.AdminLayout(data)
+			layout := admin.AdminLayout(api, data)
 			return layout
 		},
 		LoginPageFactory: func(w http.ResponseWriter, r *http.Request, data sdkhttp.LoginPageData) sdkhttp.ViewPage {
@@ -30,15 +29,15 @@ func SetAdminTheme(api plugin.PluginApi) {
 		},
 	})
 
-	// api.Http().VueRouter().AdminNavsFunc(func(acct sdkacct.Account) []sdkhttp.VueAdminNav {
-	// 	return []sdkhttp.VueAdminNav{
-	// 		{
-	// 			Category:  sdkhttp.NavCategorySystem,
-	// 			Label:     "Dashboard",
-	// 			RouteName: "dashboard",
-	// 		},
-	// 	}
-	// })
+	api.Http().Navs().AdminNavsFactory(func(r *http.Request) []sdkhttp.AdminNavItemOpt {
+		return []sdkhttp.AdminNavItemOpt{
+			{
+				Label:     "Test",
+				Category:  sdkhttp.NavCategorySystem,
+				RouteName: "test",
+			},
+		}
+	})
 
 	// api.Themes().NewAdminTheme(themes.AdminTheme{
 	// 	CssLib: themes.CssLibBootstrap4,
