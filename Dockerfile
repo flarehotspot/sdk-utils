@@ -30,6 +30,5 @@ CMD cp go.work.default go.work && \
         -R 'plugins\/update\/.*\.templ$' \
         -R 'plugins\/backup\/.*\.templ$' \
         -R '(.*)mono\.go' \
-        -R 'tools' \
         -R '\.tmp\/*.' \
         -s -- sh -c './start.sh' -v

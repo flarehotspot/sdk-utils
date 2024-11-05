@@ -15,6 +15,8 @@ func Init(g *plugins.CoreGlobals) {
 	InitDirs()
 
 	go func() {
+		InitCoreLib()
+
 		bp.AppendLog("Initializing plugins...")
 		// time.Sleep(1000 * 3 * time.Millisecond)
 		InitPlugins(g)
