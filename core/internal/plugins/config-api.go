@@ -2,15 +2,16 @@ package plugins
 
 import (
 	cfgapi "core/internal/config/api"
-	"sdk/api/config"
+	sdkcfg "sdk/api/config"
 )
 
 const (
 	DEFAULT_CONFIG_KEY = "default"
 )
 
-func NewConfigApi(api *PluginApi) *ConfigApi {
-	return &ConfigApi{api}
+func NewConfigApi(api *PluginApi) {
+	cfgApi := &ConfigApi{api}
+	api.ConfigAPI = cfgApi
 }
 
 type ConfigApi struct {

@@ -9,11 +9,12 @@ import (
 	sdkpayments "sdk/api/payments"
 )
 
-func NewPaymentsApi(plugin *PluginApi, pmgr *PaymentsMgr) *PaymentsApi {
-	return &PaymentsApi{
-		api:         plugin,
+func NewPaymentsApi(api *PluginApi, pmgr *PaymentsMgr) {
+	pmtApi := &PaymentsApi{
+		api:         api,
 		paymentsMgr: pmgr,
 	}
+	api.PaymentsAPI = pmtApi
 }
 
 type PaymentsApi struct {

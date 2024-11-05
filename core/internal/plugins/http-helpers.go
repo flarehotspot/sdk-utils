@@ -1,20 +1,14 @@
 package plugins
 
 import (
-	"fmt"
 	"html/template"
-	"log"
+	"net/http"
 	"path"
-	"path/filepath"
-	"strings"
-	texttemplate "text/template"
 
-	"core/internal/utils/flaretmpl"
-	"core/internal/web/response"
-	"core/internal/web/router"
-	rnames "core/internal/web/routes/names"
 	sdkhttp "sdk/api/http"
 	plugin "sdk/api/plugin"
+
+	"github.com/gorilla/csrf"
 )
 
 func NewHttpHelpers(api *PluginApi) sdkhttp.HttpHelpers {
@@ -25,77 +19,17 @@ type HttpHelpers struct {
 	api *PluginApi
 }
 
+func (self *HttpHelpers) CsrfHtmlTag(r *http.Request) string {
+	tpl := csrf.TemplateField(r)
+	return string(tpl)
+}
+
 func (self *HttpHelpers) Translate(msgtype string, msgk string, pairs ...interface{}) string {
 	return self.api.Utl.Translate(msgtype, msgk, pairs...)
 }
 
 func (self *HttpHelpers) AssetPath(p string) string {
 	return path.Join("/plugin", self.api.Pkg(), self.api.Version(), "assets/dist", p)
-}
-
-func (self *HttpHelpers) VueComponentPath(path string) string {
-	assetsR := router.AssetsRouter.Get(rnames.RouteAssetVueComponent)
-	if assetsR == nil {
-		log.Println("Route not found: ", rnames.RouteAssetVueComponent)
-		return ""
-	}
-
-	pluginApi := self.api
-	url, err := assetsR.URL("pkg", pluginApi.Pkg(), "version", pluginApi.Version(), "path", path)
-	if err != nil {
-		log.Println("Error generating URL: ", err.Error())
-		return ""
-	}
-
-	return url.String()
-}
-
-func (self *HttpHelpers) EmbedJs(path string, data interface{}) template.JS {
-	jspath := self.api.Utl.Resource(filepath.Join("assets", path))
-
-	var output strings.Builder
-
-	jstmpl, err := flaretmpl.GetTextTemplate(jspath)
-	if err != nil {
-		jstmpl, _ = texttemplate.New("").Parse(fmt.Sprintf("console.error('%s: %s')", jspath, err.Error()))
-	}
-
-	vdata := &response.ViewData{
-		ViewData:    data,
-		ViewHelpers: self,
-	}
-
-	err = jstmpl.Execute(&output, vdata)
-	if err != nil {
-		log.Println("Error executing template: ", err.Error())
-		return template.JS(fmt.Sprintf("console.error('%s: %s')", jspath, err.Error()))
-	}
-
-	return template.JS(output.String())
-}
-
-func (self *HttpHelpers) EmbedCss(path string, data interface{}) template.CSS {
-	csspath := self.api.Utl.Resource(filepath.Join("assets", path))
-
-	var output strings.Builder
-
-	csstmpl, err := flaretmpl.GetTextTemplate(csspath)
-	if err != nil {
-		csstmpl, _ = texttemplate.New("").Parse(fmt.Sprintf("/* %s: %s */", csspath, err.Error()))
-	}
-
-	vdata := &response.ViewData{
-		ViewData:    data,
-		ViewHelpers: self,
-	}
-
-	err = csstmpl.Execute(&output, vdata)
-	if err != nil {
-		log.Println("Error executing template: ", err.Error())
-		return template.CSS(fmt.Sprintf("/* %s: %s */", csspath, err.Error()))
-	}
-
-	return template.CSS(output.String())
 }
 
 func (self *HttpHelpers) PluginMgr() plugin.PluginsMgrApi {

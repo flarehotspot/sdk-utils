@@ -7,9 +7,9 @@ import (
 
 	"core/internal/connmgr"
 	"core/internal/db"
-	"core/internal/web/middlewares"
 	"core/internal/web/router"
 	sdkhttp "sdk/api/http"
+
 	"github.com/gorilla/mux"
 )
 
@@ -24,12 +24,16 @@ func NewHttpRouterApi(api *PluginApi, db *db.Database, clnt *connmgr.ClientRegis
 	pluginMux := router.PluginRouter.PathPrefix(prefix).Subrouter()
 
 	adminMux := pluginMux.PathPrefix("/admin").Subrouter()
-	adminMux.Use(middlewares.AdminAuth)
+	// adminMux.Use(api.HttpAPI.middlewares.AdminAuth())
 
 	pluginRouter := &HttpRouterInstance{api, pluginMux}
 	adminRouter := &HttpRouterInstance{api, adminMux}
 
 	return &HttpRouterApi{api, adminRouter, pluginRouter}
+}
+
+func (self *HttpRouterApi) Init() {
+	self.adminRouter.Use(self.api.HttpAPI.middlewares.AdminAuth())
 }
 
 func (self *HttpRouterApi) AdminRouter() sdkhttp.HttpRouterInstance {

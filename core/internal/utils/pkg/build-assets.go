@@ -59,6 +59,19 @@ func BuildAssets(pluginDir string) (err error) {
 		return
 	}
 
+	// link core js libs
+	libSrc := filepath.Join(sdkpaths.CoreDir, "resources/assets/lib")
+	libDest := filepath.Join(pluginDir, "node_modules/@flarehotspot/lib")
+	if !sdkfs.Exists(libDest) {
+		if err = sdkfs.EnsureDir(filepath.Dir(libDest)); err != nil {
+			return
+		}
+		if err = os.Symlink(libSrc, libDest); err != nil {
+			return
+		}
+	}
+	defer os.RemoveAll(filepath.Join(pluginDir, "node_modules"))
+
 	outManifest := OutputManifest{}
 
 	adminManifestPath := filepath.Join(pluginDir, AdminManifestJson)

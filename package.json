@@ -1,7 +1,6 @@
 {
   "author": "Flarego Technologies Corporation",
   "dependencies": {
-    "@flarehotspot/lib": "./core/resources/assets/lib",
     "@octokit/core": "^5.1.0",
     "fs-extra": "^11.2.0",
     "jquery": "1"

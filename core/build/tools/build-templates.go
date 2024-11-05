@@ -1,17 +1,9 @@
 package tools
 
-import (
-	"core/env"
-	"core/internal/utils/pkg"
-)
+import "core/internal/utils/pkg"
 
 func BuildTemplates() {
-	includeCore := false
-	if env.GO_ENV == env.ENV_DEV {
-		includeCore = true
-	}
-
-	pluginDirs := pkg.ListPluginDirs(includeCore)
+	pluginDirs := pkg.ListPluginDirs(true)
 	for _, p := range pluginDirs {
 		pkg.BuildTemplates(p)
 	}

@@ -14,9 +14,11 @@ type HttpMiddlewares interface {
 	AdminAuth() func(next http.Handler) http.Handler
 
 	// Returns the middleware for caching the response.
-    // It forces browsers to cache the response for n number of days.
+	// It forces browsers to cache the response for n number of days.
 	CacheResponse(days int) func(next http.Handler) http.Handler
 
 	// Returns the middleware that checks pending purchases
 	PendingPurchase() func(next http.Handler) http.Handler
+
+	CsrfProtect() func(next http.Handler) http.Handler
 }

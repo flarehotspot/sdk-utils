@@ -29,30 +29,14 @@ type PluginFile struct {
 }
 
 var PLuginFiles = []PluginFile{
-	{
-		File:     "plugin.json",
-		Optional: false,
-	},
-	{
-		File:     "plugin.so",
-		Optional: false,
-	},
-	{
-		File:     "metadata.json",
-		Optional: true,
-	},
-	{
-		File:     "resources",
-		Optional: true,
-	},
-	{
-		File:     "go.mod",
-		Optional: false,
-	},
-	{
-		File:     "LICENSE.txt",
-		Optional: true,
-	},
+	{File: "LICENSE.txt", Optional: false},
+	{File: "plugin.json", Optional: false},
+	{File: "plugin.so", Optional: false},
+	{File: "metadata.json", Optional: true},
+	{File: "resources/assets/dist", Optional: true},
+	{File: "resources/migrations", Optional: true},
+	{File: "resources/translations", Optional: true},
+	{File: "go.mod", Optional: false},
 }
 
 func InstallSrcDef(w io.Writer, def PluginSrcDef) (info sdkplugin.PluginInfo, err error) {
@@ -232,14 +216,15 @@ func InstallPlugin(src string, opts InstallOpts) error {
 
 		defer mnt.Unmount()
 	} else {
-		parentpath := filepath.Join(sdkpaths.TmpDir, "plugins", "build", sdkstr.Rand(16))
+		parentpath := filepath.Join(sdkpaths.TmpDir, "b", sdkstr.Rand(16))
 		buildpath = filepath.Join(parentpath, "0")
 		if err := sdkfs.EmptyDir(buildpath); err != nil {
 			return err
 		}
+		defer os.RemoveAll(parentpath)
 	}
 
-	if err := BuildPlugin(src, buildpath); err != nil {
+	if err := BuildPluginSo(src, buildpath); err != nil {
 		log.Println("Error building plugin: ", err)
 		return err
 	}
@@ -259,7 +244,6 @@ func InstallPlugin(src string, opts InstallOpts) error {
 	}
 
 	log.Println("Copying plugin files to: ", installPath)
-
 	for _, f := range PLuginFiles {
 		err := sdkfs.Copy(filepath.Join(src, f.File), filepath.Join(installPath, f.File))
 		if err != nil && !f.Optional {
