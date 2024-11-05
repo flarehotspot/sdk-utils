@@ -2,6 +2,7 @@ package plugins
 
 import (
 	"html/template"
+	"net/http"
 	"path"
 
 	sdkhttp "sdk/api/http"
@@ -18,9 +19,9 @@ type HttpHelpers struct {
 	api *PluginApi
 }
 
-func (self *HttpHelpers) CsrfHtmlTag() string {
-	t := csrf.TemplateTag
-	return t
+func (self *HttpHelpers) CsrfHtmlTag(r *http.Request) string {
+	tpl := csrf.TemplateField(r)
+	return string(tpl)
 }
 
 func (self *HttpHelpers) Translate(msgtype string, msgk string, pairs ...interface{}) string {

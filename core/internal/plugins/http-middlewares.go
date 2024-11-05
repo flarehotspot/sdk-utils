@@ -29,7 +29,7 @@ type PluginMiddlewares struct {
 func (self *PluginMiddlewares) AdminAuth() func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			acct, err := webutil.IsAdminAuthenticated(w, r)
+			acct, err := webutil.IsAdminAuthenticated(r)
 			if err != nil {
 				loginRoute := router.RootRouter.Get("admin:login")
 				loginUrl, _ := loginRoute.URL()

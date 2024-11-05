@@ -16,8 +16,8 @@ func AdminRoutes(g *plugins.CoreGlobals) {
 	adminR := g.CoreAPI.HttpAPI.HttpRouter().AdminRouter()
 
 	adminIndexCtrl := controllers.AdminIndexPage(g)
-	adminLoginCtrl := adminctrl.AdminLoginCtrl(g)
-	adminAuthCtrl := adminctrl.AdminAuthenticateCtrl(g)
+	adminLoginCtrl := controllers.AdminLoginCtrl(g)
+	adminAuthCtrl := controllers.AdminAuthenticateCtrl(g)
 	adminSseCtrl := controllers.AdminSseHandler(g)
 
 	rootR.Handle("/admin", authMw(adminIndexCtrl)).Methods("GET").Name("admin:index")

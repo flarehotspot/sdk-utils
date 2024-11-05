@@ -1,16 +1,19 @@
-package adminctrl
+package controllers
 
 import (
 	"core/internal/plugins"
 	"core/internal/web/router"
 	"net/http"
 	sdkhttp "sdk/api/http"
-
-	"github.com/gorilla/csrf"
 )
 
 func AdminLoginCtrl(g *plugins.CoreGlobals) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if g.CoreAPI.HttpAPI.Auth().IsAuthenticated(r) {
+			http.Redirect(w, r, "/admin", http.StatusSeeOther)
+			return
+		}
+
 		res := g.CoreAPI.HttpAPI.HttpResponse()
 		_, t, err := g.PluginMgr.GetAdminTheme()
 		if err != nil {
@@ -20,15 +23,13 @@ func AdminLoginCtrl(g *plugins.CoreGlobals) http.Handler {
 
 		authRoute := router.RootRouter.Get("admin:authenticate")
 		authUrl, _ := authRoute.URL()
-		csrf := csrf.TemplateField(r)
 
 		data := sdkhttp.LoginPageData{
-			CsrfHTML: string(csrf),
 			LoginUrl: authUrl.String(),
 		}
 
-		page := t.AdminTheme.LoginPageFactory(w, r, data)
-		g.CoreAPI.HttpAPI.HttpResponse().AdminView(w, r, page)
+		page := t.PortalTheme.LoginPageFactory(w, r, data)
+		g.CoreAPI.HttpAPI.HttpResponse().PortalView(w, r, page)
 	})
 }
 

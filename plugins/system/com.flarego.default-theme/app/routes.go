@@ -15,9 +15,9 @@ const (
 )
 
 func SetupRoutes(api sdkplugin.PluginApi) {
-	pluginRouter := api.Http().HttpRouter().PluginRouter()
+	// pluginRouter := api.Http().HttpRouter().PluginRouter()
 	adminRouter := api.Http().HttpRouter().AdminRouter()
-	pluginRouter.Get("/test", controllers.IndexCtrl(api)).Name("index")
+	// pluginRouter.Get("/test", controllers.IndexCtrl(api)).Name("index")
 	adminRouter.Get("/test", controllers.TestCtrl(api)).Name("test")
 	// pluginRouter.Group("/auth", func(subrouter sdkhttp.HttpRouterInstance) {
 	// 	subrouter.Post("/login", controllers.LoginCtrl(api)).Name(RouteNameLogin)

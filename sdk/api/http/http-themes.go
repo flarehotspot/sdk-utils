@@ -53,8 +53,6 @@ type PortalLayoutData struct {
 }
 
 type LoginPageData struct {
-	FlashMsg    FlashMsg
-	CsrfHTML    string
 	LoginUrl    string
 	UsernameErr error
 	PasswordErr error
@@ -69,7 +67,6 @@ type AdminThemeOpts struct {
 	CssFile          string
 	CssLib           CssLib
 	LayoutFactory    func(w http.ResponseWriter, r *http.Request, data AdminLayoutData) templ.Component
-	LoginPageFactory func(w http.ResponseWriter, r *http.Request, data LoginPageData) ViewPage
 	IndexPageFactory func(w http.ResponseWriter, r *http.Request) ViewPage
 }
 
@@ -78,5 +75,6 @@ type PortalThemeOpts struct {
 	CssFile          string
 	CssLib           CssLib
 	LayoutFactory    func(w http.ResponseWriter, r *http.Request, data PortalLayoutData) templ.Component
+	LoginPageFactory func(w http.ResponseWriter, r *http.Request, data LoginPageData) ViewPage
 	IndexPageFactory func(w http.ResponseWriter, r *http.Request, data PortalIndexData) ViewPage
 }

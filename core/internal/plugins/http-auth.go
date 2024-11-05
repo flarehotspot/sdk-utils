@@ -27,6 +27,11 @@ func (self *HttpAuth) CurrentAcct(r *http.Request) (sdkacct.Account, error) {
 	return helpers.CurrentAcct(r)
 }
 
+func (self *HttpAuth) IsAuthenticated(r *http.Request) bool {
+	_, err := webutil.IsAdminAuthenticated(r)
+	return err == nil
+}
+
 func (self *HttpAuth) Authenticate(username string, password string) (sdkacct.Account, error) {
 	acct, err := accounts.Find(username)
 	if err != nil {

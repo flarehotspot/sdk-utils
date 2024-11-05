@@ -16,7 +16,7 @@ const (
 	AuthTokenCookie = "auth-token"
 )
 
-func IsAdminAuthenticated(w http.ResponseWriter, r *http.Request) (*accounts.Account, error) {
+func IsAdminAuthenticated(r *http.Request) (*accounts.Account, error) {
 	authtoken, err := sdkhttp.GetCookie(r, AuthTokenCookie)
 	if err != nil {
 		bearer := r.Header.Get("Authorization")
