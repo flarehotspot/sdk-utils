@@ -20,6 +20,8 @@ type HttpHelpers interface {
 	// Returns the html for the ads view.
 	AdsView() (html template.HTML)
 
+	CsrfHtmlTag() string
+
 	// Translates a message into the current language settings from application config.
 	// msgtype is the message type, e.g. "error", "success", "info", "warning".
 	// For example, if the current language is "en", then the following code in your template:

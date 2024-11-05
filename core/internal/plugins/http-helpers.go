@@ -6,6 +6,8 @@ import (
 
 	sdkhttp "sdk/api/http"
 	plugin "sdk/api/plugin"
+
+	"github.com/gorilla/csrf"
 )
 
 func NewHttpHelpers(api *PluginApi) sdkhttp.HttpHelpers {
@@ -14,6 +16,11 @@ func NewHttpHelpers(api *PluginApi) sdkhttp.HttpHelpers {
 
 type HttpHelpers struct {
 	api *PluginApi
+}
+
+func (self *HttpHelpers) CsrfHtmlTag() string {
+	t := csrf.TemplateTag
+	return t
 }
 
 func (self *HttpHelpers) Translate(msgtype string, msgk string, pairs ...interface{}) string {
