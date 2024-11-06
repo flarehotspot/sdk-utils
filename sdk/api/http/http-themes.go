@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	CssLibBootstrap4 CssLib = "bootstrap4"
+	CssLibBootstrap5 CssLib = "bootstrap5"
 )
 
 type HttpThemesApi interface {
