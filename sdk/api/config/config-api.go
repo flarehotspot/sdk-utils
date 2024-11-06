@@ -6,6 +6,8 @@
 
 package sdkcfg
 
+import sdkfields "sdk/api/config/fields"
+
 // ConfigApi is used to access the configuration API.
 type ConfigApi interface {
 
@@ -17,4 +19,6 @@ type ConfigApi interface {
 
 	// Get the custom configuration guration api.
 	Custom(key string) CustomCfgApi
+
+	Plugin([]sdkfields.Section)
 }
