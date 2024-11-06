@@ -1,8 +1,12 @@
 {
   "theme.js": [
-    "./portal/portal.js"
+    "./vendor/bootstrap-5.3.3/js/bootstrap.bundle.js",
+    "./vendor/bootstrap-5.3.3/js/color-modes.js"
   ],
   "theme.css": [
-    "./vendor/bootstrap-4.6.1/bootstrap.min.css"
+    "./vendor/bootstrap-5.3.3/css/bootstrap.css",
+    "./vendor/bootstrap-5.3.3/css/navbar-fixed.css",
+    "./vendor/bootstrap-5.3.3/css/fixes.css",
+    "./vendor/bootstrap-5.3.3/css/example.css"
   ]
 }

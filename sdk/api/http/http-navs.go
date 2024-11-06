@@ -10,6 +10,20 @@ import (
 	"net/http"
 )
 
+type NavsApi interface {
+	// Register a factory function that returns the admin navigation menu items of your plugin.
+	AdminNavsFactory(func(r *http.Request) []AdminNavItemOpt)
+
+	// Register a factory function that returns the portal navigation menu items of your plugin.
+	PortalNavsFactory(func(r *http.Request) []PortalNavItemOpt)
+
+	// Returns the consolidated navigation list from all plugins for the admin dashboard.
+	GetAdminNavs(r *http.Request) []AdminNavList
+
+	// Returns the consolidated navigation list from all plugins for the portal.
+	GetPortalItems(r *http.Request) []PortalNavItem
+}
+
 type INavCategory string
 
 // List of admin navigation menu categories.
@@ -50,16 +64,4 @@ type PortalNavItem struct {
 	Label    string
 	IconUrl  string
 	RouteUrl string
-}
-
-type NavsApi interface {
-	AdminNavsFactory(func(r *http.Request) []AdminNavItemOpt)
-
-	PortalNavsFactory(func(r *http.Request) []PortalNavItemOpt)
-
-	// Returns the consolidated navigation list from all plugins for the admin dashboard.
-	GetAdminNavs(r *http.Request) []AdminNavList
-
-	// Returns the consolidated navigation list from all plugins for the portal.
-	GetPortalItems(r *http.Request) []PortalNavItem
 }

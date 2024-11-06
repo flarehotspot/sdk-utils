@@ -13,6 +13,9 @@ import (
 
 func SetAdminTheme(api plugin.PluginApi) {
 	api.Themes().NewAdminTheme(sdkhttp.AdminThemeOpts{
+		JsFile:  "theme.js",
+		CssFile: "theme.css",
+		CssLib:  sdkhttp.CssLibBootstrap5,
 		LayoutFactory: func(w http.ResponseWriter, r *http.Request, data sdkhttp.AdminLayoutData) templ.Component {
 			layout := admin.AdminLayout(api, data)
 			return layout

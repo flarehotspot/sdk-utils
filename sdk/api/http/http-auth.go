@@ -17,6 +17,7 @@ type HttpAuth interface {
 	// Get the current admin user from the http request.
 	CurrentAcct(r *http.Request) (sdkacct.Account, error)
 
+	// Check if the user is authenticated
 	IsAuthenticated(r *http.Request) bool
 
 	// Authenticate the user and return the account
