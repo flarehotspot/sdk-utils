@@ -15,12 +15,14 @@ func Init(g *plugins.CoreGlobals) {
 	InitDirs()
 
 	go func() {
+		InitCoreLib()
+
 		bp.AppendLog("Initializing plugins...")
-		time.Sleep(1000 * 3 * time.Millisecond)
+		// time.Sleep(1000 * 3 * time.Millisecond)
 		InitPlugins(g)
 
 		// delay boot
-		time.Sleep(1000 * 3 * time.Millisecond)
+		// time.Sleep(1000 * 3 * time.Millisecond)
 
 		bp.AppendLog("Initializing storage...")
 		InitStorage()

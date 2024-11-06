@@ -5,8 +5,9 @@ import (
 	acct "sdk/api/accounts"
 )
 
-func NewAcctApi(api *PluginApi) *AccountsApi {
-	return &AccountsApi{api}
+func NewAcctApi(api *PluginApi) {
+	acctApi := &AccountsApi{api}
+	api.AcctAPI = acctApi
 }
 
 type AccountsApi struct {

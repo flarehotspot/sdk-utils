@@ -88,7 +88,7 @@ type PluginApi interface {
 	Uci() sdkuci.UciApi
 
 	// Returns an instance of the themes api.
-	Themes() sdkhttp.ThemesApi
+	Themes() sdkhttp.HttpThemesApi
 
 	// Features returns a slice of strings representing the features supported by the plugin.
 	Features() []string

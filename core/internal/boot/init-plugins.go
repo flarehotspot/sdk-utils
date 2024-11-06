@@ -7,7 +7,6 @@ import (
 	"log"
 	"os"
 	sdkplugin "sdk/api/plugin"
-	"time"
 
 	"core/internal/plugins"
 	"core/internal/utils/pkg"
@@ -92,7 +91,7 @@ func InitPlugins(g *plugins.CoreGlobals) {
 			}
 		}
 
-		time.Sleep(1000 * 3 * time.Millisecond)
+		// time.Sleep(1000 * 3 * time.Millisecond)
 	}
 
 	// Load plugins

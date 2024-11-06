@@ -17,7 +17,10 @@ type HttpAuth interface {
 	// Get the current admin user from the http request.
 	CurrentAcct(r *http.Request) (sdkacct.Account, error)
 
-    // Authenticate the user and return the account
+	// Check if the user is authenticated
+	IsAuthenticated(r *http.Request) bool
+
+	// Authenticate the user and return the account
 	Authenticate(username string, password string) (sdkacct.Account, error)
 
 	// Sets the auth-token cookie in response header

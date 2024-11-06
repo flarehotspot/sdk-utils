@@ -1,1 +1,2 @@
-console.log("jquery:", $)
+var kkk = require('@core/lib/kkk');
+kkk();

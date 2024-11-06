@@ -55,6 +55,10 @@ func main() {
 		BuildPlugin()
 		return
 
+	case "build-templates":
+		tools.BuildTemplates()
+		return
+
 	case "fix-workspace":
 		tools.CreateGoWorkspace()
 		return
@@ -65,11 +69,6 @@ func main() {
 			installPath = os.Args[2]
 		}
 		tools.InstallGo(installPath)
-		return
-
-	case "templates":
-		fmt.Println("Building templates...")
-		tools.BuildTemplates()
 		return
 
 	case "update":
@@ -169,7 +168,7 @@ func BuildPlugin() {
 	} else {
 		pluginPath := os.Args[2]
 		workdir := filepath.Join(sdkpaths.TmpDir, "builds", filepath.Base(pluginPath))
-		err = pkg.BuildPlugin(pluginPath, workdir)
+		err = pkg.BuildPluginSo(pluginPath, workdir)
 	}
 	if err != nil {
 		fmt.Println("Error building plugin: " + err.Error())
@@ -272,13 +271,13 @@ list of commands:
 
     build-plugins                       Build plugin.so of all the local and system plugins. Similar to build-plugin command without arguments.
 
+    build-templates                     Compile templ files to golang.
+
     fix-workspace                       Re-generate the go.work file
 
     install-go  <install path>          Install Go to the given path. If install path argument is not defined, then it will install in
                                         the "$GO_CUSTOM_PATH" if defined, else it will install in "go" directory under the
                                         current working directory.
-
-    templates                           Compile all plugin templ files to go files
 
     update                              Updates the flare system
 `

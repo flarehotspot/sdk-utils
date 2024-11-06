@@ -45,16 +45,17 @@ func NewPluginApi(dir string, pmgr *PluginsMgr, trfkMgr *network.TrafficMgr) *Pl
 
 	pluginApi.info = info
 	pluginApi.models = pmgr.models
-	pluginApi.AcctAPI = NewAcctApi(pluginApi)
-	pluginApi.HttpAPI = NewHttpApi(pluginApi, pmgr.db, pmgr.clntReg, pmgr.models, pmgr.clntReg, pmgr.paymgr)
-	pluginApi.ConfigAPI = NewConfigApi(pluginApi)
-	pluginApi.PaymentsAPI = NewPaymentsApi(pluginApi, pmgr.paymgr)
-	pluginApi.ThemesAPI = NewThemesApi(pluginApi)
-	pluginApi.NetworkAPI = NewNetworkApi(trfkMgr)
-	pluginApi.AdsAPI = NewAdsApi(pluginApi)
-	pluginApi.InAppPurchaseAPI = NewInAppPurchaseApi(pluginApi)
-	pluginApi.UciAPI = NewUciApi()
-	pluginApi.LoggerAPI = NewLoggerApi()
+
+	NewAcctApi(pluginApi)
+	NewHttpApi(pluginApi, pmgr.db, pmgr.clntReg, pmgr.models, pmgr.clntReg, pmgr.paymgr)
+	NewConfigApi(pluginApi)
+	NewPaymentsApi(pluginApi, pmgr.paymgr)
+	NewThemesApi(pluginApi)
+	NewNetworkApi(pluginApi, trfkMgr)
+	NewAdsApi(pluginApi)
+	NewInAppPurchaseApi(pluginApi)
+	NewUciApi(pluginApi)
+	NewLoggerApi(pluginApi)
 
 	log.Println("NewPluginApi: ", dir, " - ", info.Package, " - ", info.Name, " - ", info.Version, " - ", info.Description)
 
@@ -71,7 +72,7 @@ type PluginApi struct {
 	HttpAPI          *HttpApi
 	ConfigAPI        *ConfigApi
 	PaymentsAPI      *PaymentsApi
-	ThemesAPI        *ThemesApi
+	ThemesAPI        *HttpThemesApi
 	NetworkAPI       *NetworkApi
 	AdsAPI           *AdsApi
 	InAppPurchaseAPI *InAppPurchaseApi
@@ -180,7 +181,7 @@ func (self *PluginApi) Uci() sdkuci.UciApi {
 	return self.UciAPI
 }
 
-func (self *PluginApi) Themes() sdkhttp.ThemesApi {
+func (self *PluginApi) Themes() sdkhttp.HttpThemesApi {
 	return self.ThemesAPI
 }
 

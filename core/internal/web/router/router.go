@@ -1,6 +1,7 @@
 package router
 
 import (
+	"core/internal/web/middlewares"
 	"errors"
 	"fmt"
 
@@ -25,6 +26,8 @@ func init() {
 	BootingRouter = mux.NewRouter().StrictSlash(true)
 	PluginRouter = RootRouter.PathPrefix("/p").Subrouter()
 	AssetsRouter = RootRouter.PathPrefix("/assets").Subrouter()
+
+	RootRouter.Use(middlewares.CsrfMiddleware)
 }
 
 func UrlForRoute(muxname sdkhttp.MuxRouteName, pairs ...string) (string, error) {

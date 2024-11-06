@@ -4,18 +4,26 @@ import (
 	"core/internal/plugins"
 	"core/internal/web/controllers"
 	"core/internal/web/controllers/adminctrl"
+	"core/internal/web/middlewares"
 	"core/internal/web/router"
 	sdkhttp "sdk/api/http"
 )
 
 func AdminRoutes(g *plugins.CoreGlobals) {
+	csrfMiddleware := middlewares.CsrfMiddleware
+	authMw := g.CoreAPI.HttpAPI.Middlewares().AdminAuth()
 	rootR := router.RootRouter
 	adminR := g.CoreAPI.HttpAPI.HttpRouter().AdminRouter()
 
 	adminIndexCtrl := controllers.AdminIndexPage(g)
+	adminLoginCtrl := controllers.AdminLoginCtrl(g)
+	adminAuthCtrl := controllers.AdminAuthenticateCtrl(g)
 	adminSseCtrl := controllers.AdminSseHandler(g)
 
-	rootR.Handle("/admin", adminIndexCtrl).Methods("GET").Name("admin:index")
+	rootR.Handle("/admin", authMw(adminIndexCtrl)).Methods("GET").Name("admin:index")
+	rootR.Handle("/login", csrfMiddleware(adminLoginCtrl)).Methods("GET").Name("admin:login")
+	rootR.Handle("/login", adminAuthCtrl).Methods("POST").Name("admin:authenticate")
+
 	adminR.Get("/events", adminSseCtrl).Name("admin:sse")
 
 	adminR.Group("/core", func(subrouter sdkhttp.HttpRouterInstance) {

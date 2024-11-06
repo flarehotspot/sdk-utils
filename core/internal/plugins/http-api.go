@@ -13,14 +13,14 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func NewHttpApi(api *PluginApi, db *db.Database, clnt *connmgr.ClientRegister, mdls *models.Models, dmgr *connmgr.ClientRegister, pmgr *PaymentsMgr) *HttpApi {
+func NewHttpApi(api *PluginApi, db *db.Database, clnt *connmgr.ClientRegister, mdls *models.Models, dmgr *connmgr.ClientRegister, pmgr *PaymentsMgr) {
 	navs := NewNavsApi(api)
 	auth := NewHttpAuth(api)
-	httpRouter := NewHttpRouterApi(api, db, clnt)
 	httpResp := NewHttpResponse(api)
 	middlewares := NewPluginMiddlewares(api, mdls, dmgr, pmgr)
+	httpRouter := NewHttpRouterApi(api, db, clnt)
 
-	return &HttpApi{
+	httpApi := &HttpApi{
 		api:         api,
 		auth:        auth,
 		httpRouter:  httpRouter,
@@ -28,6 +28,9 @@ func NewHttpApi(api *PluginApi, db *db.Database, clnt *connmgr.ClientRegister, m
 		httpResp:    httpResp,
 		middlewares: middlewares,
 	}
+
+	api.HttpAPI = httpApi
+	httpRouter.Init()
 }
 
 type HttpApi struct {

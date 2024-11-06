@@ -1,6 +1,7 @@
 package pkg
 
 import (
+	"core/env"
 	"core/internal/utils/cmd"
 	"core/internal/utils/encdisk"
 	"core/internal/utils/git"
@@ -77,7 +78,7 @@ func BuildFromGit(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, error) {
 	return info, nil
 }
 
-func BuildPlugin(pluginSrcDir string, workdir string) error {
+func BuildPluginSo(pluginSrcDir string, workdir string) error {
 	if pluginSrcDir == "" {
 		return errors.New("Build plugin error: no plugin source path")
 	}
@@ -141,12 +142,15 @@ use (
 		return err
 	}
 
-	if err := BuildTemplates(buildpath); err != nil {
+	if err := BuildAssets(pluginSrcDir); err != nil {
 		return err
 	}
 
-	if err := BuildAssets(pluginSrcDir); err != nil {
-		return err
+	// Don't build templates in development since it is already watched and built by another script.
+	if env.GO_ENV != env.ENV_DEV {
+		if err := BuildTemplates(buildpath); err != nil {
+			return err
+		}
 	}
 
 	gofile := "main.go"

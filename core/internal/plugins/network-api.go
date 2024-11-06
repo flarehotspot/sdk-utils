@@ -6,8 +6,9 @@ import (
 	sdknet "sdk/api/network"
 )
 
-func NewNetworkApi(trfk *cnet.TrafficMgr) *NetworkApi {
-	return &NetworkApi{trfk}
+func NewNetworkApi(api *PluginApi, trfk *cnet.TrafficMgr) {
+	networkApi := &NetworkApi{trfk}
+	api.NetworkAPI = networkApi
 }
 
 type NetworkApi struct {

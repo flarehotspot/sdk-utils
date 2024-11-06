@@ -1,2 +1,3 @@
-var test = require('@flarehotspot/lib/test')
-test()
+module.exports = function() {
+  console.log('kkk')
+}

@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	sdkhttp "sdk/api/http"
 
 	"core/internal/plugins"
 	sse "core/internal/utils/sse"
@@ -9,15 +10,16 @@ import (
 
 func PortalIndexPage(g *plugins.CoreGlobals) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		p, themeApi, err := g.PluginMgr.GetPortalTheme()
+		_, t, err := g.PluginMgr.GetPortalTheme()
 		if err != nil {
-			ErrorPage(w, err)
+			g.CoreAPI.HttpAPI.HttpResponse().Error(w, r, err, 500)
 			return
 		}
 
-		route := themeApi.PortalTheme.IndexRoute
-		url := p.HttpAPI.Helpers().UrlForRoute(route)
-		http.Redirect(w, r, url, http.StatusSeeOther)
+		navs := g.CoreAPI.HttpAPI.Navs().GetPortalItems(r)
+		data := sdkhttp.PortalIndexData{Navs: navs}
+		page := t.PortalTheme.IndexPageFactory(w, r, data)
+		g.CoreAPI.HttpAPI.HttpResponse().PortalView(w, r, page)
 	})
 }
 

@@ -10,6 +10,20 @@ import (
 	"net/http"
 )
 
+type NavsApi interface {
+	// Register a factory function that returns the admin navigation menu items of your plugin.
+	AdminNavsFactory(func(r *http.Request) []AdminNavItemOpt)
+
+	// Register a factory function that returns the portal navigation menu items of your plugin.
+	PortalNavsFactory(func(r *http.Request) []PortalNavItemOpt)
+
+	// Returns the consolidated navigation list from all plugins for the admin dashboard.
+	GetAdminNavs(r *http.Request) []AdminNavList
+
+	// Returns the consolidated navigation list from all plugins for the portal.
+	GetPortalItems(r *http.Request) []PortalNavItem
+}
+
 type INavCategory string
 
 // List of admin navigation menu categories.
@@ -21,10 +35,17 @@ const (
 	NavCategoryTools    INavCategory = "tools"
 )
 
-// AdminNavItem represents an admin navigation menu item.
-type AdminNavItem struct {
+// AdminNavItemOpt represents an admin navigation menu item.
+type AdminNavItemOpt struct {
 	Category    INavCategory
 	Label       string
+	RouteName   string
+	RouteParams map[string]string
+}
+
+type PortalNavItemOpt struct {
+	Label       string
+	IconUrl     string
 	RouteName   string
 	RouteParams map[string]string
 }
@@ -34,21 +55,13 @@ type AdminNavList struct {
 	Items []AdminNavItem
 }
 
-type PortalNavItem struct {
-	Label       string
-	IconUrl     string
-	RouteName   string
-	RouteParams map[string]string
+type AdminNavItem struct {
+	Label    string
+	RouteUrl string
 }
 
-type NavsApi interface {
-	AdminNavsFactory(func(r *http.Request) []AdminNavItem)
-
-	PortalNavsFactory(func(r *http.Request) []PortalNavItem)
-
-	// Returns the consolidated vue navigation list from all plugins for the admin dashboard.
-	GetAdminNavs(r *http.Request) []AdminNavList
-
-	// Returns the consolidated vue navigation list from all plugins for the portal.
-	GetPortalItems(r *http.Request) []PortalNavItem
+type PortalNavItem struct {
+	Label    string
+	IconUrl  string
+	RouteUrl string
 }

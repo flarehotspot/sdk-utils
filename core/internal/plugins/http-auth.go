@@ -7,10 +7,10 @@ import (
 	"core/internal/accounts"
 	"core/internal/config"
 	"core/internal/utils/jsonwebtoken"
+	webutil "core/internal/utils/web"
 	"core/internal/web/helpers"
-	"core/internal/web/middlewares"
-	"sdk/api/accounts"
-	"sdk/api/http"
+	sdkacct "sdk/api/accounts"
+	sdkhttp "sdk/api/http"
 )
 
 func NewHttpAuth(api *PluginApi) *HttpAuth {
@@ -25,6 +25,11 @@ type HttpAuth struct {
 
 func (self *HttpAuth) CurrentAcct(r *http.Request) (sdkacct.Account, error) {
 	return helpers.CurrentAcct(r)
+}
+
+func (self *HttpAuth) IsAuthenticated(r *http.Request) bool {
+	_, err := webutil.IsAdminAuthenticated(r)
+	return err == nil
 }
 
 func (self *HttpAuth) Authenticate(username string, password string) (sdkacct.Account, error) {
@@ -52,11 +57,11 @@ func (self *HttpAuth) SignIn(w http.ResponseWriter, acct sdkacct.Account) error 
 		return err
 	}
 
-	sdkhttp.SetCookie(w, middlewares.AuthTokenCookie, token)
+	sdkhttp.SetCookie(w, webutil.AuthTokenCookie, token)
 	return nil
 }
 
 func (self *HttpAuth) SignOut(w http.ResponseWriter) error {
-	sdkhttp.SetCookie(w, middlewares.AuthTokenCookie, "")
+	sdkhttp.SetCookie(w, webutil.AuthTokenCookie, "")
 	return nil
 }

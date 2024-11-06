@@ -17,8 +17,9 @@ CMD cp go.work.default go.work && \
     go run --tags=dev ./core/cmd/sync-versions/main.go && \
     ./tools.sh && \
     reflex \
-        -r '\.(go|templ|js|css)$' \
+        -r '\.(go|templ|js|css|json)$' \
         -R 'assets\/dist\/.*' \
+        -R '^config\/.*' \
         -R 'node_modules' \
         -R '_templ\.go$' \
         -R 'core\/main\.go' \
@@ -30,6 +31,5 @@ CMD cp go.work.default go.work && \
         -R 'plugins\/update\/.*\.templ$' \
         -R 'plugins\/backup\/.*\.templ$' \
         -R '(.*)mono\.go' \
-        -R 'tools' \
         -R '\.tmp\/*.' \
         -s -- sh -c './start.sh' -v
