@@ -2,11 +2,13 @@ package models
 
 import (
 	"context"
-	"database/sql"
+	"fmt"
 	"log"
 	"time"
 
 	"core/internal/db"
+
+	"github.com/jackc/pgx/v5"
 	// sdkpayments "sdk/api/payments"
 )
 
@@ -109,12 +111,12 @@ func (self *Purchase) FixedPrice() (float64, bool) {
 	return self.price, !self.anyPrice
 }
 
-func (self *Purchase) DeviceTx(tx *sql.Tx, ctx context.Context) (*Device, error) {
+func (self *Purchase) DeviceTx(tx pgx.Tx, ctx context.Context) (*Device, error) {
 	dev, err := self.models.deviceModel.FindTx(tx, ctx, self.deviceId)
 	return dev, err
 }
 
-func (self *Purchase) ConfirmTx(tx *sql.Tx, ctx context.Context) error {
+func (self *Purchase) ConfirmTx(tx pgx.Tx, ctx context.Context) error {
 	dev, err := self.DeviceTx(tx, ctx)
 	if err != nil {
 		log.Println(err)
@@ -150,7 +152,7 @@ func (self *Purchase) ConfirmTx(tx *sql.Tx, ctx context.Context) error {
 	return self.UpdateTx(tx, ctx, dbt, txid, nil, &now, nil)
 }
 
-func (self *Purchase) CancelTx(tx *sql.Tx, ctx context.Context) error {
+func (self *Purchase) CancelTx(tx pgx.Tx, ctx context.Context) error {
 	dev, err := self.DeviceTx(tx, ctx)
 	if err != nil {
 		log.Println(err)
@@ -192,11 +194,11 @@ func (self *Purchase) CancelTx(tx *sql.Tx, ctx context.Context) error {
 	return self.UpdateTx(tx, ctx, dbt, nil, &cancelledAt, nil, &desc)
 }
 
-func (self *Purchase) PaymentsTx(tx *sql.Tx, ctx context.Context) ([]*Payment, error) {
+func (self *Purchase) PaymentsTx(tx pgx.Tx, ctx context.Context) ([]*Payment, error) {
 	return self.models.paymentModel.FindAllByPurchaseTx(tx, ctx, self.id)
 }
 
-func (self *Purchase) TotalPaymentsTx(tx *sql.Tx, ctx context.Context) (float64, error) {
+func (self *Purchase) TotalPaymentsTx(tx pgx.Tx, ctx context.Context) (float64, error) {
 	pmts, err := self.PaymentsTx(tx, ctx)
 	if err != nil {
 		return 0, err
@@ -213,7 +215,7 @@ func (self *Purchase) TotalPaymentsTx(tx *sql.Tx, ctx context.Context) (float64,
 	return total, nil
 }
 
-func (self *Purchase) UpdateTx(tx *sql.Tx, ctx context.Context, dbt float64, txid *int64, cancelledAt *time.Time, confirmedAt *time.Time, reason *string) error {
+func (self *Purchase) UpdateTx(tx pgx.Tx, ctx context.Context, dbt float64, txid *int64, cancelledAt *time.Time, confirmedAt *time.Time, reason *string) error {
 	err := self.models.purchaseModel.UpdateTx(tx, ctx, self.id, dbt, txid, cancelledAt, confirmedAt, reason)
 	if err != nil {
 		return err
@@ -227,62 +229,93 @@ func (self *Purchase) UpdateTx(tx *sql.Tx, ctx context.Context, dbt float64, txi
 }
 
 func (self *Purchase) Cancel(ctx context.Context) error {
-	tx, err := self.db.SqlDB().BeginTx(ctx, nil)
+	tx, err := self.db.SqlDB().Begin(ctx)
 	if err != nil {
 		log.Println(err)
-		return nil
+		return fmt.Errorf("could not begin transaction: %w", err)
 	}
-	defer tx.Rollback()
+
+	defer func() {
+		if err != nil {
+			tx.Rollback(ctx)
+		}
+	}()
 
 	err = self.CancelTx(tx, ctx)
 	if err != nil {
 		return err
 	}
 
-	return tx.Commit()
+	return tx.Commit(ctx)
 }
 
 func (self *Purchase) Confirm(ctx context.Context) error {
-	tx, err := self.db.SqlDB().BeginTx(ctx, nil)
+	tx, err := self.db.SqlDB().Begin(ctx)
 	if err != nil {
-		return err
+		return fmt.Errorf("could not begin transaction: %w", err)
 	}
-	defer tx.Rollback()
+	defer func() {
+		if err != nil {
+			tx.Rollback(ctx)
+		}
+	}()
 
 	err = self.ConfirmTx(tx, ctx)
 	if err != nil {
 		return err
 	}
 
-	return tx.Commit()
+	if err := tx.Commit(ctx); err != nil {
+		return fmt.Errorf("could not commit transaction: %w", err)
+	}
+
+	return nil
 }
 
 func (self *Purchase) TotalPayment(ctx context.Context) (float64, error) {
-	tx, err := self.db.SqlDB().BeginTx(ctx, nil)
+	tx, err := self.db.SqlDB().Begin(ctx)
 	if err != nil {
-		return 0, err
+		return 0, fmt.Errorf("could not begin transaction: %w", err)
 	}
-	defer tx.Rollback()
+
+	defer func() {
+		if err != nil {
+			tx.Rollback(ctx)
+		}
+	}()
 
 	total, err := self.TotalPaymentsTx(tx, ctx)
 	if err != nil {
 		return 0, err
 	}
 
-	return total, tx.Commit()
+	if err := tx.Commit(ctx); err != nil {
+		return 0, fmt.Errorf("could not commit transaction: %w", err)
+	}
+
+	return total, nil
 }
 
 func (self *Purchase) Update(ctx context.Context, dbt float64, txid *int64, cancelledAt *time.Time, confirmedAt *time.Time, reason *string) error {
-	tx, err := self.db.SqlDB().BeginTx(ctx, nil)
+	tx, err := self.db.SqlDB().Begin(ctx)
 	if err != nil {
-		return err
+		return fmt.Errorf("could not begin transaction: %w", err)
 	}
-	defer tx.Rollback()
+
+	defer func() {
+		if err != nil {
+			tx.Rollback(ctx)
+		}
+	}()
 
 	err = self.UpdateTx(tx, ctx, dbt, txid, cancelledAt, confirmedAt, reason)
 	if err != nil {
 		return err
 	}
 
-	return tx.Commit()
+	if err := tx.Commit(ctx); err != nil {
+		return fmt.Errorf("could not commit transaction: %w", err)
+	}
+
+	return nil
 }

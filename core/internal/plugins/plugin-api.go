@@ -1,7 +1,6 @@
 package plugins
 
 import (
-	"database/sql"
 	"log"
 	"path/filepath"
 
@@ -23,6 +22,8 @@ import (
 	sdkpayments "sdk/api/payments"
 	sdkplugin "sdk/api/plugin"
 	sdkuci "sdk/api/uci"
+
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 func NewPluginApi(dir string, pmgr *PluginsMgr, trfkMgr *network.TrafficMgr) *PluginApi {
@@ -131,7 +132,7 @@ func (self *PluginApi) Resource(f string) (path string) {
 	return self.Utl.Resource(f)
 }
 
-func (self *PluginApi) SqlDb() *sql.DB {
+func (self *PluginApi) SqlDb() *pgxpool.Pool {
 	return self.db.SqlDB()
 }
 

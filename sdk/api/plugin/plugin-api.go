@@ -7,8 +7,6 @@
 package sdkplugin
 
 import (
-	"database/sql"
-
 	sdkacct "sdk/api/accounts"
 	sdkads "sdk/api/ads"
 	sdkcfg "sdk/api/config"
@@ -19,6 +17,8 @@ import (
 	sdknet "sdk/api/network"
 	sdkpayments "sdk/api/payments"
 	sdkuci "sdk/api/uci"
+
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 // PluginApi is the root of all plugin APIs.
@@ -49,7 +49,7 @@ type PluginApi interface {
 	Resource(f string) (path string)
 
 	// Returns an instance of database/sql package from go standard library.
-	SqlDb() *sql.DB
+	SqlDb() *pgxpool.Pool
 
 	// Run the plugin migration scripts in resources/migrations folder.
 	Migrate() error

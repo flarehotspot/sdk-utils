@@ -1,6 +1,7 @@
 package db
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"log"
@@ -11,18 +12,12 @@ import (
 	"core/internal/utils/mysql"
 
 	sdkstr "github.com/flarehotspot/go-utils/strings"
-	//
-	// UNCOMMENT BELOW LINES WHEN DEBUGGING SQL QUERIES:
-	//
-	// "github.com/rs/zerolog"
-	// "os"
-	// sqldblogger "github.com/simukti/sqldb-logger"
-	// "github.com/simukti/sqldb-logger/logadapter/zerologadapter"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type Database struct {
 	mu sync.RWMutex
-	db *sql.DB
+	db *pgxpool.Pool
 }
 
 func NewDatabase() (*Database, error) {
@@ -45,53 +40,51 @@ func NewDatabase() (*Database, error) {
 	url := cfg.DbUrlString()
 	log.Println("DB URL: ", url)
 
-	// Ensure mysql starts up during boot before returning err
+	dbConf, err := pgxpool.ParseConfig(url)
+	if err != nil {
+		return nil, err
+	}
+
+	//https://stackoverflow.com/questions/39980902/golang-mysql-error-packets-go33-unexpected-eof
+	dbConf.MaxConnLifetime = time.Minute * 4
+
+	// Ensure postgresql starts up during boot before returning err
 	openErrorCountThreshold := 5
-	conn, err := sql.Open("mysql", url)
+	pgPool, err := pgxpool.NewWithConfig(context.Background(), dbConf)
+	// conn, err := sql.Open("mysql", url)
 	for openErrorCount := 0; err != nil && openErrorCount < openErrorCountThreshold; openErrorCount++ {
-		conn, err = sql.Open("mysql", url)
+		pgPool, err = pgxpool.New(context.Background(), url)
 		time.Sleep(time.Second * 2)
 	}
 	if err != nil {
 		return nil, err
 	}
 
-	//https://stackoverflow.com/questions/39980902/golang-mysql-error-packets-go33-unexpected-eof
-	conn.SetConnMaxLifetime(time.Minute * 4)
+	// TODO: find an equivalent postgresql sql query debugging
 
-	// UNCOMMENT BELOW LINES WHEN DEBUGGING SQL QUERIES:
-	//
-	// loggerAdapter := zerologadapter.New(zerolog.New(os.Stdout))
-	// conn = sqldblogger.OpenDriver(
-	// url,
-	// conn.Driver(),
-	// loggerAdapter,
-	// sqldblogger.WithMinimumLevel(sqldblogger.LevelInfo),
-	// sqldblogger.WithLogDriverErrorSkip(false),
-	// sqldblogger.WithSQLQueryAsMessage(false),
-	// sqldblogger.WithWrapResult(false),
-	// sqldblogger.WithIncludeStartTime(false),
-	// sqldblogger.WithPreparerLevel(sqldblogger.LevelInfo),
-	// sqldblogger.WithQueryerLevel(sqldblogger.LevelInfo),
-	// sqldblogger.WithExecerLevel(sqldblogger.LevelInfo),
-	// )
-
-	err = conn.Ping()
+	err = CheckDatabaseConnection(pgPool)
 	if err != nil {
 		return nil, err
 	}
 
-	db.db = conn
+	db.db = pgPool
 	return &db, nil
 }
 
-func (d *Database) SqlDB() (db *sql.DB) {
+func CheckDatabaseConnection(pool *pgxpool.Pool) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	return pool.Ping(ctx)
+}
+
+func (d *Database) SqlDB() (db *pgxpool.Pool) {
 	d.mu.RLock()
 	defer d.mu.RUnlock()
 	return d.db
 }
 
-func (d *Database) SetSql(db *sql.DB) {
+func (d *Database) SetSql(db *pgxpool.Pool) {
 	d.mu.Lock()
 	defer d.mu.Unlock()
 	d.db = db

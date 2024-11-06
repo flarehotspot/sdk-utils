@@ -2,12 +2,14 @@ package models
 
 import (
 	"context"
-	"database/sql"
 	"errors"
+	"fmt"
 	"log"
 	"time"
 
 	"core/internal/db"
+
+	"github.com/jackc/pgx/v5"
 )
 
 const (
@@ -35,65 +37,91 @@ func NewSessionModel(dtb *db.Database, mdls *Models) *SessionModel {
 	return &SessionModel{dtb, mdls}
 }
 
-func (self *SessionModel) CreateTx(tx *sql.Tx, ctx context.Context, devId int64, t uint8, timeSecs uint, dataMbytes float64, expDays *uint, downMbits int, upMbits int, useGlobal bool) (*Session, error) {
-	query := "INSERT INTO sessions (device_id, session_type, time_secs, data_mbytes, exp_days, down_mbits, up_mbits, use_global) VALUES(?, ?, ?, ?, ?, ?, ?, ?)"
+func (self *SessionModel) CreateTx(tx pgx.Tx, ctx context.Context, devId int64, t uint8, timeSecs uint, dataMbytes float64, expDays *uint, downMbits int, upMbits int, useGlobal bool) (*Session, error) {
+	defer func() {
+		if err := tx.Rollback(ctx); err != nil && err != pgx.ErrTxClosed {
+			log.Printf("Rollback failed: %v", err)
+		}
+	}()
 
-	result, err := tx.ExecContext(ctx, query, devId, t, timeSecs, dataMbytes, expDays, downMbits, upMbits, useGlobal)
+	query := "INSERT INTO sessions (device_id, session_type, time_secs, data_mbytes, exp_days, down_mbits, up_mbits, use_global) VALUES($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id"
+
+	var lastInsertId int
+	err := tx.QueryRow(ctx, query, devId, t, timeSecs, dataMbytes, expDays, downMbits, upMbits, useGlobal).Scan(&lastInsertId)
 	if err != nil {
-		log.Println(err)
+		log.Println("SQL Execution Error failed: %v", err)
 		return nil, err
 	}
 
-	lastId, err := result.LastInsertId()
-	if err != nil {
-		log.Println("SQL Lastid() Error: ", err)
+	if err := tx.Commit(ctx); err != nil {
+		log.Printf("SQL transaction commit failed: %v", err)
 		return nil, err
 	}
 
-	return self.FindTx(tx, ctx, lastId)
+	return self.FindTx(tx, ctx, int64(lastInsertId))
 }
 
-func (self *SessionModel) FindTx(tx *sql.Tx, ctx context.Context, id int64) (*Session, error) {
+func (self *SessionModel) FindTx(tx pgx.Tx, ctx context.Context, id int64) (*Session, error) {
 	s := NewSession(self.db, self.models)
-	query := SELECT_QUERY + " WHERE id = ? LIMIT 1"
-	err := tx.QueryRowContext(ctx, query, id).
-		Scan(&s.id, &s.deviceId, &s.sessionType, &s.timeSecs, &s.dataMb, &s.timeCons, &s.dataCons, &s.startedAt, &s.expDays, &s.downMbits, &s.upMbits, &s.useGlobal, &s.createdAt, &s.expiresAt)
+	query := SELECT_QUERY + " WHERE id = $1 LIMIT 1"
 
-	return s, err
+	err := tx.QueryRow(ctx, query, id).
+		Scan(&s.id, &s.deviceId, &s.sessionType, &s.timeSecs, &s.dataMb, &s.timeCons, &s.dataCons, &s.startedAt, &s.expDays, &s.downMbits, &s.upMbits, &s.useGlobal, &s.createdAt, &s.expiresAt)
+	if err != nil {
+		if err == pgx.ErrNoRows {
+			log.Printf("No session found with id %d", id)
+			return nil, nil
+		}
+		log.Printf("Error finding payment with id %d: %v", id, err)
+		return nil, err
+	}
+
+	return s, nil
 }
 
-func (self *SessionModel) UpdateTx(tx *sql.Tx, ctx context.Context, id int64, devId int64, t uint8, secs uint, mb float64, timeCons uint, dataCons float64, started *time.Time, exp *uint, downMbit int, upMbit int, g bool) error {
+func (self *SessionModel) UpdateTx(tx pgx.Tx, ctx context.Context, id int64, devId int64, t uint8, secs uint, mb float64, timeCons uint, dataCons float64, started *time.Time, exp *uint, downMbit int, upMbit int, g bool) error {
 	query := `UPDATE sessions
-  SET device_id = ?, session_type = ?, time_secs = ?, data_mbytes = ?, consumption_secs = ?, consumption_mb = ?, started_at = ?, exp_days = ?, down_mbits = ?, up_mbits = ?, use_global = ?
-  WHERE id = ? LIMIT 1`
+  SET device_id = $1, session_type = $2, time_secs = $3, data_mbytes = $4, consumption_secs = $5, consumption_mb = $6, started_at = $7, exp_days = $8, down_mbits = $9, up_mbits = $10, use_global = $11
+  WHERE id = $12 LIMIT 1`
 
-	_, err := tx.ExecContext(ctx, query, devId, t, secs, mb, timeCons, dataCons, started, exp, downMbit, upMbit, g, id)
-	return err
+	cmdTag, err := tx.Exec(ctx, query, devId, t, secs, mb, timeCons, dataCons, started, exp, downMbit, upMbit, g, id)
+	if err != nil {
+		log.Println("SQL Exec Error while updating session ID %d: %v", id, err)
+		return err
+	}
+
+	if cmdTag.RowsAffected() == 0 {
+		log.Println("No session found with id %d; update operation skipped", id)
+		return fmt.Errorf("session with id %d not found", id)
+	}
+
+	log.Printf("Successfully updated device with id %d", id)
+	return nil
 }
 
-func (self *SessionModel) AvlForDevTx(tx *sql.Tx, ctx context.Context, deviceId int64) (*Session, error) {
+func (self *SessionModel) AvlForDevTx(tx pgx.Tx, ctx context.Context, deviceId int64) (*Session, error) {
 	s := NewSession(self.db, self.models)
-	query := SELECT_QUERY + " WHERE device_id = ? AND " + VALID_WHERE_QUERY + " LIMIT 1"
+	query := SELECT_QUERY + " WHERE device_id = $1 AND " + VALID_WHERE_QUERY + " LIMIT 1"
 
-	err := tx.QueryRowContext(ctx, query, deviceId).
+	err := tx.QueryRow(ctx, query, deviceId).
 		Scan(&s.id, &s.deviceId, &s.sessionType, &s.timeSecs, &s.dataMb, &s.timeCons, &s.dataCons, &s.startedAt, &s.expDays, &s.downMbits, &s.upMbits, &s.useGlobal, &s.createdAt, &s.expiresAt)
 
-	if errors.Is(err, sql.ErrNoRows) {
+	if errors.Is(err, pgx.ErrNoRows) {
 		return nil, errors.New("No more available sessions for this device")
 	}
 
 	return s, err
 }
 
-func (self *SessionModel) SessionsForDevTx(tx *sql.Tx, ctx context.Context, devId int64) ([]*Session, error) {
-	query := SELECT_QUERY + " WHERE device_id = ? AND " + VALID_WHERE_QUERY
-	rows, err := tx.QueryContext(ctx, query, devId)
+func (self *SessionModel) SessionsForDevTx(tx pgx.Tx, ctx context.Context, devId int64) ([]*Session, error) {
+	sessions := []*Session{}
+	query := SELECT_QUERY + " WHERE device_id = $1 AND " + VALID_WHERE_QUERY
+
+	rows, err := tx.Query(ctx, query, devId)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-
-	sessions := []*Session{}
 
 	for rows.Next() {
 		s := NewSession(self.db, self.models)
@@ -103,101 +131,170 @@ func (self *SessionModel) SessionsForDevTx(tx *sql.Tx, ctx context.Context, devI
 		sessions = append(sessions, s)
 	}
 
-	return sessions, rows.Err()
+	if rows.Err() != nil {
+		return nil, fmt.Errorf("row iteration error: %w", rows.Err())
+	}
+
+	return sessions, nil
 }
 
-func (self *SessionModel) UpdateAllBandwidthTx(tx *sql.Tx, ctx context.Context, downMbits int, upMbits int, useGlobal bool) error {
-	query := `UPDATE sessions SET down_mbits = ?, up_mbits = ?, use_global = ? WHERE ` + VALID_WHERE_QUERY
-	_, err := tx.ExecContext(ctx, query, downMbits, upMbits, useGlobal)
-	return err
+func (self *SessionModel) UpdateAllBandwidthTx(tx pgx.Tx, ctx context.Context, downMbits int, upMbits int, useGlobal bool) error {
+	query := `UPDATE sessions SET down_mbits = $1, up_mbits = $2, use_global = $3 WHERE ` + VALID_WHERE_QUERY
+
+	cmdTag, err := tx.Exec(ctx, query, downMbits, upMbits, useGlobal)
+	if err != nil {
+		log.Println("SQL Exec Error while updating session bandwidth: %v", err)
+		return err
+	}
+
+	if cmdTag.RowsAffected() == 0 {
+		return fmt.Errorf("session not found: %w", err)
+	}
+
+	log.Println("Successfully updated all bandwidth of valid sessions")
+	return nil
 }
 
 func (self *SessionModel) Create(ctx context.Context, devId int64, t uint8, timeSecs uint, dataMbytes float64, exp *uint, downMbit int, upMbit int, g bool) (*Session, error) {
-	tx, err := self.db.SqlDB().BeginTx(ctx, nil)
+	tx, err := self.db.SqlDB().Begin(ctx)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("could not begin transaction: %w", err)
 	}
-	defer tx.Rollback()
+
+	defer func() {
+		if err != nil {
+			tx.Rollback(ctx)
+		}
+	}()
 
 	s, err := self.CreateTx(tx, ctx, devId, t, timeSecs, dataMbytes, exp, downMbit, upMbit, g)
 	if err != nil {
 		return nil, err
 	}
 
-	return s, tx.Commit()
+	if err := tx.Commit(ctx); err != nil {
+		return nil, fmt.Errorf("could not commit transaction: %w", err)
+	}
+
+	return s, nil
 }
 
 func (self *SessionModel) Find(ctx context.Context, id int64) (*Session, error) {
-	tx, err := self.db.SqlDB().BeginTx(ctx, nil)
+	tx, err := self.db.SqlDB().Begin(ctx)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("could not begin transaction: %w", err)
 	}
-	defer tx.Rollback()
+
+	defer func() {
+		if err != nil {
+			tx.Rollback(ctx)
+		}
+	}()
 
 	s, err := self.FindTx(tx, ctx, id)
 	if err != nil {
 		return nil, err
 	}
 
-	return s, tx.Commit()
+	if err := tx.Commit(ctx); err != nil {
+		return nil, fmt.Errorf("could not commit transaction: %w", err)
+	}
+
+	return s, nil
 }
 
 func (self *SessionModel) Update(ctx context.Context, id int64, devId int64, t uint8, timeSecs uint, dataMbytes float64, timeCons uint, dataCons float64, started *time.Time, exp *uint, downMbit int, upMbit int, g bool) error {
-	tx, err := self.db.SqlDB().BeginTx(ctx, nil)
+	tx, err := self.db.SqlDB().Begin(ctx)
 	if err != nil {
-		return err
+		return fmt.Errorf("could not begin transaction: %w", err)
 	}
-	defer tx.Rollback()
+
+	defer func() {
+		if err != nil {
+			tx.Rollback(ctx)
+		}
+	}()
 
 	err = self.UpdateTx(tx, ctx, id, devId, t, timeSecs, dataMbytes, timeCons, dataCons, started, exp, downMbit, upMbit, g)
 	if err != nil {
 		return err
 	}
 
-	return tx.Commit()
+	if err := tx.Commit(ctx); err != nil {
+		return fmt.Errorf("could not commit transaction: %w", err)
+	}
+
+	return nil
 }
 
 func (self *SessionModel) AvlForDev(ctx context.Context, devId int64) (*Session, error) {
-	tx, err := self.db.SqlDB().BeginTx(ctx, nil)
+	tx, err := self.db.SqlDB().Begin(ctx)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("could not begin transaction: %w", err)
 	}
-	defer tx.Rollback()
+
+	defer func() {
+		if err != nil {
+			tx.Rollback(ctx)
+		}
+	}()
 
 	s, err := self.AvlForDevTx(tx, ctx, devId)
 	if err != nil {
 		return nil, err
 	}
 
-	return s, tx.Commit()
+	if err := tx.Commit(ctx); err != nil {
+		return nil, fmt.Errorf("could not commit transaction: %w", err)
+	}
+
+	return s, nil
 }
 
 func (self *SessionModel) SessionsForDev(ctx context.Context, devId int64) ([]*Session, error) {
-	tx, err := self.db.SqlDB().BeginTx(ctx, nil)
+	tx, err := self.db.SqlDB().Begin(ctx)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("could not begin transaction: %w", err)
 	}
-	defer tx.Rollback()
+
+	defer func() {
+		if err != nil {
+			tx.Rollback(ctx)
+		}
+	}()
 
 	sessions, err := self.SessionsForDevTx(tx, ctx, devId)
 	if err != nil {
 		return nil, err
 	}
 
-	return sessions, tx.Commit()
+	if err := tx.Commit(ctx); err != nil {
+		return nil, fmt.Errorf("could not commit transaction: %w", err)
+	}
+
+	return sessions, nil
 }
 
 func (self *SessionModel) UpdateAllBandwidth(ctx context.Context, downMbit int, upMbit int, g bool) error {
-	tx, err := self.db.SqlDB().BeginTx(ctx, nil)
+	tx, err := self.db.SqlDB().Begin(ctx)
 	if err != nil {
-		return err
+		return fmt.Errorf("could not begin transaction: %w", err)
 	}
-	defer tx.Rollback()
+
+	defer func() {
+		if err != nil {
+			tx.Rollback(ctx)
+		}
+	}()
 
 	err = self.UpdateAllBandwidthTx(tx, ctx, downMbit, upMbit, g)
 	if err != nil {
 		return err
 	}
 
-	return tx.Commit()
+	if err := tx.Commit(ctx); err != nil {
+		return fmt.Errorf("could not commit transaction: %w", err)
+	}
+
+	return nil
 }
