@@ -9,4 +9,5 @@ const (
 type ConfigField interface {
 	GetType() string
 	GetName() string
+	GetDefaultValue() interface{}
 }

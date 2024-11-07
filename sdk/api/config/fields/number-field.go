@@ -10,7 +10,6 @@ type NumberField struct {
 	Min     int    `json:"min"`
 	Max     int    `json:"max"`
 	Default int    `json:"default"`
-	Value   int    `json:"-"`
 }
 
 func (f NumberField) GetType() string {
@@ -19,4 +18,8 @@ func (f NumberField) GetType() string {
 
 func (f NumberField) GetName() string {
 	return f.Name
+}
+
+func (f NumberField) GetDefaultValue() interface{} {
+	return f.Default
 }

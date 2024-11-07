@@ -1,6 +1,6 @@
 package cfgfields
 
-type SectionField struct {
+type FieldData struct {
 	Name  string `json:"name"`
 	Value interface{}
 }

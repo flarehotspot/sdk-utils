@@ -8,7 +8,6 @@ type MultiField struct {
 	Columns []string        `json:"columns"`
 	Fields  [][]ConfigField `json:"fields"`
 	Default [][]ConfigField `json:"default"`
-	Value   [][]ConfigField `json:"-"`
 }
 
 func (f MultiField) GetType() string {
@@ -16,5 +15,9 @@ func (f MultiField) GetType() string {
 }
 
 func (f MultiField) GetName() string {
+	return f.Name
+}
+
+func (f MultiField) GetDefaultValue() interface{} {
 	return f.Name
 }

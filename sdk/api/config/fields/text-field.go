@@ -10,7 +10,6 @@ type TextField struct {
 	MinLen  int    `json:"min"`
 	MaxLen  int    `json:"max"`
 	Default string `json:"default"`
-	Value   string `json:"-"`
 }
 
 func (f TextField) GetType() string {
@@ -19,4 +18,8 @@ func (f TextField) GetType() string {
 
 func (f TextField) GetName() string {
 	return f.Name
+}
+
+func (f TextField) GetDefaultValue() interface{} {
+	return f.Default
 }
