@@ -1,20 +1,20 @@
 package sdkfields
 
-type MultiField struct {
-	Name    string
-	Columns []string
-	Fields  [][]ConfigField
+type IMultiField interface {
 }
 
-func (f *MultiField) GetType() string {
+type MultiField struct {
+	Name    string          `json:"name"`
+	Columns []string        `json:"columns"`
+	Fields  [][]ConfigField `json:"fields"`
+	Default [][]ConfigField `json:"default"`
+	Value   [][]ConfigField `json:"-"`
+}
+
+func (f MultiField) GetType() string {
 	return FieldTypeMulti
 }
 
-func (f *MultiField) GetName() string {
+func (f MultiField) GetName() string {
 	return f.Name
-}
-
-func (f *MultiField) GetValue() interface{} {
-	// TODO: return value
-	return nil
 }

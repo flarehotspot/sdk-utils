@@ -1,22 +1,22 @@
 package sdkfields
 
+type ITextField interface {
+	Value() string
+}
+
 type TextField struct {
 	Name    string `json:"name"`
 	Label   string `json:"label"`
-	Min     int    `json:"min"`
-	Max     int    `json:"max"`
+	MinLen  int    `json:"min"`
+	MaxLen  int    `json:"max"`
+	Default string `json:"default"`
 	Value   string `json:"-"`
-	Default string `json:"-"`
 }
 
-func (f *TextField) GetType() string {
+func (f TextField) GetType() string {
 	return FieldTypeText
 }
 
-func (f *TextField) GetName() string {
+func (f TextField) GetName() string {
 	return f.Name
-}
-
-func (f *TextField) GetValue() interface{} {
-	return f.Value
 }
