@@ -111,7 +111,11 @@ func (p *PluginConfig) GetStringValue(title string, name string) (val string, er
 	if err != nil {
 		return "", err
 	}
-	return v.(string), nil
+	str, ok := v.(string)
+	if !ok {
+		return "", errors.New(fmt.Sprintf("section %s, field %s is not a string", title, name))
+	}
+	return str, nil
 }
 
 func (p *PluginConfig) GetIntValue(title string, name string) (val int, err error) {
@@ -119,5 +123,9 @@ func (p *PluginConfig) GetIntValue(title string, name string) (val int, err erro
 	if err != nil {
 		return 0, err
 	}
-	return v.(int), nil
+	num, ok := v.(int)
+	if !ok {
+		return 0, errors.New(fmt.Sprintf("section %s, field %s is not an int", title, name))
+	}
+	return num, nil
 }
