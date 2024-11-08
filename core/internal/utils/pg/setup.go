@@ -114,7 +114,7 @@ func prepPgSrvConf() error {
 func installPg() error {
 	commands := []string{
 		"pg_ctl initdb -D" + srvPgDir,
-		"chown -R postgres:postgresr " + srvPgDir,
+		"chown -R postgres:postgres " + srvPgDir,
 		"service postgresql start",
 		"service postgresql enable",
 	}
