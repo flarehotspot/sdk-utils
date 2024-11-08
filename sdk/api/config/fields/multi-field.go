@@ -1,8 +1,5 @@
 package sdkfields
 
-type IMultiField interface {
-}
-
 type MultiField struct {
 	Name    string          `json:"name"`
 	Columns []string        `json:"columns"`
@@ -19,5 +16,10 @@ func (f MultiField) GetName() string {
 }
 
 func (f MultiField) GetDefaultValue() interface{} {
-	return f.Name
+	return f.Default
+}
+
+type IMultiField interface {
+	GetStringValue(row int, name string) (string, error)
+	GetIntValue(row int, name string) (int, error)
 }

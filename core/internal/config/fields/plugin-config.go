@@ -4,8 +4,10 @@ import (
 	"core/internal/plugins"
 	"errors"
 	"fmt"
+	"net/http"
 	"path/filepath"
 	sdkfields "sdk/api/config/fields"
+	"strconv"
 
 	sdkfs "github.com/flarehotspot/go-utils/fs"
 	sdkpaths "github.com/flarehotspot/go-utils/paths"
@@ -36,6 +38,105 @@ func (p *PluginConfig) LoadConfig() {
 	if err := sdkfs.ReadJson(p.datapath, &p.parsedData); err != nil {
 		p.parsedData = nil
 	}
+}
+
+func (p *PluginConfig) SaveForm(r *http.Request) (err error) {
+	parsedData := make([]SectionData, len(p.sections))
+
+	for sidx, sec := range p.sections {
+		sectionData := SectionData{
+			Name:   sec.Name,
+			Fields: make([]FieldData, len(sec.Fields)),
+		}
+
+		for fidx, fld := range sec.Fields {
+			val := r.FormValue(sec.Name + "::" + fld.GetName())
+			field := FieldData{Name: fld.GetName()}
+
+			switch fld.GetType() {
+			case sdkfields.FieldTypeText:
+				field.Value = val
+			case sdkfields.FieldTypeNumber:
+				val, err := strconv.Atoi(val)
+				if err != nil {
+					return err
+				}
+				field.Value = val
+			case sdkfields.FieldTypeMulti:
+
+			}
+			sectionData.Fields[fidx] = field
+		}
+
+		parsedData[sidx] = sectionData
+	}
+
+	return
+}
+
+func (p *PluginConfig) ParseField(r *http.Request, sec sdkfields.Section, fld sdkfields.ConfigField, valstr string) (field FieldData, err error) {
+	field = FieldData{
+		Name: fld.GetName(),
+	}
+
+	switch fld.GetType() {
+	case sdkfields.FieldTypeText:
+		field.Value = valstr
+
+	case sdkfields.FieldTypeNumber:
+		val, err := strconv.Atoi(valstr)
+		if err != nil {
+			return field, err
+		}
+		field.Value = val
+
+	case sdkfields.FieldTypeMulti:
+		multifld, err := p.ParseMultiField(r, sec, fld)
+		if err != nil {
+			return field, err
+		}
+		field.Value = multifld.Fields
+	}
+
+	return field, nil
+}
+
+func (p *PluginConfig) ParseMultiField(r *http.Request, sec sdkfields.Section, fld sdkfields.ConfigField) (field MultiFieldData, err error) {
+	multifld, ok := fld.(sdkfields.MultiField)
+	if !ok {
+		return field, errors.New("field is not a multi-field")
+	}
+
+	if len(multifld.Columns) < 1 {
+		return field, errors.New(fmt.Sprintf("multi-field %s has no columns", fld.GetName()))
+	}
+
+	col1name := multifld.Columns[0]
+	inputName := sec.Name + "::" + fld.GetName() + "::" + col1name
+	numRows := len(r.Form[inputName])
+
+	field = MultiFieldData{
+		Name:   fld.GetName(),
+		Fields: make([][]FieldData, numRows),
+	}
+
+	for ridx := 0; ridx < numRows; ridx++ {
+		row := make([]FieldData, len(multifld.Columns))
+		for cidx, colname := range multifld.Columns {
+			colfld := multifld.Fields[ridx][cidx]
+			inputName = sec.Name + "::" + fld.GetName() + "::" + colname
+			colarr := r.Form[inputName]
+			valstr := colarr[ridx]
+			row[cidx], err = p.ParseField(r, sec, colfld, valstr)
+			if err != nil {
+				return field, err
+			}
+		}
+		field.Fields[ridx] = row
+	}
+
+	return field, nil
+
 }
 
 func (p *PluginConfig) GetSection(secname string) (sec sdkfields.Section, ok bool) {
@@ -128,4 +229,16 @@ func (p *PluginConfig) GetIntValue(secname string, name string) (val int, err er
 		return 0, errors.New(fmt.Sprintf("section %s, field %s is not an int", secname, name))
 	}
 	return num, nil
+}
+
+func (p *PluginConfig) GetMultiValue(secname string, name string) (val sdkfields.IMultiField, err error) {
+	v, err := p.GetFieldValue(secname, name)
+	if err != nil {
+		return nil, err
+	}
+	fields, ok := v.(MultiFieldData)
+	if !ok {
+		return nil, errors.New(fmt.Sprintf("section %s, field %s is not a multi-field", secname, name))
+	}
+	return fields, nil
 }
