@@ -2,14 +2,14 @@ package db
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"log"
+	"strings"
 	"sync"
 	"time"
 
 	"core/internal/config"
-	"core/internal/utils/mysql"
+	"core/internal/utils/pg"
 
 	sdkstr "github.com/flarehotspot/go-utils/strings"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -24,9 +24,10 @@ func NewDatabase() (*Database, error) {
 	dbpass := sdkstr.Rand(8)
 	dbname := fmt.Sprintf("flarehotspot_%s", sdkstr.Rand(8))
 
-	err := mysql.SetupDb(dbpass, dbname)
+	// Sets up flarehotspot_.. database
+	err := pg.SetupDb(dbpass, dbname)
 	if err != nil {
-		log.Println("Error installing mariadb: ", err)
+		log.Println("Error installing postgres db: ", err)
 		return nil, err
 	}
 
@@ -51,7 +52,6 @@ func NewDatabase() (*Database, error) {
 	// Ensure postgresql starts up during boot before returning err
 	openErrorCountThreshold := 5
 	pgPool, err := pgxpool.NewWithConfig(context.Background(), dbConf)
-	// conn, err := sql.Open("mysql", url)
 	for openErrorCount := 0; err != nil && openErrorCount < openErrorCountThreshold; openErrorCount++ {
 		pgPool, err = pgxpool.New(context.Background(), url)
 		time.Sleep(time.Second * 2)
@@ -97,17 +97,21 @@ func CreateDb() (*config.DbConfig, error) {
 	}
 
 	log.Println("DB conn string: ", cfg.BaseConnStr())
-	db, err := sql.Open("mysql", cfg.BaseConnStr())
+	connPool, err := pgxpool.New(context.Background(), cfg.DbUrlString())
 	if err != nil {
 		log.Println("Error opening database: ", err)
 		return cfg, err
 	}
-	defer db.Close()
+	defer connPool.Close()
 
 	log.Println("Creating database " + cfg.Database + "...")
-	_, err = db.Exec("CREATE DATABASE IF NOT EXISTS " + cfg.Database)
+	_, err = connPool.Exec(context.Background(), "CREATE DATABASE "+cfg.Database)
 	if err != nil {
-		log.Println("Unable to create database:", err)
+		if !strings.Contains(err.Error(), "already exists") {
+			log.Println("Unable to create database:", err)
+			return nil, err
+		}
+		log.Println("Database already exists, skipping creation.")
 	}
 
 	return cfg, nil

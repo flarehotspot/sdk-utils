@@ -22,9 +22,10 @@ services:
     volumes:
       - postgres:/var/lib/postgresql/data
     environment:
-      - POSTGRES_USER=root
-      - POSTGRES_PASSWORD=root
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=flarehotspot  # Customize database name as needed
+      - PGDATA=/var/lib/postgresql/data/pgdata
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U root"]
       start_period: 20s
@@ -41,7 +42,7 @@ services:
     depends_on:
       - postgres
     environment:
-      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+      - PGADMIN_DEFAULT_EMAIL=admin@pg.com
       - PGADMIN_DEFAULT_PASSWORD=admin
     networks:
       flare_network:

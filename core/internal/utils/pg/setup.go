@@ -20,16 +20,17 @@ var (
 	srvPgDir   = "/srv/pg/"
 )
 
+// Sets up all necessary postgresql database requirements
 func SetupDb(dbpass string, dbname string) error {
 	if isInstalled() {
 		return nil
 	}
 
-	if err := prepPgConf(); err != nil {
+	if err := prepPgSrvDir(); err != nil {
 		return err
 	}
 
-	if err := prepPgSrvDir(); err != nil {
+	if err := prepPgConf(); err != nil {
 		return err
 	}
 
@@ -65,31 +66,29 @@ func isInstalled() bool {
 }
 
 func prepPgConf() error {
-	// TODO: update to a correct postgresql configuration
-	pgConfPath := "/etc/postgresql/my.cnf"
+	pgConfPath := "/var/lib/postgresql/data/pgdata/postgresql.conf"
 	bytes, err := os.ReadFile(pgConfPath)
 	if err != nil {
 		return err
 	}
 
 	content := string(bytes)
-	if stdstr.Contains(content, "[mysqld]") {
+	if stdstr.Contains(content, "data_directory") {
 		return nil
 	}
 
 	content += "\n"
-	content += "[mysqld]\n"
-	content += fmt.Sprintf("datadir = %s\n", srvPgDir)
-	content += "tmpdir  = /tmp\n"
+	content += fmt.Sprintf("data_directory = '%s'\n", srvPgDir)
+	content += "log_directory = '/var/log/postgresql'\n"
+	content += "log_filename = 'postgresql.log'\n"
 
 	return os.WriteFile(pgConfPath, []byte(content), 0644)
 }
 
 func prepPgSrvDir() error {
-	// TODO: replace to appropriate postgresql service and directory
 	commands := []string{
 		"mkdir -p " + srvPgDir,
-		"chown -R mariadb:mariadb " + srvPgDir,
+		"chown -R postgres:postgres " + srvPgDir,
 	}
 
 	for _, c := range commands {
@@ -103,23 +102,21 @@ func prepPgSrvDir() error {
 }
 
 func prepPgSrvConf() error {
-	// TODO: replace to appropriate postgresql service and equivalent service commands
-	values, ok := gouci.Get("mysqld", "general", "enabled")
+	values, ok := gouci.Get("postgresql", "general", "enabled")
 	enabled := ok && len(values) > 0 && values[0] == "1"
 	if !enabled {
-		gouci.Set("mysqld", "general", "enabled", "1")
+		gouci.Set("postgresql", "general", "enabled", "1")
 		return gouci.Commit()
 	}
 	return nil
 }
 
 func installPg() error {
-	// TODO: replace to appropriate postgresql install commands
 	commands := []string{
-		"mysql_install_db --force",
-		"chown -R mariadb:mariadb " + srvPgDir,
-		"service mysqld start",
-		"service mysqld enable",
+		"pg_ctl initdb -D" + srvPgDir,
+		"chown -R postgres:postgresr " + srvPgDir,
+		"service postgresql start",
+		"service postgresql enable",
 	}
 
 	for _, c := range commands {
@@ -129,7 +126,7 @@ func installPg() error {
 		}
 	}
 
-	// allowance time for mysql to boot first
+	// allowance time for postgres to boot first
 	// sleep 3s
 	time.Sleep(3 * time.Second)
 
@@ -142,27 +139,23 @@ func rmPgSrvDir() {
 }
 
 func stopDb() {
-	// TODO: replace to appropriate postgresql stop command
-	cmd.Exec("service mysqld stop", nil)
-	cmd.Exec("service mysqld disable", nil)
+	cmd.Exec("service postgresql stop", nil)
 }
 
 func setRootPass(dbpass string) error {
-	// TODO: replace to appropriate postgresql set password command
-	command := "mysqladmin -u root password " + dbpass
+	command := fmt.Sprintf("postgres psql -c \"ALTER USER postgres WITH PASSWORD '%s';\"", dbpass)
 	return cmd.Exec(command, nil)
 }
 
 func createDb(dbname string) error {
-	// TODO: replace to appropriate postgresql create db command
-	return cmd.Exec("mysqladmin create "+dbname, nil)
+	command := fmt.Sprintf("postgres createdb %s ", dbname)
+	return cmd.Exec(command, nil)
 }
 
 func writeConfig(dbpass string, dbname string) error {
-	// TODO: replace to appropriate postgresql database configuration
 	cfg := map[string]string{
 		"host":     "localhost",
-		"username": "root",
+		"username": "postgres",
 		"password": dbpass,
 		"database": dbname,
 	}
