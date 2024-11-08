@@ -2,8 +2,6 @@ package config
 
 import (
 	"fmt"
-
-	_ "github.com/go-sql-driver/mysql"
 )
 
 const databaseJsonFile = "database.json"
