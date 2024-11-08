@@ -38,18 +38,18 @@ func (p *PluginConfig) LoadConfig() {
 	}
 }
 
-func (p *PluginConfig) GetSection(title string) (sec sdkfields.Section, ok bool) {
+func (p *PluginConfig) GetSection(secname string) (sec sdkfields.Section, ok bool) {
 	for _, s := range p.sections {
-		if s.Title == title {
+		if s.Name == secname {
 			return s, true
 		}
 	}
 	return
 }
 
-func (p *PluginConfig) GetField(title string, name string) (f sdkfields.ConfigField, ok bool) {
+func (p *PluginConfig) GetField(secname string, name string) (f sdkfields.ConfigField, ok bool) {
 	for _, s := range p.sections {
-		if s.Title == title {
+		if s.Name == secname {
 			for _, fld := range s.Fields {
 				if fld.GetName() == name {
 					return fld, true
@@ -60,21 +60,21 @@ func (p *PluginConfig) GetField(title string, name string) (f sdkfields.ConfigFi
 	return
 }
 
-func (p *PluginConfig) GetParsedSection(title string) (sec SectionData, ok bool) {
+func (p *PluginConfig) GetParsedSection(secname string) (sec SectionData, ok bool) {
 	if p.parsedData == nil {
 		return
 	}
 
 	for _, s := range p.parsedData {
-		if s.Title == title {
+		if s.Name == secname {
 			return s, true
 		}
 	}
 	return
 }
 
-func (p *PluginConfig) GetParsedField(title string, name string) (fld FieldData, ok bool) {
-	if s, ok := p.GetParsedSection(title); ok {
+func (p *PluginConfig) GetParsedField(secname string, name string) (fld FieldData, ok bool) {
+	if s, ok := p.GetParsedSection(secname); ok {
 		for _, f := range s.Fields {
 			if f.Name == name {
 				return f, true
@@ -84,48 +84,48 @@ func (p *PluginConfig) GetParsedField(title string, name string) (fld FieldData,
 	return
 }
 
-func (p *PluginConfig) GetParsedFieldValue(title string, name string) (val interface{}, ok bool) {
-	if f, ok := p.GetParsedField(title, name); ok {
+func (p *PluginConfig) GetParsedFieldValue(secname string, name string) (val interface{}, ok bool) {
+	if f, ok := p.GetParsedField(secname, name); ok {
 		return f.Value, true
 	}
 	return
 }
 
-func (p *PluginConfig) GetDefaultValue(title string, name string) (val interface{}, err error) {
-	if f, ok := p.GetField(title, name); ok {
+func (p *PluginConfig) GetDefaultValue(secname string, name string) (val interface{}, err error) {
+	if f, ok := p.GetField(secname, name); ok {
 		return f.GetDefaultValue(), nil
 	}
-	return nil, errors.New(fmt.Sprintf("section %s, field %s default value not found", title, name))
+	return nil, errors.New(fmt.Sprintf("section %s, field %s default value not found", secname, name))
 }
 
-func (p *PluginConfig) GetFieldValue(title string, name string) (val interface{}, err error) {
-	if v, ok := p.GetParsedFieldValue(title, name); ok {
+func (p *PluginConfig) GetFieldValue(secname string, name string) (val interface{}, err error) {
+	if v, ok := p.GetParsedFieldValue(secname, name); ok {
 		return v, nil
 	}
 
-	return p.GetDefaultValue(title, name)
+	return p.GetDefaultValue(secname, name)
 }
 
-func (p *PluginConfig) GetStringValue(title string, name string) (val string, err error) {
-	v, err := p.GetFieldValue(title, name)
+func (p *PluginConfig) GetStringValue(secname string, name string) (val string, err error) {
+	v, err := p.GetFieldValue(secname, name)
 	if err != nil {
 		return "", err
 	}
 	str, ok := v.(string)
 	if !ok {
-		return "", errors.New(fmt.Sprintf("section %s, field %s is not a string", title, name))
+		return "", errors.New(fmt.Sprintf("section %s, field %s is not a string", secname, name))
 	}
 	return str, nil
 }
 
-func (p *PluginConfig) GetIntValue(title string, name string) (val int, err error) {
-	v, err := p.GetFieldValue(title, name)
+func (p *PluginConfig) GetIntValue(secname string, name string) (val int, err error) {
+	v, err := p.GetFieldValue(secname, name)
 	if err != nil {
 		return 0, err
 	}
 	num, ok := v.(int)
 	if !ok {
-		return 0, errors.New(fmt.Sprintf("section %s, field %s is not an int", title, name))
+		return 0, errors.New(fmt.Sprintf("section %s, field %s is not an int", secname, name))
 	}
 	return num, nil
 }

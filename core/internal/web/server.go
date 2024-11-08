@@ -26,14 +26,11 @@ func SetupAllRoutes(g *plugins.CoreGlobals) {
 	router.RootRouter.Handle("/config", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		c := []sdkfields.Section{
 			{
-				Title:       "General",
+				Name:        "general",
 				Description: "Some general settings",
 				Fields: []sdkfields.ConfigField{
-					sdkfields.TextField{
-						Name:    "site_title",
-						Label:   "Site Title",
-						Default: "My Site",
-					},
+					sdkfields.TextField{Name: "site_title", Label: "Site Title", Default: "My Site"},
+					sdkfields.TextField{Name: "color", Label: "Color", Default: "red"},
 				},
 			},
 		}
@@ -41,14 +38,22 @@ func SetupAllRoutes(g *plugins.CoreGlobals) {
 		pcfg := cfgfields.NewPluginConfig(g.CoreAPI, c)
 		pcfg.LoadConfig()
 
-		result, err := pcfg.GetStringValue("General", "site_title")
+		siteTitle, err := pcfg.GetStringValue("general", "site_title")
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte(err.Error()))
 			return
 		}
 
-		w.Write([]byte("Result:" + result))
+		color, err := pcfg.GetStringValue("general", "color")
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte(err.Error()))
+			return
+		}
+
+		w.Write([]byte("site title:" + siteTitle + "<br>"))
+		w.Write([]byte("color:" + color))
 	}))
 
 	router.RootRouter.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

@@ -1,6 +1,6 @@
 package cfgfields
 
 type SectionData struct {
-	Title  string      `json:"title"`
+	Name   string      `json:"name"`
 	Fields []FieldData `json:"fields"`
 }
