@@ -2,10 +2,12 @@ package models
 
 import (
 	"context"
-	"database/sql"
+	"fmt"
 	"time"
 
 	"core/internal/db"
+
+	"github.com/jackc/pgx/v5"
 )
 
 const (
@@ -122,7 +124,7 @@ func (self *Session) CreatedAt() time.Time {
 	return self.createdAt
 }
 
-func (self *Session) UpdateTx(tx *sql.Tx, ctx context.Context, devId int64, t uint8, secs uint, mb float64, timecon uint, datacon float64, started *time.Time, exp *uint, downMbit int, upMbit int, g bool) error {
+func (self *Session) UpdateTx(tx pgx.Tx, ctx context.Context, devId int64, t uint8, secs uint, mb float64, timecon uint, datacon float64, started *time.Time, exp *uint, downMbit int, upMbit int, g bool) error {
 	err := self.models.sessionModel.UpdateTx(tx, ctx, self.id, devId, t, secs, mb, timecon, datacon, started, exp, downMbit, upMbit, g)
 	if err != nil {
 		return err
@@ -140,23 +142,32 @@ func (self *Session) UpdateTx(tx *sql.Tx, ctx context.Context, devId int64, t ui
 	return nil
 }
 
-func (self *Session) SaveTx(tx *sql.Tx, ctx context.Context) error {
+func (self *Session) SaveTx(tx pgx.Tx, ctx context.Context) error {
 	return self.UpdateTx(tx, ctx, self.deviceId, self.sessionType, self.timeSecs, self.dataMb, self.timeCons, self.dataCons, self.startedAt, self.expDays, self.downMbits, self.upMbits, self.useGlobal)
 }
 
 func (self *Session) Update(ctx context.Context, devId int64, t uint8, secs uint, mb float64, timecon uint, datacon float64, started *time.Time, exp *uint, downMbit int, upMbit int, g bool) error {
-	tx, err := self.db.SqlDB().BeginTx(ctx, nil)
+	tx, err := self.db.SqlDB().Begin(ctx)
 	if err != nil {
 		return err
 	}
-	defer tx.Rollback()
+
+	defer func() {
+		if err != nil {
+			tx.Rollback(ctx)
+		}
+	}()
 
 	err = self.UpdateTx(tx, ctx, devId, t, secs, mb, timecon, datacon, started, exp, downMbit, upMbit, g)
 	if err != nil {
 		return err
 	}
 
-	return tx.Commit()
+	if err := tx.Commit(ctx); err != nil {
+		return fmt.Errorf("could not commit transaction: %w", err)
+	}
+
+	return nil
 }
 
 func (self *Session) Save(ctx context.Context) error {

@@ -2,10 +2,13 @@ package models
 
 import (
 	"context"
-	"database/sql"
+	"fmt"
+	"log"
 	"time"
 
 	"core/internal/db"
+
+	"github.com/jackc/pgx/v5"
 )
 
 type WalletTrns struct {
@@ -50,15 +53,25 @@ func (self *WalletTrns) CreatedAt() time.Time {
 	return self.createdAt
 }
 
-func (self *WalletTrns) UpdateTx(tx *sql.Tx, ctx context.Context, walletId int64, amount float64, newbal float64, desc string) error {
-	query := "UPDATE wallet_transactions SET wallet_id = ?, amount = ?, new_balance = ?, description = ? WHERE id = ? LIMIT 1"
-	_, err := tx.ExecContext(ctx, query, walletId, amount, newbal, desc, self.id)
+func (self *WalletTrns) UpdateTx(tx pgx.Tx, ctx context.Context, walletId int64, amount float64, newbal float64, desc string) error {
+	query := "UPDATE wallet_transactions SET wallet_id = $1, amount = $2, new_balance = $3, description = $4 WHERE id = $5 LIMIT 1"
+
+	cmdTag, err := tx.Exec(ctx, query, walletId, amount, newbal, desc, self.id)
 	if err != nil {
+		log.Println("SQL Exec Error while updating wallet transaction ID %d: %v", walletId, err)
 		return err
 	}
+
+	if cmdTag.RowsAffected() == 0 {
+		log.Println("No wallet transaction found with id %d; update operation skipped", walletId)
+		return fmt.Errorf("wallet with id %d not found", walletId)
+	}
+
 	self.walletId = walletId
 	self.amount = amount
 	self.newBalance = newbal
 	self.description = desc
+
+	log.Printf("Succcessfully updated wallet transaction with id %d", walletId)
 	return nil
 }
