@@ -1,6 +1,6 @@
 {
     "host": "postgres",
     "database": "flarehotspot_dev",
-    "username": "root",
-    "password": "root"
+    "username": "postgres",
+    "password": "postgres"
 }
