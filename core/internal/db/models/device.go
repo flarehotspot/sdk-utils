@@ -7,6 +7,8 @@ import (
 	"time"
 
 	"core/internal/db"
+
+	"github.com/jackc/pgx/v5"
 )
 
 type Device struct {
@@ -48,7 +50,7 @@ func (self *Device) MacAddress() string {
 	return self.macAddr
 }
 
-func (self *Device) ReloadTx(tx *sql.Tx, ctx context.Context) error {
+func (self *Device) ReloadTx(tx pgx.Tx, ctx context.Context) error {
 	d, err := self.models.deviceModel.FindTx(tx, ctx, self.id)
 	if err != nil {
 		return err
@@ -59,7 +61,7 @@ func (self *Device) ReloadTx(tx *sql.Tx, ctx context.Context) error {
 	return nil
 }
 
-func (self *Device) WalletTx(tx *sql.Tx, ctx context.Context) (*Wallet, error) {
+func (self *Device) WalletTx(tx pgx.Tx, ctx context.Context) (*Wallet, error) {
 	wallet, err := self.models.walletModel.findByDeviceTx(tx, ctx, self.id)
 	if err != nil && errors.Is(err, sql.ErrNoRows) {
 		wallet, err = self.models.walletModel.CreateTx(tx, ctx, self.id, 0)
@@ -67,7 +69,7 @@ func (self *Device) WalletTx(tx *sql.Tx, ctx context.Context) (*Wallet, error) {
 	return wallet, err
 }
 
-func (self *Device) UpdateTx(tx *sql.Tx, ctx context.Context, mac string, ip string, hostname string) error {
+func (self *Device) UpdateTx(tx pgx.Tx, ctx context.Context, mac string, ip string, hostname string) error {
 	err := self.models.deviceModel.UpdateTx(tx, ctx, self.id, mac, ip, hostname)
 	if err != nil {
 		return err
@@ -79,87 +81,87 @@ func (self *Device) UpdateTx(tx *sql.Tx, ctx context.Context, mac string, ip str
 	return nil
 }
 
-func (self *Device) NextSessionTx(tx *sql.Tx, ctx context.Context) (*Session, error) {
+func (self *Device) NextSessionTx(tx pgx.Tx, ctx context.Context) (*Session, error) {
 	return self.models.sessionModel.AvlForDevTx(tx, ctx, self.id)
 }
 
-func (self *Device) SessionsTx(tx *sql.Tx, ctx context.Context) ([]*Session, error) {
+func (self *Device) SessionsTx(tx pgx.Tx, ctx context.Context) ([]*Session, error) {
 	return self.models.sessionModel.SessionsForDevTx(tx, ctx, self.id)
 }
 
 func (self *Device) Reload(ctx context.Context) error {
-	tx, err := self.db.SqlDB().BeginTx(ctx, nil)
+	tx, err := self.db.SqlDB().Begin(ctx)
 	if err != nil {
 		return err
 	}
-	defer tx.Rollback()
+	defer tx.Rollback(ctx)
 
 	err = self.ReloadTx(tx, ctx)
 	if err != nil {
 		return err
 	}
 
-	return tx.Commit()
+	return tx.Commit(ctx)
 }
 
 func (self *Device) Update(ctx context.Context, mac string, ip string, hostname string) error {
-	tx, err := self.db.SqlDB().BeginTx(ctx, nil)
+	tx, err := self.db.SqlDB().Begin(ctx)
 	if err != nil {
 		return err
 	}
-	defer tx.Rollback()
+	defer tx.Rollback(ctx)
 
 	err = self.UpdateTx(tx, ctx, mac, ip, hostname)
 	if err != nil {
 		return err
 	}
 
-	return tx.Commit()
+	return tx.Commit(ctx)
 }
 
 func (self *Device) Wallet(ctx context.Context) (*Wallet, error) {
-	tx, err := self.db.SqlDB().BeginTx(ctx, nil)
+	tx, err := self.db.SqlDB().Begin(ctx)
 	if err != nil {
 		return nil, err
 	}
-	defer tx.Rollback()
+	defer tx.Rollback(ctx)
 
 	wallet, err := self.WalletTx(tx, ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	return wallet, tx.Commit()
+	return wallet, tx.Commit(ctx)
 }
 
 func (self *Device) NextSession(ctx context.Context) (*Session, error) {
-	tx, err := self.db.SqlDB().BeginTx(ctx, nil)
+	tx, err := self.db.SqlDB().Begin(ctx)
 	if err != nil {
 		return nil, err
 	}
-	defer tx.Rollback()
+	defer tx.Rollback(ctx)
 
 	s, err := self.NextSessionTx(tx, ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	return s, tx.Commit()
+	return s, tx.Commit(ctx)
 }
 
 func (self *Device) Sessions(ctx context.Context) ([]*Session, error) {
-	tx, err := self.db.SqlDB().BeginTx(ctx, nil)
+	tx, err := self.db.SqlDB().Begin(ctx)
 	if err != nil {
 		return nil, err
 	}
-	defer tx.Rollback()
+	defer tx.Rollback(ctx)
 
 	sessions, err := self.SessionsTx(tx, ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	return sessions, tx.Commit()
+	return sessions, tx.Commit(ctx)
 }
 
 func (self *Device) Clone() *Device {

@@ -2,13 +2,14 @@ package models
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"log"
 	"strings"
 	"time"
 
 	"core/internal/db"
+
+	"github.com/jackc/pgx/v5"
 )
 
 type WalletModel struct {
@@ -29,74 +30,112 @@ func NewWalletModel(dtb *db.Database, mdls *Models) *WalletModel {
 	}
 }
 
-func (self *WalletModel) CreateTx(tx *sql.Tx, ctx context.Context, devId int64, bal float64) (*Wallet, error) {
-	query := "INSERT INTO wallets (device_id, balance) VALUES (?, ?)"
-	result, err := tx.ExecContext(ctx, query, devId, bal)
+func (self *WalletModel) CreateTx(tx pgx.Tx, ctx context.Context, devId int64, bal float64) (*Wallet, error) {
+	defer func() {
+		if err := tx.Rollback(ctx); err != nil && err != pgx.ErrTxClosed {
+			log.Printf("Rollback failed: %v", err)
+		}
+	}()
+
+	query := "INSERT INTO wallets (device_id, balance) VALUES ($1, $2) RETURNING id"
+
+	var lastInsertId int
+	err := tx.QueryRow(ctx, query, devId, bal).Scan(&lastInsertId)
 	if err != nil {
 		return nil, err
 	}
 
-	lastId, err := result.LastInsertId()
-	if err != nil {
-		return nil, err
-	}
-
-	return self.FindTx(tx, ctx, lastId)
+	return self.FindTx(tx, ctx, int64(lastInsertId))
 }
 
-func (self *WalletModel) FindTx(tx *sql.Tx, ctx context.Context, id int64) (*Wallet, error) {
+func (self *WalletModel) FindTx(tx pgx.Tx, ctx context.Context, id int64) (*Wallet, error) {
 	wallet := NewWallet(self.db, self.models)
-	query := fmt.Sprintf("SELECT %s FROM wallets WHERE id = ? LIMIT 1", strings.Join(self.attrs, ", "))
-	err := tx.QueryRowContext(ctx, query, id).
+
+	query := fmt.Sprintf("SELECT %s FROM wallets WHERE id = $1 LIMIT 1", strings.Join(self.attrs, ", "))
+	err := tx.QueryRow(ctx, query, id).
 		Scan(&wallet.id, &wallet.deviceId, &wallet.balance, &wallet.createdAt)
 
 	if err != nil {
+		if err == pgx.ErrNoRows {
+			log.Printf("No wallet found with id %d", id)
+			return nil, nil
+		}
+		log.Printf("Error finding wallet with id %d: %v", id, err)
 		return nil, err
 	}
 
 	return wallet, nil
 }
 
-func (self *WalletModel) UpdateTx(tx *sql.Tx, ctx context.Context, id int64, bal float64) error {
-	query := "UPDATE wallets SET balance = ? WHERE id = ? LIMIT 1"
-	_, err := tx.ExecContext(ctx, query, bal, id)
-	return err
+func (self *WalletModel) UpdateTx(tx pgx.Tx, ctx context.Context, id int64, bal float64) error {
+	query := "UPDATE wallets SET balance = $1 WHERE id = $2 LIMIT 1"
+	cmdTag, err := tx.Exec(ctx, query, bal, id)
+	if err != nil {
+		log.Println("SQL Exec Error while updating wallet ID %d: %v", id, err)
+		return err
+	}
+
+	if cmdTag.RowsAffected() == 0 {
+		log.Println("No wallet found with id %d; update operation skipped", id)
+		return fmt.Errorf("wallet with id %d not found", id)
+	}
+
+	log.Printf("Successfully updated wallet with id %d", id)
+	return nil
 }
 
 func (self *WalletModel) Find(ctx context.Context, id int64) (*Wallet, error) {
-	tx, err := self.db.SqlDB().BeginTx(ctx, nil)
+	tx, err := self.db.SqlDB().Begin(ctx)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("could not begin transaction: %w", err)
 	}
-	defer tx.Rollback()
+
+	defer func() {
+		if err != nil {
+			tx.Rollback(ctx)
+		}
+	}()
 
 	wallet, err := self.FindTx(tx, ctx, id)
 	if err != nil {
 		return nil, err
 	}
 
-	return wallet, tx.Commit()
+	if err := tx.Commit(ctx); err != nil {
+		return nil, fmt.Errorf("could not commit transaction: %w", err)
+	}
+
+	return wallet, nil
 }
 
 func (self *WalletModel) Update(ctx context.Context, id int64, bal float64) error {
-	tx, err := self.db.SqlDB().BeginTx(ctx, nil)
+	tx, err := self.db.SqlDB().Begin(ctx)
 	if err != nil {
-		return err
+		return fmt.Errorf("could not begin transaction: %w", err)
 	}
-	defer tx.Rollback()
+
+	defer func() {
+		if err != nil {
+			tx.Rollback(ctx)
+		}
+	}()
 
 	err = self.UpdateTx(tx, ctx, id, bal)
 	if err != nil {
 		return err
 	}
 
-	return tx.Commit()
+	if err := tx.Commit(ctx); err != nil {
+		return fmt.Errorf("could not commit transaction: %w", err)
+	}
+
+	return nil
 }
 
-func (self *WalletModel) findByDeviceTx(tx *sql.Tx, ctx context.Context, devId int64) (*Wallet, error) {
+func (self *WalletModel) findByDeviceTx(tx pgx.Tx, ctx context.Context, devId int64) (*Wallet, error) {
 	wallet := NewWallet(self.db, self.models)
-	query := fmt.Sprintf("SELECT %s FROM wallets WHERE device_id = ? LIMIT 1", strings.Join(self.attrs, ", "))
-	err := tx.QueryRowContext(ctx, query, devId).
+	query := fmt.Sprintf("SELECT %s FROM wallets WHERE device_id = $1 LIMIT 1", strings.Join(self.attrs, ", "))
+	err := tx.QueryRow(ctx, query, devId).
 		Scan(&wallet.id, &wallet.deviceId, &wallet.balance, &wallet.createdAt)
 
 	if err != nil {
@@ -108,17 +147,25 @@ func (self *WalletModel) findByDeviceTx(tx *sql.Tx, ctx context.Context, devId i
 }
 
 func (self *WalletModel) findByDevice(ctx context.Context, devId int64) (*Wallet, error) {
-	tx, err := self.db.SqlDB().BeginTx(ctx, nil)
+	tx, err := self.db.SqlDB().Begin(ctx)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("could not begin transaction: %w", err)
 	}
-	defer tx.Rollback()
+
+	defer func() {
+		if err != nil {
+			tx.Rollback(ctx)
+		}
+	}()
 
 	wallet, err := self.findByDeviceTx(tx, ctx, devId)
 	if err != nil {
 		return nil, err
 	}
 
-	err = tx.Commit()
-	return wallet, err
+	if err := tx.Commit(ctx); err != nil {
+		return nil, fmt.Errorf("could not commit transaction: %w", err)
+	}
+
+	return wallet, nil
 }

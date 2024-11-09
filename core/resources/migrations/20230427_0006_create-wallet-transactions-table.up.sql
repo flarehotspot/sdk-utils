@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS wallet_transactions (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     wallet_id INT NOT NULL,
     amount DECIMAL(8, 2) NOT NULL,
     new_balance DECIMAL(8, 2) NOT NULL,

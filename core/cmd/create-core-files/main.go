@@ -13,7 +13,7 @@ func main() {
 			"core/resources",
 			"plugins/system",
 			"sdk",
-			"utils",
+			// "utils",
 			"go.work.default",
 		},
 		ExtraFiles: []tools.ExtraFiles{
