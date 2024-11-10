@@ -71,6 +71,8 @@ func (p *PluginConfig) SaveForm(r *http.Request) (err error) {
 		parsedData[sidx] = sectionData
 	}
 
+	p.parsedData = parsedData
+
 	return
 }
 
@@ -171,6 +173,7 @@ func (p *PluginConfig) GetParsedSection(secname string) (sec SectionData, ok boo
 			return s, true
 		}
 	}
+
 	return
 }
 
@@ -181,7 +184,9 @@ func (p *PluginConfig) GetParsedField(secname string, name string) (fld FieldDat
 				return f, true
 			}
 		}
+
 	}
+
 	return
 }
 

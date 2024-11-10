@@ -11,7 +11,7 @@ templ HtmlForm(csrfTag string) {
 		<body>
 			<form method="POST" action="/save-form">
                 @templ.Raw(csrfTag)
-				<input name="general::site_title" value=""/>
+				<input name="general::site_title"/>
                 <button type="submit">Submit</button>
 			</form>
 		</body>
