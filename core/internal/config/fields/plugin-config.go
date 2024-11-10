@@ -50,20 +50,25 @@ func (p *PluginConfig) SaveForm(r *http.Request) (err error) {
 		}
 
 		for fidx, fld := range sec.Fields {
-			val := r.FormValue(sec.Name + "::" + fld.GetName())
 			field := FieldData{Name: fld.GetName()}
 
 			switch fld.GetType() {
 			case sdkfields.FieldTypeText:
+				val := r.FormValue(sec.Name + "::" + fld.GetName())
 				field.Value = val
 			case sdkfields.FieldTypeNumber:
-				val, err := strconv.Atoi(val)
+				val := r.FormValue(sec.Name + "::" + fld.GetName())
+				v, err := strconv.Atoi(val)
 				if err != nil {
 					return err
 				}
-				field.Value = val
+				field.Value = v
 			case sdkfields.FieldTypeMulti:
-
+				multifld, err := p.ParseMultiField(r, sec, fld)
+				if err != nil {
+					return err
+				}
+				field.Value = multifld
 			}
 			sectionData.Fields[fidx] = field
 		}
@@ -106,6 +111,7 @@ func (p *PluginConfig) ParseField(r *http.Request, sec sdkfields.Section, fld sd
 func (p *PluginConfig) ParseMultiField(r *http.Request, sec sdkfields.Section, fld sdkfields.ConfigField) (field MultiFieldData, err error) {
 	multifld, ok := fld.(sdkfields.MultiField)
 	if !ok {
+		fmt.Printf("fld: %+v\n", fld)
 		return field, errors.New("field is not a multi-field")
 	}
 
@@ -113,9 +119,8 @@ func (p *PluginConfig) ParseMultiField(r *http.Request, sec sdkfields.Section, f
 		return field, errors.New(fmt.Sprintf("multi-field %s has no columns", fld.GetName()))
 	}
 
-	col1name := multifld.Columns[0]
-	inputName := sec.Name + "::" + fld.GetName() + "::" + col1name
-	numRows := len(r.Form[inputName])
+	col1 := sec.Name + "::" + fld.GetName() + "::" + multifld.Columns[0].GetName() + "[]"
+	numRows := len(r.Form[col1])
 
 	field = MultiFieldData{
 		Name:   fld.GetName(),
@@ -124,9 +129,8 @@ func (p *PluginConfig) ParseMultiField(r *http.Request, sec sdkfields.Section, f
 
 	for ridx := 0; ridx < numRows; ridx++ {
 		row := make([]FieldData, len(multifld.Columns))
-		for cidx, colname := range multifld.Columns {
-			colfld := multifld.Fields[ridx][cidx]
-			inputName = sec.Name + "::" + fld.GetName() + "::" + colname
+		for cidx, colfld := range multifld.Columns {
+			inputName := sec.Name + "::" + fld.GetName() + "::" + colfld.GetName() + "[]"
 			colarr := r.Form[inputName]
 			valstr := colarr[ridx]
 			row[cidx], err = p.ParseField(r, sec, colfld, valstr)
@@ -236,14 +240,16 @@ func (p *PluginConfig) GetIntValue(secname string, name string) (val int, err er
 	return num, nil
 }
 
-func (p *PluginConfig) GetMultiValue(secname string, name string) (val sdkfields.IMultiField, err error) {
+func (p *PluginConfig) GetMultiValue(secname string, name string) (val MultiFieldData, err error) {
 	v, err := p.GetFieldValue(secname, name)
 	if err != nil {
-		return nil, err
+		return
 	}
+
 	fields, ok := v.(MultiFieldData)
 	if !ok {
-		return nil, errors.New(fmt.Sprintf("section %s, field %s is not a multi-field", secname, name))
+		return val, errors.New(fmt.Sprintf("section %s, field %s is not a multi-field", secname, name))
 	}
+
 	return fields, nil
 }

@@ -2,9 +2,8 @@ package sdkfields
 
 type MultiField struct {
 	Name    string          `json:"name"`
-	Columns []string        `json:"columns"`
-	Fields  [][]ConfigField `json:"fields"`
-	Default [][]ConfigField `json:"default"`
+	Columns []ConfigField   `json:"columns"`
+	Default [][]interface{} `json:"default"`
 }
 
 func (f MultiField) GetType() string {

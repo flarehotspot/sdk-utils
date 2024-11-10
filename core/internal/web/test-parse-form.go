@@ -16,6 +16,15 @@ func TestParseForm(g *plugins.CoreGlobals) {
 			Name:    "site_title",
 			Default: "My Site",
 		},
+		sdkfields.MultiField{
+			Name: "wifi_rates",
+			Columns: []sdkfields.ConfigField{
+				sdkfields.NumberField{Name: "amount", Default: 1},
+				sdkfields.NumberField{Name: "session_time", Default: 1},
+				sdkfields.NumberField{Name: "session_data", Default: 1},
+			},
+			Default: [][]interface{}{{1, 10, 10}},
+		},
 	}
 
 	c := []sdkfields.Section{
@@ -51,6 +60,34 @@ func TestParseForm(g *plugins.CoreGlobals) {
 		}
 
 		html := fmt.Sprintf("site_title: %s", siteTitle)
+
+		rates, err := p.GetMultiValue("general", "wifi_rates")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		for i := 0; i < rates.NumRows(); i++ {
+			amount, err := rates.GetIntValue(i, "amount")
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			sessionTime, err := rates.GetIntValue(i, "session_time")
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			sessionData, err := rates.GetIntValue(i, "session_data")
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			fmt.Printf("---\nrow: %d\namount: %d\nsession_time: %d\nsession_data: %d\n", i, amount, sessionTime, sessionData)
+		}
 
 		w.Write([]byte(html))
 

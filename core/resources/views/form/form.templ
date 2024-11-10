@@ -10,9 +10,16 @@ templ HtmlForm(csrfTag string) {
 		</head>
 		<body>
 			<form method="POST" action="/save-form">
-                @templ.Raw(csrfTag)
+				@templ.Raw(csrfTag)
 				<input name="general::site_title"/>
-                <button type="submit">Submit</button>
+				<br/>
+				<input name="general::wifi_rates::amount[]"/>
+				<br/>
+				<input name="general::wifi_rates::session_time[]"/>
+				<br/>
+				<input name="general::wifi_rates::session_data[]"/>
+				<br/>
+				<button type="submit">Submit</button>
 			</form>
 		</body>
 	</html>

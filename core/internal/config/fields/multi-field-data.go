@@ -10,6 +10,10 @@ type MultiFieldData struct {
 	Fields [][]FieldData `json:"fields"`
 }
 
+func (f MultiFieldData) NumRows() int {
+	return len(f.Fields)
+}
+
 func (f MultiFieldData) GetValue(row int, name string) (val interface{}, err error) {
 	r := f.Fields[row]
 	if r == nil {
