@@ -19,5 +19,3 @@ CREATE TABLE IF NOT EXISTS purchases (
 
     FOREIGN KEY (device_id) REFERENCES devices (id) ON DELETE CASCADE
 );
-
-CREATE UNIQUE INDEX IF NOT EXISTS index_purchase_token ON purchases(token);
