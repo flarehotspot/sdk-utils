@@ -1,7 +1,6 @@
 CREATE TABLE IF NOT EXISTS purchases (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     device_id UUID NOT NULL,
-    token CHAR(32) NOT NULL,
     sku VARCHAR(255) NOT NULL,
     name VARCHAR(255) NOT NULL,
     description TEXT,
@@ -20,3 +19,5 @@ CREATE TABLE IF NOT EXISTS purchases (
 
     FOREIGN KEY (device_id) REFERENCES devices (id) ON DELETE CASCADE
 );
+
+CREATE UNIQUE INDEX IF NOT EXISTS index_purchase_token ON purchases(token);
