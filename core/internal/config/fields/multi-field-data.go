@@ -3,6 +3,8 @@ package cfgfields
 import (
 	"errors"
 	"fmt"
+	"reflect"
+	"strings"
 )
 
 type MultiFieldData struct {
@@ -12,6 +14,46 @@ type MultiFieldData struct {
 
 func (f MultiFieldData) NumRows() int {
 	return len(f.Fields)
+}
+
+func (f MultiFieldData) Json() string {
+	var s strings.Builder
+	s.WriteString("[")
+
+	for i, row := range f.Fields {
+		if i > 0 {
+			s.WriteString(", ")
+		}
+		s.WriteString("{ ")
+
+		for j, field := range row {
+			if j > 0 {
+				s.WriteString(", ")
+			}
+
+			s.WriteString(fmt.Sprintf(`"%s": `, field.Name))
+
+			typ := reflect.TypeOf(field.Value)
+
+			switch typ.Kind() {
+			case reflect.String:
+				s.WriteString(fmt.Sprintf(`"%s" `, field.Value))
+
+			case reflect.Int:
+				s.WriteString(fmt.Sprintf("%d", field.Value))
+
+			default:
+				s.WriteString("null")
+			}
+
+		}
+
+		s.WriteString(" }")
+	}
+
+	s.WriteString("]")
+
+	return s.String()
 }
 
 func (f MultiFieldData) GetValue(row int, name string) (val interface{}, err error) {

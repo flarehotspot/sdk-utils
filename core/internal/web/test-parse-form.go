@@ -67,29 +67,31 @@ func TestParseForm(g *plugins.CoreGlobals) {
 			return
 		}
 
-		for i := 0; i < rates.NumRows(); i++ {
-			amount, err := rates.GetIntValue(i, "amount")
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
+		// for i := 0; i < rates.NumRows(); i++ {
+		// 	amount, err := rates.GetIntValue(i, "amount")
+		// 	if err != nil {
+		// 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		// 		return
+		// 	}
 
-			sessionTime, err := rates.GetIntValue(i, "session_time")
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
+		// 	sessionTime, err := rates.GetIntValue(i, "session_time")
+		// 	if err != nil {
+		// 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		// 		return
+		// 	}
 
-			sessionData, err := rates.GetIntValue(i, "session_data")
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
+		// 	sessionData, err := rates.GetIntValue(i, "session_data")
+		// 	if err != nil {
+		// 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		// 		return
+		// 	}
 
-			fmt.Printf("---\nrow: %d\namount: %d\nsession_time: %d\nsession_data: %d\n", i, amount, sessionTime, sessionData)
-		}
+		// 	fmt.Fprintf(w, "---\nrow: %d\namount: %d\nsession_time: %d\nsession_data: %d\n", i, amount, sessionTime, sessionData)
+		// }
 
-		w.Write([]byte(html))
+		w.Write([]byte(rates.Json()))
+
+		w.Write([]byte("<br />" + html))
 
 	})).Methods("POST")
 }
