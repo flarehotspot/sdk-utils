@@ -1,6 +1,8 @@
+CREATE  EXTENSION IF NOT EXISTS "pgcrypto";
+
 CREATE TABLE IF NOT EXISTS sessions (
-    id SERIAL PRIMARY KEY,
-    device_id INT NOT NULL,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    device_id UUID NOT NULL,
     session_type SMALLINT NOT NULL,
     time_secs INT DEFAULT 0,
     data_mbytes DECIMAL(18, 9) DEFAULT 0.0,

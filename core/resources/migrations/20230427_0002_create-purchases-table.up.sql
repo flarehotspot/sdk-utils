@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS purchases (
-    id SERIAL PRIMARY KEY,
-    device_id INT NOT NULL,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    device_id UUID NOT NULL,
     token CHAR(32) NOT NULL,
     sku VARCHAR(255) NOT NULL,
     name VARCHAR(255) NOT NULL,
