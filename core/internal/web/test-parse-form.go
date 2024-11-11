@@ -7,34 +7,35 @@ import (
 	"core/resources/views/form"
 	"fmt"
 	"net/http"
-	sdkfields "sdk/api/config/fields"
 )
 
 func TestParseForm(g *plugins.CoreGlobals) {
-	flds := []sdkfields.ConfigField{
-		sdkfields.TextField{
-			Name:    "site_title",
-			Default: "My Site",
-		},
-		sdkfields.MultiField{
-			Name: "wifi_rates",
-			Columns: []sdkfields.ConfigField{
-				sdkfields.NumberField{Name: "amount", Default: 1},
-				sdkfields.NumberField{Name: "session_time", Default: 1},
-				sdkfields.NumberField{Name: "session_data", Default: 1},
-			},
-			Default: [][]interface{}{{1, 10, 10}},
-		},
-	}
+	// flds := []sdkfields.Field{
+	// 	{
+	// 		Name:    "site_title",
+	// 		Type:    sdkfields.FieldTypeText,
+	// 		Default: "My Site",
+	// 	},
+	// 	{
+	// 		Name: "wifi_rates",
+	// 		Type: sdkfields.FieldTypeMulti,
+	// 		Columns: []sdkfields.Field{
+	// 			{Name: "amount", Type: sdkfields.FieldTypeNumber, Default: 1},
+	// 			{Name: "session_time", Type: sdkfields.FieldTypeNumber, Default: 1},
+	// 			{Name: "session_data", Type: sdkfields.FieldTypeNumber, Default: 1},
+	// 		},
+	// 		Default: [][]interface{}{{1, 10, 10}},
+	// 	},
+	// }
 
-	c := []sdkfields.Section{
-		{
-			Name:   "general",
-			Fields: flds,
-		},
-	}
+	// c := []sdkfields.Section{
+	// 	{
+	// 		Name:   "general",
+	// 		Fields: flds,
+	// 	},
+	// }
 
-	p := cfgfields.NewPluginConfig(g.CoreAPI, c)
+	p := cfgfields.NewPluginConfig(g.CoreAPI)
 
 	router.RootRouter.Handle("/form", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		csrfTag := g.CoreAPI.HttpAPI.Helpers().CsrfHtmlTag(r)
@@ -44,6 +45,11 @@ func TestParseForm(g *plugins.CoreGlobals) {
 
 	router.RootRouter.Handle("/save-form", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if err := r.ParseForm(); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		if err := p.LoadConfig(); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}

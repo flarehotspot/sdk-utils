@@ -13,12 +13,13 @@ import (
 	sdkpaths "github.com/flarehotspot/go-utils/paths"
 )
 
-func NewPluginConfig(api *plugins.PluginApi, sec []sdkfields.Section) *PluginConfig {
-	savePath := filepath.Join(sdkpaths.ConfigDir, "plugins", api.Pkg(), "data.json")
+func NewPluginConfig(api *plugins.PluginApi) *PluginConfig {
+	valuesPath := filepath.Join(sdkpaths.ConfigDir, "plugins", api.Pkg(), "values.json")
+	configPath := filepath.Join(sdkpaths.ConfigDir, "plugins", api.Pkg(), "config.json")
 	return &PluginConfig{
 		api:        api,
-		sections:   sec,
-		datapath:   savePath,
+		datapath:   valuesPath,
+		configpath: configPath,
 		parsedData: nil,
 	}
 }
@@ -26,38 +27,50 @@ func NewPluginConfig(api *plugins.PluginApi, sec []sdkfields.Section) *PluginCon
 type PluginConfig struct {
 	api        *plugins.PluginApi
 	datapath   string
-	sections   []sdkfields.Section
-	parsedData []SectionData
+	configpath string
+	config     sdkfields.Config
+	parsedData ConfigData
 }
 
-func (p *PluginConfig) LoadConfig() {
+func (p *PluginConfig) LoadConfig() (err error) {
+	p.config = nil
+
+	if err := sdkfs.ReadJson(p.configpath, &p.config); err != nil {
+		return err
+	}
+
+	fmt.Printf("config: %+v\n", p.config)
+	return
+}
+
+func (p *PluginConfig) LoadValues() {
 	if !sdkfs.Exists(p.datapath) {
 		return
 	}
-	fmt.Println("Loading config from", p.datapath)
+	fmt.Println("Loading values from", p.datapath)
 	if err := sdkfs.ReadJson(p.datapath, &p.parsedData); err != nil {
 		p.parsedData = nil
 	}
 }
 
 func (p *PluginConfig) SaveForm(r *http.Request) (err error) {
-	parsedData := make([]SectionData, len(p.sections))
+	parsedData := make([]SectionData, len(p.config))
 
-	for sidx, sec := range p.sections {
+	for sidx, sec := range p.config {
 		sectionData := SectionData{
 			Name:   sec.Name,
 			Fields: make([]FieldData, len(sec.Fields)),
 		}
 
 		for fidx, fld := range sec.Fields {
-			field := FieldData{Name: fld.GetName()}
+			field := FieldData{Name: fld.Name}
 
-			switch fld.GetType() {
+			switch fld.InputType {
 			case sdkfields.FieldTypeText:
-				val := r.FormValue(sec.Name + "::" + fld.GetName())
+				val := r.FormValue(sec.Name + "::" + fld.Name)
 				field.Value = val
 			case sdkfields.FieldTypeNumber:
-				val := r.FormValue(sec.Name + "::" + fld.GetName())
+				val := r.FormValue(sec.Name + "::" + fld.Name)
 				v, err := strconv.Atoi(val)
 				if err != nil {
 					return err
@@ -76,17 +89,27 @@ func (p *PluginConfig) SaveForm(r *http.Request) (err error) {
 		parsedData[sidx] = sectionData
 	}
 
+	if err = sdkfs.WriteJson(p.datapath, parsedData); err != nil {
+		return
+	}
+
+	fmt.Printf("parsedData: %+v\n", parsedData)
+
 	p.parsedData = parsedData
 
 	return
 }
 
-func (p *PluginConfig) ParseField(r *http.Request, sec sdkfields.Section, fld sdkfields.ConfigField, valstr string) (field FieldData, err error) {
-	field = FieldData{
-		Name: fld.GetName(),
+func (p *PluginConfig) ParseField(r *http.Request, sec sdkfields.Section, fld sdkfields.Field, valstr string) (field FieldData, err error) {
+	if fld.InputType == "" {
+		return field, errors.New(fmt.Sprintf("field %s with value %s has no type", fld.Name, valstr))
 	}
 
-	switch fld.GetType() {
+	field = FieldData{
+		Name: fld.Name,
+	}
+
+	switch fld.InputType {
 	case sdkfields.FieldTypeText:
 		field.Value = valstr
 
@@ -103,50 +126,63 @@ func (p *PluginConfig) ParseField(r *http.Request, sec sdkfields.Section, fld sd
 			return field, err
 		}
 		field.Value = multifld.Fields
+	default:
+		return field, errors.New(fmt.Sprintf("field type %s not supported", fld.InputType))
 	}
+
+	fmt.Printf("parsed field: %+v\n", field)
 
 	return field, nil
 }
 
-func (p *PluginConfig) ParseMultiField(r *http.Request, sec sdkfields.Section, fld sdkfields.ConfigField) (field MultiFieldData, err error) {
-	multifld, ok := fld.(sdkfields.MultiField)
-	if !ok {
-		fmt.Printf("fld: %+v\n", fld)
-		return field, errors.New("field is not a multi-field")
+func (p *PluginConfig) ParseMultiField(r *http.Request, sec sdkfields.Section, fld sdkfields.Field) (field MultiFieldData, err error) {
+	if len(fld.Columns) < 1 {
+		return field, errors.New(fmt.Sprintf("multi-field %s has no columns", fld.Name))
 	}
 
-	if len(multifld.Columns) < 1 {
-		return field, errors.New(fmt.Sprintf("multi-field %s has no columns", fld.GetName()))
-	}
+	fmt.Printf("multi field form: %+v\n", r.Form)
 
-	col1 := sec.Name + "::" + fld.GetName() + "::" + multifld.Columns[0].GetName() + "[]"
+	col1 := sec.Name + "::" + fld.Name + "::" + fld.Columns[0].Name + "[]"
 	numRows := len(r.Form[col1])
 
+	fmt.Printf("numRows: %d\n", numRows)
+
 	field = MultiFieldData{
-		Name:   fld.GetName(),
+		Name:   fld.Name,
 		Fields: make([][]FieldData, numRows),
 	}
 
 	for ridx := 0; ridx < numRows; ridx++ {
-		row := make([]FieldData, len(multifld.Columns))
-		for cidx, colfld := range multifld.Columns {
-			inputName := sec.Name + "::" + fld.GetName() + "::" + colfld.GetName() + "[]"
+		row := make([]FieldData, len(fld.Columns))
+		for cidx, col := range fld.Columns {
+			colfld := sdkfields.Field{
+				Name:      col.Name,
+				InputType: col.Type,
+				Default:   col.Default,
+			}
+			inputName := sec.Name + "::" + fld.Name + "::" + colfld.Name + "[]"
 			colarr := r.Form[inputName]
+			fmt.Printf("colarr: %+v\n", colarr)
 			valstr := colarr[ridx]
+			fmt.Printf("valstr: %s\n", valstr)
+
 			row[cidx], err = p.ParseField(r, sec, colfld, valstr)
 			if err != nil {
 				return field, err
 			}
 		}
+		fmt.Printf("row: %+v\n", row)
 		field.Fields[ridx] = row
 	}
+
+	fmt.Printf("parsed multi-field: %+v\n", field)
 
 	return field, nil
 
 }
 
 func (p *PluginConfig) GetSection(secname string) (sec sdkfields.Section, ok bool) {
-	for _, s := range p.sections {
+	for _, s := range p.config {
 		if s.Name == secname {
 			return s, true
 		}
@@ -154,11 +190,11 @@ func (p *PluginConfig) GetSection(secname string) (sec sdkfields.Section, ok boo
 	return
 }
 
-func (p *PluginConfig) GetField(secname string, name string) (f sdkfields.ConfigField, ok bool) {
-	for _, s := range p.sections {
+func (p *PluginConfig) GetField(secname string, name string) (f sdkfields.Field, ok bool) {
+	for _, s := range p.config {
 		if s.Name == secname {
 			for _, fld := range s.Fields {
-				if fld.GetName() == name {
+				if fld.Name == name {
 					return fld, true
 				}
 			}
@@ -203,7 +239,7 @@ func (p *PluginConfig) GetParsedFieldValue(secname string, name string) (val int
 
 func (p *PluginConfig) GetDefaultValue(secname string, name string) (val interface{}, err error) {
 	if f, ok := p.GetField(secname, name); ok {
-		return f.GetDefaultValue(), nil
+		return f.Default, nil
 	}
 	return nil, errors.New(fmt.Sprintf("section %s, field %s default value not found", secname, name))
 }
