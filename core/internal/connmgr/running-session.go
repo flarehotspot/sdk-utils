@@ -13,6 +13,8 @@ import (
 	connmgr "sdk/api/connmgr"
 	sdkconnmgr "sdk/api/connmgr"
 	sdknet "sdk/api/network"
+
+	"github.com/google/uuid"
 )
 
 var sessionQ *jobque.JobQue = jobque.NewJobQue()
@@ -37,7 +39,7 @@ func NewRunningSession(clnt sdkconnmgr.ClientDevice, s connmgr.ClientSession) (*
 
 type RunningSession struct {
 	mu         sync.RWMutex
-	clntId     int64
+	clntId     uuid.UUID
 	ip         string
 	mac        string
 	lan        *network.NetworkLan
@@ -49,7 +51,7 @@ type RunningSession struct {
 	callbacks  []chan error
 }
 
-func (self *RunningSession) ClientId() int64 {
+func (self *RunningSession) ClientId() uuid.UUID {
 	self.mu.RLock()
 	defer self.mu.RUnlock()
 	return self.clntId

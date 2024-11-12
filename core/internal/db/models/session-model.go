@@ -9,6 +9,7 @@ import (
 
 	"core/internal/db"
 
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 )
 
@@ -37,7 +38,7 @@ func NewSessionModel(dtb *db.Database, mdls *Models) *SessionModel {
 	return &SessionModel{dtb, mdls}
 }
 
-func (self *SessionModel) CreateTx(tx pgx.Tx, ctx context.Context, devId int64, t uint8, timeSecs uint, dataMbytes float64, expDays *uint, downMbits int, upMbits int, useGlobal bool) (*Session, error) {
+func (self *SessionModel) CreateTx(tx pgx.Tx, ctx context.Context, devId uuid.UUID, t uint8, timeSecs uint, dataMbytes float64, expDays *uint, downMbits int, upMbits int, useGlobal bool) (*Session, error) {
 	defer func() {
 		if err := tx.Rollback(ctx); err != nil && err != pgx.ErrTxClosed {
 			log.Printf("Rollback failed: %v", err)
@@ -46,22 +47,21 @@ func (self *SessionModel) CreateTx(tx pgx.Tx, ctx context.Context, devId int64, 
 
 	query := "INSERT INTO sessions (device_id, session_type, time_secs, data_mbytes, exp_days, down_mbits, up_mbits, use_global) VALUES($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id"
 
-	var lastInsertId int
+	var lastInsertId uuid.UUID
 	err := tx.QueryRow(ctx, query, devId, t, timeSecs, dataMbytes, expDays, downMbits, upMbits, useGlobal).Scan(&lastInsertId)
 	if err != nil {
-		log.Println("SQL Execution Error failed: %v", err)
+		log.Printf("SQL Execution Error failed: %v", err)
 		return nil, err
 	}
 
 	if err := tx.Commit(ctx); err != nil {
-		log.Printf("SQL transaction commit failed: %v", err)
-		return nil, err
+		return nil, fmt.Errorf("could not commit transaction: %w", err)
 	}
 
-	return self.FindTx(tx, ctx, int64(lastInsertId))
+	return self.FindTx(tx, ctx, lastInsertId)
 }
 
-func (self *SessionModel) FindTx(tx pgx.Tx, ctx context.Context, id int64) (*Session, error) {
+func (self *SessionModel) FindTx(tx pgx.Tx, ctx context.Context, id uuid.UUID) (*Session, error) {
 	s := NewSession(self.db, self.models)
 	query := SELECT_QUERY + " WHERE id = $1 LIMIT 1"
 
@@ -76,30 +76,38 @@ func (self *SessionModel) FindTx(tx pgx.Tx, ctx context.Context, id int64) (*Ses
 		return nil, err
 	}
 
+	if err := tx.Commit(ctx); err != nil {
+		return nil, fmt.Errorf("could not commit transaction: %w", err)
+	}
+
 	return s, nil
 }
 
-func (self *SessionModel) UpdateTx(tx pgx.Tx, ctx context.Context, id int64, devId int64, t uint8, secs uint, mb float64, timeCons uint, dataCons float64, started *time.Time, exp *uint, downMbit int, upMbit int, g bool) error {
+func (self *SessionModel) UpdateTx(tx pgx.Tx, ctx context.Context, id uuid.UUID, devId uuid.UUID, t uint8, secs uint, mb float64, timeCons uint, dataCons float64, started *time.Time, exp *uint, downMbit int, upMbit int, g bool) error {
 	query := `UPDATE sessions
   SET device_id = $1, session_type = $2, time_secs = $3, data_mbytes = $4, consumption_secs = $5, consumption_mb = $6, started_at = $7, exp_days = $8, down_mbits = $9, up_mbits = $10, use_global = $11
   WHERE id = $12 LIMIT 1`
 
 	cmdTag, err := tx.Exec(ctx, query, devId, t, secs, mb, timeCons, dataCons, started, exp, downMbit, upMbit, g, id)
 	if err != nil {
-		log.Println("SQL Exec Error while updating session ID %d: %v", id, err)
+		log.Printf("SQL Exec Error while updating session ID %d: %v", id, err)
 		return err
 	}
 
 	if cmdTag.RowsAffected() == 0 {
-		log.Println("No session found with id %d; update operation skipped", id)
+		log.Printf("No session found with id %d; update operation skipped", id)
 		return fmt.Errorf("session with id %d not found", id)
+	}
+
+	if err := tx.Commit(ctx); err != nil {
+		return fmt.Errorf("could not commit transaction: %w", err)
 	}
 
 	log.Printf("Successfully updated device with id %d", id)
 	return nil
 }
 
-func (self *SessionModel) AvlForDevTx(tx pgx.Tx, ctx context.Context, deviceId int64) (*Session, error) {
+func (self *SessionModel) AvlForDevTx(tx pgx.Tx, ctx context.Context, deviceId uuid.UUID) (*Session, error) {
 	s := NewSession(self.db, self.models)
 	query := SELECT_QUERY + " WHERE device_id = $1 AND " + VALID_WHERE_QUERY + " LIMIT 1"
 
@@ -110,10 +118,14 @@ func (self *SessionModel) AvlForDevTx(tx pgx.Tx, ctx context.Context, deviceId i
 		return nil, errors.New("No more available sessions for this device")
 	}
 
+	if err := tx.Commit(ctx); err != nil {
+		return nil, fmt.Errorf("could not commit transaction: %w", err)
+	}
+
 	return s, err
 }
 
-func (self *SessionModel) SessionsForDevTx(tx pgx.Tx, ctx context.Context, devId int64) ([]*Session, error) {
+func (self *SessionModel) SessionsForDevTx(tx pgx.Tx, ctx context.Context, devId uuid.UUID) ([]*Session, error) {
 	sessions := []*Session{}
 	query := SELECT_QUERY + " WHERE device_id = $1 AND " + VALID_WHERE_QUERY
 
@@ -135,6 +147,10 @@ func (self *SessionModel) SessionsForDevTx(tx pgx.Tx, ctx context.Context, devId
 		return nil, fmt.Errorf("row iteration error: %w", rows.Err())
 	}
 
+	if err := tx.Commit(ctx); err != nil {
+		return nil, fmt.Errorf("could not commit transaction: %w", err)
+	}
+
 	return sessions, nil
 }
 
@@ -143,7 +159,7 @@ func (self *SessionModel) UpdateAllBandwidthTx(tx pgx.Tx, ctx context.Context, d
 
 	cmdTag, err := tx.Exec(ctx, query, downMbits, upMbits, useGlobal)
 	if err != nil {
-		log.Println("SQL Exec Error while updating session bandwidth: %v", err)
+		log.Printf("SQL Exec Error while updating session bandwidth: %v", err)
 		return err
 	}
 
@@ -151,11 +167,15 @@ func (self *SessionModel) UpdateAllBandwidthTx(tx pgx.Tx, ctx context.Context, d
 		return fmt.Errorf("session not found: %w", err)
 	}
 
+	if err := tx.Commit(ctx); err != nil {
+		return fmt.Errorf("could not commit transaction: %w", err)
+	}
+
 	log.Println("Successfully updated all bandwidth of valid sessions")
 	return nil
 }
 
-func (self *SessionModel) Create(ctx context.Context, devId int64, t uint8, timeSecs uint, dataMbytes float64, exp *uint, downMbit int, upMbit int, g bool) (*Session, error) {
+func (self *SessionModel) Create(ctx context.Context, devId uuid.UUID, t uint8, timeSecs uint, dataMbytes float64, exp *uint, downMbit int, upMbit int, g bool) (*Session, error) {
 	tx, err := self.db.SqlDB().Begin(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("could not begin transaction: %w", err)
@@ -172,14 +192,10 @@ func (self *SessionModel) Create(ctx context.Context, devId int64, t uint8, time
 		return nil, err
 	}
 
-	if err := tx.Commit(ctx); err != nil {
-		return nil, fmt.Errorf("could not commit transaction: %w", err)
-	}
-
 	return s, nil
 }
 
-func (self *SessionModel) Find(ctx context.Context, id int64) (*Session, error) {
+func (self *SessionModel) Find(ctx context.Context, id uuid.UUID) (*Session, error) {
 	tx, err := self.db.SqlDB().Begin(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("could not begin transaction: %w", err)
@@ -196,14 +212,10 @@ func (self *SessionModel) Find(ctx context.Context, id int64) (*Session, error) 
 		return nil, err
 	}
 
-	if err := tx.Commit(ctx); err != nil {
-		return nil, fmt.Errorf("could not commit transaction: %w", err)
-	}
-
 	return s, nil
 }
 
-func (self *SessionModel) Update(ctx context.Context, id int64, devId int64, t uint8, timeSecs uint, dataMbytes float64, timeCons uint, dataCons float64, started *time.Time, exp *uint, downMbit int, upMbit int, g bool) error {
+func (self *SessionModel) Update(ctx context.Context, id uuid.UUID, devId uuid.UUID, t uint8, timeSecs uint, dataMbytes float64, timeCons uint, dataCons float64, started *time.Time, exp *uint, downMbit int, upMbit int, g bool) error {
 	tx, err := self.db.SqlDB().Begin(ctx)
 	if err != nil {
 		return fmt.Errorf("could not begin transaction: %w", err)
@@ -220,14 +232,10 @@ func (self *SessionModel) Update(ctx context.Context, id int64, devId int64, t u
 		return err
 	}
 
-	if err := tx.Commit(ctx); err != nil {
-		return fmt.Errorf("could not commit transaction: %w", err)
-	}
-
 	return nil
 }
 
-func (self *SessionModel) AvlForDev(ctx context.Context, devId int64) (*Session, error) {
+func (self *SessionModel) AvlForDev(ctx context.Context, devId uuid.UUID) (*Session, error) {
 	tx, err := self.db.SqlDB().Begin(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("could not begin transaction: %w", err)
@@ -244,14 +252,10 @@ func (self *SessionModel) AvlForDev(ctx context.Context, devId int64) (*Session,
 		return nil, err
 	}
 
-	if err := tx.Commit(ctx); err != nil {
-		return nil, fmt.Errorf("could not commit transaction: %w", err)
-	}
-
 	return s, nil
 }
 
-func (self *SessionModel) SessionsForDev(ctx context.Context, devId int64) ([]*Session, error) {
+func (self *SessionModel) SessionsForDev(ctx context.Context, devId uuid.UUID) ([]*Session, error) {
 	tx, err := self.db.SqlDB().Begin(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("could not begin transaction: %w", err)
@@ -266,10 +270,6 @@ func (self *SessionModel) SessionsForDev(ctx context.Context, devId int64) ([]*S
 	sessions, err := self.SessionsForDevTx(tx, ctx, devId)
 	if err != nil {
 		return nil, err
-	}
-
-	if err := tx.Commit(ctx); err != nil {
-		return nil, fmt.Errorf("could not commit transaction: %w", err)
 	}
 
 	return sessions, nil
@@ -290,10 +290,6 @@ func (self *SessionModel) UpdateAllBandwidth(ctx context.Context, downMbit int, 
 	err = self.UpdateAllBandwidthTx(tx, ctx, downMbit, upMbit, g)
 	if err != nil {
 		return err
-	}
-
-	if err := tx.Commit(ctx); err != nil {
-		return fmt.Errorf("could not commit transaction: %w", err)
 	}
 
 	return nil

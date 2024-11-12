@@ -1,8 +1,7 @@
 package connmgr
 
 import (
-	"database/sql"
-	"errors"
+	"fmt"
 	"net/http"
 
 	"core/internal/db"
@@ -49,7 +48,7 @@ func (reg *ClientRegister) Register(r *http.Request, mac string, ip string, host
 	ctx := r.Context()
 	dev, err := reg.mdls.Device().FindByMac(ctx, mac)
 
-	if errors.Is(err, sql.ErrNoRows) {
+	if dev == nil {
 		// create new device record
 		dev, err = reg.mdls.Device().Create(ctx, mac, ip, hostname)
 		if err != nil {
@@ -91,7 +90,8 @@ func (reg *ClientRegister) Register(r *http.Request, mac string, ip string, host
 		old := NewClientDevice(reg.db, reg.mdls, dev.Clone())
 		err := dev.Update(ctx, mac, ip, hostname)
 		if err != nil {
-			return nil, err
+			fmt.Println("error updating dev: ", err)
+			return nil, fmt.Errorf("could not update dev: %w", err)
 		}
 
 		// call changedHooks functions

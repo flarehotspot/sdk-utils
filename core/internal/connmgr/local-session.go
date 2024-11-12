@@ -10,6 +10,8 @@ import (
 	"core/internal/db/models"
 	connmgr "sdk/api/connmgr"
 	sdkconnmgr "sdk/api/connmgr"
+
+	"github.com/google/uuid"
 )
 
 func NewLocalSession(dtb *db.Database, mdls *models.Models, s *models.Session) connmgr.SessionSource {
@@ -22,8 +24,8 @@ type LocalSession struct {
 	mu        sync.RWMutex
 	db        *db.Database
 	mdls      *models.Models
-	id        int64
-	devId     int64
+	id        uuid.UUID
+	devId     uuid.UUID
 	t         uint8
 	timeSecs  uint
 	dataMb    float64

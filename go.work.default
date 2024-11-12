@@ -10,5 +10,6 @@ use (
     ./sdk/libs/go-json-0.10.3
     ./sdk/libs/websocket-1.5.3
     ./sdk/libs/pgx-5.5.5
+    ./sdk/libs/uuid-1.6.0
     ./sdk/libs/templ-0.2.793
 )

@@ -7,9 +7,11 @@ import (
 
 	"core/internal/db/models"
 	sdkpayments "sdk/api/payments"
+
+	"github.com/google/uuid"
 )
 
-func NewPurchase(api *PluginApi, ctx context.Context, deviceId int64, p *models.Purchase) *Purchase {
+func NewPurchase(api *PluginApi, ctx context.Context, deviceId uuid.UUID, p *models.Purchase) *Purchase {
 	return &Purchase{
 		api:      api,
 		ctx:      ctx,
@@ -21,7 +23,7 @@ func NewPurchase(api *PluginApi, ctx context.Context, deviceId int64, p *models.
 type Purchase struct {
 	api      *PluginApi
 	ctx      context.Context
-	deviceId int64
+	deviceId uuid.UUID
 	purchase *models.Purchase
 }
 
