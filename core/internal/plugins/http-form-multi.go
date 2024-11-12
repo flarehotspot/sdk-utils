@@ -1,6 +1,7 @@
-package cfgfields
+package plugins
 
 import (
+	formsutl "core/internal/utils/forms"
 	"errors"
 	"fmt"
 	"reflect"
@@ -8,8 +9,8 @@ import (
 )
 
 type MultiFieldData struct {
-	Name   string        `json:"name"`
-	Fields [][]FieldData `json:"fields"`
+	Name   string                 `json:"name"`
+	Fields [][]formsutl.FieldData `json:"fields"`
 }
 
 func (f MultiFieldData) NumRows() int {

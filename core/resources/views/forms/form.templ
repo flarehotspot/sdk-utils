@@ -1,0 +1,19 @@
+package formsview
+
+import "sdk/api/http"
+import "core/internal/utils/forms"
+
+templ HtmlForm(csrfTag string, sections []sdkhttp.Section, values formsutl.ConfigData) {
+	<form method="POST" action="/save-form">
+		@templ.Raw(csrfTag)
+		<input name="general::site_title"/>
+		<br/>
+		<input name="general::wifi_rates::amount[]"/>
+		<br/>
+		<input name="general::wifi_rates::session_time[]"/>
+		<br/>
+		<input name="general::wifi_rates::session_data[]"/>
+		<br/>
+		<button type="submit">Submit</button>
+	</form>
+}

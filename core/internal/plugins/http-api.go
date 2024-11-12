@@ -19,6 +19,7 @@ func NewHttpApi(api *PluginApi, db *db.Database, clnt *connmgr.ClientRegister, m
 	httpResp := NewHttpResponse(api)
 	middlewares := NewPluginMiddlewares(api, mdls, dmgr, pmgr)
 	httpRouter := NewHttpRouterApi(api, db, clnt)
+	httpForm := NewHttpFormApi(api)
 
 	httpApi := &HttpApi{
 		api:         api,
@@ -27,6 +28,7 @@ func NewHttpApi(api *PluginApi, db *db.Database, clnt *connmgr.ClientRegister, m
 		navsApi:     navs,
 		httpResp:    httpResp,
 		middlewares: middlewares,
+		formsApi:    httpForm,
 	}
 
 	api.HttpAPI = httpApi
@@ -38,6 +40,7 @@ type HttpApi struct {
 	auth        *HttpAuth
 	httpRouter  *HttpRouterApi
 	navsApi     *HttpNavsApi
+	formsApi    *HttpFormApi
 	httpResp    *HttpResponse
 	middlewares *PluginMiddlewares
 }
@@ -52,6 +55,10 @@ func (self *HttpApi) Auth() sdkhttp.HttpAuth {
 
 func (self *HttpApi) HttpRouter() sdkhttp.HttpRouterApi {
 	return self.httpRouter
+}
+
+func (self *HttpApi) Forms() sdkhttp.HttpFormApi {
+	return self.formsApi
 }
 
 func (self *HttpApi) Helpers() sdkhttp.HttpHelpers {
