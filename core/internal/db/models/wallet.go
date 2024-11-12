@@ -7,14 +7,15 @@ import (
 
 	"core/internal/db"
 
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 )
 
 type Wallet struct {
 	db        *db.Database
 	models    *Models
-	id        int64
-	deviceId  int64
+	id        uuid.UUID
+	deviceId  uuid.UUID
 	balance   float64
 	createdAt time.Time
 }
@@ -26,11 +27,11 @@ func NewWallet(dtb *db.Database, m *Models) *Wallet {
 	}
 }
 
-func (self *Wallet) Id() int64 {
+func (self *Wallet) Id() uuid.UUID {
 	return self.id
 }
 
-func (self *Wallet) DeviceId() int64 {
+func (self *Wallet) DeviceId() uuid.UUID {
 	return self.deviceId
 }
 
@@ -89,10 +90,6 @@ func (self *Wallet) IncBalance(ctx context.Context, bal float64) error {
 		return err
 	}
 
-	if err := tx.Commit(ctx); err != nil {
-		return fmt.Errorf("could not commit transaction: %w", err)
-	}
-
 	return nil
 }
 
@@ -113,10 +110,6 @@ func (self *Wallet) Update(ctx context.Context, bal float64) error {
 		return err
 	}
 
-	if err := tx.Commit(ctx); err != nil {
-		return fmt.Errorf("could not commit transaction: %w", err)
-	}
-
 	return nil
 }
 
@@ -135,10 +128,6 @@ func (self *Wallet) AvailableBal(ctx context.Context) (float64, error) {
 	bal, err := self.AvailableBalTx(tx, ctx)
 	if err != nil {
 		return 0, nil
-	}
-
-	if err := tx.Commit(ctx); err != nil {
-		return 0, fmt.Errorf("could not commit transaction: %w", err)
 	}
 
 	return bal, nil

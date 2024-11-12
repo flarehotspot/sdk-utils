@@ -2,11 +2,11 @@ package models
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"core/internal/db"
 
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 )
 
@@ -19,8 +19,8 @@ const (
 type Session struct {
 	db          *db.Database
 	models      *Models
-	id          int64
-	deviceId    int64
+	id          uuid.UUID
+	deviceId    uuid.UUID
 	sessionType uint8
 	timeSecs    uint
 	dataMb      float64
@@ -42,7 +42,7 @@ func NewSession(dtb *db.Database, mdls *Models) *Session {
 	}
 }
 
-func BuildSession(id int64, devId int64, t uint8, timeSecs uint, dataMb float64, timeCons uint, dataCons float64, startedAt *time.Time, expDays *uint, expiresAt *time.Time, dmbits int, umbits int, g bool) *Session {
+func BuildSession(id uuid.UUID, devId uuid.UUID, t uint8, timeSecs uint, dataMb float64, timeCons uint, dataCons float64, startedAt *time.Time, expDays *uint, expiresAt *time.Time, dmbits int, umbits int, g bool) *Session {
 	return &Session{
 		id:          id,
 		deviceId:    devId,
@@ -60,11 +60,11 @@ func BuildSession(id int64, devId int64, t uint8, timeSecs uint, dataMb float64,
 	}
 }
 
-func (self *Session) Id() int64 {
+func (self *Session) Id() uuid.UUID {
 	return self.id
 }
 
-func (self *Session) DeviceId() int64 {
+func (self *Session) DeviceId() uuid.UUID {
 	return self.deviceId
 }
 
@@ -124,7 +124,7 @@ func (self *Session) CreatedAt() time.Time {
 	return self.createdAt
 }
 
-func (self *Session) UpdateTx(tx pgx.Tx, ctx context.Context, devId int64, t uint8, secs uint, mb float64, timecon uint, datacon float64, started *time.Time, exp *uint, downMbit int, upMbit int, g bool) error {
+func (self *Session) UpdateTx(tx pgx.Tx, ctx context.Context, devId uuid.UUID, t uint8, secs uint, mb float64, timecon uint, datacon float64, started *time.Time, exp *uint, downMbit int, upMbit int, g bool) error {
 	err := self.models.sessionModel.UpdateTx(tx, ctx, self.id, devId, t, secs, mb, timecon, datacon, started, exp, downMbit, upMbit, g)
 	if err != nil {
 		return err
@@ -146,7 +146,7 @@ func (self *Session) SaveTx(tx pgx.Tx, ctx context.Context) error {
 	return self.UpdateTx(tx, ctx, self.deviceId, self.sessionType, self.timeSecs, self.dataMb, self.timeCons, self.dataCons, self.startedAt, self.expDays, self.downMbits, self.upMbits, self.useGlobal)
 }
 
-func (self *Session) Update(ctx context.Context, devId int64, t uint8, secs uint, mb float64, timecon uint, datacon float64, started *time.Time, exp *uint, downMbit int, upMbit int, g bool) error {
+func (self *Session) Update(ctx context.Context, devId uuid.UUID, t uint8, secs uint, mb float64, timecon uint, datacon float64, started *time.Time, exp *uint, downMbit int, upMbit int, g bool) error {
 	tx, err := self.db.SqlDB().Begin(ctx)
 	if err != nil {
 		return err
@@ -161,10 +161,6 @@ func (self *Session) Update(ctx context.Context, devId int64, t uint8, secs uint
 	err = self.UpdateTx(tx, ctx, devId, t, secs, mb, timecon, datacon, started, exp, downMbit, upMbit, g)
 	if err != nil {
 		return err
-	}
-
-	if err := tx.Commit(ctx); err != nil {
-		return fmt.Errorf("could not commit transaction: %w", err)
 	}
 
 	return nil

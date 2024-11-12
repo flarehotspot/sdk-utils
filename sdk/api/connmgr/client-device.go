@@ -6,13 +6,16 @@
 
 package sdkconnmgr
 
-import "context"
+import (
+	"context"
+	"github.com/google/uuid"
+)
 
 // ClientDevice represents a client device connected to the network.
 type ClientDevice interface {
 
 	// Returns the database id of the client device ID.
-	Id() int64
+	Id() uuid.UUID
 
 	// Returns the hostname of the device.
 	Hostname() string

@@ -15,6 +15,8 @@ import (
 	sdknet "sdk/api/network"
 
 	sdkslices "github.com/flarehotspot/go-utils/slices"
+
+	"github.com/google/uuid"
 )
 
 const (
@@ -289,7 +291,7 @@ func (self *SessionsMgr) endSession(ctx context.Context, clnt sdkconnmgr.ClientD
 
 func (self *SessionsMgr) CreateSession(
 	ctx context.Context,
-	devId int64,
+	devId uuid.UUID,
 	t uint8,
 	timeSecs uint,
 	dataMbytes float64,
