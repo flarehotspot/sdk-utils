@@ -75,5 +75,5 @@ func (self *Payment) Update(ctx context.Context, amt float64) error {
 		return fmt.Errorf("could not update payment: %w", err)
 	}
 
-	return tx.Commit(ctx)
+	return nil
 }

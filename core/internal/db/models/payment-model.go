@@ -61,6 +61,11 @@ func (self *PaymentModel) FindTx(tx pgx.Tx, ctx context.Context, id int64) (*Pay
 		return nil, err
 	}
 
+	if err := tx.Commit(ctx); err != nil {
+		log.Printf("SQL transaction commit failed: %v", err)
+		return nil, err
+	}
+
 	return payment, nil
 }
 
@@ -89,6 +94,11 @@ func (self *PaymentModel) FindAllByPurchaseTx(tx pgx.Tx, ctx context.Context, pu
 		return nil, fmt.Errorf("row iteration error: %w", rows.Err())
 	}
 
+	if err := tx.Commit(ctx); err != nil {
+		log.Printf("SQL transaction commit failed: %v", err)
+		return nil, err
+	}
+
 	return payments, nil
 }
 
@@ -104,6 +114,10 @@ func (self *PaymentModel) UpdateTx(tx pgx.Tx, ctx context.Context, id uuid.UUID,
 	if cmdTag.RowsAffected() == 0 {
 		log.Printf("No payment found with id %d; update operation skipped", id)
 		return fmt.Errorf("device with id %d not found", id)
+	}
+
+	if err := tx.Commit(ctx); err != nil {
+		return fmt.Errorf("could not commit transaction: %w", err)
 	}
 
 	log.Printf("Successfully updated device with id %d", id)
@@ -124,10 +138,6 @@ func (self *PaymentModel) Create(ctx context.Context, purid uuid.UUID, amt float
 	payment, err := self.CreateTx(tx, ctx, purid, amt, mtd)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create device: %w", err)
-	}
-
-	if err = tx.Commit(ctx); err != nil {
-		return nil, fmt.Errorf("could not commit transaction: %w", err)
 	}
 
 	return payment, nil
@@ -151,10 +161,6 @@ func (self *PaymentModel) Find(ctx context.Context, id int64) (*Payment, error) 
 		return nil, fmt.Errorf("failed to find payment: %w", err)
 	}
 
-	if err = tx.Commit(ctx); err != nil {
-		return nil, fmt.Errorf("could not commit transaction: %w", err)
-	}
-
 	return pmnt, nil
 }
 
@@ -175,10 +181,6 @@ func (self *PaymentModel) FindAllByPurchase(ctx context.Context, purId uuid.UUID
 		return nil, fmt.Errorf("could not retrieve payments: %w", err)
 	}
 
-	if err = tx.Commit(ctx); err != nil {
-		return nil, fmt.Errorf("could not commit transaction: %w", err)
-	}
-
 	return payments, nil
 }
 
@@ -197,10 +199,6 @@ func (self *PaymentModel) Update(ctx context.Context, id uuid.UUID, amt float64,
 	err = self.UpdateTx(tx, ctx, id, amt)
 	if err != nil {
 		return fmt.Errorf("could not update payment: %w", err)
-	}
-
-	if err := tx.Commit(ctx); err != nil {
-		return fmt.Errorf("could not commit transaction: %w", err)
 	}
 
 	return nil

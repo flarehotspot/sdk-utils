@@ -37,7 +37,7 @@ func (self *PurchaseModel) CreateTx(tx pgx.Tx, ctx context.Context, deviceId uui
         callback_vue_route_name
     ) VALUES($1, $2, $3, $4, $5, $6, $7, $8)
     RETURNING id`
-	var lastInsertId int
+	var lastInsertId uuid.UUID
 
 	err := tx.QueryRow(ctx, query, deviceId, sku, name, desc, price, vprice, pkg, routename).Scan(&lastInsertId)
 	if err != nil {
@@ -46,14 +46,13 @@ func (self *PurchaseModel) CreateTx(tx pgx.Tx, ctx context.Context, deviceId uui
 	}
 
 	if err := tx.Commit(ctx); err != nil {
-		log.Printf("SQL transaction commit failed: %v", err)
-		return nil, err
+		return nil, fmt.Errorf("could not commit transaction: %w", err)
 	}
 
-	return self.FindTx(tx, ctx, int64(lastInsertId))
+	return self.FindTx(tx, ctx, lastInsertId)
 }
 
-func (self *PurchaseModel) FindTx(tx pgx.Tx, ctx context.Context, id int64) (*Purchase, error) {
+func (self *PurchaseModel) FindTx(tx pgx.Tx, ctx context.Context, id uuid.UUID) (*Purchase, error) {
 	p := NewPurchase(self.db, self.models)
 
 	attrs := strings.Join(self.attrs, ", ")
@@ -68,6 +67,10 @@ func (self *PurchaseModel) FindTx(tx pgx.Tx, ctx context.Context, id int64) (*Pu
 			return nil, nil
 		}
 		log.Printf("Error finding purchase with id %d: %v", id, err)
+	}
+
+	if err := tx.Commit(ctx); err != nil {
+		return nil, fmt.Errorf("could not commit transaction: %w", err)
 	}
 
 	return p, err
@@ -95,6 +98,10 @@ func (self *PurchaseModel) FindByDeviceIdTx(tx pgx.Tx, ctx context.Context, devi
 		log.Printf("Error finding purchase with device id %d: %v", deviceId, err)
 	}
 
+	if err := tx.Commit(ctx); err != nil {
+		return nil, fmt.Errorf("could not commit transaction: %w", err)
+	}
+
 	return p, err
 }
 
@@ -106,6 +113,11 @@ func (self *PurchaseModel) UpdateTx(tx pgx.Tx, ctx context.Context, id uuid.UUID
 		log.Printf("No purchase found with id %d; update operation skipped", id)
 		return fmt.Errorf("purchase with id %d not found", id)
 	}
+
+	if err := tx.Commit(ctx); err != nil {
+		return fmt.Errorf("could not commit transaction: %w", err)
+	}
+
 	return err
 }
 
@@ -133,6 +145,10 @@ func (self *PurchaseModel) PendingPurchaseTx(tx pgx.Tx, ctx context.Context, dev
 		log.Printf("Error finding purchase with device id %d: %v", deviceId, err)
 	}
 
+	if err := tx.Commit(ctx); err != nil {
+		return nil, fmt.Errorf("could not commit transaction: %w", err)
+	}
+
 	return p, err
 }
 
@@ -153,14 +169,10 @@ func (self *PurchaseModel) Create(ctx context.Context, deviceId uuid.UUID, sku s
 		return nil, fmt.Errorf("could not create purchase: %w", err)
 	}
 
-	if err := tx.Commit(ctx); err != nil {
-		return nil, fmt.Errorf("could not commit transaction: %w", err)
-	}
-
 	return d, nil
 }
 
-func (self *PurchaseModel) Find(ctx context.Context, id int64) (*Purchase, error) {
+func (self *PurchaseModel) Find(ctx context.Context, id uuid.UUID) (*Purchase, error) {
 	tx, err := self.db.SqlDB().Begin(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("could not begin transaction: %w", err)
@@ -175,10 +187,6 @@ func (self *PurchaseModel) Find(ctx context.Context, id int64) (*Purchase, error
 	p, err := self.FindTx(tx, ctx, id)
 	if err != nil {
 		return nil, err
-	}
-
-	if err := tx.Commit(ctx); err != nil {
-		return nil, fmt.Errorf("could not commit transaction: %w", err)
 	}
 
 	return p, nil
@@ -201,10 +209,6 @@ func (self *PurchaseModel) PendingPurchase(ctx context.Context, deviceId uuid.UU
 		return nil, err
 	}
 
-	if err := tx.Commit(ctx); err != nil {
-		return nil, fmt.Errorf("could not commit transaction: %w", err)
-	}
-
 	return d, nil
 }
 
@@ -225,10 +229,6 @@ func (self *PurchaseModel) FindByDeviceId(ctx context.Context, deviceId int64) (
 		return nil, err
 	}
 
-	if err := tx.Commit(ctx); err != nil {
-		return nil, fmt.Errorf("could not commit transaction: %w", err)
-	}
-
 	return purchase, nil
 }
 
@@ -247,10 +247,6 @@ func (self *PurchaseModel) Update(ctx context.Context, id uuid.UUID, dbt float64
 	err = self.UpdateTx(tx, ctx, id, dbt, txid, cancelledAt, confirmedAt, reason)
 	if err != nil {
 		return err
-	}
-
-	if err := tx.Commit(ctx); err != nil {
-		return fmt.Errorf("could not commit transaction: %w", err)
 	}
 
 	return nil

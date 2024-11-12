@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"time"
 
 	"core/internal/db"
@@ -59,6 +60,11 @@ func (self *Device) ReloadTx(tx pgx.Tx, ctx context.Context) error {
 	self.hostname = d.Hostname()
 	self.ipAddr = d.IpAddress()
 	self.macAddr = d.MacAddress()
+
+	if err := tx.Commit(ctx); err != nil {
+		return fmt.Errorf("could not commit transaction: %w", err)
+	}
+
 	return nil
 }
 
@@ -67,6 +73,7 @@ func (self *Device) WalletTx(tx pgx.Tx, ctx context.Context) (*Wallet, error) {
 	if err != nil && errors.Is(err, sql.ErrNoRows) {
 		wallet, err = self.models.walletModel.CreateTx(tx, ctx, self.id, 0)
 	}
+
 	return wallet, err
 }
 
@@ -79,6 +86,7 @@ func (self *Device) UpdateTx(tx pgx.Tx, ctx context.Context, mac string, ip stri
 	self.hostname = hostname
 	self.macAddr = mac
 	self.ipAddr = ip
+
 	return nil
 }
 
@@ -102,7 +110,7 @@ func (self *Device) Reload(ctx context.Context) error {
 		return err
 	}
 
-	return tx.Commit(ctx)
+	return nil
 }
 
 func (self *Device) Update(ctx context.Context, mac string, ip string, hostname string) error {
@@ -114,10 +122,10 @@ func (self *Device) Update(ctx context.Context, mac string, ip string, hostname 
 
 	err = self.UpdateTx(tx, ctx, mac, ip, hostname)
 	if err != nil {
-		return err
+		return fmt.Errorf("could not update device: %w", err)
 	}
 
-	return tx.Commit(ctx)
+	return nil
 }
 
 func (self *Device) Wallet(ctx context.Context) (*Wallet, error) {
@@ -132,7 +140,7 @@ func (self *Device) Wallet(ctx context.Context) (*Wallet, error) {
 		return nil, err
 	}
 
-	return wallet, tx.Commit(ctx)
+	return wallet, nil
 }
 
 func (self *Device) NextSession(ctx context.Context) (*Session, error) {
@@ -147,7 +155,7 @@ func (self *Device) NextSession(ctx context.Context) (*Session, error) {
 		return nil, err
 	}
 
-	return s, tx.Commit(ctx)
+	return s, nil
 }
 
 func (self *Device) Sessions(ctx context.Context) ([]*Session, error) {
@@ -162,7 +170,7 @@ func (self *Device) Sessions(ctx context.Context) ([]*Session, error) {
 		return nil, err
 	}
 
-	return sessions, tx.Commit(ctx)
+	return sessions, nil
 }
 
 func (self *Device) Clone() *Device {

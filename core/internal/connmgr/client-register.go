@@ -1,6 +1,7 @@
 package connmgr
 
 import (
+	"fmt"
 	"net/http"
 
 	"core/internal/db"
@@ -89,7 +90,8 @@ func (reg *ClientRegister) Register(r *http.Request, mac string, ip string, host
 		old := NewClientDevice(reg.db, reg.mdls, dev.Clone())
 		err := dev.Update(ctx, mac, ip, hostname)
 		if err != nil {
-			return nil, err
+			fmt.Println("error updating dev: ", err)
+			return nil, fmt.Errorf("could not update dev: %w", err)
 		}
 
 		// call changedHooks functions

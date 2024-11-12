@@ -2,6 +2,7 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"log"
 
 	"core/internal/db"
@@ -35,8 +36,7 @@ func (self *WalletTrnsModel) CreateTx(tx pgx.Tx, ctx context.Context, wltId uuid
 	}
 
 	if err := tx.Commit(ctx); err != nil {
-		log.Println("SQL transaction commit failed:", err)
-		return nil, err
+		return nil, fmt.Errorf("could not commit transaction: %w", err)
 	}
 
 	return self.FindTx(tx, ctx, int64(lastId))
@@ -50,6 +50,10 @@ func (self *WalletTrnsModel) FindTx(tx pgx.Tx, ctx context.Context, id int64) (*
 	if err != nil {
 		log.Println("Error scanning row:", err)
 		return nil, err
+	}
+
+	if err := tx.Commit(ctx); err != nil {
+		return nil, fmt.Errorf("could not commit transaction: %w", err)
 	}
 
 	return trns, err
@@ -67,7 +71,7 @@ func (self *WalletTrnsModel) Create(ctx context.Context, wltId uuid.UUID, amount
 		return nil, err
 	}
 
-	return trns, tx.Commit(ctx)
+	return trns, nil
 }
 
 func (self *WalletTrnsModel) Find(ctx context.Context, id int64) (*WalletTrns, error) {
@@ -82,5 +86,5 @@ func (self *WalletTrnsModel) Find(ctx context.Context, id int64) (*WalletTrns, e
 		return nil, err
 	}
 
-	return trns, tx.Commit(ctx)
+	return trns, nil
 }

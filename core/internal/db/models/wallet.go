@@ -90,10 +90,6 @@ func (self *Wallet) IncBalance(ctx context.Context, bal float64) error {
 		return err
 	}
 
-	if err := tx.Commit(ctx); err != nil {
-		return fmt.Errorf("could not commit transaction: %w", err)
-	}
-
 	return nil
 }
 
@@ -114,10 +110,6 @@ func (self *Wallet) Update(ctx context.Context, bal float64) error {
 		return err
 	}
 
-	if err := tx.Commit(ctx); err != nil {
-		return fmt.Errorf("could not commit transaction: %w", err)
-	}
-
 	return nil
 }
 
@@ -136,10 +128,6 @@ func (self *Wallet) AvailableBal(ctx context.Context) (float64, error) {
 	bal, err := self.AvailableBalTx(tx, ctx)
 	if err != nil {
 		return 0, nil
-	}
-
-	if err := tx.Commit(ctx); err != nil {
-		return 0, fmt.Errorf("could not commit transaction: %w", err)
 	}
 
 	return bal, nil

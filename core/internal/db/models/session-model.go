@@ -55,8 +55,7 @@ func (self *SessionModel) CreateTx(tx pgx.Tx, ctx context.Context, devId uuid.UU
 	}
 
 	if err := tx.Commit(ctx); err != nil {
-		log.Printf("SQL transaction commit failed: %v", err)
-		return nil, err
+		return nil, fmt.Errorf("could not commit transaction: %w", err)
 	}
 
 	return self.FindTx(tx, ctx, lastInsertId)
@@ -75,6 +74,10 @@ func (self *SessionModel) FindTx(tx pgx.Tx, ctx context.Context, id uuid.UUID) (
 		}
 		log.Printf("Error finding payment with id %d: %v", id, err)
 		return nil, err
+	}
+
+	if err := tx.Commit(ctx); err != nil {
+		return nil, fmt.Errorf("could not commit transaction: %w", err)
 	}
 
 	return s, nil
@@ -96,6 +99,10 @@ func (self *SessionModel) UpdateTx(tx pgx.Tx, ctx context.Context, id uuid.UUID,
 		return fmt.Errorf("session with id %d not found", id)
 	}
 
+	if err := tx.Commit(ctx); err != nil {
+		return fmt.Errorf("could not commit transaction: %w", err)
+	}
+
 	log.Printf("Successfully updated device with id %d", id)
 	return nil
 }
@@ -109,6 +116,10 @@ func (self *SessionModel) AvlForDevTx(tx pgx.Tx, ctx context.Context, deviceId u
 
 	if errors.Is(err, pgx.ErrNoRows) {
 		return nil, errors.New("No more available sessions for this device")
+	}
+
+	if err := tx.Commit(ctx); err != nil {
+		return nil, fmt.Errorf("could not commit transaction: %w", err)
 	}
 
 	return s, err
@@ -136,6 +147,10 @@ func (self *SessionModel) SessionsForDevTx(tx pgx.Tx, ctx context.Context, devId
 		return nil, fmt.Errorf("row iteration error: %w", rows.Err())
 	}
 
+	if err := tx.Commit(ctx); err != nil {
+		return nil, fmt.Errorf("could not commit transaction: %w", err)
+	}
+
 	return sessions, nil
 }
 
@@ -150,6 +165,10 @@ func (self *SessionModel) UpdateAllBandwidthTx(tx pgx.Tx, ctx context.Context, d
 
 	if cmdTag.RowsAffected() == 0 {
 		return fmt.Errorf("session not found: %w", err)
+	}
+
+	if err := tx.Commit(ctx); err != nil {
+		return fmt.Errorf("could not commit transaction: %w", err)
 	}
 
 	log.Println("Successfully updated all bandwidth of valid sessions")
@@ -173,10 +192,6 @@ func (self *SessionModel) Create(ctx context.Context, devId uuid.UUID, t uint8, 
 		return nil, err
 	}
 
-	if err := tx.Commit(ctx); err != nil {
-		return nil, fmt.Errorf("could not commit transaction: %w", err)
-	}
-
 	return s, nil
 }
 
@@ -195,10 +210,6 @@ func (self *SessionModel) Find(ctx context.Context, id uuid.UUID) (*Session, err
 	s, err := self.FindTx(tx, ctx, id)
 	if err != nil {
 		return nil, err
-	}
-
-	if err := tx.Commit(ctx); err != nil {
-		return nil, fmt.Errorf("could not commit transaction: %w", err)
 	}
 
 	return s, nil
@@ -221,10 +232,6 @@ func (self *SessionModel) Update(ctx context.Context, id uuid.UUID, devId uuid.U
 		return err
 	}
 
-	if err := tx.Commit(ctx); err != nil {
-		return fmt.Errorf("could not commit transaction: %w", err)
-	}
-
 	return nil
 }
 
@@ -243,10 +250,6 @@ func (self *SessionModel) AvlForDev(ctx context.Context, devId uuid.UUID) (*Sess
 	s, err := self.AvlForDevTx(tx, ctx, devId)
 	if err != nil {
 		return nil, err
-	}
-
-	if err := tx.Commit(ctx); err != nil {
-		return nil, fmt.Errorf("could not commit transaction: %w", err)
 	}
 
 	return s, nil
@@ -269,10 +272,6 @@ func (self *SessionModel) SessionsForDev(ctx context.Context, devId uuid.UUID) (
 		return nil, err
 	}
 
-	if err := tx.Commit(ctx); err != nil {
-		return nil, fmt.Errorf("could not commit transaction: %w", err)
-	}
-
 	return sessions, nil
 }
 
@@ -291,10 +290,6 @@ func (self *SessionModel) UpdateAllBandwidth(ctx context.Context, downMbit int, 
 	err = self.UpdateAllBandwidthTx(tx, ctx, downMbit, upMbit, g)
 	if err != nil {
 		return err
-	}
-
-	if err := tx.Commit(ctx); err != nil {
-		return fmt.Errorf("could not commit transaction: %w", err)
 	}
 
 	return nil

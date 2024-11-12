@@ -21,12 +21,6 @@ func NewDeviceModel(database *db.Database, mdls *Models) *DeviceModel {
 }
 
 func (self *DeviceModel) CreateTx(tx pgx.Tx, ctx context.Context, mac string, ip string, hostname string) (*Device, error) {
-	defer func() {
-		if err := tx.Rollback(ctx); err != nil && err != pgx.ErrTxClosed {
-			log.Printf("Rollback failed: %v", err)
-		}
-	}()
-
 	query := "INSERT INTO devices (mac_address, ip_address, hostname) VALUES($1, $2, UPPER($3)) RETURNING id"
 	var lastInsertId uuid.UUID
 	err := tx.QueryRow(ctx, query, mac, ip, hostname).Scan(&lastInsertId)
@@ -34,13 +28,24 @@ func (self *DeviceModel) CreateTx(tx pgx.Tx, ctx context.Context, mac string, ip
 		log.Printf("SQL Execution failed: %v", err)
 		return nil, err
 	}
+	defer func() {
+		if err != nil {
+			tx.Rollback(ctx)
+		}
+	}()
 
 	if err := tx.Commit(ctx); err != nil {
 		log.Printf("SQL transaction commit failed: %v", err)
 		return nil, err
 	}
 
-	return self.FindTx(tx, ctx, lastInsertId)
+	dev, err := self.Find(ctx, lastInsertId)
+	if err != nil {
+		log.Printf("Could not find device with id %v: %v", lastInsertId, err)
+		return nil, err
+	}
+
+	return dev, nil
 }
 
 func (self *DeviceModel) FindTx(tx pgx.Tx, ctx context.Context, id uuid.UUID) (*Device, error) {
@@ -55,6 +60,11 @@ func (self *DeviceModel) FindTx(tx pgx.Tx, ctx context.Context, id uuid.UUID) (*
 			return nil, nil
 		}
 		log.Printf("Error finding device with id %d: %v", id, err)
+		return nil, err
+	}
+
+	if err := tx.Commit(ctx); err != nil {
+		log.Printf("SQL transaction commit failed: %v", err)
 		return nil, err
 	}
 
@@ -78,6 +88,11 @@ func (self *DeviceModel) FindByMacTx(tx pgx.Tx, ctx context.Context, mac string)
 		return nil, err
 	}
 
+	if err := tx.Commit(ctx); err != nil {
+		log.Printf("SQL transaction commit failed: %v", err)
+		return nil, err
+	}
+
 	log.Println("Found device: ", device)
 	return device, nil
 }
@@ -94,6 +109,10 @@ func (self *DeviceModel) UpdateTx(tx pgx.Tx, ctx context.Context, id uuid.UUID, 
 	if cmdTag.RowsAffected() == 0 {
 		log.Printf("No device found with id %d; update operation skipped", id)
 		return fmt.Errorf("device with id %d not found", id)
+	}
+
+	if err := tx.Commit(ctx); err != nil {
+		return fmt.Errorf("could not commit transaction: %w", err)
 	}
 
 	log.Printf("Successfully updated device with id %d", id)
@@ -116,10 +135,6 @@ func (self *DeviceModel) Create(ctx context.Context, mac string, ip string, host
 		return nil, fmt.Errorf("failed to create device: %w", err)
 	}
 
-	if err = tx.Commit(ctx); err != nil {
-		return nil, fmt.Errorf("could not commit transaction: %w", err)
-	}
-
 	return dev, nil
 }
 
@@ -128,7 +143,6 @@ func (self *DeviceModel) Find(ctx context.Context, id uuid.UUID) (*Device, error
 	if err != nil {
 		return nil, fmt.Errorf("could not begin transaction: %w", err)
 	}
-
 	defer func() {
 		if err != nil {
 			tx.Rollback(ctx)
@@ -138,10 +152,6 @@ func (self *DeviceModel) Find(ctx context.Context, id uuid.UUID) (*Device, error
 	device, err := self.FindTx(tx, ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to find device: %w", err)
-	}
-
-	if err = tx.Commit(ctx); err != nil {
-		return nil, fmt.Errorf("could not commit transaction: %w", err)
 	}
 
 	return device, nil
@@ -157,11 +167,6 @@ func (self *DeviceModel) FindByMac(ctx context.Context, mac string) (*Device, er
 	dev, err := self.FindByMacTx(tx, ctx, mac)
 	if err != nil {
 		return nil, err
-	}
-
-	if err := tx.Commit(ctx); err != nil {
-		fmt.Println("Error committing transaction")
-		return nil, fmt.Errorf("could not commit transaction: %w", err)
 	}
 
 	return dev, nil
@@ -182,10 +187,6 @@ func (self *DeviceModel) Update(ctx context.Context, id uuid.UUID, mac string, i
 	err = self.UpdateTx(tx, ctx, id, mac, ip, hostname)
 	if err != nil {
 		return fmt.Errorf("could not update device: %w", err)
-	}
-
-	if err := tx.Commit(ctx); err != nil {
-		return fmt.Errorf("could not commit transaction: %w", err)
 	}
 
 	return nil

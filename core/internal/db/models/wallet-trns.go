@@ -73,6 +73,10 @@ func (self *WalletTrns) UpdateTx(tx pgx.Tx, ctx context.Context, walletId uuid.U
 	self.newBalance = newbal
 	self.description = desc
 
+	if err := tx.Commit(ctx); err != nil {
+		return fmt.Errorf("could not commit transaction: %w", err)
+	}
+
 	log.Printf("Succcessfully updated wallet transaction with id %d", walletId)
 	return nil
 }

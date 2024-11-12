@@ -2,7 +2,6 @@ package models
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"core/internal/db"
@@ -162,10 +161,6 @@ func (self *Session) Update(ctx context.Context, devId uuid.UUID, t uint8, secs 
 	err = self.UpdateTx(tx, ctx, devId, t, secs, mb, timecon, datacon, started, exp, downMbit, upMbit, g)
 	if err != nil {
 		return err
-	}
-
-	if err := tx.Commit(ctx); err != nil {
-		return fmt.Errorf("could not commit transaction: %w", err)
 	}
 
 	return nil

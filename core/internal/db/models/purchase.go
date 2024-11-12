@@ -247,7 +247,7 @@ func (self *Purchase) Cancel(ctx context.Context) error {
 		return err
 	}
 
-	return tx.Commit(ctx)
+	return nil
 }
 
 func (self *Purchase) Confirm(ctx context.Context) error {
@@ -264,10 +264,6 @@ func (self *Purchase) Confirm(ctx context.Context) error {
 	err = self.ConfirmTx(tx, ctx)
 	if err != nil {
 		return err
-	}
-
-	if err := tx.Commit(ctx); err != nil {
-		return fmt.Errorf("could not commit transaction: %w", err)
 	}
 
 	return nil
@@ -290,10 +286,6 @@ func (self *Purchase) TotalPayment(ctx context.Context) (float64, error) {
 		return 0, err
 	}
 
-	if err := tx.Commit(ctx); err != nil {
-		return 0, fmt.Errorf("could not commit transaction: %w", err)
-	}
-
 	return total, nil
 }
 
@@ -312,10 +304,6 @@ func (self *Purchase) Update(ctx context.Context, dbt float64, txid *uuid.UUID, 
 	err = self.UpdateTx(tx, ctx, dbt, txid, cancelledAt, confirmedAt, reason)
 	if err != nil {
 		return err
-	}
-
-	if err := tx.Commit(ctx); err != nil {
-		return fmt.Errorf("could not commit transaction: %w", err)
 	}
 
 	return nil

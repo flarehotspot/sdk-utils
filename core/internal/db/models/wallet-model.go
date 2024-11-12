@@ -46,6 +46,10 @@ func (self *WalletModel) CreateTx(tx pgx.Tx, ctx context.Context, devId uuid.UUI
 		return nil, err
 	}
 
+	if err := tx.Commit(ctx); err != nil {
+		return nil, fmt.Errorf("could not commit transaction: %w", err)
+	}
+
 	return self.FindTx(tx, ctx, int64(lastInsertId))
 }
 
@@ -65,6 +69,10 @@ func (self *WalletModel) FindTx(tx pgx.Tx, ctx context.Context, id int64) (*Wall
 		return nil, err
 	}
 
+	if err := tx.Commit(ctx); err != nil {
+		return nil, fmt.Errorf("could not commit transaction: %w", err)
+	}
+
 	return wallet, nil
 }
 
@@ -79,6 +87,10 @@ func (self *WalletModel) UpdateTx(tx pgx.Tx, ctx context.Context, id uuid.UUID, 
 	if cmdTag.RowsAffected() == 0 {
 		log.Printf("No wallet found with id %d; update operation skipped", id)
 		return fmt.Errorf("wallet with id %d not found", id)
+	}
+
+	if err := tx.Commit(ctx); err != nil {
+		return fmt.Errorf("could not commit transaction: %w", err)
 	}
 
 	log.Printf("Successfully updated wallet with id %d", id)
@@ -102,10 +114,6 @@ func (self *WalletModel) Find(ctx context.Context, id int64) (*Wallet, error) {
 		return nil, err
 	}
 
-	if err := tx.Commit(ctx); err != nil {
-		return nil, fmt.Errorf("could not commit transaction: %w", err)
-	}
-
 	return wallet, nil
 }
 
@@ -126,10 +134,6 @@ func (self *WalletModel) Update(ctx context.Context, id uuid.UUID, bal float64) 
 		return err
 	}
 
-	if err := tx.Commit(ctx); err != nil {
-		return fmt.Errorf("could not commit transaction: %w", err)
-	}
-
 	return nil
 }
 
@@ -142,6 +146,10 @@ func (self *WalletModel) findByDeviceTx(tx pgx.Tx, ctx context.Context, devId uu
 	if err != nil {
 		log.Println("Error finding wallet for device id "+devId.String(), err.Error())
 		return nil, err
+	}
+
+	if err := tx.Commit(ctx); err != nil {
+		return nil, fmt.Errorf("could not commit transaction: %w", err)
 	}
 
 	return wallet, nil
@@ -162,10 +170,6 @@ func (self *WalletModel) findByDevice(ctx context.Context, devId uuid.UUID) (*Wa
 	wallet, err := self.findByDeviceTx(tx, ctx, devId)
 	if err != nil {
 		return nil, err
-	}
-
-	if err := tx.Commit(ctx); err != nil {
-		return nil, fmt.Errorf("could not commit transaction: %w", err)
 	}
 
 	return wallet, nil
