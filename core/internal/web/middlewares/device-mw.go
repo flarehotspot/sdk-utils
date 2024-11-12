@@ -2,6 +2,7 @@ package middlewares
 
 import (
 	"context"
+	"fmt"
 	"net"
 	"net/http"
 
@@ -37,6 +38,8 @@ func DeviceMiddleware(dtb *db.Database, clntMgr *connmgr.ClientRegister) func(ne
 				w.WriteHeader(http.StatusBadRequest)
 				return
 			}
+
+			fmt.Println("DeviceMiddleware: ", clnt)
 
 			ctx := context.WithValue(r.Context(), sdkhttp.ClientCtxKey, clnt)
 			next.ServeHTTP(w, r.WithContext(ctx))
