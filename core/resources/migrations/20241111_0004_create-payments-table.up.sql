@@ -6,3 +6,5 @@ CREATE TABLE IF NOT EXISTS payments (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (purchase_id) REFERENCES purchases (id) ON DELETE CASCADE
 );
+
+CREATE INDEX IF NOT EXISTS index_optname ON payments(optname);
