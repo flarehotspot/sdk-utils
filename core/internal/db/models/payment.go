@@ -7,14 +7,15 @@ import (
 
 	"core/internal/db"
 
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 )
 
 type Payment struct {
 	db         *db.Database
 	models     *Models
-	id         int64
-	purchaseId int64
+	id         uuid.UUID
+	purchaseId uuid.UUID
 	amount     float64
 	optname    string
 	createdAt  time.Time
@@ -27,11 +28,11 @@ func NewPayment(dtb *db.Database, mdls *Models) *Payment {
 	}
 }
 
-func (self *Payment) Id() int64 {
+func (self *Payment) Id() uuid.UUID {
 	return self.id
 }
 
-func (self *Payment) PurchaseId() int64 {
+func (self *Payment) PurchaseId() uuid.UUID {
 	return self.purchaseId
 }
 

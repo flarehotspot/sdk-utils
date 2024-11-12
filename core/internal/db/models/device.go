@@ -8,13 +8,14 @@ import (
 
 	"core/internal/db"
 
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 )
 
 type Device struct {
 	db        *db.Database
 	models    *Models
-	id        int64
+	id        uuid.UUID
 	macAddr   string
 	ipAddr    string
 	hostname  string
@@ -25,7 +26,7 @@ func NewDevice(d *db.Database, m *Models) *Device {
 	return &Device{db: d, models: m}
 }
 
-func BuildDevice(id int64, mac string, ip string, hostname string) *Device {
+func BuildDevice(id uuid.UUID, mac string, ip string, hostname string) *Device {
 	return &Device{
 		id:       id,
 		macAddr:  mac,
@@ -34,7 +35,7 @@ func BuildDevice(id int64, mac string, ip string, hostname string) *Device {
 	}
 }
 
-func (self *Device) Id() int64 {
+func (self *Device) Id() uuid.UUID {
 	return self.id
 }
 

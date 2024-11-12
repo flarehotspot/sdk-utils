@@ -7,14 +7,15 @@ import (
 
 	"core/internal/db"
 
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 )
 
 type Wallet struct {
 	db        *db.Database
 	models    *Models
-	id        int64
-	deviceId  int64
+	id        uuid.UUID
+	deviceId  uuid.UUID
 	balance   float64
 	createdAt time.Time
 }
@@ -26,11 +27,11 @@ func NewWallet(dtb *db.Database, m *Models) *Wallet {
 	}
 }
 
-func (self *Wallet) Id() int64 {
+func (self *Wallet) Id() uuid.UUID {
 	return self.id
 }
 
-func (self *Wallet) DeviceId() int64 {
+func (self *Wallet) DeviceId() uuid.UUID {
 	return self.deviceId
 }
 

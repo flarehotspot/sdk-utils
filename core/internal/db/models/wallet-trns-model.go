@@ -6,6 +6,7 @@ import (
 
 	"core/internal/db"
 
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 )
 
@@ -18,17 +19,17 @@ func NewWalletTrnsModel(dtb *db.Database, mdls *Models) *WalletTrnsModel {
 	return &WalletTrnsModel{dtb, mdls}
 }
 
-func (self *WalletTrnsModel) CreateTx(tx pgx.Tx, ctx context.Context, wltId int64, amount float64, newBal float64, desc string) (*WalletTrns, error) {
+func (self *WalletTrnsModel) CreateTx(tx pgx.Tx, ctx context.Context, wltId uuid.UUID, amount float64, newBal float64, desc string) (*WalletTrns, error) {
 	query := "INSERT INTO wallet_transactions (wallet_id, amount, new_balance, description) VALUES($1, $2, $3, $4)"
 
 	var lastId int
 	err := tx.QueryRow(ctx, query, wltId, amount, newBal, desc).Scan(&lastId)
 	if err != nil {
 		if rbErr := tx.Rollback(ctx); rbErr != nil {
-			log.Println("Rollback failed: %v", rbErr)
+			log.Printf("Rollback failed: %v", rbErr)
 			return nil, err
 		}
-		log.Println("SQL Execution failed: %v", err)
+		log.Printf("SQL Execution failed: %v", err)
 
 		return nil, err
 	}
@@ -54,7 +55,7 @@ func (self *WalletTrnsModel) FindTx(tx pgx.Tx, ctx context.Context, id int64) (*
 	return trns, err
 }
 
-func (self *WalletTrnsModel) Create(ctx context.Context, wltId int64, amount float64, newBal float64, desc string) (*WalletTrns, error) {
+func (self *WalletTrnsModel) Create(ctx context.Context, wltId uuid.UUID, amount float64, newBal float64, desc string) (*WalletTrns, error) {
 	tx, err := self.db.SqlDB().Begin(ctx)
 	if err != nil {
 		return nil, err

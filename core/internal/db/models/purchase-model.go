@@ -9,6 +9,7 @@ import (
 
 	"core/internal/db"
 
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 )
 
@@ -23,7 +24,7 @@ func NewPurchaseModel(dtb *db.Database, mdls *Models) *PurchaseModel {
 	return &PurchaseModel{dtb, mdls, attrs}
 }
 
-func (self *PurchaseModel) CreateTx(tx pgx.Tx, ctx context.Context, deviceId int64, sku string, name string, desc string, price float64, vprice bool, pkg string, routename string) (*Purchase, error) {
+func (self *PurchaseModel) CreateTx(tx pgx.Tx, ctx context.Context, deviceId uuid.UUID, sku string, name string, desc string, price float64, vprice bool, pkg string, routename string) (*Purchase, error) {
 	query := `
     INSERT INTO purchases (
         device_id,
@@ -97,18 +98,18 @@ func (self *PurchaseModel) FindByDeviceIdTx(tx pgx.Tx, ctx context.Context, devi
 	return p, err
 }
 
-func (self *PurchaseModel) UpdateTx(tx pgx.Tx, ctx context.Context, id int64, dbt float64, txid *int64, cancelledAt *time.Time, confirmedAt *time.Time, reason *string) error {
+func (self *PurchaseModel) UpdateTx(tx pgx.Tx, ctx context.Context, id uuid.UUID, dbt float64, txid *uuid.UUID, cancelledAt *time.Time, confirmedAt *time.Time, reason *string) error {
 	query := "UPDATE purchases SET wallet_debit = $1, wallet_tx_id = $2, cancelled_at = $3, confirmed_at = $4, cancelled_reason = $5 WHERE id = $6 LIMIT 1"
 	cmdTag, err := tx.Exec(ctx, query, dbt, txid, cancelledAt, confirmedAt, reason, id)
 
 	if cmdTag.RowsAffected() == 0 {
-		log.Println("No purchase found with id %d; update operation skipped", id)
+		log.Printf("No purchase found with id %d; update operation skipped", id)
 		return fmt.Errorf("purchase with id %d not found", id)
 	}
 	return err
 }
 
-func (self *PurchaseModel) PendingPurchaseTx(tx pgx.Tx, ctx context.Context, deviceId int64) (*Purchase, error) {
+func (self *PurchaseModel) PendingPurchaseTx(tx pgx.Tx, ctx context.Context, deviceId uuid.UUID) (*Purchase, error) {
 	p := NewPurchase(self.db, self.models)
 	attrs := strings.Join(self.attrs, ", ")
 
@@ -135,7 +136,7 @@ func (self *PurchaseModel) PendingPurchaseTx(tx pgx.Tx, ctx context.Context, dev
 	return p, err
 }
 
-func (self *PurchaseModel) Create(ctx context.Context, deviceId int64, sku string, name string, desc string, price float64, vprice bool, pkg string, routename string) (*Purchase, error) {
+func (self *PurchaseModel) Create(ctx context.Context, deviceId uuid.UUID, sku string, name string, desc string, price float64, vprice bool, pkg string, routename string) (*Purchase, error) {
 	tx, err := self.db.SqlDB().Begin(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("could not begin transaction: %w", err)
@@ -183,7 +184,7 @@ func (self *PurchaseModel) Find(ctx context.Context, id int64) (*Purchase, error
 	return p, nil
 }
 
-func (self *PurchaseModel) PendingPurchase(ctx context.Context, deviceId int64) (*Purchase, error) {
+func (self *PurchaseModel) PendingPurchase(ctx context.Context, deviceId uuid.UUID) (*Purchase, error) {
 	tx, err := self.db.SqlDB().Begin(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("could not begin transaction: %w", err)
@@ -231,7 +232,7 @@ func (self *PurchaseModel) FindByDeviceId(ctx context.Context, deviceId int64) (
 	return purchase, nil
 }
 
-func (self *PurchaseModel) Update(ctx context.Context, id int64, dbt float64, txid *int64, cancelledAt *time.Time, confirmedAt *time.Time, reason *string) error {
+func (self *PurchaseModel) Update(ctx context.Context, id uuid.UUID, dbt float64, txid *uuid.UUID, cancelledAt *time.Time, confirmedAt *time.Time, reason *string) error {
 	tx, err := self.db.SqlDB().Begin(ctx)
 	if err != nil {
 		return fmt.Errorf("could not begin transaction: %w", err)
