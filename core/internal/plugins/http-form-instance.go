@@ -7,9 +7,7 @@ import (
 	"fmt"
 	"net/http"
 	"path/filepath"
-	"reflect"
-	sdkhttp "sdk/api/http"
-	"strconv"
+	sdkforms "sdk/api/forms"
 
 	"github.com/a-h/templ"
 	sdkfs "github.com/flarehotspot/go-utils/fs"
@@ -20,112 +18,79 @@ var (
 	ErrFieldMulti = errors.New("field type is multifield")
 )
 
-func NewHttpForm(api *PluginApi, key string, sections []sdkhttp.Section) (*HttpFormInstance, error) {
-	configDir := filepath.Join(sdkpaths.ConfigDir, "plugins", api.Pkg(), key)
-
-	if err := sdkfs.EnsureDir(configDir); err != nil {
-		return nil, err
-	}
-
-	form := &HttpFormInstance{
+func NewHttpForm(api *PluginApi, form sdkforms.Form) *HttpFormInstance {
+	httpForm := &HttpFormInstance{
 		api:        api,
-		configdir:  configDir,
-		sections:   sections,
+		form:       form,
 		parsedData: nil,
 	}
-
-	if err := form.writeConfig(); err != nil {
-		return nil, err
-	}
-
-	form.LoadData()
-
-	return form, nil
-}
-
-func LoadHttpForm(api *PluginApi, configDir string) (*HttpFormInstance, error) {
-	form := &HttpFormInstance{
-		api:        api,
-		configdir:  configDir,
-		sections:   nil,
-		parsedData: nil,
-	}
-
-	if err := form.LoadConfig(); err != nil {
-		return nil, err
-	}
-
-	return form, nil
+	httpForm.LoadFormData()
+	return httpForm
 }
 
 type HttpFormInstance struct {
 	api        *PluginApi
-	configdir  string
-	sections   []sdkhttp.Section
-	parsedData formsutl.ConfigData
+	form       sdkforms.Form
+	parsedData []formsutl.SectionData
 }
 
-func (p *HttpFormInstance) Template(r *http.Request) templ.Component {
-	csrfTag := p.api.HttpAPI.Helpers().CsrfHtmlTag(r)
-	return formsview.HtmlForm(csrfTag, p.sections, p.parsedData)
+func (self *HttpFormInstance) Template(r *http.Request) templ.Component {
+	csrfTag := self.api.HttpAPI.Helpers().CsrfHtmlTag(r)
+	return formsview.HtmlForm(csrfTag, self.form, self.parsedData)
 }
 
-func (p *HttpFormInstance) LoadConfig() (err error) {
-	p.sections = nil
-	if err := sdkfs.ReadJson(p.configPath(), &p.sections); err != nil {
-		return err
-	}
-
-	fmt.Printf("config: %+v\n", p.sections)
-	return
-}
-
-func (p *HttpFormInstance) LoadData() {
-	if !sdkfs.Exists(p.dataPath()) {
+func (self *HttpFormInstance) LoadFormData() {
+	if !sdkfs.Exists(self.dataPath()) {
 		return
 	}
-	fmt.Println("Loading values from", p.dataPath())
-	if err := sdkfs.ReadJson(p.dataPath(), &p.parsedData); err != nil {
-		p.parsedData = nil
+	fmt.Println("Loading values from", self.dataPath())
+	if err := sdkfs.ReadJson(self.dataPath(), &self.parsedData); err != nil {
+		self.parsedData = nil
 	}
 }
 
-func (p *HttpFormInstance) GetFormData() formsutl.ConfigData {
-	return p.parsedData
+func (self *HttpFormInstance) GetFormData() []formsutl.SectionData {
+	return self.parsedData
 }
 
-func (p *HttpFormInstance) SaveForm(r *http.Request) (err error) {
-	parsedData := make([]formsutl.SectionData, len(p.sections))
+func (self *HttpFormInstance) SaveForm(r *http.Request) (err error) {
+	parsedData := make([]formsutl.SectionData, len(self.form.Sections))
 
-	for sidx, sec := range p.sections {
+	for sidx, sec := range self.form.Sections {
 		sectionData := formsutl.SectionData{
 			Name:   sec.Name,
 			Fields: make([]formsutl.FieldData, len(sec.Fields)),
 		}
 
 		for fidx, fld := range sec.Fields {
-			field := formsutl.FieldData{Name: fld.Name}
+			field := formsutl.FieldData{Name: fld.GetName()}
+			valstr := r.Form[sec.Name+"::"+fld.GetName()]
 
-			if _, ok := fld.DefaultVal.(string); ok {
-				val := r.FormValue(sec.Name + "::" + fld.Name)
-				field.Value = val
-			}
-
-			if _, ok := fld.DefaultVal.(int); ok {
-				val := r.FormValue(sec.Name + "::" + fld.Name)
-				v, err := strconv.Atoi(val)
+			switch fld.GetType() {
+			case sdkforms.FormFieldTypeText, sdkforms.FormFieldTypeNumber, sdkforms.FormFieldTypeBoolean:
+				field.Value, err = formsutl.ParseBasicValue(fld, valstr[0])
 				if err != nil {
 					return err
 				}
-				field.Value = v
-			}
 
-			if _, ok := fld.DefaultVal.([][]interface{}); ok {
-				multifld, err := p.parseMultiField(r, sec, fld)
+			case sdkforms.FormFieldTypeList:
+				field.Value, err = formsutl.ParseListFieldValue(fld, valstr)
 				if err != nil {
 					return err
 				}
-				field.Value = multifld
+
+			case sdkforms.FormFieldTypeMulti:
+				val, err := formsutl.ParseMultiFieldValue(sec, fld, r.Form)
+				if err != nil {
+					return err
+				}
+
+				field.Value = formsutl.MultiFieldData{
+					Fields: val,
+				}
+
+			default:
+				return errors.New("invalid field type" + fld.GetType())
 			}
 
 			sectionData.Fields[fidx] = field
@@ -134,19 +99,22 @@ func (p *HttpFormInstance) SaveForm(r *http.Request) (err error) {
 		parsedData[sidx] = sectionData
 	}
 
-	if err = sdkfs.WriteJson(p.dataPath(), parsedData); err != nil {
+	self.parsedData = parsedData
+
+	if err = self.writeData(); err != nil {
+		self.parsedData = nil
 		return
 	}
 
 	fmt.Printf("parsedData: %+v\n", parsedData)
 
-	p.parsedData = parsedData
+	self.parsedData = parsedData
 
 	return
 }
 
-func (p *HttpFormInstance) GetStringValue(secname string, name string) (val string, err error) {
-	v, err := p.getFieldValue(secname, name)
+func (self *HttpFormInstance) GetStringValue(secname string, name string) (val string, err error) {
+	v, err := self.getFieldValue(secname, name)
 	if err != nil {
 		return val, err
 	}
@@ -157,8 +125,8 @@ func (p *HttpFormInstance) GetStringValue(secname string, name string) (val stri
 	return str, nil
 }
 
-func (p *HttpFormInstance) GetStringValues(secname string, name string) (val []string, err error) {
-	v, err := p.getFieldValue(secname, name)
+func (self *HttpFormInstance) GetStringValues(secname string, name string) (val []string, err error) {
+	v, err := self.getFieldValue(secname, name)
 	if err != nil {
 		return nil, err
 	}
@@ -169,8 +137,8 @@ func (p *HttpFormInstance) GetStringValues(secname string, name string) (val []s
 	return str, nil
 }
 
-func (p *HttpFormInstance) GetIntValue(secname string, name string) (val int, err error) {
-	v, err := p.getFieldValue(secname, name)
+func (self *HttpFormInstance) GetIntValue(secname string, name string) (val int, err error) {
+	v, err := self.getFieldValue(secname, name)
 	if err != nil {
 		return 0, err
 	}
@@ -181,8 +149,8 @@ func (p *HttpFormInstance) GetIntValue(secname string, name string) (val int, er
 	return num, nil
 }
 
-func (p *HttpFormInstance) GetIntValues(secname string, name string) (val []int, err error) {
-	v, err := p.getFieldValue(secname, name)
+func (self *HttpFormInstance) GetIntValues(secname string, name string) (val []int, err error) {
+	v, err := self.getFieldValue(secname, name)
 	if err != nil {
 		return val, err
 	}
@@ -193,8 +161,8 @@ func (p *HttpFormInstance) GetIntValues(secname string, name string) (val []int,
 	return num, nil
 }
 
-func (p *HttpFormInstance) GetBoolValue(secname string, name string) (val bool, err error) {
-	v, err := p.getFieldValue(secname, name)
+func (self *HttpFormInstance) GetBoolValue(secname string, name string) (val bool, err error) {
+	v, err := self.getFieldValue(secname, name)
 	if err != nil {
 		return
 	}
@@ -204,8 +172,8 @@ func (p *HttpFormInstance) GetBoolValue(secname string, name string) (val bool, 
 	return false, errors.New(fmt.Sprintf("section %s, field %s is not a boolean", secname, name))
 }
 
-func (p *HttpFormInstance) GetBoolValues(secname string, name string) (val []bool, err error) {
-	v, err := p.getFieldValue(secname, name)
+func (self *HttpFormInstance) GetBoolValues(secname string, name string) (val []bool, err error) {
+	v, err := self.getFieldValue(secname, name)
 	if err != nil {
 		return
 	}
@@ -215,8 +183,8 @@ func (p *HttpFormInstance) GetBoolValues(secname string, name string) (val []boo
 	return val, errors.New(fmt.Sprintf("section %s, field %s is not a boolean", secname, name))
 }
 
-func (p *HttpFormInstance) GetFloatValue(secname string, name string) (val float64, err error) {
-	v, err := p.getFieldValue(secname, name)
+func (self *HttpFormInstance) GetFloatValue(secname string, name string) (val float64, err error) {
+	v, err := self.getFieldValue(secname, name)
 	if err != nil {
 		return
 	}
@@ -226,8 +194,8 @@ func (p *HttpFormInstance) GetFloatValue(secname string, name string) (val float
 	return val, errors.New(fmt.Sprintf("section %s, field %s is not a boolean", secname, name))
 }
 
-func (p *HttpFormInstance) GetFloatValues(secname string, name string) (val []float64, err error) {
-	v, err := p.getFieldValue(secname, name)
+func (self *HttpFormInstance) GetFloatValues(secname string, name string) (val []float64, err error) {
+	v, err := self.getFieldValue(secname, name)
 	if err != nil {
 		return
 	}
@@ -237,13 +205,13 @@ func (p *HttpFormInstance) GetFloatValues(secname string, name string) (val []fl
 	return val, errors.New(fmt.Sprintf("section %s, field %s is not a boolean", secname, name))
 }
 
-func (p *HttpFormInstance) GetMultiValue(secname string, name string) (val MultiFieldData, err error) {
-	v, err := p.getFieldValue(secname, name)
+func (self *HttpFormInstance) GetMultiField(secname string, name string) (val sdkforms.IMultiField, err error) {
+	v, err := self.getFieldValue(secname, name)
 	if err != nil {
 		return
 	}
 
-	fields, ok := v.(MultiFieldData)
+	fields, ok := v.(formsutl.MultiFieldData)
 	if !ok {
 		return val, errors.New(fmt.Sprintf("section %s, field %s is not a multi-field", secname, name))
 	}
@@ -252,116 +220,20 @@ func (p *HttpFormInstance) GetMultiValue(secname string, name string) (val Multi
 }
 
 // start private funcs---------------------
-
-func (p *HttpFormInstance) configPath() string {
-	return filepath.Join(p.configdir, "config.json")
+func (self *HttpFormInstance) dataPath() string {
+	return filepath.Join(sdkpaths.ConfigDir, "plugins", self.api.Pkg(), self.form.Name+".json")
 }
 
-func (p *HttpFormInstance) dataPath() string {
-	return filepath.Join(p.configdir, "data.json")
+func (self *HttpFormInstance) writeData() error {
+	savepath := self.dataPath()
+	if err := sdkfs.EnsureDir(filepath.Dir(savepath)); err != nil {
+		return err
+	}
+	return sdkfs.WriteJson(savepath, self.parsedData)
 }
 
-func (p *HttpFormInstance) writeConfig() error {
-	return sdkfs.WriteJson(p.configPath(), p.sections)
-}
-
-func (p *HttpFormInstance) writeData() error {
-	return sdkfs.WriteJson(p.dataPath(), p.parsedData)
-}
-
-func (p *HttpFormInstance) parseFieldValue(fld sdkhttp.Field, valstr string) (val interface{}, err error) {
-	if _, ok := fld.DefaultVal.(string); ok {
-		return valstr, nil
-	}
-
-	if _, ok := fld.DefaultVal.(int); ok {
-		return strconv.Atoi(valstr)
-	}
-
-	if _, ok := fld.DefaultVal.([][]interface{}); ok {
-		return nil, ErrFieldMulti
-	}
-
-	t := reflect.TypeOf(fld.DefaultVal)
-
-	return nil, errors.New(fmt.Sprintf("field type %s not supported", t.Kind().String()))
-}
-
-func (p *HttpFormInstance) parseField(r *http.Request, sec sdkhttp.Section, fld sdkhttp.Field, valstr string) (field formsutl.FieldData, err error) {
-
-	field = formsutl.FieldData{
-		Name: fld.Name,
-	}
-
-	val, err := p.parseFieldValue(fld, valstr)
-	if err != nil && errors.Is(err, ErrFieldMulti) {
-		multifld, err := p.parseMultiField(r, sec, fld)
-		if err != nil {
-			return field, err
-		}
-
-		field.Value = multifld
-		return field, nil
-	}
-
-	if err != nil {
-		return field, err
-	}
-
-	field.Value = val
-
-	fmt.Printf("parsed field: %+v\n", field)
-
-	return field, nil
-}
-
-func (p *HttpFormInstance) parseMultiField(r *http.Request, sec sdkhttp.Section, fld sdkhttp.Field) (multifld MultiFieldData, err error) {
-	if len(fld.Columns) < 1 {
-		return multifld, errors.New(fmt.Sprintf("multi-field %s has no columns", fld.Name))
-	}
-
-	fmt.Printf("multi field form: %+v\n", r.Form)
-
-	col1 := sec.Name + "::" + fld.Name + "::" + fld.Columns[0].Name + "[]"
-	numRows := len(r.Form[col1])
-
-	fmt.Printf("numRows: %d\n", numRows)
-
-	multifld = MultiFieldData{
-		Name:   fld.Name,
-		Fields: make([][]formsutl.FieldData, numRows),
-	}
-
-	for ridx := 0; ridx < numRows; ridx++ {
-		row := make([]formsutl.FieldData, len(fld.Columns))
-		for cidx, col := range fld.Columns {
-			colfld := sdkhttp.Field{
-				Name:       col.Name,
-				DefaultVal: col.DefaultVal,
-			}
-			inputName := sec.Name + "::" + fld.Name + "::" + colfld.Name + "[]"
-			colarr := r.Form[inputName]
-			fmt.Printf("colarr: %+v\n", colarr)
-			valstr := colarr[ridx]
-			fmt.Printf("valstr: %s\n", valstr)
-
-			row[cidx], err = p.parseField(r, sec, colfld, valstr)
-			if err != nil {
-				return multifld, err
-			}
-		}
-		fmt.Printf("row: %+v\n", row)
-		multifld.Fields[ridx] = row
-	}
-
-	fmt.Printf("parsed multi-field: %+v\n", multifld)
-
-	return multifld, nil
-
-}
-
-func (p *HttpFormInstance) getSection(secname string) (sec sdkhttp.Section, ok bool) {
-	for _, s := range p.sections {
+func (self *HttpFormInstance) getSection(secname string) (sec sdkforms.FormSection, ok bool) {
+	for _, s := range self.form.Sections {
 		if s.Name == secname {
 			return s, true
 		}
@@ -369,11 +241,11 @@ func (p *HttpFormInstance) getSection(secname string) (sec sdkhttp.Section, ok b
 	return
 }
 
-func (p *HttpFormInstance) getField(secname string, name string) (f sdkhttp.Field, ok bool) {
-	for _, s := range p.sections {
+func (self *HttpFormInstance) getField(secname string, name string) (f sdkforms.FormField, ok bool) {
+	for _, s := range self.form.Sections {
 		if s.Name == secname {
 			for _, fld := range s.Fields {
-				if fld.Name == name {
+				if fld.GetName() == name {
 					return fld, true
 				}
 			}
@@ -382,12 +254,12 @@ func (p *HttpFormInstance) getField(secname string, name string) (f sdkhttp.Fiel
 	return
 }
 
-func (p *HttpFormInstance) getParsedSection(secname string) (sec formsutl.SectionData, ok bool) {
-	if p.parsedData == nil {
+func (self *HttpFormInstance) getParsedSection(secname string) (sec formsutl.SectionData, ok bool) {
+	if self.parsedData == nil {
 		return
 	}
 
-	for _, s := range p.parsedData {
+	for _, s := range self.parsedData {
 		if s.Name == secname {
 			return s, true
 		}
@@ -396,8 +268,8 @@ func (p *HttpFormInstance) getParsedSection(secname string) (sec formsutl.Sectio
 	return
 }
 
-func (p *HttpFormInstance) getParsedField(secname string, name string) (fld formsutl.FieldData, ok bool) {
-	if s, ok := p.getParsedSection(secname); ok {
+func (self *HttpFormInstance) getParsedField(secname string, name string) (fld formsutl.FieldData, ok bool) {
+	if s, ok := self.getParsedSection(secname); ok {
 		for _, f := range s.Fields {
 			if f.Name == name {
 				return f, true
@@ -409,24 +281,24 @@ func (p *HttpFormInstance) getParsedField(secname string, name string) (fld form
 	return
 }
 
-func (p *HttpFormInstance) getParsedFieldValue(secname string, name string) (val interface{}, ok bool) {
-	if f, ok := p.getParsedField(secname, name); ok {
+func (self *HttpFormInstance) getParsedFieldValue(secname string, name string) (val interface{}, ok bool) {
+	if f, ok := self.getParsedField(secname, name); ok {
 		return f.Value, true
 	}
 	return
 }
 
-func (p *HttpFormInstance) getDefaultValue(secname string, name string) (val interface{}, err error) {
-	if f, ok := p.getField(secname, name); ok {
-		return f.DefaultVal, nil
+func (self *HttpFormInstance) getDefaultValue(secname string, name string) (val interface{}, err error) {
+	if f, ok := self.getField(secname, name); ok {
+		return f.GetDefaultVal(), nil
 	}
 	return nil, errors.New(fmt.Sprintf("section %s, field %s default value not found", secname, name))
 }
 
-func (p *HttpFormInstance) getFieldValue(secname string, name string) (val interface{}, err error) {
-	if v, ok := p.getParsedFieldValue(secname, name); ok {
+func (self *HttpFormInstance) getFieldValue(secname string, name string) (val interface{}, err error) {
+	if v, ok := self.getParsedFieldValue(secname, name); ok {
 		return v, nil
 	}
 
-	return p.getDefaultValue(secname, name)
+	return self.getDefaultValue(secname, name)
 }

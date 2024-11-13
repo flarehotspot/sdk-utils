@@ -1,19 +1,27 @@
 package formsview
 
-import "sdk/api/http"
 import "core/internal/utils/forms"
+import "sdk/api/forms"
 
-templ HtmlForm(csrfTag string, sections []sdkhttp.Section, values formsutl.ConfigData) {
+templ HtmlForm(csrfTag string, form sdkforms.Form, values []formsutl.SectionData) {
 	<form method="POST" action="/save-form">
 		@templ.Raw(csrfTag)
-		<input name="general::site_title"/>
+        <!-- <input type="hidden" name="config::key" value="default"> -->
+		<input name="general::site_title" type="text" />
 		<br/>
+		<!-- <input name="general::page" type="number" /> -->
+		<!-- <br/> -->
+
 		<input name="general::wifi_rates::amount[]"/>
 		<br/>
 		<input name="general::wifi_rates::session_time[]"/>
 		<br/>
 		<input name="general::wifi_rates::session_data[]"/>
 		<br/>
+
+		<!-- <input name="general::wifi_rates::people" type="checkbox" value="juan"/> -->
+		<!-- <input name="general::wifi_rates::people" type="checkbox" value="maria"/> -->
+		<!-- <br/> -->
 		<button type="submit">Submit</button>
 	</form>
 }

@@ -21,7 +21,7 @@ func SetupAllRoutes(g *plugins.CoreGlobals) {
 	routes.AdminRoutes(g)
 	routes.PaymentRoutes(g)
 
-	// TestParseForm(g)
+	TestParseForm(g)
 
 	router.RootRouter.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		log.Println("Warning: unknown route requested: ", r.URL.Path)

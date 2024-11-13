@@ -1,0 +1,45 @@
+package sdkforms
+
+type IMultiField interface {
+	NumRows() int
+	Json() string
+	GetStringValue(row int, name string) (string, error)
+	GetFloatValue(row int, name string) (float64, error)
+	GetBoolValue(row int, name string) (bool, error)
+}
+
+type MultiFieldCol struct {
+	Name       string
+	Type       string
+	DefaultVal interface{}
+}
+
+func (col MultiFieldCol) GetName() string {
+	return col.Name
+}
+
+func (col MultiFieldCol) GetType() string {
+	return col.Type
+}
+
+func (col MultiFieldCol) GetDefaultVal() interface{} {
+	return col.DefaultVal
+}
+
+type MultiField struct {
+	Name       string
+	Columns    func() []MultiFieldCol
+	DefaultVal [][]interface{}
+}
+
+func (f MultiField) GetName() string {
+	return f.Name
+}
+
+func (f MultiField) GetType() string {
+	return FormFieldTypeMulti
+}
+
+func (f MultiField) GetDefaultVal() interface{} {
+	return f.DefaultVal
+}
