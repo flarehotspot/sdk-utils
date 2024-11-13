@@ -3,7 +3,7 @@ package sdkforms
 type NumberField struct {
 	Name       string
 	Label      string
-	DefaultVal int
+	DefaultVal float64
 }
 
 func (f NumberField) GetName() string {

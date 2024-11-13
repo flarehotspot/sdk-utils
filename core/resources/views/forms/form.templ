@@ -3,6 +3,7 @@ package formsview
 import (
 	"fmt"
 	"sdk/api/forms"
+	"reflect"
 )
 
 templ HtmlForm(form sdkforms.IHttpForm, csrfTag string, submitUrl string) {
@@ -15,6 +16,13 @@ templ HtmlForm(form sdkforms.IHttpForm, csrfTag string, submitUrl string) {
 					case sdkforms.FormFieldTypeText, sdkforms.FormFieldTypeNumber, sdkforms.FormFieldTypeBoolean:
 						<label>{ fld.GetLabel() }</label>
 						<input name={ fmt.Sprintf("%s::%s", sec.Name, fld.GetName()) } type={ inputType(fld) } value={ inputValue(form, sec, fld) }/>
+					case sdkforms.FormFieldTypeList:
+						<label>{ fld.GetLabel() }</label>
+						<select name={ fld.GetName() }>
+							for _, opt := range listField(fld).Options() {
+								<option value={ inputString(opt.Value) }>{ opt.Label }</option>
+							}
+						</select>
 				}
 				<br/>
 			}
@@ -45,7 +53,7 @@ func inputType(fld sdkforms.FormField) string {
 	case sdkforms.FormFieldTypeNumber:
 		return "number"
 	case sdkforms.FormFieldTypeBoolean:
-		return "number"
+		return "text"
 	default:
 		return ""
 	}
@@ -74,4 +82,38 @@ func inputValue(form sdkforms.IHttpForm, sec sdkforms.FormSection, fld sdkforms.
 		return err.Error()
 	}
 	return
+}
+func listField(fld sdkforms.FormField) sdkforms.ListField {
+	listField, ok := fld.(sdkforms.ListField)
+	if !ok {
+		return sdkforms.ListField{Name: fld.GetName()}
+	}
+	return listField
+}
+func inputString(val interface{}) string {
+	typ := reflect.TypeOf(val)
+	switch typ.Kind() {
+	case reflect.String:
+		return val.(string)
+	case reflect.Float64:
+		return fmt.Sprintf("%f", val)
+	case reflect.Bool:
+		return fmt.Sprintf("%t", val)
+	}
+	return ""
+}
+
+type SelectOptions struct {
+    Label string
+    Value string
+    Selected bool
+}
+
+type SelectInput struct {
+    Name string
+    Options SelectOptions
+}
+
+func selectInput(form sdkforms.IHttpForm, sec sdkforms.FormSection, fld sdkforms.FormField) {
+
 }

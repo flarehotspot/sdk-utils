@@ -15,6 +15,20 @@ func TestParseForm(g *plugins.CoreGlobals) {
 			Name: "general",
 			Fields: []sdkforms.FormField{
 				sdkforms.TextField{Name: "site_title", DefaultVal: "Default Site Title"},
+				sdkforms.NumberField{Name: "page", DefaultVal: 0},
+				sdkforms.BooleanField{Name: "test_bool", DefaultVal: false},
+				sdkforms.ListField{
+					Name:  "themes",
+					Label: "Themes",
+					Type:  sdkforms.FormFieldTypeText,
+					Options: func() []sdkforms.ListOption {
+						return []sdkforms.ListOption{
+							{Label: "Theme1", Value: "theme1"},
+							{Label: "Theme 2", Value: "theme2"},
+						}
+					},
+					DefaultVal: []string{},
+				},
 				sdkforms.MultiField{
 					Name: "wifi_rates",
 					Columns: func() []sdkforms.MultiFieldCol {
