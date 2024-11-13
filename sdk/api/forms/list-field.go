@@ -7,6 +7,7 @@ type ListOption struct {
 
 type ListField struct {
 	Name       string
+	Label      string
 	Type       string
 	Multiple   bool
 	Options    func() []ListOption
@@ -15,6 +16,10 @@ type ListField struct {
 
 func (f ListField) GetName() string {
 	return f.Name
+}
+
+func (f ListField) GetLabel() string {
+	return f.Label
 }
 
 func (f ListField) GetType() string {

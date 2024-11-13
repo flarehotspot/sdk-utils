@@ -10,12 +10,17 @@ type IMultiField interface {
 
 type MultiFieldCol struct {
 	Name       string
+	Label      string
 	Type       string
 	DefaultVal interface{}
 }
 
 func (col MultiFieldCol) GetName() string {
 	return col.Name
+}
+
+func (col MultiFieldCol) GetLabel() string {
+	return col.Label
 }
 
 func (col MultiFieldCol) GetType() string {
@@ -28,12 +33,17 @@ func (col MultiFieldCol) GetDefaultVal() interface{} {
 
 type MultiField struct {
 	Name       string
+	Label      string
 	Columns    func() []MultiFieldCol
 	DefaultVal [][]interface{}
 }
 
 func (f MultiField) GetName() string {
 	return f.Name
+}
+
+func (f MultiField) GetLabel() string {
+	return f.Label
 }
 
 func (f MultiField) GetType() string {

@@ -36,7 +36,7 @@ type HttpFormInstance struct {
 
 func (self *HttpFormInstance) Template(r *http.Request) templ.Component {
 	csrfTag := self.api.HttpAPI.Helpers().CsrfHtmlTag(r)
-	return formsview.HtmlForm(csrfTag, self.form, self.parsedData)
+	return formsview.HtmlForm(self, csrfTag, self.getSubmitUrl())
 }
 
 func (self *HttpFormInstance) LoadFormData() {
@@ -47,6 +47,10 @@ func (self *HttpFormInstance) LoadFormData() {
 	if err := sdkfs.ReadJson(self.dataPath(), &self.parsedData); err != nil {
 		self.parsedData = nil
 	}
+}
+
+func (self *HttpFormInstance) GetSections() []sdkforms.FormSection {
+	return self.form.Sections
 }
 
 func (self *HttpFormInstance) GetFormData() []formsutl.SectionData {
@@ -301,4 +305,8 @@ func (self *HttpFormInstance) getFieldValue(secname string, name string) (val in
 	}
 
 	return self.getDefaultValue(secname, name)
+}
+
+func (self *HttpFormInstance) getSubmitUrl() string {
+	return self.api.CoreAPI.HttpAPI.httpRouter.UrlForRoute("admin:forms:save", "pkg", self.api.Pkg(), "name", self.form.Name)
 }

@@ -10,6 +10,7 @@ const (
 
 type FormField interface {
 	GetName() string
+	GetLabel() string
 	GetType() string
 	GetDefaultVal() interface{}
 }

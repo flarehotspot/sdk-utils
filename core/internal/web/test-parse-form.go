@@ -3,7 +3,6 @@ package web
 import (
 	"core/internal/plugins"
 	"core/internal/web/router"
-	"fmt"
 	"net/http"
 	sdkforms "sdk/api/forms"
 	sdkhttp "sdk/api/http"
@@ -52,62 +51,62 @@ func TestParseForm(g *plugins.CoreGlobals) {
 	})).Methods("GET")
 
 	router.RootRouter.Handle("/save-form", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if err := r.ParseForm(); err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		err := form.SaveForm(r)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		// v := sdkhttp.ViewPage{
-		// 	PageContent: form.Template(r),
+		// if err := r.ParseForm(); err != nil {
+		// 	http.Error(w, err.Error(), http.StatusInternalServerError)
+		// 	return
 		// }
 
-		// g.CoreAPI.HttpAPI.HttpResponse().AdminView(w, r, v)
+		// err := form.SaveForm(r)
+		// if err != nil {
+		// 	http.Error(w, err.Error(), http.StatusInternalServerError)
+		// 	return
+		// }
 
-		siteTitle, err := form.GetStringValue("general", "site_title")
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
+		// // v := sdkhttp.ViewPage{
+		// // 	PageContent: form.Template(r),
+		// // }
 
-		html := fmt.Sprintf("site_title: %s", siteTitle)
+		// // g.CoreAPI.HttpAPI.HttpResponse().AdminView(w, r, v)
 
-		rates, err := form.GetMultiField("general", "wifi_rates")
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
+		// siteTitle, err := form.GetStringValue("general", "site_title")
+		// if err != nil {
+		// 	http.Error(w, err.Error(), http.StatusInternalServerError)
+		// 	return
+		// }
 
-		for i := 0; i < rates.NumRows(); i++ {
-			amount, err := rates.GetFloatValue(i, "amount")
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
+		// html := fmt.Sprintf("site_title: %s", siteTitle)
 
-			sessionTime, err := rates.GetFloatValue(i, "session_time")
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
+		// rates, err := form.GetMultiField("general", "wifi_rates")
+		// if err != nil {
+		// 	http.Error(w, err.Error(), http.StatusInternalServerError)
+		// 	return
+		// }
 
-			sessionData, err := rates.GetFloatValue(i, "session_data")
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
+		// for i := 0; i < rates.NumRows(); i++ {
+		// 	amount, err := rates.GetFloatValue(i, "amount")
+		// 	if err != nil {
+		// 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		// 		return
+		// 	}
 
-			fmt.Fprintf(w, "---\nrow: %d\namount: %f\nsession_time: %f\nsession_data: %f\n", i, amount, sessionTime, sessionData)
-		}
+		// 	sessionTime, err := rates.GetFloatValue(i, "session_time")
+		// 	if err != nil {
+		// 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		// 		return
+		// 	}
 
-		w.Write([]byte(rates.Json()))
+		// 	sessionData, err := rates.GetFloatValue(i, "session_data")
+		// 	if err != nil {
+		// 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		// 		return
+		// 	}
 
-		w.Write([]byte("<br />" + html))
+		// 	fmt.Fprintf(w, "---\nrow: %d\namount: %f\nsession_time: %f\nsession_data: %f\n", i, amount, sessionTime, sessionData)
+		// }
+
+		// w.Write([]byte(rates.Json()))
+
+		// w.Write([]byte("<br />" + html))
 
 	})).Methods("POST")
 }

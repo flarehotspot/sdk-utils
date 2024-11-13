@@ -1,27 +1,77 @@
 package formsview
 
-import "core/internal/utils/forms"
-import "sdk/api/forms"
+import (
+	"fmt"
+	"sdk/api/forms"
+)
 
-templ HtmlForm(csrfTag string, form sdkforms.Form, values []formsutl.SectionData) {
-	<form method="POST" action="/save-form">
+templ HtmlForm(form sdkforms.IHttpForm, csrfTag string, submitUrl string) {
+	<form method="POST" action={ templ.SafeURL(submitUrl) }>
 		@templ.Raw(csrfTag)
-        <!-- <input type="hidden" name="config::key" value="default"> -->
-		<input name="general::site_title" type="text" />
-		<br/>
+		for _, sec := range form.GetSections() {
+			<legend>{ sec.Name }</legend>
+			for _, fld := range sec.Fields {
+				switch fld.GetType() {
+					case sdkforms.FormFieldTypeText, sdkforms.FormFieldTypeNumber, sdkforms.FormFieldTypeBoolean:
+						<label>{ fld.GetLabel() }</label>
+						<input name={ fmt.Sprintf("%s::%s", sec.Name, fld.GetName()) } type={ inputType(fld) } value={ inputValue(form, sec, fld) }/>
+				}
+				<br/>
+			}
+			<hr/>
+		}
+		<!-- <input type="hidden" name="config::key" value="default"> -->
+		<!-- <input name="general::site_title" type="text" /> -->
+		<!-- <br/> -->
 		<!-- <input name="general::page" type="number" /> -->
 		<!-- <br/> -->
-
-		<input name="general::wifi_rates::amount[]"/>
-		<br/>
-		<input name="general::wifi_rates::session_time[]"/>
-		<br/>
-		<input name="general::wifi_rates::session_data[]"/>
-		<br/>
-
+		<!-- <input name="general::wifi_rates::amount[]"/> -->
+		<!-- <br/> -->
+		<!-- <input name="general::wifi_rates::session_time[]"/> -->
+		<!-- <br/> -->
+		<!-- <input name="general::wifi_rates::session_data[]"/> -->
+		<!-- <br/> -->
 		<!-- <input name="general::wifi_rates::people" type="checkbox" value="juan"/> -->
 		<!-- <input name="general::wifi_rates::people" type="checkbox" value="maria"/> -->
 		<!-- <br/> -->
 		<button type="submit">Submit</button>
 	</form>
+}
+
+func inputType(fld sdkforms.FormField) string {
+	switch fld.GetType() {
+	case sdkforms.FormFieldTypeText:
+		return "text"
+	case sdkforms.FormFieldTypeNumber:
+		return "number"
+	case sdkforms.FormFieldTypeBoolean:
+		return "number"
+	default:
+		return ""
+	}
+}
+func inputValue(form sdkforms.IHttpForm, sec sdkforms.FormSection, fld sdkforms.FormField) (val string) {
+	var err error
+	switch fld.GetType() {
+	case sdkforms.FormFieldTypeText:
+		val, err = form.GetStringValue(sec.Name, fld.GetName())
+	case sdkforms.FormFieldTypeNumber:
+		num, err := form.GetFloatValue(sec.Name, fld.GetName())
+		if err != nil {
+			val = err.Error()
+		}
+		return fmt.Sprintf("%f", num)
+	case sdkforms.FormFieldTypeBoolean:
+		v, err := form.GetBoolValue(sec.Name, fld.GetName())
+		if err != nil {
+			val = err.Error()
+		}
+		return fmt.Sprintf("%t", v)
+	default:
+		val = ""
+	}
+	if err != nil {
+		return err.Error()
+	}
+	return
 }

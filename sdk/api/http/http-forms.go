@@ -5,5 +5,6 @@ import (
 )
 
 type HttpFormApi interface {
-	MakeHttpForm(form sdkforms.Form) (sdkforms.IHttpForm, error)
+	MakeHttpForm(f sdkforms.Form) (form sdkforms.IHttpForm, err error)
+	GetForm(name string) (form sdkforms.IHttpForm, ok bool)
 }

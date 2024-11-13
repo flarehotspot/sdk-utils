@@ -8,7 +8,8 @@ import (
 
 type IHttpForm interface {
 	Template(r *http.Request) templ.Component
-	SaveForm(r *http.Request) error
+
+	GetSections() []FormSection
 
 	GetStringValue(section string, name string) (string, error)
 	GetStringValues(section string, name string) ([]string, error)
@@ -26,7 +27,7 @@ type IHttpForm interface {
 }
 
 type Form struct {
-	Name        string
-	SubmitRoute string
-	Sections    []FormSection
+	Name          string
+	Sections      []FormSection
+	CallbackRoute string
 }
