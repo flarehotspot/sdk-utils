@@ -1,10 +1,11 @@
-package formsview
+package bootstrap5
 
 import (
 	"fmt"
 	"sdk/api/forms"
 	"reflect"
 )
+
 
 templ HtmlForm(form sdkforms.IHttpForm, csrfTag string, submitUrl string) {
 	<form method="POST" action={ templ.SafeURL(submitUrl) }>
@@ -13,9 +14,7 @@ templ HtmlForm(form sdkforms.IHttpForm, csrfTag string, submitUrl string) {
 			<legend>{ sec.Name }</legend>
 			for _, fld := range sec.Fields {
 				switch fld.GetType() {
-					case sdkforms.FormFieldTypeText, sdkforms.FormFieldTypeNumber, sdkforms.FormFieldTypeBoolean:
-						<label>{ fld.GetLabel() }</label>
-						<input name={ fmt.Sprintf("%s::%s", sec.Name, fld.GetName()) } type={ inputType(fld) } value={ inputValue(form, sec, fld) }/>
+					case sdkforms.FormFieldTypeText, sdkforms.FormFieldTypeNumber:
 					case sdkforms.FormFieldTypeList:
 						<label>{ fld.GetLabel() }</label>
 						<select name={ fld.GetName() }>
