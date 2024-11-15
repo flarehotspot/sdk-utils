@@ -1,5 +1,0 @@
-package testeventhandler
-
-templ singleError(a: string) {
-    <div/>
-}
