@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 
 	"github.com/a-h/templ/generator"
 	"github.com/a-h/templ/parser/v2"
@@ -17,40 +18,72 @@ func BuildTemplates(pluginDir string) error {
 		return err
 	}
 
+	var (
+		wg    sync.WaitGroup
+		errCh = make(chan error, len(templateFiles))
+		errs  []error
+	)
+
 	for _, file := range templateFiles {
-		if filepath.Ext(file) == ".templ" {
-			dir := filepath.Dir(file)
-			filename := filepath.Base(file)
-			out := filepath.Join(dir, strings.Replace(filename, ".templ", "_templ.go", 1))
-			fmt.Println("Generating template:", file, "->", out)
+		wg.Add(1)
+		go func(file string) {
+			defer wg.Done()
 
-			t, err := parser.Parse(file)
-			if err != nil {
-				fmt.Println("Error parsing template", file, err)
-				return err
-			}
+			if filepath.Ext(file) == ".templ" {
+				dir := filepath.Dir(file)
+				filename := filepath.Base(file)
+				out := filepath.Join(dir, strings.Replace(filename, ".templ", "_templ.go", 1))
+				fmt.Println("Generating template:", file, "->", out)
 
-			if sdkfs.Exists(out) {
-				if err = os.Remove(out); err != nil {
-					return err
+				t, err := parser.Parse(file)
+				if err != nil {
+					fmt.Println("Error parsing template", file, err)
+					errCh <- err
+					return
 				}
+
+				if sdkfs.Exists(out) {
+					if err = os.Remove(out); err != nil {
+						errCh <- err
+						return
+					}
+				}
+
+				outfile, err := os.OpenFile(out, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+				if err != nil {
+					fmt.Println("Error opening file:", err)
+					errCh <- err
+					return
+				}
+
+				defer outfile.Close() // Ensure the file is closed after writing
+
+				_, _, err = generator.Generate(t, outfile)
+				if err != nil {
+					fmt.Println("Error generating template", err)
+					errCh <- err
+					return
+				}
+
+				errCh <- nil
 			}
 
-			outfile, err := os.OpenFile(out, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
-			if err != nil {
-				fmt.Println("Error opening file:", err)
-				return err
-			}
+		}(file)
+	}
 
-			defer outfile.Close() // Ensure the file is closed after writing
+	go func() {
+		wg.Wait()
+		close(errCh)
+	}()
 
-			_, _, err = generator.Generate(t, outfile)
-			if err != nil {
-				fmt.Println("Error generating template", err)
-				return err
-			}
-
+	for err := range errCh {
+		if err != nil {
+			errs = append(errs, err)
 		}
+	}
+
+	if len(errs) > 0 {
+		return fmt.Errorf("errors occurred while building templates: %v", errs)
 	}
 
 	return nil

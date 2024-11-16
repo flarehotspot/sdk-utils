@@ -3,6 +3,8 @@ package sdkforms
 type NumberField struct {
 	Name       string
 	Label      string
+	Step       string
+	Precision  int
 	DefaultVal float64
 }
 

@@ -13,16 +13,6 @@ var (
 	ErrNotBasicType = fmt.Errorf("field type is not a basic type, i.e. string, number, bool")
 )
 
-type FieldData struct {
-	Name  string      `json:"name"`
-	Value interface{} `json:"value"`
-}
-
-type SectionData struct {
-	Name   string      `json:"name"`
-	Fields []FieldData `json:"fields"`
-}
-
 func ParseBasicValue(fld sdkforms.FormField, valstr string) (val interface{}, err error) {
 	switch fld.GetType() {
 	case sdkforms.FormFieldTypeText:

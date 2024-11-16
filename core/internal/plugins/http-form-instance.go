@@ -2,7 +2,7 @@ package plugins
 
 import (
 	formsutl "core/internal/utils/forms"
-	formsview "core/resources/views/forms"
+	formsview "core/resources/views/forms/bootstrap5"
 	"errors"
 	"fmt"
 	"net/http"
@@ -69,6 +69,9 @@ func (self *HttpFormInstance) SaveForm(r *http.Request) (err error) {
 		for fidx, fld := range sec.Fields {
 			field := formsutl.FieldData{Name: fld.GetName()}
 			valstr := r.Form[sec.Name+"::"+fld.GetName()]
+			if len(valstr) == 0 {
+				continue
+			}
 
 			switch fld.GetType() {
 			case sdkforms.FormFieldTypeText, sdkforms.FormFieldTypeNumber, sdkforms.FormFieldTypeBoolean:

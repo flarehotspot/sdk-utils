@@ -25,6 +25,7 @@
 *.app
 *.work
 *.log
+.env
 main_mono.go
 plugin-init_mono.go
 go.work.sum

@@ -1,11 +1,8 @@
 package bootstrap5
 
 import (
-	"fmt"
 	"sdk/api/forms"
-	"reflect"
 )
-
 
 templ HtmlForm(form sdkforms.IHttpForm, csrfTag string, submitUrl string) {
 	<form method="POST" action={ templ.SafeURL(submitUrl) }>
@@ -14,105 +11,15 @@ templ HtmlForm(form sdkforms.IHttpForm, csrfTag string, submitUrl string) {
 			<legend>{ sec.Name }</legend>
 			for _, fld := range sec.Fields {
 				switch fld.GetType() {
-					case sdkforms.FormFieldTypeText, sdkforms.FormFieldTypeNumber:
-					case sdkforms.FormFieldTypeList:
-						<label>{ fld.GetLabel() }</label>
-						<select name={ fld.GetName() }>
-							for _, opt := range listField(fld).Options() {
-								<option value={ inputString(opt.Value) }>{ opt.Label }</option>
-							}
-						</select>
+					case sdkforms.FormFieldTypeText:
+						@TextInputField(getTextInputFieldAttrs(form, sec, fld))
+                    case sdkforms.FormFieldTypeNumber:
+                        @NumberInputField(getNumberInputFieldAttrs(form, sec, fld))
 				}
 				<br/>
 			}
 			<hr/>
 		}
-		<!-- <input type="hidden" name="config::key" value="default"> -->
-		<!-- <input name="general::site_title" type="text" /> -->
-		<!-- <br/> -->
-		<!-- <input name="general::page" type="number" /> -->
-		<!-- <br/> -->
-		<!-- <input name="general::wifi_rates::amount[]"/> -->
-		<!-- <br/> -->
-		<!-- <input name="general::wifi_rates::session_time[]"/> -->
-		<!-- <br/> -->
-		<!-- <input name="general::wifi_rates::session_data[]"/> -->
-		<!-- <br/> -->
-		<!-- <input name="general::wifi_rates::people" type="checkbox" value="juan"/> -->
-		<!-- <input name="general::wifi_rates::people" type="checkbox" value="maria"/> -->
-		<!-- <br/> -->
 		<button type="submit">Submit</button>
 	</form>
-}
-
-func inputType(fld sdkforms.FormField) string {
-	switch fld.GetType() {
-	case sdkforms.FormFieldTypeText:
-		return "text"
-	case sdkforms.FormFieldTypeNumber:
-		return "number"
-	case sdkforms.FormFieldTypeBoolean:
-		return "text"
-	default:
-		return ""
-	}
-}
-func inputValue(form sdkforms.IHttpForm, sec sdkforms.FormSection, fld sdkforms.FormField) (val string) {
-	var err error
-	switch fld.GetType() {
-	case sdkforms.FormFieldTypeText:
-		val, err = form.GetStringValue(sec.Name, fld.GetName())
-	case sdkforms.FormFieldTypeNumber:
-		num, err := form.GetFloatValue(sec.Name, fld.GetName())
-		if err != nil {
-			val = err.Error()
-		}
-		return fmt.Sprintf("%f", num)
-	case sdkforms.FormFieldTypeBoolean:
-		v, err := form.GetBoolValue(sec.Name, fld.GetName())
-		if err != nil {
-			val = err.Error()
-		}
-		return fmt.Sprintf("%t", v)
-	default:
-		val = ""
-	}
-	if err != nil {
-		return err.Error()
-	}
-	return
-}
-func listField(fld sdkforms.FormField) sdkforms.ListField {
-	listField, ok := fld.(sdkforms.ListField)
-	if !ok {
-		return sdkforms.ListField{Name: fld.GetName()}
-	}
-	return listField
-}
-func inputString(val interface{}) string {
-	typ := reflect.TypeOf(val)
-	switch typ.Kind() {
-	case reflect.String:
-		return val.(string)
-	case reflect.Float64:
-		return fmt.Sprintf("%f", val)
-	case reflect.Bool:
-		return fmt.Sprintf("%t", val)
-	}
-	return ""
-}
-
-type SelectOptions struct {
-    Label string
-    Value string
-    Selected bool
-}
-
-type SelectInput struct {
-    Name string
-    Options SelectOptions
-}
-
-func selectInput(form sdkforms.IHttpForm, sec sdkforms.FormSection, fld sdkforms.FormField) {
-
 }
