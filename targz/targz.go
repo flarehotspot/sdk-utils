@@ -49,15 +49,19 @@ func TarGz(sourceDir, outputFile string) error {
 
 		// If the file is not a directory, write the file content
 		if !info.IsDir() {
-			file, err := os.Open(path)
-			if err != nil {
-				return err
-			}
-			defer file.Close()
+			err = func(tw *tar.Writer) (err error) {
+				file, err := os.Open(path)
+				if err != nil {
+					return
+				}
+				defer file.Close()
 
-			if _, err := io.Copy(tw, file); err != nil {
-				return err
-			}
+				if _, err = io.Copy(tw, file); err != nil {
+					return
+				}
+				return
+			}(tw)
+			return err
 		}
 
 		return nil
@@ -106,15 +110,20 @@ func UntarGz(tarGzFile, outputDir string) error {
 		}
 
 		// Handle files
-		file, err := os.OpenFile(outputPath, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, os.FileMode(header.Mode))
-		if err != nil {
-			return err
-		}
-		defer file.Close()
+		err = func(outputPath string) (err error) {
+			file, err := os.OpenFile(outputPath, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, os.FileMode(header.Mode))
+			if err != nil {
+				return
+			}
+			defer file.Close()
 
-		if _, err := io.Copy(file, tr); err != nil {
-			return err
-		}
+			if _, err = io.Copy(file, tr); err != nil {
+				return
+			}
+			return
+		}(outputPath)
+
+		return err
 	}
 
 	return nil
