@@ -4,11 +4,12 @@ RUN apt-get update && \
         apt-get install -y \
         wget curl gcc golang-go git ca-certificates
 
-ENV GOPATH=/build/.tmp/gopath
-ENV GOCACHE=/build/.tmp/gocache
-ENV GO_CUSTOM_PATH=/build/.tmp/go
+ENV TEMP_PATH=/var/tmp/flare.tmp
+ENV GOPATH=${TEMP_PATH}/gopath
+ENV GOCACHE=${TEMP_PATH}/gocache
+ENV GO_CUSTOM_PATH=${TEMP_PATH}/go
 ENV PATH=${GO_CUSTOM_PATH}/bin:${PATH}
-ENV PATH=${PATH}:/build/.tmp/gopath/bin
+ENV PATH=${PATH}:${TEMP_PATH}/gopath/bin
 
 WORKDIR /build
 
