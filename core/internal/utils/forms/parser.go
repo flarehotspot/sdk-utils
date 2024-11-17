@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"net/url"
-	"reflect"
 	sdkforms "sdk/api/forms"
 	"strconv"
 )
@@ -28,15 +27,9 @@ func ParseBasicValue(fld sdkforms.FormField, valstr string) (val interface{}, er
 }
 
 func ParseListFieldValue(fld sdkforms.FormField, valstr []string) (val interface{}, err error) {
-	t := reflect.TypeOf(fld.GetDefaultVal()).Kind()
-	if t != reflect.Slice {
-		err = fmt.Errorf("field type is not a list")
-		return
-	}
-
 	listField, ok := fld.(sdkforms.ListField)
 	if !ok {
-		err = fmt.Errorf("field type is not a list")
+		err = fmt.Errorf("field %s is not a list field", fld.GetName())
 		return
 	}
 

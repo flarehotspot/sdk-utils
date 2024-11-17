@@ -96,11 +96,12 @@ func (self *HttpResponse) Redirect(w http.ResponseWriter, r *http.Request, route
 func (self *HttpResponse) Error(w http.ResponseWriter, r *http.Request, err error, status int) {
 	// w.WriteHeader(status)
 	page := views.ErrorPage(err)
-	v := sdkhttp.ViewPage{PageContent: page}
-	_, autherr := self.api.HttpAPI.auth.CurrentAcct(r)
-	if autherr != nil {
-		self.api.HttpAPI.HttpResponse().PortalView(w, r, v)
-	} else {
-		self.api.HttpAPI.HttpResponse().AdminView(w, r, v)
-	}
+	page.Render(r.Context(), w)
+	// v := sdkhttp.ViewPage{PageContent: page}
+	// _, autherr := self.api.HttpAPI.auth.CurrentAcct(r)
+	// if autherr != nil {
+	// 	self.api.HttpAPI.HttpResponse().PortalView(w, r, v)
+	// } else {
+	// 	self.api.HttpAPI.HttpResponse().AdminView(w, r, v)
+	// }
 }

@@ -7,40 +7,28 @@ import "github.com/flarehotspot/go-utils/slices"
 templ ListInputField(form sdkforms.IHttpForm, sec sdkforms.FormSection, fld sdkforms.FormField) {
 	{{ lf, ok := fld.(sdkforms.ListField) }}
 	if ok {
-		if lf.Multiple {
-			@listCheckboxFields(form, sec, lf)
-		} else {
-			@listRadioFields(form, sec, lf)
-		}
+		@listOptionFields(form, sec, lf)
 	} else {
 		<span>{ fmt.Sprintf("list field %s in section %s is not a list field", fld.GetName(), sec.Name) }</span>
 	}
 }
 
-templ listRadioFields(form sdkforms.IHttpForm, sec sdkforms.FormSection, lf sdkforms.ListField) {
-	for _, opt := range lf.Options() {
-		<div class="form-check">
-			<input
-				class="form-check-input"
-				type="radio"
-				name={ fmt.Sprintf("%s::%s", sec.Name, lf.Name) }
-				value={ parseListOptValue(lf, opt) }
-				checked?={ isListOptSelected(form, sec, lf, opt) }
-			/>
-			<label class="form-check-label">
-				{ opt.Label }
-			</label>
-		</div>
+templ listOptionFields(form sdkforms.IHttpForm, sec sdkforms.FormSection, lf sdkforms.ListField) {
+	<legend>{ lf.Label }</legend>
+	{{
+	var optType string
+	if lf.Multiple {
+		optType = "checkbox"
+	} else {
+		optType = "radio"
 	}
-}
-
-templ listCheckboxFields(form sdkforms.IHttpForm, sec sdkforms.FormSection, lf sdkforms.ListField) {
+	}}
 	for _, opt := range lf.Options() {
 		<div class="form-check">
 			<input
 				class="form-check-input"
-				type="checkbox"
-				name={ fmt.Sprintf("%s::%s[]", sec.Name, lf.Name) }
+				type={ optType }
+				name={ fmt.Sprintf("%s::%s", sec.Name, lf.Name) }
 				value={ parseListOptValue(lf, opt) }
 				checked?={ isListOptSelected(form, sec, lf, opt) }
 			/>
@@ -58,6 +46,7 @@ func isListOptSelected(form sdkforms.IHttpForm, sec sdkforms.FormSection, lf sdk
 		if err != nil {
 			return false
 		}
+
 		v, ok := opt.Value.(string)
 		if !ok {
 			return false
@@ -77,6 +66,13 @@ func isListOptSelected(form sdkforms.IHttpForm, sec sdkforms.FormSection, lf sdk
 	return false
 }
 func parseListOptValue(lf sdkforms.ListField, opt sdkforms.ListOption) (val string) {
+	// vals, err := form.GetStringValues(sec.Name, lf.Name)
+	// if err != nil {
+	// 	log.Printf("error getting form vals: %s", err)
+	// }
+	// log.Printf("got form vals: %+v", vals)
+	// return strings.Join(vals, ",")
+
 	switch lf.Type {
 	case sdkforms.FormFieldTypeText:
 		v, ok := opt.Value.(string)

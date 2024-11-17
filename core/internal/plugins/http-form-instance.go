@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"path/filepath"
 	sdkforms "sdk/api/forms"
+	sdkhttp "sdk/api/http"
+	"sync"
 
 	"github.com/a-h/templ"
 	sdkfs "github.com/flarehotspot/go-utils/fs"
@@ -20,18 +22,19 @@ var (
 
 func NewHttpForm(api *PluginApi, form sdkforms.Form) *HttpFormInstance {
 	httpForm := &HttpFormInstance{
-		api:        api,
-		form:       form,
-		parsedData: nil,
+		api:  api,
+		form: form,
+		data: nil,
 	}
 	httpForm.LoadFormData()
 	return httpForm
 }
 
 type HttpFormInstance struct {
-	api        *PluginApi
-	form       sdkforms.Form
-	parsedData []formsutl.SectionData
+	mu   sync.RWMutex
+	api  *PluginApi
+	form sdkforms.Form
+	data []formsutl.SectionData
 }
 
 func (self *HttpFormInstance) Template(r *http.Request) templ.Component {
@@ -43,18 +46,18 @@ func (self *HttpFormInstance) LoadFormData() {
 	if !sdkfs.Exists(self.dataPath()) {
 		return
 	}
+
+	self.mu.Lock()
+	defer self.mu.Unlock()
+
 	fmt.Println("Loading values from", self.dataPath())
-	if err := sdkfs.ReadJson(self.dataPath(), &self.parsedData); err != nil {
-		self.parsedData = nil
+	if err := sdkfs.ReadJson(self.dataPath(), &self.data); err != nil {
+		self.data = nil
 	}
 }
 
 func (self *HttpFormInstance) GetSections() []sdkforms.FormSection {
 	return self.form.Sections
-}
-
-func (self *HttpFormInstance) GetFormData() []formsutl.SectionData {
-	return self.parsedData
 }
 
 func (self *HttpFormInstance) SaveForm(r *http.Request) (err error) {
@@ -106,124 +109,135 @@ func (self *HttpFormInstance) SaveForm(r *http.Request) (err error) {
 		parsedData[sidx] = sectionData
 	}
 
-	self.parsedData = parsedData
-
-	if err = self.writeData(); err != nil {
-		self.parsedData = nil
+	if err = self.writeData(parsedData); err != nil {
+		self.mu.Lock()
+		self.data = nil
+		self.mu.Unlock()
 		return
 	}
 
-	fmt.Printf("parsedData: %+v\n", parsedData)
-
-	self.parsedData = parsedData
+	self.LoadFormData()
 
 	return
 }
 
-func (self *HttpFormInstance) GetStringValue(secname string, name string) (val string, err error) {
-	v, err := self.getFieldValue(secname, name)
+func (self *HttpFormInstance) GetStringValue(section string, field string) (val string, err error) {
+	v, err := self.getFieldValue(section, field)
 	if err != nil {
 		return val, err
 	}
 	str, ok := v.(string)
 	if !ok {
-		return val, errors.New(fmt.Sprintf("section %s, field %s is not a string slice", secname, name))
+		return val, errors.New(fmt.Sprintf("section %s, field %s is not a string slice", section, field))
 	}
 	return str, nil
 }
 
-func (self *HttpFormInstance) GetStringValues(secname string, name string) (val []string, err error) {
-	v, err := self.getFieldValue(secname, name)
+func (self *HttpFormInstance) GetStringValues(section string, field string) (val []string, err error) {
+	ivals, err := self.getFieldValues(section, field)
 	if err != nil {
 		return nil, err
 	}
-	str, ok := v.([]string)
-	if !ok {
-		return nil, errors.New(fmt.Sprintf("section %s, field %s is not a string slice", secname, name))
+
+	val = make([]string, len(ivals))
+	for i, v := range ivals {
+		val[i] = v.(string)
 	}
-	return str, nil
+
+	return val, nil
 }
 
-func (self *HttpFormInstance) GetIntValue(secname string, name string) (val int, err error) {
-	v, err := self.getFieldValue(secname, name)
-	if err != nil {
-		return 0, err
-	}
-	num, ok := v.(int)
-	if !ok {
-		return 0, errors.New(fmt.Sprintf("section %s, field %s is not an int", secname, name))
-	}
-	return num, nil
-}
-
-func (self *HttpFormInstance) GetIntValues(secname string, name string) (val []int, err error) {
-	v, err := self.getFieldValue(secname, name)
-	if err != nil {
-		return val, err
-	}
-	num, ok := v.([]int)
-	if !ok {
-		return val, errors.New(fmt.Sprintf("section %s, field %s is not an int", secname, name))
-	}
-	return num, nil
-}
-
-func (self *HttpFormInstance) GetBoolValue(secname string, name string) (val bool, err error) {
-	v, err := self.getFieldValue(secname, name)
+func (self *HttpFormInstance) GetBoolValue(section string, field string) (val bool, err error) {
+	v, err := self.getFieldValue(section, field)
 	if err != nil {
 		return
 	}
 	if val, ok := v.(bool); ok {
 		return val, nil
 	}
-	return false, errors.New(fmt.Sprintf("section %s, field %s is not a boolean", secname, name))
+	return false, errors.New(fmt.Sprintf("section %s, field %s is not a boolean", section, field))
 }
 
-func (self *HttpFormInstance) GetBoolValues(secname string, name string) (val []bool, err error) {
-	v, err := self.getFieldValue(secname, name)
+func (self *HttpFormInstance) GetBoolValues(section string, field string) (val []bool, err error) {
+	ivals, err := self.getFieldValues(section, field)
 	if err != nil {
 		return
 	}
-	if val, ok := v.([]bool); ok {
-		return val, nil
+
+	val = make([]bool, len(ivals))
+	for i, v := range ivals {
+		val[i] = v.(bool)
 	}
-	return val, errors.New(fmt.Sprintf("section %s, field %s is not a boolean", secname, name))
+
+	return val, nil
 }
 
-func (self *HttpFormInstance) GetFloatValue(secname string, name string) (val float64, err error) {
-	v, err := self.getFieldValue(secname, name)
+func (self *HttpFormInstance) GetFloatValue(section string, field string) (val float64, err error) {
+	v, err := self.getFieldValue(section, field)
 	if err != nil {
 		return
 	}
 	if val, ok := v.(float64); ok {
 		return val, nil
 	}
-	return val, errors.New(fmt.Sprintf("section %s, field %s is not a boolean", secname, name))
+	return val, errors.New(fmt.Sprintf("section %s, field %s is not a boolean", section, field))
 }
 
-func (self *HttpFormInstance) GetFloatValues(secname string, name string) (val []float64, err error) {
-	v, err := self.getFieldValue(secname, name)
+func (self *HttpFormInstance) GetFloatValues(section string, field string) (val []float64, err error) {
+	ivals, err := self.getFieldValues(section, field)
 	if err != nil {
 		return
 	}
-	if val, ok := v.([]float64); ok {
-		return val, nil
+
+	val = make([]float64, len(ivals))
+	for i, v := range ivals {
+		val[i] = v.(float64)
 	}
-	return val, errors.New(fmt.Sprintf("section %s, field %s is not a boolean", secname, name))
+	return val, nil
 }
 
-func (self *HttpFormInstance) GetMultiField(secname string, name string) (val sdkforms.IMultiField, err error) {
-	v, err := self.getFieldValue(secname, name)
+func (self *HttpFormInstance) GetIntValue(section string, field string) (val int, err error) {
+	v, err := self.getFieldValue(section, field)
+	if err != nil {
+		return
+	}
+	if val, ok := v.(int); ok {
+		return val, nil
+	}
+	return val, errors.New(fmt.Sprintf("section %s, field %s is not an int", section, field))
+}
+
+func (self *HttpFormInstance) GetIntValues(section string, field string) (val []int, err error) {
+	ivals, err := self.getFieldValues(section, field)
+	if err != nil {
+		return
+	}
+
+	val = make([]int, len(ivals))
+	for i, v := range ivals {
+		val[i] = v.(int)
+	}
+
+	return val, nil
+}
+
+func (self *HttpFormInstance) GetMultiField(section string, field string) (val sdkforms.IMultiField, err error) {
+	v, err := self.getFieldValue(section, field)
 	if err != nil {
 		return
 	}
 
 	fields, ok := v.(formsutl.MultiFieldData)
 	if !ok {
-		return val, errors.New(fmt.Sprintf("section %s, field %s is not a multi-field", secname, name))
+		return val, errors.New(fmt.Sprintf("section %s, field %s is not a multi-field", section, field))
 	}
 
 	return fields, nil
+}
+
+func (self *HttpFormInstance) GetRedirectUrl() string {
+	url := self.api.HttpAPI.httpRouter.UrlForRoute(sdkhttp.PluginRouteName(self.form.CallbackRoute))
+	return url
 }
 
 // start private funcs---------------------
@@ -231,28 +245,28 @@ func (self *HttpFormInstance) dataPath() string {
 	return filepath.Join(sdkpaths.ConfigDir, "plugins", self.api.Pkg(), self.form.Name+".json")
 }
 
-func (self *HttpFormInstance) writeData() error {
+func (self *HttpFormInstance) writeData(parsedData []formsutl.SectionData) error {
 	savepath := self.dataPath()
 	if err := sdkfs.EnsureDir(filepath.Dir(savepath)); err != nil {
 		return err
 	}
-	return sdkfs.WriteJson(savepath, self.parsedData)
+	return sdkfs.WriteJson(savepath, parsedData)
 }
 
-func (self *HttpFormInstance) getSection(secname string) (sec sdkforms.FormSection, ok bool) {
+func (self *HttpFormInstance) getSection(section string) (sec sdkforms.FormSection, ok bool) {
 	for _, s := range self.form.Sections {
-		if s.Name == secname {
+		if s.Name == section {
 			return s, true
 		}
 	}
 	return
 }
 
-func (self *HttpFormInstance) getField(secname string, name string) (f sdkforms.FormField, ok bool) {
+func (self *HttpFormInstance) getField(section string, field string) (f sdkforms.FormField, ok bool) {
 	for _, s := range self.form.Sections {
-		if s.Name == secname {
+		if s.Name == section {
 			for _, fld := range s.Fields {
-				if fld.GetName() == name {
+				if fld.GetName() == field {
 					return fld, true
 				}
 			}
@@ -261,13 +275,14 @@ func (self *HttpFormInstance) getField(secname string, name string) (f sdkforms.
 	return
 }
 
-func (self *HttpFormInstance) getParsedSection(secname string) (sec formsutl.SectionData, ok bool) {
-	if self.parsedData == nil {
+func (self *HttpFormInstance) getParsedSection(section string) (sec formsutl.SectionData, ok bool) {
+	data := self.getFormData()
+	if data == nil {
 		return
 	}
 
-	for _, s := range self.parsedData {
-		if s.Name == secname {
+	for _, s := range data {
+		if s.Name == section {
 			return s, true
 		}
 	}
@@ -275,10 +290,10 @@ func (self *HttpFormInstance) getParsedSection(secname string) (sec formsutl.Sec
 	return
 }
 
-func (self *HttpFormInstance) getParsedField(secname string, name string) (fld formsutl.FieldData, ok bool) {
-	if s, ok := self.getParsedSection(secname); ok {
+func (self *HttpFormInstance) getParsedField(section string, field string) (fld formsutl.FieldData, ok bool) {
+	if s, ok := self.getParsedSection(section); ok {
 		for _, f := range s.Fields {
-			if f.Name == name {
+			if f.Name == field {
 				return f, true
 			}
 		}
@@ -288,28 +303,61 @@ func (self *HttpFormInstance) getParsedField(secname string, name string) (fld f
 	return
 }
 
-func (self *HttpFormInstance) getParsedFieldValue(secname string, name string) (val interface{}, ok bool) {
-	if f, ok := self.getParsedField(secname, name); ok {
+func (self *HttpFormInstance) getParsedFieldValue(section string, field string) (val interface{}, ok bool) {
+	if f, ok := self.getParsedField(section, field); ok {
 		return f.Value, true
 	}
 	return
 }
 
-func (self *HttpFormInstance) getDefaultValue(secname string, name string) (val interface{}, err error) {
-	if f, ok := self.getField(secname, name); ok {
+func (self *HttpFormInstance) getDefaultValue(secname string, field string) (val interface{}, err error) {
+	if f, ok := self.getField(secname, field); ok {
 		return f.GetDefaultVal(), nil
 	}
-	return nil, errors.New(fmt.Sprintf("section %s, field %s default value not found", secname, name))
+	return nil, errors.New(fmt.Sprintf("section %s, field %s default value not found", secname, field))
 }
 
-func (self *HttpFormInstance) getFieldValue(secname string, name string) (val interface{}, err error) {
-	if v, ok := self.getParsedFieldValue(secname, name); ok {
+func (self *HttpFormInstance) getDefaultValues(secname string, field string) (val []interface{}, err error) {
+	f, ok := self.getField(secname, field)
+	if !ok {
+		return nil, errors.New(fmt.Sprintf("section %s, field %s default value not found", secname, field))
+	}
+
+	v := f.GetDefaultVal()
+	if val, ok = v.([]interface{}); !ok {
+		return nil, errors.New(fmt.Sprintf("section %s, field %s default value is not a slice", secname, field))
+	}
+
+	return val, nil
+}
+
+func (self *HttpFormInstance) getFieldValue(section string, field string) (val interface{}, err error) {
+	if v, ok := self.getParsedFieldValue(section, field); ok {
 		return v, nil
 	}
 
-	return self.getDefaultValue(secname, name)
+	return self.getDefaultValue(section, field)
+}
+
+func (self *HttpFormInstance) getFieldValues(section string, field string) (val []interface{}, err error) {
+	v, ok := self.getParsedFieldValue(section, field)
+	if !ok {
+		return self.getDefaultValues(section, field)
+	}
+
+	if val, ok = v.([]interface{}); !ok {
+		return self.getDefaultValues(section, field)
+	}
+
+	return val, nil
 }
 
 func (self *HttpFormInstance) getSubmitUrl() string {
 	return self.api.CoreAPI.HttpAPI.httpRouter.UrlForRoute("admin:forms:save", "pkg", self.api.Pkg(), "name", self.form.Name)
+}
+
+func (self *HttpFormInstance) getFormData() []formsutl.SectionData {
+	self.mu.RLock()
+	defer self.mu.RUnlock()
+	return self.data
 }

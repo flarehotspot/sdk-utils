@@ -54,5 +54,7 @@ func (ctrl *FormsCtrl) SaveForm(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Fprintf(w, "Form %s saved", name)
+	url := httpForm.GetRedirectUrl()
+	http.Redirect(w, r, url, http.StatusSeeOther)
+	// TODO: redirect back to the form page and show success message if redirect url is empty
 }

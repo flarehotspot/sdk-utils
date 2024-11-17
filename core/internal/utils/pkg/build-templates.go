@@ -53,11 +53,17 @@ func BuildTemplates(pluginDir string) (err error) {
 		}
 
 		if strings.HasSuffix(file, "_templ.go") {
-			if err = os.RemoveAll(file); err != nil {
-				return err
-			}
+			defer removeDanglingTemplFile(file)
 		}
 	}
 
 	return nil
+}
+
+func removeDanglingTemplFile(templgoFile string) (err error) {
+	templFile := strings.Replace(templgoFile, "_templ.go", ".templ", 1)
+	if !sdkfs.Exists(templFile) {
+		err = os.Remove(templgoFile)
+	}
+	return
 }

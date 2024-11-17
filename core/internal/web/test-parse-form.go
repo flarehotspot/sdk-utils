@@ -18,8 +18,8 @@ func TestParseForm(g *plugins.CoreGlobals) {
 				sdkforms.NumberField{Name: "page", DefaultVal: 0},
 				sdkforms.BooleanField{Name: "test_bool", DefaultVal: false},
 				sdkforms.ListField{
-					Name:  "themes",
-					Label: "Themes",
+					Name:  "portal_themes",
+					Label: "Portal Themes",
 					Type:  sdkforms.FormFieldTypeText,
 					Options: func() []sdkforms.ListOption {
 						return []sdkforms.ListOption{
@@ -28,6 +28,19 @@ func TestParseForm(g *plugins.CoreGlobals) {
 						}
 					},
 					DefaultVal: []string{},
+				},
+				sdkforms.ListField{
+					Name:     "admin_themes",
+					Label:    "Admin Themes",
+					Multiple: true,
+					Type:     sdkforms.FormFieldTypeText,
+					Options: func() []sdkforms.ListOption {
+						return []sdkforms.ListOption{
+							{Label: "Admin Theme1", Value: "admin_theme1"},
+							{Label: "Admin Theme 2", Value: "admin_theme2"},
+						}
+					},
+					DefaultVal: "admin_theme1",
 				},
 				sdkforms.MultiField{
 					Name: "wifi_rates",

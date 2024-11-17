@@ -24,13 +24,11 @@ CMD cp go.work.default go.work && \
         -R 'node_modules' \
         -R '_templ\.go$' \
         -R 'core\/main\.go' \
-        -R 'plugins\/installed' \
         -R 'plugins\/system\/.*\/main\.go$' \
         -R 'plugins\/local\/.*\/main\.go$' \
-        -R 'plugins\/update\/.*\/main\.go$' \
-        -R 'plugins\/backup\/.*\/main\.go$' \
-        -R 'plugins\/update\/.*\.templ$' \
-        -R 'plugins\/backup\/.*\.templ$' \
+        -R 'plugins\/installed\/.*' \
+        -R 'plugins\/update\/.*' \
+        -R 'plugins\/backup\/.*' \
         -R '(.*)mono\.go' \
         -R '\.tmp\/*.' \
         -s -- sh -c './start.sh' -v
