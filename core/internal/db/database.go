@@ -55,6 +55,7 @@ func NewDatabase() (*Database, error) {
 	for openErrorCount := 0; err != nil && openErrorCount < openErrorCountThreshold; openErrorCount++ {
 		pgPool, err = pgxpool.New(context.Background(), url)
 		time.Sleep(time.Second * 2)
+		log.Println("Error opening database: ", err)
 	}
 	if err != nil {
 		return nil, err

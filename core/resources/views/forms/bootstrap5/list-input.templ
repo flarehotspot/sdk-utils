@@ -1,0 +1,106 @@
+package bootstrap5
+
+import "sdk/api/forms"
+import "fmt"
+import "github.com/flarehotspot/go-utils/slices"
+
+templ ListInputField(form sdkforms.IHttpForm, sec sdkforms.FormSection, fld sdkforms.FormField) {
+	{{ lf, ok := fld.(sdkforms.ListField) }}
+	if ok {
+		if lf.Multiple {
+			@listCheckboxFields(form, sec, lf)
+		} else {
+			@listRadioFields(form, sec, lf)
+		}
+	} else {
+		<span>{ fmt.Sprintf("list field %s in section %s is not a list field", fld.GetName(), sec.Name) }</span>
+	}
+}
+
+templ listRadioFields(form sdkforms.IHttpForm, sec sdkforms.FormSection, lf sdkforms.ListField) {
+	for _, opt := range lf.Options() {
+		<div class="form-check">
+			<input
+				class="form-check-input"
+				type="radio"
+				name={ fmt.Sprintf("%s::%s", sec.Name, lf.Name) }
+				value={ parseListOptValue(lf, opt) }
+				checked?={ isListOptSelected(form, sec, lf, opt) }
+			/>
+			<label class="form-check-label">
+				{ opt.Label }
+			</label>
+		</div>
+	}
+}
+
+templ listCheckboxFields(form sdkforms.IHttpForm, sec sdkforms.FormSection, lf sdkforms.ListField) {
+	for _, opt := range lf.Options() {
+		<div class="form-check">
+			<input
+				class="form-check-input"
+				type="checkbox"
+				name={ fmt.Sprintf("%s::%s[]", sec.Name, lf.Name) }
+				value={ parseListOptValue(lf, opt) }
+				checked?={ isListOptSelected(form, sec, lf, opt) }
+			/>
+			<label class="form-check-label">
+				{ opt.Label }
+			</label>
+		</div>
+	}
+}
+
+func isListOptSelected(form sdkforms.IHttpForm, sec sdkforms.FormSection, lf sdkforms.ListField, opt sdkforms.ListOption) bool {
+	switch lf.Type {
+	case sdkforms.FormFieldTypeText:
+		vals, err := form.GetStringValues(sec.Name, lf.Name)
+		if err != nil {
+			return false
+		}
+		v, ok := opt.Value.(string)
+		if !ok {
+			return false
+		}
+		return sdkslices.Contains(vals, v)
+	case sdkforms.FormFieldTypeNumber:
+		vals, err := form.GetFloatValues(sec.Name, lf.Name)
+		if err != nil {
+			return false
+		}
+		v, ok := opt.Value.(float64)
+		if !ok {
+			return false
+		}
+		return sdkslices.Contains(vals, v)
+	}
+	return false
+}
+func parseListOptValue(lf sdkforms.ListField, opt sdkforms.ListOption) (val string) {
+	switch lf.Type {
+	case sdkforms.FormFieldTypeText:
+		v, ok := opt.Value.(string)
+		if !ok {
+			return ""
+		}
+		return v
+	case sdkforms.FormFieldTypeNumber:
+		v, ok := opt.Value.(float64)
+		if !ok {
+			return ""
+		}
+		return fmt.Sprintf("%.2f", v)
+	}
+	return
+}
+func getListInputField(fld sdkforms.FormField) (lf sdkforms.ListField) {
+	lf, _ = fld.(sdkforms.ListField)
+	return lf
+}
+func getListFieldInputType(fld sdkforms.FormField) string {
+	listField, ok := fld.(sdkforms.ListField)
+	if !ok {
+		return "not a list field"
+	}
+	return listField.Type
+}

@@ -13,8 +13,10 @@ templ HtmlForm(form sdkforms.IHttpForm, csrfTag string, submitUrl string) {
 				switch fld.GetType() {
 					case sdkforms.FormFieldTypeText:
 						@TextInputField(getTextInputFieldAttrs(form, sec, fld))
-                    case sdkforms.FormFieldTypeNumber:
-                        @NumberInputField(getNumberInputFieldAttrs(form, sec, fld))
+					case sdkforms.FormFieldTypeNumber:
+						@NumberInputField(getNumberInputFieldAttrs(form, sec, fld))
+					case sdkforms.FormFieldTypeList:
+						@ListInputField(form, sec, fld)
 				}
 				<br/>
 			}
