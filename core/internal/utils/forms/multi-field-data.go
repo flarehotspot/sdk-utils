@@ -3,9 +3,7 @@ package formsutl
 import (
 	"errors"
 	"fmt"
-	"reflect"
 	sdkforms "sdk/api/forms"
-	"strings"
 )
 
 type MultiFieldData struct {
@@ -14,49 +12,6 @@ type MultiFieldData struct {
 
 func (f MultiFieldData) NumRows() int {
 	return len(f.Fields)
-}
-
-func (f MultiFieldData) Json() string {
-	var s strings.Builder
-	s.WriteString("[")
-
-	for i, row := range f.Fields {
-		if i > 0 {
-			s.WriteString(", ")
-		}
-		s.WriteString("{ ")
-
-		for j, field := range row {
-			if j > 0 {
-				s.WriteString(", ")
-			}
-
-			s.WriteString(fmt.Sprintf(`"%s": `, field.Name))
-
-			typ := reflect.TypeOf(field.Value)
-
-			switch typ.Kind() {
-			case reflect.String:
-				s.WriteString(fmt.Sprintf(`"%s" `, field.Value))
-
-			case reflect.Float64:
-				s.WriteString(fmt.Sprintf("%f", field.Value))
-
-			case reflect.Bool:
-				s.WriteString(fmt.Sprintf("%t", field.Value))
-
-			default:
-				s.WriteString("null")
-			}
-
-		}
-
-		s.WriteString(" }")
-	}
-
-	s.WriteString("]")
-
-	return s.String()
 }
 
 func (f MultiFieldData) GetValue(row int, name string) (val interface{}, err error) {
