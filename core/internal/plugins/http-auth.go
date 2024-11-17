@@ -4,7 +4,6 @@ import (
 	"errors"
 	"net/http"
 
-	"core/internal/accounts"
 	"core/internal/config"
 	"core/internal/utils/jsonwebtoken"
 	webutil "core/internal/utils/web"
@@ -33,13 +32,10 @@ func (self *HttpAuth) IsAuthenticated(r *http.Request) bool {
 }
 
 func (self *HttpAuth) Authenticate(username string, password string) (sdkacct.Account, error) {
-	acct, err := accounts.Find(username)
+	acct, err := webutil.AuthenticateAdmin(username, password)
 	if err != nil {
+		err = errors.New(self.api.CoreAPI.Utl.Translate("error", "invalid_login"))
 		return nil, err
-	}
-
-	if !acct.Auth(password) {
-		return nil, errors.New(self.api.CoreAPI.Utl.Translate("error", "invalid_login"))
 	}
 
 	return acct, nil

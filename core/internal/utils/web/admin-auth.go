@@ -16,6 +16,10 @@ const (
 	AuthTokenCookie = "auth-token"
 )
 
+var (
+	ErrAuthenticationFailed = errors.New("authentication failed")
+)
+
 func IsAdminAuthenticated(r *http.Request) (*accounts.Account, error) {
 	authtoken, err := sdkhttp.GetCookie(r, AuthTokenCookie)
 	if err != nil {
@@ -46,4 +50,17 @@ func IsAdminAuthenticated(r *http.Request) (*accounts.Account, error) {
 	username := claims["username"].(string)
 
 	return accounts.Find(username)
+}
+
+func AuthenticateAdmin(username string, password string) (*accounts.Account, error) {
+	acct, err := accounts.Find(username)
+	if err != nil {
+		return nil, ErrAuthenticationFailed
+	}
+
+	if !acct.Auth(password) {
+		return nil, ErrAuthenticationFailed
+	}
+
+	return acct, nil
 }

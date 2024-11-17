@@ -2,17 +2,17 @@ package routes
 
 import (
 	"core/internal/plugins"
+	webutil "core/internal/utils/web"
 	"core/internal/web/controllers"
 	"core/internal/web/controllers/adminctrl"
 	"core/internal/web/middlewares"
-	"core/internal/web/router"
 	sdkhttp "sdk/api/http"
 )
 
 func AdminRoutes(g *plugins.CoreGlobals) {
 	csrfMiddleware := middlewares.CsrfMiddleware
 	authMw := g.CoreAPI.HttpAPI.Middlewares().AdminAuth()
-	rootR := router.RootRouter
+	rootR := webutil.RootRouter
 	adminR := g.CoreAPI.HttpAPI.HttpRouter().AdminRouter()
 
 	adminIndexCtrl := controllers.AdminIndexPage(g)
