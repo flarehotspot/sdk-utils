@@ -72,7 +72,8 @@ func (self *HttpFormInstance) SaveForm(r *http.Request) (err error) {
 		for fidx, fld := range sec.Fields {
 			field := sdkforms.FieldData{Name: fld.GetName()}
 			valstr := r.Form[sec.Name+":"+fld.GetName()]
-			if len(valstr) == 0 {
+
+			if fld.GetType() != sdkforms.FormFieldTypeMulti && len(valstr) == 0 {
 				continue
 			}
 
@@ -222,26 +223,69 @@ func (self *HttpFormInstance) GetIntValues(section string, field string) (val []
 }
 
 func (self *HttpFormInstance) GetMultiField(section string, field string) (val sdkforms.IMultiField, err error) {
+	fld, ok := self.getField(section, field)
+	if !ok {
+		return val, fmt.Errorf("multi-field with name %s does not exist", field)
+	}
+
+	mfld, ok := fld.(sdkforms.MultiField)
+	if !ok {
+		return val, fmt.Errorf("form field %s is not a multi-field", field)
+	}
+
 	v, err := self.getFieldValue(section, field)
 	if err != nil {
 		return
 	}
 
-	ivals, ok := v.([][]sdkforms.FieldData)
+	ivals, ok := v.(map[string]interface{})
 	if !ok {
 		return val, errors.New(fmt.Sprintf("section %s, field %s is not a multi-field, instead %T", section, field, v))
 	}
 
-	mfd := formsutl.MultiFieldData{Fields: make([][]sdkforms.FieldData, len(ivals))}
+	ifields, ok := ivals["fields"]
+	if !ok {
+		return val, errors.New(fmt.Sprintf("multi-field %s value has no 'fields' field", field))
+	}
 
-	for ridx, irow := range ivals {
-		row := make([]sdkforms.FieldData, len(irow))
+	irows, ok := ifields.([]interface{})
+	if !ok {
+		return val, fmt.Errorf("multi-field %s value is not a slice of field data, instead %T", field, ifields)
+	}
 
-		for cidx, icol := range irow {
-			fd := icol
-			if !ok {
-				return val, errors.New("column is not a field data")
+	mfd := formsutl.MultiFieldData{Fields: make([][]sdkforms.FieldData, len(irows))}
+
+	for ridx, irow := range irows {
+		icols, ok := irow.([]interface{})
+		if !ok {
+			return val, fmt.Errorf("multi-field %s row is not a slice of field data, instead %T", field, irow)
+		}
+
+		cols := mfld.Columns()
+		row := make([]sdkforms.FieldData, len(cols))
+
+		for cidx, colfld := range cols {
+			fd := sdkforms.FieldData{Name: colfld.Name}
+
+			if cidx > (len(icols) - 1) {
+				row[cidx] = fd
+				continue
 			}
+
+			icol := icols[cidx]
+
+			colmap, ok := icol.(map[string]interface{})
+			if !ok {
+				return val, fmt.Errorf("multi-field column %s is not a field data, instead %T", colfld.Name, icol)
+			}
+
+			v, ok := colmap["value"]
+			if !ok {
+				return val, fmt.Errorf("multi-field column %s does not have a value field", colfld.Name)
+			}
+
+			fd.Value = v
+
 			row[cidx] = fd
 		}
 

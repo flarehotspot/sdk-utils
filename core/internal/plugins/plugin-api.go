@@ -84,8 +84,9 @@ type PluginApi struct {
 	AssetsManifest   pkg.OutputManifest
 }
 
-func (self *PluginApi) InitCoreApi(coreApi *PluginApi) {
+func (self *PluginApi) Initialize(coreApi *PluginApi) {
 	self.CoreAPI = coreApi
+	self.HttpAPI.Initialize()
 }
 
 func (self *PluginApi) Migrate() error {

@@ -52,11 +52,11 @@ func (self *PluginsMgr) RegisterPlugin(p *PluginApi) {
 			log.Println("Error initializing plugin: "+p.Dir(), err)
 		}
 
-		p.InitCoreApi(self.CoreAPI)
+		p.Initialize(self.CoreAPI)
 		p.LoadAssetsManifest()
 		self.plugins = append(self.plugins, p)
 	} else {
-		p.InitCoreApi(self.CoreAPI)
+		p.Initialize(self.CoreAPI)
 		self.plugins = append(self.plugins, p)
 	}
 }

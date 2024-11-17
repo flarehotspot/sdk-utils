@@ -20,7 +20,13 @@ func GetAvailableThemes(g *plugins.CoreGlobals) http.HandlerFunc {
 			return
 		}
 
-		httpForm, err := g.CoreAPI.HttpAPI.Forms().MakeHttpForm(themeForm)
+		err = g.CoreAPI.HttpAPI.Forms().RegisterHttpForms(themeForm)
+		if err != nil {
+			res.Error(w, r, err, http.StatusInternalServerError)
+			return
+		}
+
+		httpForm, err := g.CoreAPI.HttpAPI.Forms().GetForm(themeForm.Name)
 		if err != nil {
 			res.Error(w, r, err, http.StatusInternalServerError)
 			return
@@ -40,7 +46,7 @@ func SaveThemeSettings(g *plugins.CoreGlobals) http.HandlerFunc {
 			return
 		}
 
-		httpForm, err := g.CoreAPI.HttpAPI.Forms().MakeHttpForm(f)
+		httpForm, err := g.CoreAPI.HttpAPI.Forms().GetForm(f.Name)
 		if err != nil {
 			res.Error(w, r, err, http.StatusInternalServerError)
 			return

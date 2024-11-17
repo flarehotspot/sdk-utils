@@ -2,6 +2,7 @@ package plugins
 
 import (
 	"errors"
+	"fmt"
 	sdkforms "sdk/api/forms"
 	"sync"
 )
@@ -18,23 +19,30 @@ type HttpFormApi struct {
 	forms sync.Map
 }
 
-func (self *HttpFormApi) MakeHttpForm(form sdkforms.Form) (sdkforms.IHttpForm, error) {
-	if form.Name == "" {
-		return nil, errors.New("config key is required")
+func (self *HttpFormApi) RegisterHttpForms(forms ...sdkforms.Form) error {
+	for _, form := range forms {
+		if form.Name == "" {
+			return errors.New("form name key is required")
+		}
+
+		f := NewHttpForm(self.api, form)
+		self.forms.Store(form.Name, f)
+
 	}
 
-	f := NewHttpForm(self.api, form)
-	self.forms.Store(form.Name, f)
-
-	return f, nil
+	return nil
 }
 
-func (self *HttpFormApi) GetForm(name string) (form sdkforms.IHttpForm, ok bool) {
+func (self *HttpFormApi) GetForm(name string) (form sdkforms.IHttpForm, err error) {
 	f, ok := self.forms.Load(name)
 	if !ok {
-		return
+		return form, fmt.Errorf("http form %s is not registered", name)
 	}
 
 	form, ok = f.(sdkforms.IHttpForm)
+	if !ok {
+		return form, fmt.Errorf("form %s is not IHttpForm", name)
+	}
+
 	return
 }

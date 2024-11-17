@@ -36,9 +36,9 @@ func (ctrl *FormsCtrl) SaveForm(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	form, ok := p.HttpAPI.Forms().GetForm(name)
-	if !ok {
-		http.Error(w, fmt.Sprintf("Form %s not found", name), 404)
+	form, err := p.HttpAPI.Forms().GetForm(name)
+	if err != nil {
+		http.Error(w, err.Error(), 404)
 		return
 	}
 

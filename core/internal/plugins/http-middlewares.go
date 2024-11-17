@@ -90,10 +90,6 @@ func (self *PluginMiddlewares) PendingPurchase() func(http.Handler) http.Handler
 
 }
 
-func (self *PluginMiddlewares) CsrfProtect() func(http.Handler) http.Handler {
-	return middlewares.CsrfMiddleware
-}
-
 func (self *PluginMiddlewares) ErrorPage(w http.ResponseWriter, err error, code int) {
 	// TODO: Display common error page
 	w.WriteHeader(code)

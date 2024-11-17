@@ -20,7 +20,4 @@ type HttpMiddlewares interface {
 	// Returns the middleware that checks pending purchases
 	// It rediercts to the pending purchase page if there is a pending purchase.
 	PendingPurchase() func(next http.Handler) http.Handler
-
-	// Returns a middleware for CSRF protection
-	CsrfProtect() func(next http.Handler) http.Handler
 }

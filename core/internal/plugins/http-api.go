@@ -32,7 +32,6 @@ func NewHttpApi(api *PluginApi, db *db.Database, clnt *connmgr.ClientRegister, m
 	}
 
 	api.HttpAPI = httpApi
-	httpRouter.Init()
 }
 
 type HttpApi struct {
@@ -43,6 +42,10 @@ type HttpApi struct {
 	formsApi    *HttpFormApi
 	httpResp    *HttpResponse
 	middlewares *PluginMiddlewares
+}
+
+func (self *HttpApi) Initialize() {
+	self.httpRouter.Initialize()
 }
 
 func (self *HttpApi) GetClientDevice(r *http.Request) (sdkconnmgr.ClientDevice, error) {

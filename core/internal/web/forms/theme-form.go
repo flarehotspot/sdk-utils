@@ -76,6 +76,12 @@ func GetThemeForm(g *plugins.CoreGlobals) (form sdkforms.Form, err error) {
 					Type:       sdkforms.FormFieldTypeText,
 					DefaultVal: "default val 1",
 				},
+				{
+					Name:       "col2",
+					Label:      "Column 2",
+					Type:       sdkforms.FormFieldTypeText,
+					DefaultVal: "default val 2",
+				},
 			}
 			return cols
 		},
@@ -84,6 +90,10 @@ func GetThemeForm(g *plugins.CoreGlobals) (form sdkforms.Form, err error) {
 				{
 					Name:  "col1",
 					Value: "col1 default val",
+				},
+				{
+					Name:  "col2",
+					Value: "col2 default val",
 				},
 			},
 		},

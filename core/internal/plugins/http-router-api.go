@@ -22,9 +22,7 @@ type HttpRouterApi struct {
 func NewHttpRouterApi(api *PluginApi, db *db.Database, clnt *connmgr.ClientRegister) *HttpRouterApi {
 	prefix := fmt.Sprintf("/%s/%s", api.Pkg(), api.Version())
 	pluginMux := webutil.PluginRouter.PathPrefix(prefix).Subrouter()
-
 	adminMux := pluginMux.PathPrefix("/admin").Subrouter()
-	// adminMux.Use(api.HttpAPI.middlewares.AdminAuth())
 
 	pluginRouter := &HttpRouterInstance{api, pluginMux}
 	adminRouter := &HttpRouterInstance{api, adminMux}
@@ -32,7 +30,7 @@ func NewHttpRouterApi(api *PluginApi, db *db.Database, clnt *connmgr.ClientRegis
 	return &HttpRouterApi{api, adminRouter, pluginRouter}
 }
 
-func (self *HttpRouterApi) Init() {
+func (self *HttpRouterApi) Initialize() {
 	self.adminRouter.Use(self.api.HttpAPI.middlewares.AdminAuth())
 }
 

@@ -120,7 +120,7 @@ func ParseMultiFieldValue(sec sdkforms.FormSection, f sdkforms.FormField, form u
 				}
 
 			default:
-				err = errors.New(fmt.Sprintf("unsupported list field type %s", fld.GetType()))
+				err = errors.New(fmt.Sprintf("unsupported list field type %s", colfld.GetType()))
 				return
 			}
 

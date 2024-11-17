@@ -1,19 +1,23 @@
 package middlewares
 
-import (
-	"core/internal/config"
-	"fmt"
-	"net/http"
+// import (
+// 	"core/internal/config"
+// 	"net/http"
 
-	"github.com/gorilla/csrf"
-)
+// 	"github.com/gorilla/csrf"
+// )
 
-var CsrfMiddleware func(http.Handler) http.Handler
+// func CsrfMiddleware() func(http.Handler) http.Handler {
+// 	return func(next http.Handler) http.Handler {
+// 		var csrfMiddleware func(http.Handler) http.Handler
 
-func init() {
-	appcfg, err := config.ReadApplicationConfig()
-	if err != nil {
-		panic(fmt.Errorf("Failed to read application config: %v", err))
-	}
-	CsrfMiddleware = csrf.Protect([]byte(appcfg.Secret))
-}
+// 		appcfg, err := config.ReadApplicationConfig()
+// 		if err != nil {
+// 			csrfMiddleware = csrf.Protect([]byte("default"))
+// 			return csrfMiddleware(next)
+// 		}
+
+// 		csrfMiddleware = csrf.Protect([]byte(appcfg.Secret))
+// 		return csrfMiddleware(next)
+// 	}
+// }

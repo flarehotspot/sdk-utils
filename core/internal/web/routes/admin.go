@@ -5,12 +5,10 @@ import (
 	webutil "core/internal/utils/web"
 	"core/internal/web/controllers"
 	"core/internal/web/controllers/adminctrl"
-	"core/internal/web/middlewares"
 	sdkhttp "sdk/api/http"
 )
 
 func AdminRoutes(g *plugins.CoreGlobals) {
-	csrfMiddleware := middlewares.CsrfMiddleware
 	authMw := g.CoreAPI.HttpAPI.Middlewares().AdminAuth()
 	rootR := webutil.RootRouter
 	adminR := g.CoreAPI.HttpAPI.HttpRouter().AdminRouter()
@@ -22,7 +20,8 @@ func AdminRoutes(g *plugins.CoreGlobals) {
 	adminFormsCtrl := adminctrl.NewFormsCtrl(g)
 
 	rootR.Handle("/admin", authMw(adminIndexCtrl)).Methods("GET").Name("admin:index")
-	rootR.Handle("/login", csrfMiddleware(adminLoginCtrl)).Methods("GET").Name("admin:login")
+	// TODO: enable csrf protection
+	rootR.Handle("/login", adminLoginCtrl).Methods("GET").Name("admin:login")
 	rootR.Handle("/login", adminAuthCtrl).Methods("POST").Name("admin:authenticate")
 
 	adminR.Group("/forms", func(subrouter sdkhttp.HttpRouterInstance) {

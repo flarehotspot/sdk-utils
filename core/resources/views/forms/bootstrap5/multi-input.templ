@@ -37,26 +37,27 @@ templ MultiInputField(form sdkforms.IHttpForm, sec sdkforms.FormSection, fld sdk
 }
 
 templ multiFieldCol(sec sdkforms.FormSection, fld sdkforms.MultiField, mfval sdkforms.IMultiField, row int, col sdkforms.MultiFieldCol) {
-	{{ colName := mfColName(sec, fld, col) }}
-	switch col.Type {
-		case sdkforms.FormFieldTypeText:
-			{{ var val string }}
-			{{ var err error }}
-			if row < 0 {
-				{{ val = "" }}
-			} else {
-				{{ val, err = mfval.GetStringValue(row, col.Name) }}
-			}
-			if err != nil {
-				<p>{ fmt.Sprintf("unable to get string value from field %s, column %s", fld.Name, col.Name) }</p>
-				{{ return }}
-			}
-			<input type="text" class="form-control" name={ colName } placeholder={ col.Label } aria-label={ col.Label } value={ val }/>
-		case sdkforms.FormFieldTypeNumber:
-		case sdkforms.FormFieldTypeBoolean:
-		default:
-			<p>{ fmt.Sprintf("unsupported column type: %s", col.Type) }</p>
-	}
+	<div class="col">
+		{{ colName := mfColName(sec, fld, col) }}
+		switch col.Type {
+			case sdkforms.FormFieldTypeText:
+				{{ var val string }}
+				{{ var err error }}
+				if row < 0 {
+					{{ val = "" }}
+				} else {
+					{{ val, err = mfval.GetStringValue(row, col.Name) }}
+				}
+				<input type="text" class="form-control" name={ colName } placeholder={ col.Label } aria-label={ col.Label } value={ val }/>
+				if err != nil {
+					<p class="text text-danger text-small">{ fmt.Sprintf("unable to get string value from field %s, column %s", fld.Name, col.Name) }</p>
+				}
+			case sdkforms.FormFieldTypeNumber:
+			case sdkforms.FormFieldTypeBoolean:
+			default:
+				<p>{ fmt.Sprintf("unsupported column type: %s", col.Type) }</p>
+		}
+	</div>
 }
 
 func mfColName(sec sdkforms.FormSection, fld sdkforms.FormField, col sdkforms.MultiFieldCol) string {

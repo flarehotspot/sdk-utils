@@ -24,7 +24,7 @@ func (col MultiFieldCol) GetLabel() string {
 }
 
 func (col MultiFieldCol) GetType() string {
-	return FormFieldTypeMulti
+	return col.Type
 }
 
 func (col MultiFieldCol) GetDefaultVal() interface{} {
