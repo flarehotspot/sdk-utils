@@ -50,7 +50,6 @@ func (self *HttpFormInstance) LoadFormData() {
 	self.mu.Lock()
 	defer self.mu.Unlock()
 
-	fmt.Println("Loading values from", self.dataPath())
 	if err := sdkfs.ReadJson(self.dataPath(), &self.data); err != nil {
 		self.data = nil
 	}

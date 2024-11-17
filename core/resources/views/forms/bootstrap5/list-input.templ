@@ -1,10 +1,15 @@
 package bootstrap5
 
-import "sdk/api/forms"
-import "fmt"
-import "github.com/flarehotspot/go-utils/slices"
+import (
+	"fmt"
 
-templ ListInputField(form sdkforms.IHttpForm, sec sdkforms.FormSection, fld sdkforms.FormField) {
+	"sdk/api/http"
+	"sdk/api/forms"
+
+	"github.com/flarehotspot/go-utils/slices"
+)
+
+templ ListInputField(form sdkhttp.IHttpForm, sec sdkforms.FormSection, fld sdkforms.FormField) {
 	{{ lf, ok := fld.(sdkforms.ListField) }}
 	if ok {
 		@listOptionFields(form, sec, lf)
@@ -13,7 +18,7 @@ templ ListInputField(form sdkforms.IHttpForm, sec sdkforms.FormSection, fld sdkf
 	}
 }
 
-templ listOptionFields(form sdkforms.IHttpForm, sec sdkforms.FormSection, lf sdkforms.ListField) {
+templ listOptionFields(form sdkhttp.IHttpForm, sec sdkforms.FormSection, lf sdkforms.ListField) {
 	<legend>{ lf.Label }</legend>
 	{{
 	var optType string
@@ -39,7 +44,7 @@ templ listOptionFields(form sdkforms.IHttpForm, sec sdkforms.FormSection, lf sdk
 	}
 }
 
-func isListOptSelected(form sdkforms.IHttpForm, sec sdkforms.FormSection, lf sdkforms.ListField, opt sdkforms.ListOption) bool {
+func isListOptSelected(form sdkhttp.IHttpForm, sec sdkforms.FormSection, lf sdkforms.ListField, opt sdkforms.ListOption) bool {
 	switch lf.Type {
 	case sdkforms.FormFieldTypeText:
 		v, ok := opt.Value.(string)

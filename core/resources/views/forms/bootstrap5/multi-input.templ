@@ -3,9 +3,10 @@ package bootstrap5
 import (
 	"sdk/api/forms"
 	"fmt"
+	"sdk/api/http"
 )
 
-templ MultiInputField(form sdkforms.IHttpForm, sec sdkforms.FormSection, fld sdkforms.FormField) {
+templ MultiInputField(form sdkhttp.IHttpForm, sec sdkforms.FormSection, fld sdkforms.FormField) {
 	<legend>{ fld.GetLabel() }</legend>
 	{{ mfval, err := form.GetMultiField(sec.Name, fld.GetName()) }}
 	if err != nil {

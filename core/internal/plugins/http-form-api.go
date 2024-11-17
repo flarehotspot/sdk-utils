@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	sdkforms "sdk/api/forms"
+	sdkhttp "sdk/api/http"
 	"sync"
 )
 
@@ -33,13 +34,13 @@ func (self *HttpFormApi) RegisterHttpForms(forms ...sdkforms.Form) error {
 	return nil
 }
 
-func (self *HttpFormApi) GetForm(name string) (form sdkforms.IHttpForm, err error) {
+func (self *HttpFormApi) GetForm(name string) (form sdkhttp.IHttpForm, err error) {
 	f, ok := self.forms.Load(name)
 	if !ok {
 		return form, fmt.Errorf("http form %s is not registered", name)
 	}
 
-	form, ok = f.(sdkforms.IHttpForm)
+	form, ok = f.(sdkhttp.IHttpForm)
 	if !ok {
 		return form, fmt.Errorf("form %s is not IHttpForm", name)
 	}

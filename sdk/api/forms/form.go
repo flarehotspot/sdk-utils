@@ -1,29 +1,28 @@
 package sdkforms
 
-import (
-	"net/http"
-
-	"github.com/a-h/templ"
+const (
+	FormFieldTypeText    string = "text"
+	FormFieldTypeNumber  string = "number"
+	FormFieldTypeBoolean string = "bool"
+	FormFieldTypeList    string = "list"
+	FormFieldTypeMulti   string = "multi"
 )
 
-type IHttpForm interface {
-	Template(r *http.Request) templ.Component
+type FieldData struct {
+	Name  string      `json:"name"`
+	Value interface{} `json:"value"`
+}
 
-	GetSections() []FormSection
+type FormField interface {
+	GetName() string
+	GetLabel() string
+	GetType() string
+	GetDefaultVal() interface{}
+}
 
-	GetStringValue(section string, name string) (string, error)
-	GetStringValues(section string, name string) ([]string, error)
-
-	GetIntValue(section string, name string) (int, error)
-	GetIntValues(section string, name string) ([]int, error)
-
-	GetFloatValue(section string, name string) (float64, error)
-	GetFloatValues(section string, name string) ([]float64, error)
-
-	GetBoolValue(section string, name string) (bool, error)
-	GetBoolValues(section string, name string) ([]bool, error)
-
-	GetMultiField(section string, name string) (IMultiField, error)
+type FormSection struct {
+	Name   string
+	Fields []FormField
 }
 
 type Form struct {

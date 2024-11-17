@@ -90,12 +90,8 @@ func ParseMultiFieldValue(sec sdkforms.FormSection, f sdkforms.FormField, form u
 		return
 	}
 
-	fmt.Printf("multi field form: %+v\n", form)
-
 	col1 := sec.Name + ":" + fld.Name + ":" + columns[0].Name
 	numRows := len(form[col1])
-
-	fmt.Printf("numRows: %d\n", numRows)
 
 	vals := make([][]sdkforms.FieldData, numRows)
 
@@ -106,9 +102,6 @@ func ParseMultiFieldValue(sec sdkforms.FormSection, f sdkforms.FormField, form u
 			inputName := sec.Name + ":" + fld.Name + ":" + colfld.Name
 			colarr := form[inputName]
 			valstr := colarr[ridx]
-
-			fmt.Printf("colarr: %+v\n", colarr)
-			fmt.Printf("valstr: %s\n", valstr)
 
 			var value interface{}
 
@@ -130,11 +123,8 @@ func ParseMultiFieldValue(sec sdkforms.FormSection, f sdkforms.FormField, form u
 			}
 		}
 
-		fmt.Printf("row: %+v\n", row)
 		vals[ridx] = row
 	}
-
-	fmt.Printf("parsed multi-field: %+v\n", fld)
 
 	return vals, nil
 

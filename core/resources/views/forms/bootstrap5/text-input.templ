@@ -2,6 +2,7 @@ package bootstrap5
 
 import "sdk/api/forms"
 import "fmt"
+import "sdk/api/http"
 
 type TextInputFieldAttrs struct {
 	Label string
@@ -18,7 +19,7 @@ templ TextInputField(attrs TextInputFieldAttrs) {
 	}
 }
 
-func getTextInputFieldAttrs(form sdkforms.IHttpForm, sec sdkforms.FormSection, fld sdkforms.FormField) (attrs TextInputFieldAttrs) {
+func getTextInputFieldAttrs(form sdkhttp.IHttpForm, sec sdkforms.FormSection, fld sdkforms.FormField) (attrs TextInputFieldAttrs) {
 	attrs.Name = fmt.Sprintf("%s:%s", sec.Name, fld.GetName())
 	attrs.Label = fld.GetLabel()
 	attrs.Value, attrs.Error = form.GetStringValue(sec.Name, fld.GetName())

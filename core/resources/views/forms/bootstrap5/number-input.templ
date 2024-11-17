@@ -3,6 +3,7 @@ package bootstrap5
 import (
 	"sdk/api/forms"
 	"fmt"
+	"sdk/api/http"
 )
 
 type NumberInputFieldAttrs struct {
@@ -21,7 +22,7 @@ templ NumberInputField(attrs NumberInputFieldAttrs) {
 	}
 }
 
-func getNumberInputFieldAttrs(form sdkforms.IHttpForm, sec sdkforms.FormSection, fld sdkforms.FormField) (attrs NumberInputFieldAttrs) {
+func getNumberInputFieldAttrs(form sdkhttp.IHttpForm, sec sdkforms.FormSection, fld sdkforms.FormField) (attrs NumberInputFieldAttrs) {
 	attrs.Label = fld.GetLabel()
 	attrs.Name = fmt.Sprintf("%s:%s", sec.Name, fld.GetName())
 
