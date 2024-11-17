@@ -28,7 +28,7 @@ templ listOptionFields(form sdkforms.IHttpForm, sec sdkforms.FormSection, lf sdk
 			<input
 				class="form-check-input"
 				type={ optType }
-				name={ fmt.Sprintf("%s::%s", sec.Name, lf.Name) }
+				name={ fmt.Sprintf("%s:%s", sec.Name, lf.Name) }
 				value={ parseListOptValue(lf, opt) }
 				checked?={ isListOptSelected(form, sec, lf, opt) }
 			/>
@@ -42,26 +42,43 @@ templ listOptionFields(form sdkforms.IHttpForm, sec sdkforms.FormSection, lf sdk
 func isListOptSelected(form sdkforms.IHttpForm, sec sdkforms.FormSection, lf sdkforms.ListField, opt sdkforms.ListOption) bool {
 	switch lf.Type {
 	case sdkforms.FormFieldTypeText:
-		vals, err := form.GetStringValues(sec.Name, lf.Name)
-		if err != nil {
-			return false
-		}
-
 		v, ok := opt.Value.(string)
 		if !ok {
 			return false
 		}
-		return sdkslices.Contains(vals, v)
-	case sdkforms.FormFieldTypeNumber:
-		vals, err := form.GetFloatValues(sec.Name, lf.Name)
-		if err != nil {
-			return false
+
+		if lf.Multiple {
+			vals, err := form.GetStringValues(sec.Name, lf.Name)
+			if err != nil {
+				return false
+			}
+			return sdkslices.Contains(vals, v)
+		} else {
+			val, err := form.GetStringValue(sec.Name, lf.Name)
+			if err != nil {
+				return false
+			}
+			return val == v
 		}
+	case sdkforms.FormFieldTypeNumber:
 		v, ok := opt.Value.(float64)
 		if !ok {
 			return false
 		}
-		return sdkslices.Contains(vals, v)
+
+		if lf.Multiple {
+			vals, err := form.GetFloatValues(sec.Name, lf.Name)
+			if err != nil {
+				return false
+			}
+			return sdkslices.Contains(vals, v)
+		} else {
+			val, err := form.GetFloatValue(sec.Name, lf.Name)
+			if err != nil {
+				return false
+			}
+			return val == v
+		}
 	}
 	return false
 }

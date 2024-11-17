@@ -19,7 +19,7 @@ templ TextInputField(attrs TextInputFieldAttrs) {
 }
 
 func getTextInputFieldAttrs(form sdkforms.IHttpForm, sec sdkforms.FormSection, fld sdkforms.FormField) (attrs TextInputFieldAttrs) {
-	attrs.Name = fmt.Sprintf("%s::%s", sec.Name, fld.GetName())
+	attrs.Name = fmt.Sprintf("%s:%s", sec.Name, fld.GetName())
 	attrs.Label = fld.GetLabel()
 	attrs.Value, attrs.Error = form.GetStringValue(sec.Name, fld.GetName())
 	return

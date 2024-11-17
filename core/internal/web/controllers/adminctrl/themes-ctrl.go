@@ -2,79 +2,72 @@ package adminctrl
 
 import (
 	"net/http"
+	sdkhttp "sdk/api/http"
 
+	"core/internal/config"
 	"core/internal/plugins"
+	coreforms "core/internal/web/forms"
+	"core/resources/views/admin/themes"
 )
 
 func GetAvailableThemes(g *plugins.CoreGlobals) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// res := g.CoreAPI.HttpAPI.VueResponse()
-		// allPlugins := g.PluginMgr.All()
-		// adminThemes := []map[string]string{}
-		// portalThemes := []map[string]string{}
+		res := g.CoreAPI.HttpAPI.HttpResponse()
 
-		// for _, p := range allPlugins {
-		// 	features := p.Features()
-		// 	for _, f := range features {
-		// 		if f == "theme:admin" {
-		// 			adminThemes = append(adminThemes, map[string]string{
-		// 				"name": p.Name(),
-		// 				"pkg":  p.Pkg(),
-		// 			})
-		// 		}
+		themeForm, err := coreforms.GetThemeForm(g)
+		if err != nil {
+			res.Error(w, r, err, http.StatusInternalServerError)
+			return
+		}
 
-		// 		if f == "theme:portal" {
-		// 			portalThemes = append(portalThemes, map[string]string{
-		// 				"name": p.Name(),
-		// 				"pkg":  p.Pkg(),
-		// 			})
-		// 		}
-		// 	}
-		// }
+		httpForm, err := g.CoreAPI.HttpAPI.Forms().MakeHttpForm(themeForm)
+		if err != nil {
+			res.Error(w, r, err, http.StatusInternalServerError)
+			return
+		}
 
-		// cfg, err := config.ReadThemesConfig()
-		// if err != nil {
-		// 	res.Error(w, err.Error(), http.StatusInternalServerError)
-		// 	return
-		// }
-
-		// data := map[string]interface{}{
-		// 	"admin_themes":  adminThemes,
-		// 	"portal_themes": portalThemes,
-		// 	"themes_config": cfg,
-		// }
-
-		// res.Json(w, data, http.StatusOK)
+		page := themes.AdminThemesIndex(httpForm.Template(r))
+		res.AdminView(w, r, sdkhttp.ViewPage{PageContent: page})
 	}
 }
 
 func SaveThemeSettings(g *plugins.CoreGlobals) http.HandlerFunc {
-
-	type ThemeSettings struct {
-		AdminTheme  string `json:"admin"`
-		PortalTheme string `json:"portal"`
-	}
-
 	return func(w http.ResponseWriter, r *http.Request) {
-		// res := g.CoreAPI.HttpAPI.VueResponse()
-		// var thm ThemeSettings
-		// err := json.NewDecoder(r.Body).Decode(&thm)
-		// if err != nil {
-		// 	res.Error(w, err.Error(), http.StatusBadRequest)
-		// 	return
-		// }
+		res := g.CoreAPI.HttpAPI.HttpResponse()
+		f, err := coreforms.GetThemeForm(g)
+		if err != nil {
+			res.Error(w, r, err, http.StatusInternalServerError)
+			return
+		}
 
-		// cfg := config.ThemesConfig{
-		// 	Portal: thm.PortalTheme,
-		// 	Admin:  thm.AdminTheme,
-		// }
+		httpForm, err := g.CoreAPI.HttpAPI.Forms().MakeHttpForm(f)
+		if err != nil {
+			res.Error(w, r, err, http.StatusInternalServerError)
+			return
+		}
 
-		// err = config.WriteThemesConfig(cfg)
-		// if err != nil {
-		// 	res.Error(w, err.Error(), http.StatusInternalServerError)
-		// 	return
-		// }
+		portalTheme, err := httpForm.GetStringValue("themes", "portal_theme")
+		if err != nil {
+			res.Error(w, r, err, http.StatusInternalServerError)
+			return
+		}
 
-		// res.Json(w, cfg, http.StatusOK)
+		adminTheme, err := httpForm.GetStringValue("themes", "admin_theme")
+		if err != nil {
+			res.Error(w, r, err, http.StatusInternalServerError)
+			return
+		}
+
+		err = config.WriteThemesConfig(config.ThemesConfig{
+			AdminThemePkg:  adminTheme,
+			PortalThemePkg: portalTheme,
+		})
+		if err != nil {
+			res.Error(w, r, err, http.StatusInternalServerError)
+			return
+		}
+
+		themesIndexUrl := g.CoreAPI.HttpAPI.Helpers().UrlForRoute("admin:themes:index")
+		http.Redirect(w, r, themesIndexUrl, http.StatusSeeOther)
 	}
 }

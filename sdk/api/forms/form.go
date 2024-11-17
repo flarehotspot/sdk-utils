@@ -28,6 +28,6 @@ type IHttpForm interface {
 
 type Form struct {
 	Name          string
-	Sections      []FormSection
 	CallbackRoute string
+	Sections      []FormSection
 }

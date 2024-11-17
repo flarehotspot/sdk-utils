@@ -71,7 +71,7 @@ func (self *HttpFormInstance) SaveForm(r *http.Request) (err error) {
 
 		for fidx, fld := range sec.Fields {
 			field := formsutl.FieldData{Name: fld.GetName()}
-			valstr := r.Form[sec.Name+"::"+fld.GetName()]
+			valstr := r.Form[sec.Name+":"+fld.GetName()]
 			if len(valstr) == 0 {
 				continue
 			}

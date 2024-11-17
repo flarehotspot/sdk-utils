@@ -1,11 +1,11 @@
 package sdkforms
 
 const (
-	FormFieldTypeText    = "text"
-	FormFieldTypeNumber  = "number"
-	FormFieldTypeBoolean = "bool"
-	FormFieldTypeList    = "list"
-	FormFieldTypeMulti   = "multi"
+	FormFieldTypeText    string = "text"
+	FormFieldTypeNumber  string = "number"
+	FormFieldTypeBoolean string = "bool"
+	FormFieldTypeList    string = "list"
+	FormFieldTypeMulti   string = "multi"
 )
 
 type FormField interface {

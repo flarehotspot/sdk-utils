@@ -36,7 +36,11 @@ func ParseListFieldValue(fld sdkforms.FormField, valstr []string) (val interface
 	switch listField.Type {
 
 	case sdkforms.FormFieldTypeText:
+		vals := valstr
 		val = valstr
+		if !listField.Multiple && len(vals) > 0 {
+			val = vals[0]
+		}
 
 	case sdkforms.FormFieldTypeNumber:
 		vals := make([]float64, len(valstr))
@@ -47,6 +51,9 @@ func ParseListFieldValue(fld sdkforms.FormField, valstr []string) (val interface
 			}
 		}
 		val = vals
+		if !listField.Multiple && len(vals) > 0 {
+			val = vals[0]
+		}
 
 	case sdkforms.FormFieldTypeBoolean:
 		vals := make([]bool, len(valstr))
@@ -57,6 +64,9 @@ func ParseListFieldValue(fld sdkforms.FormField, valstr []string) (val interface
 			}
 		}
 		val = vals
+		if !listField.Multiple && len(vals) > 0 {
+			val = vals[0]
+		}
 
 	default:
 		err = errors.New(fmt.Sprintf("%s default value %s is not supported list field", fld.GetName(), listField.Type))

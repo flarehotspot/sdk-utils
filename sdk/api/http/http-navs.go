@@ -31,7 +31,6 @@ const (
 	NavCategorySystem   INavCategory = "system"
 	NavCategoryPayments INavCategory = "payments"
 	NavCategoryNetwork  INavCategory = "network"
-	NavCategoryThemes   INavCategory = "themes"
 	NavCategoryTools    INavCategory = "tools"
 )
 

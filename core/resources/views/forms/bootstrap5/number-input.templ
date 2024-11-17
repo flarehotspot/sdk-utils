@@ -23,7 +23,7 @@ templ NumberInputField(attrs NumberInputFieldAttrs) {
 
 func getNumberInputFieldAttrs(form sdkforms.IHttpForm, sec sdkforms.FormSection, fld sdkforms.FormField) (attrs NumberInputFieldAttrs) {
 	attrs.Label = fld.GetLabel()
-	attrs.Name = fmt.Sprintf("%s::%s", sec.Name, fld.GetName())
+	attrs.Name = fmt.Sprintf("%s:%s", sec.Name, fld.GetName())
 
 	var val float64
 	val, attrs.Error = form.GetFloatValue(sec.Name, fld.GetName())
