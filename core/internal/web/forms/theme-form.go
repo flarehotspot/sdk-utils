@@ -72,30 +72,64 @@ func GetThemeForm(g *plugins.CoreGlobals) (form sdkforms.Form, err error) {
 			cols := []sdkforms.MultiFieldCol{
 				{
 					Name:       "col1",
-					Label:      "Column 1",
+					Label:      "Column 1 (text)",
 					Type:       sdkforms.FormFieldTypeText,
 					DefaultVal: "default val 1",
 				},
 				{
 					Name:       "col2",
-					Label:      "Column 2",
-					Type:       sdkforms.FormFieldTypeText,
-					DefaultVal: "default val 2",
+					Label:      "Column 2 (number)",
+					Type:       sdkforms.FormFieldTypeNumber,
+					DefaultVal: 1,
+				},
+				{
+					Name:       "col3",
+					Label:      "Column 3 (boolean)",
+					Type:       sdkforms.FormFieldTypeBoolean,
+					DefaultVal: true,
 				},
 			}
 			return cols
 		},
-		DefaultVal: [][]sdkforms.FieldData{
-			{
+		DefaultVal: [][]sdkforms.FieldData{{}},
+	}
+
+	listFieldTxt := sdkforms.ListField{
+		Name:       "list_field_txt",
+		Label:      "List Field (text)",
+		Multiple:   true,
+		Type:       sdkforms.FormFieldTypeText,
+		DefaultVal: []string{"val1"},
+		Options: func() []sdkforms.ListOption {
+			return []sdkforms.ListOption{
 				{
-					Name:  "col1",
-					Value: "col1 default val",
+					Label: "Value 1",
+					Value: "val1",
 				},
 				{
-					Name:  "col2",
-					Value: "col2 default val",
+					Label: "Value 2",
+					Value: "val2",
 				},
-			},
+			}
+		},
+	}
+
+	listFieldNum := sdkforms.ListField{
+		Name:       "list_field_num",
+		Label:      "List Field (number)",
+		Type:       sdkforms.FormFieldTypeNumber,
+		DefaultVal: 100,
+		Options: func() []sdkforms.ListOption {
+			return []sdkforms.ListOption{
+				{
+					Label: "100",
+					Value: 100,
+				},
+				{
+					Label: "200",
+					Value: 200,
+				},
+			}
 		},
 	}
 
@@ -109,6 +143,8 @@ func GetThemeForm(g *plugins.CoreGlobals) (form sdkforms.Form, err error) {
 					portalThemesField,
 					adminThemesField,
 					multiField,
+					listFieldTxt,
+					listFieldNum,
 				},
 			},
 		},

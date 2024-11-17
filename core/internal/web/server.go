@@ -6,6 +6,7 @@ import (
 
 	"core/internal/plugins"
 	webutil "core/internal/utils/web"
+	forms "core/internal/web/forms"
 	"core/internal/web/navs"
 	"core/internal/web/routes"
 )
@@ -23,6 +24,7 @@ func SetupAllRoutes(g *plugins.CoreGlobals) {
 	routes.PaymentRoutes(g)
 
 	navs.SetAdminNavs(g)
+	forms.RegisterForms(g)
 
 	webutil.RootRouter.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		log.Println("Warning: unknown route requested: ", r.URL.Path)

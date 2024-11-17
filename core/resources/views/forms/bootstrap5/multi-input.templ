@@ -54,7 +54,33 @@ templ multiFieldCol(sec sdkforms.FormSection, fld sdkforms.MultiField, mfval sdk
 					<p class="text text-danger text-small">{ fmt.Sprintf("unable to get string value from field %s, column %s", fld.Name, col.Name) }</p>
 				}
 			case sdkforms.FormFieldTypeNumber:
+				{{ var val float64 }}
+				{{ var err error }}
+				if row < 0 {
+					{{ val = 0 }}
+				} else {
+					{{ val, err = mfval.GetFloatValue(row, col.Name) }}
+				}
+				<input type="text" class="form-control" name={ colName } placeholder={ col.Label } aria-label={ col.Label } value={ fmt.Sprintf("%.2f", val) }/>
+				if err != nil {
+					<p class="text text-danger text-small">{ fmt.Sprintf("unable to get number value from field %s, column %s: %+v", fld.Name, col.Name, err) }</p>
+				}
 			case sdkforms.FormFieldTypeBoolean:
+				{{ var val bool }}
+				{{ var err error }}
+				if row < 0 {
+					{{ val = false }}
+				} else {
+					{{ val, err = mfval.GetBoolValue(row, col.Name) }}
+				}
+				<!-- <input type="text" class="form-control" name={ colName } placeholder={ col.Label } aria-label={ col.Label } value={ fmt.Sprintf("%.2f", val) }/> -->
+                <select class="form-control" name={ colName }>
+                    <option value="true" selected?={ val }>Yes</option>
+                    <option value="false" selected?={ !val }>No</option>
+                </select>
+				if err != nil {
+					<p class="text text-danger text-small">{ fmt.Sprintf("unable to get number value from field %s, column %s: %+v", fld.Name, col.Name, err) }</p>
+				}
 			default:
 				<p>{ fmt.Sprintf("unsupported column type: %s", col.Type) }</p>
 		}

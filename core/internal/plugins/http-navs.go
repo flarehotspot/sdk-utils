@@ -36,6 +36,7 @@ func (self *HttpNavsApi) GetAdminNavs(r *http.Request) []sdkhttp.AdminNavList {
 		sdkhttp.NavCategorySystem,
 		sdkhttp.NavCategoryPayments,
 		sdkhttp.NavCategoryNetwork,
+		sdkhttp.NavCategoryThemes,
 		sdkhttp.NavCategoryTools,
 	}
 

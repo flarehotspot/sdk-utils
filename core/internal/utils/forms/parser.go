@@ -18,8 +18,14 @@ func ParseBasicValue(fld sdkforms.FormField, valstr string) (val interface{}, er
 		val = valstr
 	case sdkforms.FormFieldTypeNumber:
 		val, err = strconv.ParseFloat(valstr, 64)
+		if err != nil {
+			return 0, nil
+		}
 	case sdkforms.FormFieldTypeBoolean:
 		val, err = strconv.ParseBool(valstr)
+		if err != nil {
+			return false, nil
+		}
 	default:
 		err = ErrNotBasicType
 	}
@@ -47,7 +53,7 @@ func ParseListFieldValue(fld sdkforms.FormField, valstr []string) (val interface
 		for i, v := range valstr {
 			vals[i], err = strconv.ParseFloat(v, 64)
 			if err != nil {
-				return
+				return 0, nil
 			}
 		}
 		val = vals
@@ -60,7 +66,7 @@ func ParseListFieldValue(fld sdkforms.FormField, valstr []string) (val interface
 		for i, v := range valstr {
 			vals[i], err = strconv.ParseBool(v)
 			if err != nil {
-				return
+				return false, nil
 			}
 		}
 		val = vals
@@ -76,8 +82,6 @@ func ParseListFieldValue(fld sdkforms.FormField, valstr []string) (val interface
 }
 
 func ParseMultiFieldValue(sec sdkforms.FormSection, f sdkforms.FormField, form url.Values) (val [][]sdkforms.FieldData, err error) {
-	fmt.Printf("parsing multifield form: %+v\n", form)
-
 	fld, ok := f.(sdkforms.MultiField)
 	if !ok {
 		err = errors.New(fmt.Sprintf("field %s in section %s is not a multi-field", f.GetName(), sec.Name))
@@ -98,15 +102,19 @@ func ParseMultiFieldValue(sec sdkforms.FormSection, f sdkforms.FormField, form u
 	for ridx := 0; ridx < numRows; ridx++ {
 		row := make([]sdkforms.FieldData, len(columns))
 		for cidx, colfld := range columns {
+			var value interface{}
 
 			inputName := sec.Name + ":" + fld.Name + ":" + colfld.Name
 			colarr := form[inputName]
-			valstr := colarr[ridx]
-
-			var value interface{}
 
 			switch colfld.GetType() {
 			case sdkforms.FormFieldTypeText, sdkforms.FormFieldTypeNumber, sdkforms.FormFieldTypeBoolean:
+				if ridx >= len(colarr) {
+					value = getTypeDefault(colfld.GetType())
+					break
+				}
+
+				valstr := colarr[ridx]
 				value, err = ParseBasicValue(colfld, valstr)
 				if err != nil {
 					return nil, err
@@ -128,4 +136,17 @@ func ParseMultiFieldValue(sec sdkforms.FormSection, f sdkforms.FormField, form u
 
 	return vals, nil
 
+}
+
+func getTypeDefault(t string) interface{} {
+	switch t {
+	case sdkforms.FormFieldTypeText:
+		return ""
+	case sdkforms.FormFieldTypeNumber:
+		return 0
+	case sdkforms.FormFieldTypeBoolean:
+		return false
+	default:
+		return nil
+	}
 }
