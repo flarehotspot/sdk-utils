@@ -49,19 +49,16 @@ func TarGz(sourceDir, outputFile string) error {
 
 		// If the file is not a directory, write the file content
 		if !info.IsDir() {
-			err = func(tw *tar.Writer) (err error) {
-				file, err := os.Open(path)
-				if err != nil {
-					return
-				}
-				defer file.Close()
+			file, err := os.Open(path)
+			if err != nil {
+				return err
+			}
 
-				if _, err = io.Copy(tw, file); err != nil {
-					return
-				}
-				return
-			}(tw)
-			return err
+			if _, err = io.Copy(tw, file); err != nil {
+				file.Close() // dont use defer
+				return err
+			}
+			file.Close() // dont use defer
 		}
 
 		return nil
@@ -94,6 +91,7 @@ func UntarGz(tarGzFile, outputDir string) error {
 		if err == io.EOF {
 			break // End of archive
 		}
+
 		if err != nil {
 			return err
 		}
@@ -110,18 +108,17 @@ func UntarGz(tarGzFile, outputDir string) error {
 		}
 
 		// Handle files
-		err = func(outputPath string) (err error) {
-			file, err := os.OpenFile(outputPath, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, os.FileMode(header.Mode))
-			if err != nil {
-				return
-			}
-			defer file.Close()
+		file, err := os.OpenFile(outputPath, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, os.FileMode(header.Mode))
+		if err != nil {
+			return err
+		}
 
-			if _, err = io.Copy(file, tr); err != nil {
-				return
-			}
-			return
-		}(outputPath)
+		if _, err = io.Copy(file, tr); err != nil {
+			file.Close() // dont use defer
+			return err
+		}
+
+		file.Close() // dont use defer
 
 		return err
 	}
