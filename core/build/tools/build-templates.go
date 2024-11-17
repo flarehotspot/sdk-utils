@@ -10,4 +10,5 @@ func BuildTemplates() {
 	for _, p := range pluginDirs {
 		pkg.BuildTemplates(p)
 	}
+
 }

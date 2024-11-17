@@ -12,4 +12,5 @@ use (
     ./sdk/libs/pgx-5.5.5
     ./sdk/libs/uuid-1.6.0
     ./sdk/libs/templ-0.2.793
+    ./sdk/libs/validator-10.22.1
 )

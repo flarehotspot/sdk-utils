@@ -1,0 +1,33 @@
+package bootstrap5
+
+import (
+	"fmt"
+	"sdk/api/forms"
+	"sdk/api/http"
+)
+
+templ HtmlForm(form sdkhttp.IHttpForm, csrfTag string, submitUrl string) {
+	<form method="POST" action={ templ.SafeURL(submitUrl) }>
+		@templ.Raw(csrfTag)
+		for _, sec := range form.GetSections() {
+			<legend>{ sec.Name }</legend>
+			for _, fld := range sec.Fields {
+				switch fld.GetType() {
+					case sdkforms.FormFieldTypeText:
+						@TextInputField(getTextInputFieldAttrs(form, sec, fld))
+					case sdkforms.FormFieldTypeNumber:
+						@NumberInputField(getNumberInputFieldAttrs(form, sec, fld))
+					case sdkforms.FormFieldTypeList:
+						@ListInputField(form, sec, fld)
+					case sdkforms.FormFieldTypeMulti:
+						@MultiInputField(form, sec, fld)
+					default:
+						<p>{ fmt.Sprintf("unsupported field type: %s", fld.GetType()) }</p>
+				}
+				<br/>
+			}
+			<hr/>
+		}
+		<button type="submit">Submit</button>
+	</form>
+}

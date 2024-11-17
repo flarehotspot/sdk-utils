@@ -4,7 +4,6 @@ import (
 	"log"
 	"path/filepath"
 
-	"core/internal/config/plugincfg"
 	"core/internal/connmgr"
 	"core/internal/db"
 	"core/internal/db/models"
@@ -37,13 +36,13 @@ func NewPluginApi(dir string, pmgr *PluginsMgr, trfkMgr *network.TrafficMgr) *Pl
 
 	pluginApi.Utl = NewPluginUtils(pluginApi)
 
-	info, err := plugincfg.GetPluginInfo(dir)
+	info, err := pkg.GetSrcInfo(dir)
 	if err != nil {
 		log.Println("Error getting plugin info: ", err.Error())
 		return nil
 	}
 
-	pluginApi.info = info
+	pluginApi.info = &info
 	pluginApi.models = pmgr.models
 
 	NewAcctApi(pluginApi)
@@ -85,8 +84,9 @@ type PluginApi struct {
 	AssetsManifest   pkg.OutputManifest
 }
 
-func (self *PluginApi) InitCoreApi(coreApi *PluginApi) {
+func (self *PluginApi) Initialize(coreApi *PluginApi) {
 	self.CoreAPI = coreApi
+	self.HttpAPI.Initialize()
 }
 
 func (self *PluginApi) Migrate() error {
@@ -114,7 +114,7 @@ func (self *PluginApi) Version() string {
 }
 
 func (self *PluginApi) Description() string {
-	info, err := plugincfg.GetPluginInfo(self.dir)
+	info, err := pkg.GetSrcInfo(self.dir)
 	if err != nil {
 		return ""
 	}

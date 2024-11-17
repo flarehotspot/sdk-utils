@@ -1,0 +1,92 @@
+package bootstrap5
+
+import (
+	"sdk/api/forms"
+	"fmt"
+	"sdk/api/http"
+)
+
+templ MultiInputField(form sdkhttp.IHttpForm, sec sdkforms.FormSection, fld sdkforms.FormField) {
+	<legend>{ fld.GetLabel() }</legend>
+	{{ mfval, err := form.GetMultiField(sec.Name, fld.GetName()) }}
+	if err != nil {
+		<p>{ fmt.Sprintf("unable to get multi-field value: %s", err.Error()) }</p>
+		{{ return }}
+	}
+	{{ mfld, ok := fld.(sdkforms.MultiField) }}
+	if !ok {
+		<p>{ fmt.Sprintf("field %s is not a multi-field", fld.GetName()) }</p>
+		{{ return }}
+	}
+	<div class="row">
+		for _, col := range mfld.Columns() {
+			<div class="col">{ col.Label }</div>
+		}
+	</div>
+	for  i := 0; i < mfval.NumRows(); i++ {
+		<div class="row">
+			for _, col := range mfld.Columns() {
+				@multiFieldCol(sec, mfld, mfval, i, col)
+			}
+		</div>
+	}
+	<div class="row">
+		for _, col := range mfld.Columns() {
+			@multiFieldCol(sec, mfld, mfval, -1, col)
+		}
+	</div>
+}
+
+templ multiFieldCol(sec sdkforms.FormSection, fld sdkforms.MultiField, mfval sdkforms.IMultiField, row int, col sdkforms.MultiFieldCol) {
+	<div class="col">
+		{{ colName := mfColName(sec, fld, col) }}
+		switch col.Type {
+			case sdkforms.FormFieldTypeText:
+				{{ var val string }}
+				{{ var err error }}
+				if row < 0 {
+					{{ val = "" }}
+				} else {
+					{{ val, err = mfval.GetStringValue(row, col.Name) }}
+				}
+				<input type="text" class="form-control" name={ colName } placeholder={ col.Label } aria-label={ col.Label } value={ val }/>
+				if err != nil {
+					<p class="text text-danger text-small">{ fmt.Sprintf("unable to get string value from field %s, column %s", fld.Name, col.Name) }</p>
+				}
+			case sdkforms.FormFieldTypeNumber:
+				{{ var val float64 }}
+				{{ var err error }}
+				if row < 0 {
+					{{ val = 0 }}
+				} else {
+					{{ val, err = mfval.GetFloatValue(row, col.Name) }}
+				}
+				<input type="text" class="form-control" name={ colName } placeholder={ col.Label } aria-label={ col.Label } value={ fmt.Sprintf("%.2f", val) }/>
+				if err != nil {
+					<p class="text text-danger text-small">{ fmt.Sprintf("unable to get number value from field %s, column %s: %+v", fld.Name, col.Name, err) }</p>
+				}
+			case sdkforms.FormFieldTypeBoolean:
+				{{ var val bool }}
+				{{ var err error }}
+				if row < 0 {
+					{{ val = false }}
+				} else {
+					{{ val, err = mfval.GetBoolValue(row, col.Name) }}
+				}
+				<!-- <input type="text" class="form-control" name={ colName } placeholder={ col.Label } aria-label={ col.Label } value={ fmt.Sprintf("%.2f", val) }/> -->
+                <select class="form-control" name={ colName }>
+                    <option value="true" selected?={ val }>Yes</option>
+                    <option value="false" selected?={ !val }>No</option>
+                </select>
+				if err != nil {
+					<p class="text text-danger text-small">{ fmt.Sprintf("unable to get number value from field %s, column %s: %+v", fld.Name, col.Name, err) }</p>
+				}
+			default:
+				<p>{ fmt.Sprintf("unsupported column type: %s", col.Type) }</p>
+		}
+	</div>
+}
+
+func mfColName(sec sdkforms.FormSection, fld sdkforms.FormField, col sdkforms.MultiFieldCol) string {
+	return sec.Name + ":" + fld.GetName() + ":" + col.Name
+}

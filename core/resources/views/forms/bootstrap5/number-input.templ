@@ -1,0 +1,49 @@
+package bootstrap5
+
+import (
+	"sdk/api/forms"
+	"fmt"
+	"sdk/api/http"
+)
+
+type NumberInputFieldAttrs struct {
+	Label string
+	Name  string
+	Value string
+	Step  string
+	Error error
+}
+
+templ NumberInputField(attrs NumberInputFieldAttrs) {
+	<label for={ attrs.Name } class="form-label">{ attrs.Label }</label>
+	<input type="number" step={ attrs.Step } class="form-control" id={ attrs.Name } name={ attrs.Name } value={ attrs.Value }/>
+	if attrs.Error != nil {
+		<div class="invalid-feedback">{ attrs.Error.Error() }</div>
+	}
+}
+
+func getNumberInputFieldAttrs(form sdkhttp.IHttpForm, sec sdkforms.FormSection, fld sdkforms.FormField) (attrs NumberInputFieldAttrs) {
+	attrs.Label = fld.GetLabel()
+	attrs.Name = fmt.Sprintf("%s:%s", sec.Name, fld.GetName())
+
+	var val float64
+	val, attrs.Error = form.GetFloatValue(sec.Name, fld.GetName())
+	if attrs.Error != nil {
+		return
+	}
+
+	numfield, ok := fld.(sdkforms.NumberField)
+	if !ok {
+		attrs.Error = fmt.Errorf("Field %s in section %s is not a number field", fld.GetName(), sec.Name)
+		return
+	}
+
+	if numfield.Step == "" {
+		attrs.Step = "1"
+	}
+
+	format := fmt.Sprintf("%%.%df", numfield.Precision)
+	attrs.Value = fmt.Sprintf(format, val)
+
+	return
+}

@@ -21,6 +21,8 @@ type HttpApi interface {
 	// Returns helper methods for views and handlers.
 	Helpers() HttpHelpers
 
+	Forms() HttpFormApi
+
 	// Returns the built in http middlewares
 	Middlewares() HttpMiddlewares
 

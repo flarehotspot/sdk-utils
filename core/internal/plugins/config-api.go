@@ -5,10 +5,6 @@ import (
 	sdkcfg "sdk/api/config"
 )
 
-const (
-	DEFAULT_CONFIG_KEY = "default"
-)
-
 func NewConfigApi(api *PluginApi) {
 	cfgApi := &ConfigApi{api}
 	api.ConfigAPI = cfgApi
@@ -16,13 +12,6 @@ func NewConfigApi(api *PluginApi) {
 
 type ConfigApi struct {
 	api *PluginApi
-}
-
-func (self *ConfigApi) Custom(key string) sdkcfg.CustomCfgApi {
-	if key == "" {
-		key = DEFAULT_CONFIG_KEY
-	}
-	return cfgapi.NewCustomCfgApi(key, self.api.Pkg())
 }
 
 func (self *ConfigApi) Application() sdkcfg.AppCfgApi {

@@ -12,7 +12,6 @@ import (
 
 func EnsureDir(dirs ...string) error {
 	for _, dir := range dirs {
-
 		if !Exists(dir) {
 			err := os.MkdirAll(dir, PermDir)
 			if err != nil {
@@ -20,6 +19,5 @@ func EnsureDir(dirs ...string) error {
 			}
 		}
 	}
-
 	return nil
 }

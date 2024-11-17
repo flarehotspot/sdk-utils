@@ -26,7 +26,7 @@ var (
 	PublicDir   = filepath.Join(AppDir, "public")
 	LogsDir     = filepath.Join(AppDir, "logs")
 	SdkDir      = filepath.Join(AppDir, "sdk")
-	TmpDir      = filepath.Join(AppDir, ".tmp")
+	TmpDir      = filepath.Join("/var/tmp/flare.tmp")
 	CacheDir    = filepath.Join(TmpDir, "cache")
 	UploadsDir  = filepath.Join(TmpDir, "uploads")
 )

@@ -52,11 +52,11 @@ func (self *PluginsMgr) RegisterPlugin(p *PluginApi) {
 			log.Println("Error initializing plugin: "+p.Dir(), err)
 		}
 
-		p.InitCoreApi(self.CoreAPI)
+		p.Initialize(self.CoreAPI)
 		p.LoadAssetsManifest()
 		self.plugins = append(self.plugins, p)
 	} else {
-		p.InitCoreApi(self.CoreAPI)
+		p.Initialize(self.CoreAPI)
 		self.plugins = append(self.plugins, p)
 	}
 }
@@ -104,7 +104,7 @@ func (self *PluginsMgr) GetAdminTheme() (*PluginApi, *HttpThemesApi, error) {
 		return nil, nil, err
 	}
 
-	pkg := cfg.Admin
+	pkg := cfg.AdminThemePkg
 	p, ok := self.FindByPkg(pkg)
 	if !ok {
 		return nil, nil, fmt.Errorf("admin theme plugin '%s' is not installed", pkg)
@@ -124,7 +124,7 @@ func (self *PluginsMgr) GetPortalTheme() (*PluginApi, *HttpThemesApi, error) {
 		return nil, nil, err
 	}
 
-	pkg := cfg.Portal
+	pkg := cfg.PortalThemePkg
 	p, ok := self.FindByPkg(pkg)
 	if !ok {
 		return nil, nil, fmt.Errorf("portal theme plugin '%s' is not installed", pkg)

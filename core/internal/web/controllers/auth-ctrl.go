@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"core/internal/plugins"
-	"core/internal/web/router"
+	webutil "core/internal/utils/web"
 	"net/http"
 	sdkhttp "sdk/api/http"
 )
@@ -21,7 +21,7 @@ func AdminLoginCtrl(g *plugins.CoreGlobals) http.Handler {
 			return
 		}
 
-		authRoute := router.RootRouter.Get("admin:authenticate")
+		authRoute := webutil.RootRouter.Get("admin:authenticate")
 		authUrl, _ := authRoute.URL()
 
 		data := sdkhttp.LoginPageData{

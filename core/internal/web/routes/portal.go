@@ -2,14 +2,14 @@ package routes
 
 import (
 	"core/internal/plugins"
+	webutil "core/internal/utils/web"
 	"core/internal/web/controllers"
 	"core/internal/web/middlewares"
-	"core/internal/web/router"
 )
 
 func PortalRoutes(g *plugins.CoreGlobals) {
 	deviceMw := middlewares.DeviceMiddleware(g.Db, g.ClientRegister)
-	rootR := router.RootRouter
+	rootR := webutil.RootRouter
 	portalR := g.CoreAPI.HttpAPI.HttpRouter().PluginRouter()
 	// pendingPurchaseMw := g.CoreAPI.HttpAPI.Middlewares().PendingPurchase()
 

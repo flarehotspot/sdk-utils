@@ -30,8 +30,8 @@ type INavCategory string
 const (
 	NavCategorySystem   INavCategory = "system"
 	NavCategoryPayments INavCategory = "payments"
-	NavCategoryNetwork  INavCategory = "network"
 	NavCategoryThemes   INavCategory = "themes"
+	NavCategoryNetwork  INavCategory = "network"
 	NavCategoryTools    INavCategory = "tools"
 )
 
