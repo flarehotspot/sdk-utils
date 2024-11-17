@@ -25,25 +25,22 @@ templ NumberInputField(attrs NumberInputFieldAttrs) {
 func getNumberInputFieldAttrs(form sdkhttp.IHttpForm, sec sdkforms.FormSection, fld sdkforms.FormField) (attrs NumberInputFieldAttrs) {
 	attrs.Label = fld.GetLabel()
 	attrs.Name = fmt.Sprintf("%s:%s", sec.Name, fld.GetName())
-
 	var val float64
 	val, attrs.Error = form.GetFloatValue(sec.Name, fld.GetName())
 	if attrs.Error != nil {
 		return
 	}
-
 	numfield, ok := fld.(sdkforms.NumberField)
 	if !ok {
 		attrs.Error = fmt.Errorf("Field %s in section %s is not a number field", fld.GetName(), sec.Name)
 		return
 	}
-
-	if numfield.Step == "" {
+	if numfield.Step == 0.0 {
 		attrs.Step = "1"
+	} else {
+		attrs.Step = fmt.Sprintf("%f", numfield.Step)
 	}
-
 	format := fmt.Sprintf("%%.%df", numfield.Precision)
 	attrs.Value = fmt.Sprintf(format, val)
-
 	return
 }

@@ -2,7 +2,6 @@ package sdkforms
 
 type IMultiField interface {
 	NumRows() int
-	Json() string
 	GetStringValue(row int, name string) (string, error)
 	GetFloatValue(row int, name string) (float64, error)
 	GetBoolValue(row int, name string) (bool, error)
