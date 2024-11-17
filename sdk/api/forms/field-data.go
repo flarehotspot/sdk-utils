@@ -1,4 +1,4 @@
-package formsutl
+package sdkforms
 
 type FieldData struct {
 	Name  string      `json:"name"`

@@ -1,7 +1,8 @@
 package formsutl
 
+import sdkforms "sdk/api/forms"
 
 type SectionData struct {
-	Name   string      `json:"name"`
-	Fields []FieldData `json:"fields"`
+	Name   string               `json:"name"`
+	Fields []sdkforms.FieldData `json:"fields"`
 }

@@ -4,11 +4,12 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
+	sdkforms "sdk/api/forms"
 	"strings"
 )
 
 type MultiFieldData struct {
-	Fields [][]FieldData `json:"fields"`
+	Fields [][]sdkforms.FieldData `json:"fields"`
 }
 
 func (f MultiFieldData) NumRows() int {

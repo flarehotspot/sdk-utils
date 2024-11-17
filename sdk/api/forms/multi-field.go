@@ -24,7 +24,7 @@ func (col MultiFieldCol) GetLabel() string {
 }
 
 func (col MultiFieldCol) GetType() string {
-	return col.Type
+	return FormFieldTypeMulti
 }
 
 func (col MultiFieldCol) GetDefaultVal() interface{} {
@@ -35,7 +35,7 @@ type MultiField struct {
 	Name       string
 	Label      string
 	Columns    func() []MultiFieldCol
-	DefaultVal [][]interface{}
+	DefaultVal [][]FieldData
 }
 
 func (f MultiField) GetName() string {

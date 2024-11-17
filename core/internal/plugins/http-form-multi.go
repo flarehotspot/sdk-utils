@@ -10,7 +10,7 @@ package plugins
 
 // type MultiFieldData struct {
 // 	Name   string                 `json:"name"`
-// 	Fields [][]formsutl.FieldData `json:"fields"`
+// 	Fields [][]sdkforms.FieldData `json:"fields"`
 // }
 
 // func (f MultiFieldData) NumRows() int {

@@ -1,6 +1,7 @@
 package bootstrap5
 
 import (
+	"fmt"
 	"sdk/api/forms"
 )
 
@@ -17,6 +18,10 @@ templ HtmlForm(form sdkforms.IHttpForm, csrfTag string, submitUrl string) {
 						@NumberInputField(getNumberInputFieldAttrs(form, sec, fld))
 					case sdkforms.FormFieldTypeList:
 						@ListInputField(form, sec, fld)
+					case sdkforms.FormFieldTypeMulti:
+						@MultiInputField(form, sec, fld)
+					default:
+						<p>{ fmt.Sprintf("unsupported field type: %s", fld.GetType()) }</p>
 				}
 				<br/>
 			}

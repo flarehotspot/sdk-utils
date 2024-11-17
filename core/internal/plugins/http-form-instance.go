@@ -66,11 +66,11 @@ func (self *HttpFormInstance) SaveForm(r *http.Request) (err error) {
 	for sidx, sec := range self.form.Sections {
 		sectionData := formsutl.SectionData{
 			Name:   sec.Name,
-			Fields: make([]formsutl.FieldData, len(sec.Fields)),
+			Fields: make([]sdkforms.FieldData, len(sec.Fields)),
 		}
 
 		for fidx, fld := range sec.Fields {
-			field := formsutl.FieldData{Name: fld.GetName()}
+			field := sdkforms.FieldData{Name: fld.GetName()}
 			valstr := r.Form[sec.Name+":"+fld.GetName()]
 			if len(valstr) == 0 {
 				continue
@@ -227,12 +227,28 @@ func (self *HttpFormInstance) GetMultiField(section string, field string) (val s
 		return
 	}
 
-	fields, ok := v.(formsutl.MultiFieldData)
+	ivals, ok := v.([][]sdkforms.FieldData)
 	if !ok {
-		return val, errors.New(fmt.Sprintf("section %s, field %s is not a multi-field", section, field))
+		return val, errors.New(fmt.Sprintf("section %s, field %s is not a multi-field, instead %T", section, field, v))
 	}
 
-	return fields, nil
+	mfd := formsutl.MultiFieldData{Fields: make([][]sdkforms.FieldData, len(ivals))}
+
+	for ridx, irow := range ivals {
+		row := make([]sdkforms.FieldData, len(irow))
+
+		for cidx, icol := range irow {
+			fd := icol
+			if !ok {
+				return val, errors.New("column is not a field data")
+			}
+			row[cidx] = fd
+		}
+
+		mfd.Fields[ridx] = row
+	}
+
+	return mfd, nil
 }
 
 func (self *HttpFormInstance) GetRedirectUrl() string {
@@ -290,7 +306,7 @@ func (self *HttpFormInstance) getParsedSection(section string) (sec formsutl.Sec
 	return
 }
 
-func (self *HttpFormInstance) getParsedField(section string, field string) (fld formsutl.FieldData, ok bool) {
+func (self *HttpFormInstance) getParsedField(section string, field string) (fld sdkforms.FieldData, ok bool) {
 	if s, ok := self.getParsedSection(section); ok {
 		for _, f := range s.Fields {
 			if f.Name == field {

@@ -31,6 +31,64 @@ func GetThemeForm(g *plugins.CoreGlobals) (form sdkforms.Form, err error) {
 		}
 	}
 
+	portalThemesField := sdkforms.ListField{
+		Name:       "portal_theme",
+		Label:      "Select Portal Theme",
+		Type:       sdkforms.FormFieldTypeText,
+		DefaultVal: cfg.PortalThemePkg,
+		Options: func() []sdkforms.ListOption {
+			opts := []sdkforms.ListOption{}
+			for _, p := range portalThemes {
+				opts = append(opts, sdkforms.ListOption{
+					Label: p.Name(),
+					Value: p.Pkg(),
+				})
+			}
+			return opts
+		},
+	}
+
+	adminThemesField := sdkforms.ListField{
+		Name:       "admin_theme",
+		Label:      "Select Admin Theme",
+		Type:       sdkforms.FormFieldTypeText,
+		DefaultVal: cfg.AdminThemePkg,
+		Options: func() []sdkforms.ListOption {
+			opts := []sdkforms.ListOption{}
+			for _, p := range adminThemes {
+				opts = append(opts, sdkforms.ListOption{
+					Label: p.Name(),
+					Value: p.Pkg(),
+				})
+			}
+			return opts
+		},
+	}
+
+	multiField := sdkforms.MultiField{
+		Name:  "multi_field",
+		Label: "Multi Field",
+		Columns: func() []sdkforms.MultiFieldCol {
+			cols := []sdkforms.MultiFieldCol{
+				{
+					Name:       "col1",
+					Label:      "Column 1",
+					Type:       sdkforms.FormFieldTypeText,
+					DefaultVal: "default val 1",
+				},
+			}
+			return cols
+		},
+		DefaultVal: [][]sdkforms.FieldData{
+			{
+				{
+					Name:  "col1",
+					Value: "col1 default val",
+				},
+			},
+		},
+	}
+
 	form = sdkforms.Form{
 		Name:          "themes",
 		CallbackRoute: "admin:themes:save",
@@ -38,38 +96,9 @@ func GetThemeForm(g *plugins.CoreGlobals) (form sdkforms.Form, err error) {
 			{
 				Name: "themes",
 				Fields: []sdkforms.FormField{
-					sdkforms.ListField{
-						Name:       "portal_theme",
-						Label:      "Select Portal Theme",
-						Type:       sdkforms.FormFieldTypeText,
-						DefaultVal: cfg.PortalThemePkg,
-						Options: func() []sdkforms.ListOption {
-							opts := []sdkforms.ListOption{}
-							for _, p := range portalThemes {
-								opts = append(opts, sdkforms.ListOption{
-									Label: p.Name(),
-									Value: p.Pkg(),
-								})
-							}
-							return opts
-						},
-					},
-					sdkforms.ListField{
-						Name:       "admin_theme",
-						Label:      "Select Admin Theme",
-						Type:       sdkforms.FormFieldTypeText,
-						DefaultVal: cfg.AdminThemePkg,
-						Options: func() []sdkforms.ListOption {
-							opts := []sdkforms.ListOption{}
-							for _, p := range adminThemes {
-								opts = append(opts, sdkforms.ListOption{
-									Label: p.Name(),
-									Value: p.Pkg(),
-								})
-							}
-							return opts
-						},
-					},
+					portalThemesField,
+					adminThemesField,
+					multiField,
 				},
 			},
 		},

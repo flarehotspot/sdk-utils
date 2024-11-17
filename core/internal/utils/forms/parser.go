@@ -75,7 +75,7 @@ func ParseListFieldValue(fld sdkforms.FormField, valstr []string) (val interface
 	return
 }
 
-func ParseMultiFieldValue(sec sdkforms.FormSection, f sdkforms.FormField, form url.Values) (val [][]FieldData, err error) {
+func ParseMultiFieldValue(sec sdkforms.FormSection, f sdkforms.FormField, form url.Values) (val [][]sdkforms.FieldData, err error) {
 	fmt.Printf("parsing multifield form: %+v\n", form)
 
 	fld, ok := f.(sdkforms.MultiField)
@@ -92,18 +92,18 @@ func ParseMultiFieldValue(sec sdkforms.FormSection, f sdkforms.FormField, form u
 
 	fmt.Printf("multi field form: %+v\n", form)
 
-	col1 := sec.Name + "::" + fld.Name + "::" + columns[0].Name + "[]"
+	col1 := sec.Name + ":" + fld.Name + ":" + columns[0].Name
 	numRows := len(form[col1])
 
 	fmt.Printf("numRows: %d\n", numRows)
 
-	vals := make([][]FieldData, numRows)
+	vals := make([][]sdkforms.FieldData, numRows)
 
 	for ridx := 0; ridx < numRows; ridx++ {
-		row := make([]FieldData, len(columns))
+		row := make([]sdkforms.FieldData, len(columns))
 		for cidx, colfld := range columns {
 
-			inputName := sec.Name + "::" + fld.Name + "::" + colfld.Name + "[]"
+			inputName := sec.Name + ":" + fld.Name + ":" + colfld.Name
 			colarr := form[inputName]
 			valstr := colarr[ridx]
 
@@ -124,7 +124,7 @@ func ParseMultiFieldValue(sec sdkforms.FormSection, f sdkforms.FormField, form u
 				return
 			}
 
-			row[cidx] = FieldData{
+			row[cidx] = sdkforms.FieldData{
 				Name:  colfld.GetName(),
 				Value: value,
 			}
