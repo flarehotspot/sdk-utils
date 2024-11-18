@@ -17,6 +17,7 @@ func AssetsRoutes(g *plugins.CoreGlobals) {
 	assetsCtrl := controllers.NewAssetsCtrl(g)
 
 	webutils.RootRouter.Handle("/favicon.ico", cacheMw(http.HandlerFunc(assetsCtrl.GetFavicon)))
+	webutils.RootRouter.Handle("/polyfill.min.js", cacheMw(http.HandlerFunc(assetsCtrl.Polyfill)))
 
 	allPlugins := g.PluginMgr.All()
 	for _, p := range allPlugins {
