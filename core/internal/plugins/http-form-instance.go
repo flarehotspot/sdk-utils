@@ -95,7 +95,7 @@ func (self *HttpFormInstance) SaveForm(r *http.Request) (err error) {
 					return err
 				}
 
-				field.Value = formsutl.MultiFieldData{
+				field.Value = sdkforms.MultiFieldData{
 					Fields: val,
 				}
 
@@ -252,7 +252,7 @@ func (self *HttpFormInstance) GetMultiField(section string, field string) (val s
 		return val, fmt.Errorf("multi-field %s value is not a slice of field data, instead %T", field, ifields)
 	}
 
-	mfd := formsutl.MultiFieldData{Fields: make([][]sdkforms.FieldData, len(irows))}
+	mfd := sdkforms.MultiFieldData{Fields: make([][]sdkforms.FieldData, len(irows))}
 
 	for ridx, irow := range irows {
 		icols, ok := irow.([]interface{})
@@ -371,7 +371,28 @@ func (self *HttpFormInstance) getParsedFieldValue(section string, field string) 
 
 func (self *HttpFormInstance) getDefaultValue(secname string, field string) (val interface{}, err error) {
 	if f, ok := self.getField(secname, field); ok {
-		return f.GetDefaultVal(), nil
+		val = f.GetDefaultVal()
+		switch f.GetType() {
+		case sdkforms.FormFieldTypeMulti:
+			if v, ok := val.(map[string]interface{}); ok {
+				return v, nil
+			}
+			if v, ok := val.([][]sdkforms.FieldData); ok {
+				vmap := make(map[string]interface{})
+				for _, row := range v {
+					vmap["fields"] = []interface{}{}
+					for _, col := range row {
+						vrow := make(map[string]interface{})
+						vrow["name"] = col.Name
+						vrow["value"] = col.Value
+					}
+				}
+				return vmap, nil
+			}
+			return val, nil
+		default:
+			return val, nil
+		}
 	}
 	return nil, errors.New(fmt.Sprintf("section %s, field %s default value not found", secname, field))
 }

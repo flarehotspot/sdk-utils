@@ -91,7 +91,7 @@ func GetThemeForm(g *plugins.CoreGlobals) (form sdkforms.Form, err error) {
 			}
 			return cols
 		},
-		DefaultVal: [][]sdkforms.FieldData{{}},
+		DefaultVal: sdkforms.MultiFieldData{},
 	}
 
 	listFieldTxt := sdkforms.ListField{

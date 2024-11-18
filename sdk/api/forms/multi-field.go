@@ -34,7 +34,7 @@ type MultiField struct {
 	Name       string
 	Label      string
 	Columns    func() []MultiFieldCol
-	DefaultVal [][]FieldData
+	DefaultVal MultiFieldData
 }
 
 func (f MultiField) GetName() string {
