@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	PolyfillJsSrc = "/polyfill.min.js?flags=gated&features=default,es5,es6,es7,matchMedia,IntersectionObserver,ResizeObserver,NodeList.prototype.forEach,HTMLTemplateElement,Element.prototype.closest,requestAnimationFrame,CustomEvent,URLSearchParams,queueMicrotask"
+	PolyfillJsSrc = "/polyfill.min.js?flags=gated&features=default,es5,es6,es7,matchMedia,IntersectionObserver,ResizeObserver,NodeList.prototype.forEach,HTMLTemplateElement,Element.prototype.closest,requestAnimationFrame,CustomEvent,URLSearchParams,queueMicrotask,EventSource,Promise"
 )
 
 func NewPluginUtils(api *PluginApi) *PluginUtils {
