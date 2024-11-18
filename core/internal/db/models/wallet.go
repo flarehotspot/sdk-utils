@@ -9,13 +9,14 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type Wallet struct {
 	db        *db.Database
 	models    *Models
-	id        uuid.UUID
-	deviceId  uuid.UUID
+	id        pgtype.UUID
+	deviceId  pgtype.UUID
 	balance   float64
 	createdAt time.Time
 }

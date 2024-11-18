@@ -2,20 +2,21 @@ package models
 
 import (
 	"context"
-	"fmt"
+	"log"
 	"time"
 
 	"core/internal/db"
+	"core/internal/db/sqlc"
+	"core/internal/utils/pg"
 
-	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type Payment struct {
 	db         *db.Database
 	models     *Models
-	id         uuid.UUID
-	purchaseId uuid.UUID
+	id         pgtype.UUID
+	purchaseId pgtype.UUID
 	amount     float64
 	optname    string
 	createdAt  time.Time
@@ -28,11 +29,11 @@ func NewPayment(dtb *db.Database, mdls *Models) *Payment {
 	}
 }
 
-func (self *Payment) Id() uuid.UUID {
+func (self *Payment) Id() pgtype.UUID {
 	return self.id
 }
 
-func (self *Payment) PurchaseId() uuid.UUID {
+func (self *Payment) PurchaseId() pgtype.UUID {
 	return self.purchaseId
 }
 
@@ -48,31 +49,14 @@ func (self *Payment) CreatedAt() time.Time {
 	return self.createdAt
 }
 
-func (self *Payment) UpdateTx(tx pgx.Tx, ctx context.Context, amt float64) error {
-	err := self.models.paymentModel.UpdateTx(tx, ctx, self.id, amt)
-	if err != nil {
-		return fmt.Errorf("could not update payment model: %w", err)
-	}
-
-	self.amount = amt
-	return nil
-}
-
 func (self *Payment) Update(ctx context.Context, amt float64) error {
-	tx, err := self.db.SqlDB().Begin(ctx)
+	err := self.db.Queries.UpdatePayment(ctx, sqlc.UpdatePaymentParams{
+		Amount: pg.Float64ToNumeric(amt),
+		ID:     self.id,
+	})
 	if err != nil {
-		return fmt.Errorf("could not begin transaction: %w", err)
-	}
-
-	defer func() {
-		if err != nil {
-			tx.Rollback(ctx)
-		}
-	}()
-
-	err = self.UpdateTx(tx, ctx, amt)
-	if err != nil {
-		return fmt.Errorf("could not update payment: %w", err)
+		log.Println("error updating payment %v: %w", self.id, err)
+		return err
 	}
 
 	return nil

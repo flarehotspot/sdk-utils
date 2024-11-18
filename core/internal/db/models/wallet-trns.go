@@ -8,15 +8,15 @@ import (
 
 	"core/internal/db"
 
-	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type WalletTrns struct {
 	db          *db.Database
 	models      *Models
-	id          uuid.UUID
-	walletId    uuid.UUID
+	id          pgtype.UUID
+	walletId    pgtype.UUID
 	amount      float64
 	newBalance  float64
 	description string
@@ -30,11 +30,11 @@ func NewWalletTrns(dtb *db.Database, mdls *Models) *WalletTrns {
 	}
 }
 
-func (self *WalletTrns) Id() uuid.UUID {
+func (self *WalletTrns) Id() pgtype.UUID {
 	return self.id
 }
 
-func (self *WalletTrns) WalletId() uuid.UUID {
+func (self *WalletTrns) WalletId() pgtype.UUID {
 	return self.walletId
 }
 
@@ -54,7 +54,7 @@ func (self *WalletTrns) CreatedAt() time.Time {
 	return self.createdAt
 }
 
-func (self *WalletTrns) UpdateTx(tx pgx.Tx, ctx context.Context, walletId uuid.UUID, amount float64, newbal float64, desc string) error {
+func (self *WalletTrns) UpdateTx(tx pgx.Tx, ctx context.Context, walletId pgtype.UUID, amount float64, newbal float64, desc string) error {
 	query := "UPDATE wallet_transactions SET wallet_id = $1, amount = $2, new_balance = $3, description = $4 WHERE id = $5 LIMIT 1"
 
 	cmdTag, err := tx.Exec(ctx, query, walletId, amount, newbal, desc, self.id)

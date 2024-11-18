@@ -7,9 +7,11 @@ import (
 	"time"
 
 	"core/internal/db"
+	"core/internal/db/sqlc"
+	"core/internal/utils/pg"
 
-	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgtype"
 	// sdkpayments "sdk/api/payments"
 )
 
@@ -23,8 +25,8 @@ func NewPurchase(dtb *db.Database, mdls *Models) *Purchase {
 type Purchase struct {
 	db                   *db.Database
 	models               *Models
-	id                   uuid.UUID
-	deviceId             uuid.UUID
+	id                   pgtype.UUID
+	deviceId             pgtype.UUID
 	sku                  string
 	name                 string
 	description          string
@@ -33,18 +35,18 @@ type Purchase struct {
 	callbackPluginPkg    string
 	callbackVueRouteName string
 	walletDebit          float64
-	walletTxId           *uuid.UUID
+	walletTxId           *pgtype.UUID
 	confirmedAt          *time.Time
 	cancelledAt          *time.Time
 	cancelledReason      *string
 	createdAt            time.Time
 }
 
-func (self *Purchase) Id() uuid.UUID {
+func (self *Purchase) Id() pgtype.UUID {
 	return self.id
 }
 
-func (self *Purchase) DeviceId() uuid.UUID {
+func (self *Purchase) DeviceId() pgtype.UUID {
 	return self.deviceId
 }
 
@@ -72,7 +74,7 @@ func (self *Purchase) WalletDebit() float64 {
 	return self.walletDebit
 }
 
-func (self *Purchase) WalletTxId() *uuid.UUID {
+func (self *Purchase) WalletTxId() *pgtype.UUID {
 	return self.walletTxId
 }
 
@@ -113,7 +115,7 @@ func (self *Purchase) FixedPrice() (float64, bool) {
 }
 
 func (self *Purchase) DeviceTx(tx pgx.Tx, ctx context.Context) (*Device, error) {
-	dev, err := self.models.deviceModel.FindTx(tx, ctx, self.deviceId)
+	dev, err := self.models.deviceModel.Find(ctx, self.deviceId)
 	return dev, err
 }
 
@@ -124,13 +126,13 @@ func (self *Purchase) ConfirmTx(tx pgx.Tx, ctx context.Context) error {
 		return err
 	}
 
-	wallet, err := dev.WalletTx(tx, ctx)
+	wallet, err := dev.Wallet(ctx)
 	if err != nil {
 		log.Println(err)
 		return err
 	}
 
-	var txid *uuid.UUID
+	var txid *pgtype.UUID
 	dbt := self.walletDebit
 	if dbt > 0 {
 		newBal := wallet.Balance() - dbt
@@ -150,7 +152,7 @@ func (self *Purchase) ConfirmTx(tx pgx.Tx, ctx context.Context) error {
 	}
 
 	now := time.Now()
-	return self.UpdateTx(tx, ctx, dbt, txid, nil, &now, nil)
+	return self.Update(ctx, dbt, txid, nil, &now, nil)
 }
 
 func (self *Purchase) CancelTx(tx pgx.Tx, ctx context.Context) error {
@@ -170,7 +172,7 @@ func (self *Purchase) CancelTx(tx pgx.Tx, ctx context.Context) error {
 	cancelledAt := time.Now()
 
 	if pmtTotal > 0 {
-		wallet, err := dev.WalletTx(tx, ctx)
+		wallet, err := dev.Wallet(ctx)
 		if err != nil {
 			log.Println(err)
 			return err
@@ -189,14 +191,14 @@ func (self *Purchase) CancelTx(tx pgx.Tx, ctx context.Context) error {
 		}
 
 		trnsId := trns.Id()
-		return self.UpdateTx(tx, ctx, dbt, &trnsId, &cancelledAt, nil, &desc)
+		return self.Update(ctx, dbt, &trnsId, &cancelledAt, nil, &desc)
 	}
 
-	return self.UpdateTx(tx, ctx, dbt, nil, &cancelledAt, nil, &desc)
+	return self.Update(ctx, dbt, nil, &cancelledAt, nil, &desc)
 }
 
 func (self *Purchase) PaymentsTx(tx pgx.Tx, ctx context.Context) ([]*Payment, error) {
-	return self.models.paymentModel.FindAllByPurchaseTx(tx, ctx, self.id)
+	return self.models.paymentModel.FindAllByPurchase(ctx, self.id)
 }
 
 func (self *Purchase) TotalPaymentsTx(tx pgx.Tx, ctx context.Context) (float64, error) {
@@ -214,19 +216,6 @@ func (self *Purchase) TotalPaymentsTx(tx pgx.Tx, ctx context.Context) (float64, 
 	total += self.WalletDebit()
 
 	return total, nil
-}
-
-func (self *Purchase) UpdateTx(tx pgx.Tx, ctx context.Context, dbt float64, txid *uuid.UUID, cancelledAt *time.Time, confirmedAt *time.Time, reason *string) error {
-	err := self.models.purchaseModel.UpdateTx(tx, ctx, self.id, dbt, txid, cancelledAt, confirmedAt, reason)
-	if err != nil {
-		return err
-	}
-
-	self.walletDebit = dbt
-	self.walletTxId = txid
-	self.cancelledAt = cancelledAt
-	self.confirmedAt = confirmedAt
-	return nil
 }
 
 func (self *Purchase) Cancel(ctx context.Context) error {
@@ -289,22 +278,24 @@ func (self *Purchase) TotalPayment(ctx context.Context) (float64, error) {
 	return total, nil
 }
 
-func (self *Purchase) Update(ctx context.Context, dbt float64, txid *uuid.UUID, cancelledAt *time.Time, confirmedAt *time.Time, reason *string) error {
-	tx, err := self.db.SqlDB().Begin(ctx)
+func (self *Purchase) Update(ctx context.Context, dbt float64, txid *pgtype.UUID, cancelledAt *time.Time, confirmedAt *time.Time, reason *string) error {
+	err := self.db.Queries.UpdatePurchase(ctx, sqlc.UpdatePurchaseParams{
+		WalletDebit:     pg.Float64ToNumeric(dbt),
+		WalletTxID:      *txid,
+		CancelledAt:     pgtype.Timestamp{Time: *cancelledAt},
+		ConfirmedAt:     pgtype.Timestamp{Time: *confirmedAt},
+		CancelledReason: pgtype.Text{String: *reason},
+		ID:              self.id,
+	})
 	if err != nil {
-		return fmt.Errorf("could not begin transaction: %w", err)
-	}
-
-	defer func() {
-		if err != nil {
-			tx.Rollback(ctx)
-		}
-	}()
-
-	err = self.UpdateTx(tx, ctx, dbt, txid, cancelledAt, confirmedAt, reason)
-	if err != nil {
+		log.Println("error updating purchase %v: %w", self.id, err)
 		return err
 	}
+
+	self.walletDebit = dbt
+	self.walletTxId = txid
+	self.cancelledAt = cancelledAt
+	self.confirmedAt = confirmedAt
 
 	return nil
 }
