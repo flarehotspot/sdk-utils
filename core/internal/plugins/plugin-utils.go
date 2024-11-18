@@ -11,6 +11,10 @@ import (
 	"core/internal/utils/pkg"
 )
 
+const (
+	PolyfillJsSrc = "/polyfill.min.js?flags=gated&features=default,es5,es6,es7,matchMedia,IntersectionObserver,ResizeObserver,NodeList.prototype.forEach,HTMLTemplateElement,Element.prototype.closest,requestAnimationFrame,CustomEvent,URLSearchParams,queueMicrotask"
+)
+
 func NewPluginUtils(api *PluginApi) *PluginUtils {
 	return &PluginUtils{api}
 }
@@ -83,6 +87,8 @@ func (self *PluginUtils) GetAdminAssetsForPage(v sdkhttp.ViewPage) (assets sdkht
 		assets.PageCssHref = self.api.HttpAPI.Helpers().AssetPath(cssFile)
 	}
 
+	assets.PolyfillJsSrc = PolyfillJsSrc
+
 	return
 }
 
@@ -111,6 +117,8 @@ func (self *PluginUtils) GetPortalAssetsForPage(v sdkhttp.ViewPage) (assets sdkh
 	if ok {
 		assets.PageCssHref = self.api.HttpAPI.Helpers().AssetPath(cssFile)
 	}
+
+	assets.PolyfillJsSrc = PolyfillJsSrc
 
 	return
 }
