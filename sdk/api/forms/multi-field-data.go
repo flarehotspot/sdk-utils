@@ -1,13 +1,12 @@
-package formsutl
+package sdkforms
 
 import (
 	"errors"
 	"fmt"
-	sdkforms "sdk/api/forms"
 )
 
 type MultiFieldData struct {
-	Fields [][]sdkforms.FieldData `json:"fields"`
+	Fields [][]FieldData `json:"fields"`
 }
 
 func (f MultiFieldData) NumRows() int {
