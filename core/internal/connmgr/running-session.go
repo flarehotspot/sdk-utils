@@ -14,7 +14,7 @@ import (
 	sdkconnmgr "sdk/api/connmgr"
 	sdknet "sdk/api/network"
 
-	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 var sessionQ *jobque.JobQue = jobque.NewJobQue()
@@ -39,7 +39,7 @@ func NewRunningSession(clnt sdkconnmgr.ClientDevice, s connmgr.ClientSession) (*
 
 type RunningSession struct {
 	mu         sync.RWMutex
-	clntId     uuid.UUID
+	clntId     pgtype.UUID
 	ip         string
 	mac        string
 	lan        *network.NetworkLan
@@ -51,7 +51,7 @@ type RunningSession struct {
 	callbacks  []chan error
 }
 
-func (self *RunningSession) ClientId() uuid.UUID {
+func (self *RunningSession) ClientId() pgtype.UUID {
 	self.mu.RLock()
 	defer self.mu.RUnlock()
 	return self.clntId

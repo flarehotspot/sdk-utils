@@ -10,14 +10,14 @@ import (
 	"core/internal/utils/events"
 	"core/internal/utils/sse"
 
-	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type ClientDevice struct {
 	mu       sync.RWMutex
 	db       *db.Database
 	mdls     *models.Models
-	id       uuid.UUID
+	id       pgtype.UUID
 	mac      string
 	ip       string
 	hostname string
@@ -34,7 +34,7 @@ func NewClientDevice(dtb *db.Database, mdls *models.Models, d *models.Device) *C
 	}
 }
 
-func (self *ClientDevice) Id() uuid.UUID {
+func (self *ClientDevice) Id() pgtype.UUID {
 	self.mu.RLock()
 	defer self.mu.RUnlock()
 	return self.id
