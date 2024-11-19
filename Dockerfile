@@ -20,7 +20,8 @@ CMD cp go.work.default go.work && \
     reflex \
         -r '\.(go|templ|js|css|json)$' \
         -R 'assets\/dist\/.*' \
-        -R '^config\/.*' \
+        -R 'db/sqlc/.*' \
+        -R 'config\/.*' \
         -R 'node_modules' \
         -R '_templ\.go$' \
         -R 'core\/main\.go' \

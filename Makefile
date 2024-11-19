@@ -1,5 +1,4 @@
 default:
-	sqlc generate && \
 	docker compose up --build --remove-orphans
 
 server-dev:
