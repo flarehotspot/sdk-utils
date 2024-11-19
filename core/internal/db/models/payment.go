@@ -55,7 +55,7 @@ func (self *Payment) Update(ctx context.Context, amt float64) error {
 		ID:     self.id,
 	})
 	if err != nil {
-		log.Println("error updating payment %v: %w", self.id, err)
+		log.Printf("error updating payment %v: %v", self.id, err)
 		return err
 	}
 

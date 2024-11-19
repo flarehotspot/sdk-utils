@@ -142,7 +142,7 @@ func (self *Session) Update(ctx context.Context, devId pgtype.UUID, t uint8, sec
 		ID:              self.id,
 	})
 	if err != nil {
-		log.Printf("error updating session %v: %w", self.id, err)
+		log.Printf("error updating session %v: %v", self.id, err)
 		return err
 	}
 

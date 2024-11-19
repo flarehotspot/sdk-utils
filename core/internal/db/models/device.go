@@ -54,7 +54,7 @@ func (self *Device) MacAddress() string {
 func (self *Device) Reload(ctx context.Context) error {
 	dRow, err := self.db.Queries.FindDevice(ctx, self.id)
 	if err != nil {
-		log.Printf("error finding device with id %v: %w", self.id, err)
+		log.Printf("error finding device with id %v: %v", self.id, err)
 	}
 	self.hostname = dRow.Hostname.String
 	self.ipAddr = dRow.IpAddress
@@ -71,7 +71,7 @@ func (self *Device) Update(ctx context.Context, mac string, ip string, hostname 
 		ID:         self.id,
 	})
 	if err != nil {
-		log.Printf("error updating device %v: %w", self.id, err)
+		log.Printf("error updating device %v: %v", self.id, err)
 		return err
 	}
 
@@ -85,7 +85,7 @@ func (self *Device) Update(ctx context.Context, mac string, ip string, hostname 
 func (self *Device) Wallet(ctx context.Context) (*Wallet, error) {
 	w, err := self.db.Queries.FindWalletByDeviceId(ctx, self.id)
 	if err != nil {
-		log.Printf("error finding wallet by device id %v: %w", self.id, err)
+		log.Printf("error finding wallet by device id %v: %v", self.id, err)
 		return nil, err
 	}
 
@@ -101,7 +101,7 @@ func (self *Device) Wallet(ctx context.Context) (*Wallet, error) {
 func (self *Device) NextSession(ctx context.Context) (*Session, error) {
 	sRow, err := self.db.Queries.FindAvlSessionForDev(ctx, self.id)
 	if err != nil {
-		log.Printf("error finding available session for device", self.id, err)
+		log.Printf("error finding available session for device %v: %v", self.id, err)
 		return nil, err
 	}
 
@@ -136,7 +136,7 @@ func (self *Device) Sessions(ctx context.Context) ([]*Session, error) {
 
 	sessionsRow, err := self.db.Queries.FindSessionsForDev(ctx, self.id)
 	if err != nil {
-		log.Printf("error finding sessions for dev %v: %w", err)
+		log.Printf("error finding sessions for dev %v: %v", self.id, err)
 		return nil, err
 	}
 

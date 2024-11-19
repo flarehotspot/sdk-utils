@@ -72,7 +72,7 @@ func (self *PurchaseModel) Find(ctx context.Context, id pgtype.UUID) (*Purchase,
 func (self *PurchaseModel) PendingPurchase(ctx context.Context, deviceId pgtype.UUID) (*Purchase, error) {
 	p, err := self.db.Queries.FindPending(ctx, deviceId)
 	if err != nil {
-		log.Printf("error finding pending purchase with dev id %v: %w\n", deviceId, err)
+		log.Printf("error finding pending purchase with dev id %v: %v\n", deviceId, err)
 		return nil, err
 	}
 
@@ -99,7 +99,7 @@ func (self *PurchaseModel) PendingPurchase(ctx context.Context, deviceId pgtype.
 func (self *PurchaseModel) FindByDeviceId(ctx context.Context, deviceId pgtype.UUID) (*Purchase, error) {
 	p, err := self.db.Queries.FindPurchaseByDeviceId(ctx, deviceId)
 	if err != nil {
-		log.Println("error finding purchase by device id %v: %w", deviceId, err)
+		log.Printf("error finding purchase by device id %v: %v", deviceId, err)
 		return nil, err
 	}
 
@@ -133,7 +133,7 @@ func (self *PurchaseModel) Update(ctx context.Context, id pgtype.UUID, dbt float
 		ID:              id,
 	})
 	if err != nil {
-		log.Println("error updating purchase %v: %w", id, err)
+		log.Printf("error updating purchase %v: %v", id, err)
 		return err
 	}
 

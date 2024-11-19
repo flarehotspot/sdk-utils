@@ -20,15 +20,15 @@ func NewDeviceModel(database *db.Database, mdls *Models) *DeviceModel {
 }
 
 func (self *DeviceModel) Create(ctx context.Context, mac string, ip string, hostname string) (*Device, error) {
-	lastInsertId, err := self.db.Queries.CreateDevice(ctx, sqlc.CreateDeviceParams{})
+	dId, err := self.db.Queries.CreateDevice(ctx, sqlc.CreateDeviceParams{})
 	if err != nil {
 		log.Println("error creating new device:", err)
 		return nil, err
 	}
 
-	d, err := self.db.Queries.FindDevice(ctx, lastInsertId)
+	d, err := self.db.Queries.FindDevice(ctx, dId)
 	if err != nil {
-		log.Printf("error finding device %d: %w\n", lastInsertId, err)
+		log.Printf("error finding device %v: %v\n", dId, err)
 		return nil, err
 	}
 
@@ -50,7 +50,7 @@ func (self *DeviceModel) Find(ctx context.Context, id pgtype.UUID) (*Device, err
 
 	d, err := self.db.Queries.FindDevice(ctx, id)
 	if err != nil {
-		log.Println("error finding device %v: %w", id, err)
+		log.Printf("error finding device %v: %v", id, err)
 		return nil, err
 	}
 
@@ -69,7 +69,7 @@ func (self *DeviceModel) FindByMac(ctx context.Context, mac string) (*Device, er
 
 	d, err := self.db.Queries.FindDeviceByMac(ctx, mac)
 	if err != nil {
-		log.Println("error finding device %s: %w", mac, err)
+		log.Printf("error finding device %s: %v", mac, err)
 		return nil, err
 	}
 
@@ -91,10 +91,10 @@ func (self *DeviceModel) Update(ctx context.Context, id pgtype.UUID, mac string,
 		ID:         id,
 	})
 	if err != nil {
-		log.Println("error updating device %v: %w", id, err)
+		log.Printf("error updating device %v: %v", id, err)
 		return err
 	}
 
-	log.Printf("Successfully updated device with id %d", id)
+	log.Printf("Successfully updated device with id %v", id)
 	return nil
 }

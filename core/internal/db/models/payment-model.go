@@ -33,7 +33,7 @@ func (self *PaymentModel) Create(ctx context.Context, purid pgtype.UUID, amt flo
 
 	p, err := self.db.Queries.FindPayment(ctx, pId)
 	if err != nil {
-		log.Println("error finding payemnt %v: %w", pId, err)
+		log.Printf("error finding payemnt %v: %v", pId, err)
 		return nil, err
 	}
 
@@ -50,7 +50,7 @@ func (self *PaymentModel) Create(ctx context.Context, purid pgtype.UUID, amt flo
 func (self *PaymentModel) Find(ctx context.Context, id pgtype.UUID) (*Payment, error) {
 	p, err := self.db.Queries.FindPayment(ctx, id)
 	if err != nil {
-		log.Println("error finding payment %v: %w", id, err)
+		log.Printf("error finding payment %v: %v", id, err)
 		return nil, err
 	}
 
@@ -69,7 +69,7 @@ func (self *PaymentModel) FindAllByPurchase(ctx context.Context, purId pgtype.UU
 
 	pRows, err := self.db.Queries.FindAllPaymentsByPurchaseId(ctx, purId)
 	if err != nil {
-		log.Println("error finding payments by purchase id %v: %w", purId, err)
+		log.Printf("error finding payments by purchase id %v: %v", purId, err)
 		return nil, err
 	}
 
@@ -93,7 +93,7 @@ func (self *PaymentModel) Update(ctx context.Context, id pgtype.UUID, amt float6
 		ID:     id,
 	})
 	if err != nil {
-		log.Println("error updating payment %v: %w", id, err)
+		log.Printf("error updating payment %v: %v", id, err)
 		return err
 	}
 

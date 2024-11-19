@@ -2,11 +2,12 @@ package models
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"time"
 
 	"core/internal/db"
+	"core/internal/db/sqlc"
+	"core/internal/utils/pg"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
@@ -55,17 +56,16 @@ func (self *WalletTrns) CreatedAt() time.Time {
 }
 
 func (self *WalletTrns) UpdateTx(tx pgx.Tx, ctx context.Context, walletId pgtype.UUID, amount float64, newbal float64, desc string) error {
-	query := "UPDATE wallet_transactions SET wallet_id = $1, amount = $2, new_balance = $3, description = $4 WHERE id = $5 LIMIT 1"
-
-	cmdTag, err := tx.Exec(ctx, query, walletId, amount, newbal, desc, self.id)
+	err := self.db.Queries.UpdateWalletTrns(ctx, sqlc.UpdateWalletTrnsParams{
+		WalletID:    walletId,
+		Amount:      pg.Float64ToNumeric(amount),
+		NewBalance:  pg.Float64ToNumeric(newbal),
+		Description: pgtype.Text{String: desc},
+		ID:          self.id,
+	})
 	if err != nil {
-		log.Printf("SQL Exec Error while updating wallet transaction ID %d: %v", walletId, err)
+		log.Printf("error updating wallet transaction %+v: %v", self.id, err)
 		return err
-	}
-
-	if cmdTag.RowsAffected() == 0 {
-		log.Printf("No wallet transaction found with id %d; update operation skipped", walletId)
-		return fmt.Errorf("wallet with id %d not found", walletId)
 	}
 
 	self.walletId = walletId
@@ -73,10 +73,6 @@ func (self *WalletTrns) UpdateTx(tx pgx.Tx, ctx context.Context, walletId pgtype
 	self.newBalance = newbal
 	self.description = desc
 
-	if err := tx.Commit(ctx); err != nil {
-		return fmt.Errorf("could not commit transaction: %w", err)
-	}
-
-	log.Printf("Succcessfully updated wallet transaction with id %d", walletId)
+	log.Printf("Succcessfully updated wallet transaction with id %v", walletId)
 	return nil
 }

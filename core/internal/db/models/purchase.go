@@ -142,7 +142,7 @@ func (self *Purchase) ConfirmTx(tx pgx.Tx, ctx context.Context) error {
 		}
 
 		desc := "Partial payment for " + self.description
-		trns, err := self.models.walletTrnsModel.CreateTx(tx, ctx, wallet.Id(), -dbt, newBal, desc)
+		trns, err := self.models.walletTrnsModel.Create(ctx, wallet.Id(), -dbt, newBal, desc)
 		if err != nil {
 			return err
 		}
@@ -184,7 +184,7 @@ func (self *Purchase) CancelTx(tx pgx.Tx, ctx context.Context) error {
 			return err
 		}
 
-		trns, err := self.models.walletTrnsModel.CreateTx(tx, ctx, wallet.Id(), pmtTotal, wallet.Balance(), "Refund for "+desc)
+		trns, err := self.models.walletTrnsModel.Create(ctx, wallet.Id(), pmtTotal, wallet.Balance(), "Refund for "+desc)
 		if err != nil {
 			log.Println(err)
 			return err
@@ -288,7 +288,7 @@ func (self *Purchase) Update(ctx context.Context, dbt float64, txid *pgtype.UUID
 		ID:              self.id,
 	})
 	if err != nil {
-		log.Println("error updating purchase %v: %w", self.id, err)
+		log.Printf("error updating purchase %v: %v", self.id, err)
 		return err
 	}
 

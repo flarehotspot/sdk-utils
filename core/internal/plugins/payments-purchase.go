@@ -8,10 +8,10 @@ import (
 	"core/internal/db/models"
 	sdkpayments "sdk/api/payments"
 
-	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
-func NewPurchase(api *PluginApi, ctx context.Context, deviceId uuid.UUID, p *models.Purchase) *Purchase {
+func NewPurchase(api *PluginApi, ctx context.Context, deviceId pgtype.UUID, p *models.Purchase) *Purchase {
 	return &Purchase{
 		api:      api,
 		ctx:      ctx,
@@ -23,7 +23,7 @@ func NewPurchase(api *PluginApi, ctx context.Context, deviceId uuid.UUID, p *mod
 type Purchase struct {
 	api      *PluginApi
 	ctx      context.Context
-	deviceId uuid.UUID
+	deviceId pgtype.UUID
 	purchase *models.Purchase
 }
 
