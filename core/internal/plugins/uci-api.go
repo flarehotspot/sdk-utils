@@ -18,15 +18,15 @@ func NewUciApi(pluginApi *PluginApi) {
 	pluginApi.UciAPI = uciApi
 }
 
-func (self *UciApi) Network() sdkuci.NetworkApi {
+func (self *UciApi) Network() sdkuci.INetworkApi {
 	return self.networkApi
 }
 
-func (self *UciApi) Dhcp() sdkuci.DhcpApi {
+func (self *UciApi) Dhcp() sdkuci.IDhcpApi {
 	return self.dhcpApi
 }
 
-func (self *UciApi) Wireless() sdkuci.WirelessApi {
+func (self *UciApi) Wireless() sdkuci.IWirelessApi {
 	return self.wirelessApi
 }
 

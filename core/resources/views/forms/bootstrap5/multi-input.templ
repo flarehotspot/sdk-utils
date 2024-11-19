@@ -6,7 +6,7 @@ import (
 	"sdk/api/http"
 )
 
-templ MultiInputField(form sdkhttp.IHttpForm, sec sdkforms.FormSection, fld sdkforms.FormField) {
+templ MultiInputField(form sdkhttp.IHttpForm, sec sdkforms.FormSection, fld sdkforms.IFormField) {
 	<legend>{ fld.GetLabel() }</legend>
 	{{ mfval, err := form.GetMultiField(sec.Name, fld.GetName()) }}
 	if err != nil {
@@ -87,6 +87,6 @@ templ multiFieldCol(sec sdkforms.FormSection, fld sdkforms.MultiField, mfval sdk
 	</div>
 }
 
-func mfColName(sec sdkforms.FormSection, fld sdkforms.FormField, col sdkforms.MultiFieldCol) string {
+func mfColName(sec sdkforms.FormSection, fld sdkforms.IFormField, col sdkforms.IMultiFieldCol) string {
 	return sec.Name + ":" + fld.GetName() + ":" + col.Name
 }

@@ -44,7 +44,7 @@ func (reg *ClientRegister) ClientChangedHook(fn ...connmgr.ClientChangedHookFn) 
 	reg.changedHooks = append(reg.changedHooks, fn...)
 }
 
-func (reg *ClientRegister) Register(r *http.Request, mac string, ip string, hostname string) (connmgr.ClientDevice, error) {
+func (reg *ClientRegister) Register(r *http.Request, mac string, ip string, hostname string) (connmgr.IClientDevice, error) {
 	ctx := r.Context()
 	dev, err := reg.mdls.Device().FindByMac(ctx, mac)
 

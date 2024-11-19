@@ -10,7 +10,7 @@ import (
 	"reflect"
 )
 
-templ ListInputField(form sdkhttp.IHttpForm, sec sdkforms.FormSection, fld sdkforms.FormField) {
+templ ListInputField(form sdkhttp.IHttpForm, sec sdkforms.FormSection, fld sdkforms.IFormField) {
 	{{ lf, ok := fld.(sdkforms.ListField) }}
 	if ok {
 		@listOptionFields(form, sec, lf)
@@ -118,11 +118,11 @@ func parseListOptValue(lf sdkforms.ListField, opt sdkforms.ListOption) (val stri
 	}
 	return
 }
-func getListInputField(fld sdkforms.FormField) (lf sdkforms.ListField) {
+func getListInputField(fld sdkforms.IFormField) (lf sdkforms.ListField) {
 	lf, _ = fld.(sdkforms.ListField)
 	return lf
 }
-func getListFieldInputType(fld sdkforms.FormField) string {
+func getListFieldInputType(fld sdkforms.IFormField) string {
 	listField, ok := fld.(sdkforms.ListField)
 	if !ok {
 		return "not a list field"

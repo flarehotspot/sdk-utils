@@ -11,7 +11,7 @@ import (
 	"github.com/gorilla/csrf"
 )
 
-func NewHttpHelpers(api *PluginApi) sdkhttp.HttpHelpers {
+func NewHttpHelpers(api *PluginApi) sdkhttp.IHttpHelpers {
 	return &HttpHelpers{api: api}
 }
 
@@ -32,7 +32,7 @@ func (self *HttpHelpers) AssetPath(p string) string {
 	return path.Join("/plugin", self.api.Pkg(), self.api.Version(), "assets/dist", p)
 }
 
-func (self *HttpHelpers) PluginMgr() plugin.PluginsMgrApi {
+func (self *HttpHelpers) PluginMgr() plugin.IPluginsMgrApi {
 	return self.api.PluginsMgrApi
 }
 

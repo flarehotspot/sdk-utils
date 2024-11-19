@@ -7,7 +7,7 @@ import (
 	"github.com/a-h/templ"
 )
 
-type HttpFormApi interface {
+type IHttpFormApi interface {
 	RegisterHttpForms(forms ...sdkforms.Form) (err error)
 	GetForm(name string) (form IHttpForm, err error)
 }

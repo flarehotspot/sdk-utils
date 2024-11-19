@@ -10,7 +10,7 @@ import (
 	"net/http"
 )
 
-type NavsApi interface {
+type INavpsApi interface {
 	// Register a factory function that returns the admin navigation menu items of your plugin.
 	AdminNavsFactory(func(r *http.Request) []AdminNavItemOpt)
 

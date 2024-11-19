@@ -61,7 +61,7 @@ func (self *PluginsMgr) RegisterPlugin(p *PluginApi) {
 	}
 }
 
-func (self *PluginsMgr) FindByName(name string) (sdkplugin.PluginApi, bool) {
+func (self *PluginsMgr) FindByName(name string) (sdkplugin.IPluginApi, bool) {
 	for _, p := range self.plugins {
 		if p.Name() == name {
 			return p, true
@@ -70,7 +70,7 @@ func (self *PluginsMgr) FindByName(name string) (sdkplugin.PluginApi, bool) {
 	return nil, false
 }
 
-func (self *PluginsMgr) FindByPkg(pkg string) (sdkplugin.PluginApi, bool) {
+func (self *PluginsMgr) FindByPkg(pkg string) (sdkplugin.IPluginApi, bool) {
 	for _, p := range self.plugins {
 		if p.Pkg() == pkg {
 			return p, true
@@ -79,16 +79,16 @@ func (self *PluginsMgr) FindByPkg(pkg string) (sdkplugin.PluginApi, bool) {
 	return nil, false
 }
 
-func (self *PluginsMgr) All() []sdkplugin.PluginApi {
-	plugins := []sdkplugin.PluginApi{}
+func (self *PluginsMgr) All() []sdkplugin.IPluginApi {
+	plugins := []sdkplugin.IPluginApi{}
 	for _, p := range self.plugins {
 		plugins = append(plugins, p)
 	}
 	return plugins
 }
 
-func (self *PluginsMgr) PaymentMethods() []sdkplugin.PluginApi {
-	methods := []sdkplugin.PluginApi{}
+func (self *PluginsMgr) PaymentMethods() []sdkplugin.IPluginApi {
+	methods := []sdkplugin.IPluginApi{}
 	for _, p := range self.plugins {
 		pmnt := p.Payments().(*PaymentsApi)
 		if pmnt.paymentsMgr != nil {

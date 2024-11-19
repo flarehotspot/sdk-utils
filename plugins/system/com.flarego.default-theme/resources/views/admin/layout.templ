@@ -3,7 +3,7 @@ package admin
 import "sdk/api/http"
 import "sdk/api/plugin"
 
-templ AdminLayout(api sdkplugin.PluginApi, data sdkhttp.AdminLayoutData) {
+templ AdminLayout(api sdkplugin.IPluginApi, data sdkhttp.AdminLayoutData) {
 	<!DOCTYPE html>
 	<html lang="en" data-bs-theme="auto">
 		<head>

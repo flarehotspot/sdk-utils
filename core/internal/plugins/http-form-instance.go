@@ -321,7 +321,7 @@ func (self *HttpFormInstance) getSection(section string) (sec sdkforms.FormSecti
 	return
 }
 
-func (self *HttpFormInstance) getField(section string, field string) (f sdkforms.FormField, ok bool) {
+func (self *HttpFormInstance) getField(section string, field string) (f sdkforms.IFormField, ok bool) {
 	for _, s := range self.form.Sections {
 		if s.Name == section {
 			for _, fld := range s.Fields {

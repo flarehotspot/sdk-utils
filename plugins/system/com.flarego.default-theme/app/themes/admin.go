@@ -11,7 +11,7 @@ import (
 	"github.com/a-h/templ"
 )
 
-func SetAdminTheme(api plugin.PluginApi) {
+func SetAdminTheme(api plugin.IPluginApi) {
 	api.Themes().NewAdminTheme(sdkhttp.AdminThemeOpts{
 		JsFile:  "theme.js",
 		CssFile: "theme.css",

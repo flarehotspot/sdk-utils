@@ -21,8 +21,8 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-// PluginApi is the root of all plugin APIs.
-type PluginApi interface {
+// IPluginApi is the root of all plugin APIs.
+type IPluginApi interface {
 
 	// Returns the package name of the plugin as defined in package.yml "package" field.
 	Pkg() string
@@ -58,40 +58,40 @@ type PluginApi interface {
 	Acct() sdkacct.AccountsApi
 
 	// Returns an instance of http api.
-	Http() sdkhttp.HttpApi
+	Http() sdkhttp.IHttpApi
 
 	// Returns an instance of config api.
-	Config() sdkcfg.ConfigApi
+	Config() sdkcfg.IConfigApi
 
 	// Returns an instance of payments api.
-	Payments() sdkpayments.PaymentsApi
+	Payments() sdkpayments.IPaymentsApi
 
 	// Returns an instance of network api.
-	Network() sdknet.NetworkApi
+	Network() sdknet.INetworkApi
 
 	// Returns an instance of ads api.
-	Ads() sdkads.AdsApi
+	Ads() sdkads.IAdsApi
 
 	// Returns an instance of in-app purchase api.
-	InAppPurchases() sdkinappur.InAppPurchasesApi
+	InAppPurchases() sdkinappur.IInAppPurchasesApi
 
 	// Returns an instance of the plugin manager.
-	PluginsMgr() PluginsMgrApi
+	PluginsMgr() IPluginsMgrApi
 
 	// Returns an instance of the client register.
-	DeviceHooks() sdkconnmgr.DeviceHooksApi
+	DeviceHooks() sdkconnmgr.IDeviceHooksApi
 
 	// Returns an instance of the client manager.
-	SessionsMgr() sdkconnmgr.SessionsMgrApi
+	SessionsMgr() sdkconnmgr.ISessionsMgrApi
 
 	// Returns an instance of the uci api.
-	Uci() sdkuci.UciApi
+	Uci() sdkuci.IUciApi
 
 	// Returns an instance of the themes api.
-	Themes() sdkhttp.HttpThemesApi
+	Themes() sdkhttp.IHttpThemesApi
 
 	// Features returns a slice of strings representing the features supported by the plugin.
 	Features() []string
 
-	Logger() sdklogger.LoggerApi
+	Logger() sdklogger.ILoggerApi
 }

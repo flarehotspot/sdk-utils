@@ -29,7 +29,7 @@ func NewSessionsMgr(dtb *db.Database, mdl *models.Models) *SessionsMgr {
 		db:        dtb,
 		mdl:       mdl,
 		sessions:  []*RunningSession{},
-		providers: []sdkconnmgr.SessionProvider{},
+		providers: []sdkconnmgr.ISessionProvider{},
 	}
 }
 
@@ -38,7 +38,7 @@ type SessionsMgr struct {
 	db        *db.Database
 	mdl       *models.Models
 	sessions  []*RunningSession
-	providers []sdkconnmgr.SessionProvider
+	providers []sdkconnmgr.ISessionProvider
 }
 
 func (self *SessionsMgr) ListenTraffic(trfk *network.TrafficMgr) {
@@ -114,7 +114,7 @@ func (self *SessionsMgr) StopSessions(ctx context.Context, iface string, reason 
 	<-done
 }
 
-func (self *SessionsMgr) Connect(ctx context.Context, clnt sdkconnmgr.ClientDevice, notify string) error {
+func (self *SessionsMgr) Connect(ctx context.Context, clnt sdkconnmgr.IClientDevice, notify string) error {
 	errCh := make(chan error)
 
 	go func() {
@@ -147,7 +147,7 @@ func (self *SessionsMgr) Connect(ctx context.Context, clnt sdkconnmgr.ClientDevi
 	return <-errCh
 }
 
-func (self *SessionsMgr) Disconnect(ctx context.Context, clnt sdkconnmgr.ClientDevice, notify string) error {
+func (self *SessionsMgr) Disconnect(ctx context.Context, clnt sdkconnmgr.IClientDevice, notify string) error {
 	err := self.endSession(ctx, clnt)
 	if err != nil {
 		return err
@@ -158,11 +158,11 @@ func (self *SessionsMgr) Disconnect(ctx context.Context, clnt sdkconnmgr.ClientD
 	return nil
 }
 
-func (self *SessionsMgr) IsConnected(clnt sdkconnmgr.ClientDevice) (connected bool) {
+func (self *SessionsMgr) IsConnected(clnt sdkconnmgr.IClientDevice) (connected bool) {
 	return nftables.IsConnected(clnt.MacAddr())
 }
 
-func (self *SessionsMgr) CurrSession(clnt sdkconnmgr.ClientDevice) (cs sdkconnmgr.ClientSession, ok bool) {
+func (self *SessionsMgr) CurrSession(clnt sdkconnmgr.IClientDevice) (cs sdkconnmgr.IClientSession, ok bool) {
 	self.mu.RLock()
 	defer self.mu.RUnlock()
 
@@ -175,7 +175,7 @@ func (self *SessionsMgr) CurrSession(clnt sdkconnmgr.ClientDevice) (cs sdkconnmg
 	return nil, false
 }
 
-func (self *SessionsMgr) loopSessions(clnt sdkconnmgr.ClientDevice) {
+func (self *SessionsMgr) loopSessions(clnt sdkconnmgr.IClientDevice) {
 	ctx := context.Background()
 
 	for nftables.IsConnected(clnt.MacAddr()) {
@@ -237,7 +237,7 @@ func (self *SessionsMgr) loopSessions(clnt sdkconnmgr.ClientDevice) {
 	}
 }
 
-func (self *SessionsMgr) getRunningSession(clnt sdkconnmgr.ClientDevice) (rs *RunningSession, ok bool) {
+func (self *SessionsMgr) getRunningSession(clnt sdkconnmgr.IClientDevice) (rs *RunningSession, ok bool) {
 	for _, rs := range self.sessions {
 		if rs.ClientId() == clnt.Id() {
 			return rs, true
@@ -246,7 +246,7 @@ func (self *SessionsMgr) getRunningSession(clnt sdkconnmgr.ClientDevice) (rs *Ru
 	return nil, false
 }
 
-func (self *SessionsMgr) endSession(ctx context.Context, clnt sdkconnmgr.ClientDevice) error {
+func (self *SessionsMgr) endSession(ctx context.Context, clnt sdkconnmgr.IClientDevice) error {
 	errCh := make(chan error)
 
 	go func() {
@@ -303,7 +303,7 @@ func (self *SessionsMgr) CreateSession(
 	return err
 }
 
-func (self *SessionsMgr) GetSession(ctx context.Context, clnt sdkconnmgr.ClientDevice) (sdkconnmgr.ClientSession, error) {
+func (self *SessionsMgr) GetSession(ctx context.Context, clnt sdkconnmgr.IClientDevice) (sdkconnmgr.IClientSession, error) {
 	self.mu.RLock()
 	defer self.mu.RUnlock()
 
@@ -328,7 +328,7 @@ func (self *SessionsMgr) GetSession(ctx context.Context, clnt sdkconnmgr.ClientD
 	return NewClientSession(localSrc), nil
 }
 
-func (self *SessionsMgr) RegisterSessionProvider(provider sdkconnmgr.SessionProvider) {
+func (self *SessionsMgr) RegisterSessionProvider(provider sdkconnmgr.ISessionProvider) {
 	self.mu.Lock()
 	defer self.mu.Unlock()
 	self.providers = append(self.providers, provider)

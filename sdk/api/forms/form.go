@@ -13,7 +13,7 @@ type FieldData struct {
 	Value interface{} `json:"value"`
 }
 
-type FormField interface {
+type IFormField interface {
 	GetName() string
 	GetLabel() string
 	GetType() string
@@ -22,7 +22,7 @@ type FormField interface {
 
 type FormSection struct {
 	Name   string
-	Fields []FormField
+	Fields []IFormField
 }
 
 type Form struct {

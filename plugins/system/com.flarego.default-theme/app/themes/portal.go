@@ -10,7 +10,7 @@ import (
 	"github.com/a-h/templ"
 )
 
-func SetPortalTheme(api sdkplugin.PluginApi) {
+func SetPortalTheme(api sdkplugin.IPluginApi) {
 
 	api.Themes().NewPortalTheme(sdkhttp.PortalThemeOpts{
 		JsFile:  "theme.js",
