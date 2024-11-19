@@ -8,14 +8,15 @@ package sdkconnmgr
 
 import (
 	"context"
-	"github.com/google/uuid"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 // ClientDevice represents a client device connected to the network.
 type ClientDevice interface {
 
 	// Returns the database id of the client device ID.
-	Id() uuid.UUID
+	Id() pgtype.UUID
 
 	// Returns the hostname of the device.
 	Hostname() string

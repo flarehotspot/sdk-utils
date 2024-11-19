@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"core/internal/config"
+	"core/internal/db/sqlc"
 	"core/internal/utils/pg"
 
 	sdkstr "github.com/flarehotspot/go-utils/strings"
@@ -16,8 +17,9 @@ import (
 )
 
 type Database struct {
-	mu sync.RWMutex
-	db *pgxpool.Pool
+	mu      sync.RWMutex
+	db      *pgxpool.Pool
+	Queries sqlc.Queries
 }
 
 func NewDatabase() (*Database, error) {
@@ -68,6 +70,7 @@ func NewDatabase() (*Database, error) {
 		return nil, err
 	}
 
+	db.Queries = *sqlc.New(pgPool)
 	db.db = pgPool
 	return &db, nil
 }
