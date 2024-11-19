@@ -22,3 +22,14 @@ WHERE
 LIMIT 
   1;
 
+
+-- name: UpdateWalletTrns :exec
+UPDATE
+  wallet_transactions 
+SET 
+  wallet_id = $1,
+  amount = $2,
+  new_balance = $3,
+  description = $4 
+WHERE 
+  id = $5;
