@@ -20,6 +20,7 @@ templ AdminLayout(api sdkplugin.PluginApi, data sdkhttp.AdminLayoutData) {
 			<main class="container">
 				@data.Layout.PageContent
 			</main>
+			<script src={ data.Layout.Assets.PolyfillJsSrc }></script>
 			<script src={ data.Layout.Assets.GlobalJsSrc }></script>
 			<script src={ data.Layout.Assets.ThemeJsSrc }></script>
 			<script src={ data.Layout.Assets.PageJsSrc }></script>
