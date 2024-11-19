@@ -9,7 +9,7 @@ package sdkconnmgr
 import (
 	"context"
 
-	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 // SessionsMgrApi is used to manage client devices.
@@ -28,7 +28,7 @@ type SessionsMgrApi interface {
 	// Create a session for the client device
 	CreateSession(
 		ctx context.Context,
-		devId uuid.UUID,
+		devId pgtype.UUID,
 		t uint8,
 		timeSecs uint,
 		dataMbytes float64,

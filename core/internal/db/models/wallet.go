@@ -7,15 +7,15 @@ import (
 
 	"core/internal/db"
 
-	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type Wallet struct {
 	db        *db.Database
 	models    *Models
-	id        uuid.UUID
-	deviceId  uuid.UUID
+	id        pgtype.UUID
+	deviceId  pgtype.UUID
 	balance   float64
 	createdAt time.Time
 }
@@ -27,11 +27,11 @@ func NewWallet(dtb *db.Database, m *Models) *Wallet {
 	}
 }
 
-func (self *Wallet) Id() uuid.UUID {
+func (self *Wallet) Id() pgtype.UUID {
 	return self.id
 }
 
-func (self *Wallet) DeviceId() uuid.UUID {
+func (self *Wallet) DeviceId() pgtype.UUID {
 	return self.deviceId
 }
 
@@ -55,7 +55,7 @@ func (self *Wallet) IncBalanceTx(tx pgx.Tx, ctx context.Context, bal float64) er
 }
 
 func (self *Wallet) UpdateTx(tx pgx.Tx, ctx context.Context, bal float64) error {
-	err := self.models.walletModel.UpdateTx(tx, ctx, self.id, bal)
+	err := self.models.walletModel.Update(ctx, self.id, bal)
 	if err != nil {
 		return err
 	}
@@ -64,7 +64,7 @@ func (self *Wallet) UpdateTx(tx pgx.Tx, ctx context.Context, bal float64) error 
 }
 
 func (self *Wallet) AvailableBalTx(tx pgx.Tx, ctx context.Context) (float64, error) {
-	pending, err := self.models.purchaseModel.PendingPurchaseTx(tx, ctx, self.deviceId)
+	pending, err := self.models.purchaseModel.PendingPurchase(ctx, self.deviceId)
 	if err != nil {
 		return 0, nil
 	}

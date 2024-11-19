@@ -2,13 +2,13 @@ package models
 
 import (
 	"context"
-	"fmt"
 	"log"
 
 	"core/internal/db"
+	"core/internal/db/sqlc"
+	"core/internal/utils/pg"
 
-	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type PaymentModel struct {
@@ -20,185 +20,81 @@ func NewPaymentModel(dtb *db.Database, mdls *Models) *PaymentModel {
 	return &PaymentModel{dtb, mdls}
 }
 
-func (self *PaymentModel) CreateTx(tx pgx.Tx, ctx context.Context, purid uuid.UUID, amt float64, mtd string) (*Payment, error) {
-	defer func() {
-		if err := tx.Rollback(ctx); err != nil && err != pgx.ErrTxClosed {
-			log.Printf("Rollback failed: %v", err)
-		}
-	}()
-
-	query := "INSERT INTO payments (purchase_id, amount, optname) VALUES($1, $2, $3) RETURNING id"
-
-	var lastInsertId int
-	err := tx.QueryRow(ctx, query, purid, amt, mtd).Scan(&lastInsertId)
+func (self *PaymentModel) Create(ctx context.Context, purid pgtype.UUID, amt float64, mtd string) (*Payment, error) {
+	pId, err := self.db.Queries.CreatePayment(ctx, sqlc.CreatePaymentParams{
+		PurchaseID: purid,
+		Amount:     pg.Float64ToNumeric(amt),
+		Optname:    mtd,
+	})
 	if err != nil {
-		log.Printf("SQL Execution failed: %v", err)
+		log.Println("error creating payment:", err)
 		return nil, err
 	}
 
-	if err := tx.Commit(ctx); err != nil {
-		log.Printf("SQL transaction commit failed: %v", err)
+	p, err := self.db.Queries.FindPayment(ctx, pId)
+	if err != nil {
+		log.Printf("error finding payemnt %v: %v", pId, err)
 		return nil, err
 	}
 
-	return self.FindTx(tx, ctx, int64(lastInsertId))
-}
-
-func (self *PaymentModel) FindTx(tx pgx.Tx, ctx context.Context, id int64) (*Payment, error) {
 	payment := NewPayment(self.db, self.models)
-
-	query := "SELECT id, purchase_id, amount, optname, created_at FROM payments WHERE id = $1 LIMIT 1"
-
-	err := tx.QueryRow(ctx, query, id).
-		Scan(&payment.id, &payment.purchaseId, &payment.amount, &payment.optname, &payment.createdAt)
-
-	if err != nil {
-		if err == pgx.ErrNoRows {
-			log.Printf("No payment found with id %d", id)
-			return nil, nil
-		}
-		log.Printf("Error finding payment with id %d: %v", id, err)
-		return nil, err
-	}
-
-	if err := tx.Commit(ctx); err != nil {
-		log.Printf("SQL transaction commit failed: %v", err)
-		return nil, err
-	}
+	payment.id = p.ID
+	payment.purchaseId = p.PurchaseID
+	payment.amount = pg.NumericToFloat64(p.Amount)
+	payment.optname = p.Optname
+	payment.createdAt = p.CreatedAt.Time
 
 	return payment, nil
 }
 
-func (self *PaymentModel) FindAllByPurchaseTx(tx pgx.Tx, ctx context.Context, purId uuid.UUID) ([]*Payment, error) {
+func (self *PaymentModel) Find(ctx context.Context, id pgtype.UUID) (*Payment, error) {
+	p, err := self.db.Queries.FindPayment(ctx, id)
+	if err != nil {
+		log.Printf("error finding payment %v: %v", id, err)
+		return nil, err
+	}
+
+	payment := NewPayment(self.db, self.models)
+	payment.id = p.ID
+	payment.purchaseId = p.PurchaseID
+	payment.amount = pg.NumericToFloat64(p.Amount)
+	payment.optname = p.Optname
+	payment.createdAt = p.CreatedAt.Time
+
+	return payment, nil
+}
+
+func (self *PaymentModel) FindAllByPurchase(ctx context.Context, purId pgtype.UUID) ([]*Payment, error) {
 	payments := []*Payment{}
 
-	query := "SELECT id, purchase_id, amount, optname, created_at FROM payments WHERE purchase_id = $1"
-
-	rows, err := tx.Query(ctx, query, purId)
+	pRows, err := self.db.Queries.FindAllPaymentsByPurchaseId(ctx, purId)
 	if err != nil {
-		return nil, fmt.Errorf("query exection failed: %w", err)
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		pmt := NewPayment(self.db, self.models)
-		err = rows.Scan(&pmt.id, &pmt.purchaseId, &pmt.amount, &pmt.optname, &pmt.createdAt)
-		if err != nil {
-			return nil, fmt.Errorf("row scan failed: %w", err)
-		}
-
-		payments = append(payments, pmt)
-	}
-
-	if rows.Err() != nil {
-		return nil, fmt.Errorf("row iteration error: %w", rows.Err())
-	}
-
-	if err := tx.Commit(ctx); err != nil {
-		log.Printf("SQL transaction commit failed: %v", err)
+		log.Printf("error finding payments by purchase id %v: %v", purId, err)
 		return nil, err
+	}
+
+	// Parse payments
+	for _, p := range pRows {
+		nP := NewPayment(self.db, self.models)
+		nP.id = p.ID
+		nP.purchaseId = p.PurchaseID
+		nP.amount = pg.NumericToFloat64(p.Amount)
+		nP.optname = p.Optname
+		nP.createdAt = p.CreatedAt.Time
+		payments = append(payments, nP)
 	}
 
 	return payments, nil
 }
 
-func (self *PaymentModel) UpdateTx(tx pgx.Tx, ctx context.Context, id uuid.UUID, amt float64) error {
-	query := "UPDATE payments SET amount = $1 WHERE id = $2 LIMIT 1"
-
-	cmdTag, err := tx.Exec(ctx, query, amt, id)
+func (self *PaymentModel) Update(ctx context.Context, id pgtype.UUID, amt float64, dbt *float64, txid *int64) error {
+	err := self.db.Queries.UpdatePayment(ctx, sqlc.UpdatePaymentParams{
+		Amount: pg.Float64ToNumeric(amt),
+		ID:     id,
+	})
 	if err != nil {
-		log.Printf("SQL Exec Error while updating payment ID %d: %v", id, err)
+		log.Printf("error updating payment %v: %v", id, err)
 		return err
-	}
-
-	if cmdTag.RowsAffected() == 0 {
-		log.Printf("No payment found with id %d; update operation skipped", id)
-		return fmt.Errorf("device with id %d not found", id)
-	}
-
-	if err := tx.Commit(ctx); err != nil {
-		return fmt.Errorf("could not commit transaction: %w", err)
-	}
-
-	log.Printf("Successfully updated device with id %d", id)
-	return nil
-}
-
-func (self *PaymentModel) Create(ctx context.Context, purid uuid.UUID, amt float64, mtd string) (*Payment, error) {
-	tx, err := self.db.SqlDB().Begin(ctx)
-	if err != nil {
-		return nil, err
-	}
-	defer func() {
-		if err != nil {
-			tx.Rollback(ctx)
-		}
-	}()
-
-	payment, err := self.CreateTx(tx, ctx, purid, amt, mtd)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create device: %w", err)
-	}
-
-	return payment, nil
-}
-
-func (self *PaymentModel) Find(ctx context.Context, id int64) (*Payment, error) {
-	tx, err := self.db.SqlDB().Begin(ctx)
-
-	if err != nil {
-		return nil, fmt.Errorf("could not begin transaction: %w", err)
-	}
-
-	defer func() {
-		if err != nil {
-			tx.Rollback(ctx)
-		}
-	}()
-
-	pmnt, err := self.FindTx(tx, ctx, id)
-	if err != nil {
-		return nil, fmt.Errorf("failed to find payment: %w", err)
-	}
-
-	return pmnt, nil
-}
-
-func (self *PaymentModel) FindAllByPurchase(ctx context.Context, purId uuid.UUID) ([]*Payment, error) {
-	tx, err := self.db.SqlDB().Begin(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("could not begin transaction: %w", err)
-	}
-
-	defer func() {
-		if err != nil {
-			tx.Rollback(ctx)
-		}
-	}()
-
-	payments, err := self.FindAllByPurchaseTx(tx, ctx, purId)
-	if err != nil {
-		return nil, fmt.Errorf("could not retrieve payments: %w", err)
-	}
-
-	return payments, nil
-}
-
-func (self *PaymentModel) Update(ctx context.Context, id uuid.UUID, amt float64, dbt *float64, txid *int64) error {
-	tx, err := self.db.SqlDB().Begin(ctx)
-	if err != nil {
-		return fmt.Errorf("count not begin transaction: %w", err)
-	}
-
-	defer func() {
-		if err != nil {
-			tx.Rollback(ctx)
-		}
-	}()
-
-	err = self.UpdateTx(tx, ctx, id, amt)
-	if err != nil {
-		return fmt.Errorf("could not update payment: %w", err)
 	}
 
 	return nil

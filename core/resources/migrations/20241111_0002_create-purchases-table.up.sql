@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS purchases (
     callback_vue_route_name VARCHAR(2048),
 
     wallet_debit DECIMAL(8, 2) NOT NULL DEFAULT 0.0,
-    wallet_tx_id INT DEFAULT NULL,
+    wallet_tx_id UUID DEFAULT NULL,
 
     confirmed_at TIMESTAMP NULL,
     cancelled_at TIMESTAMP NULL,
