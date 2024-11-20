@@ -190,32 +190,9 @@ func compileManifest(pluginDir string, manifest Manifest) (results CompileResult
 
 		var result api.BuildResult
 		if ext == ".js" {
-			result = api.Build(api.BuildOptions{
-				EntryPoints:       []string{indexFile},
-				Outfile:           outfile,
-				Platform:          api.PlatformBrowser,
-				Target:            api.ES5,
-				EntryNames:        "[name]-[hash]",
-				Sourcemap:         api.SourceMapLinked,
-				Bundle:            true,
-				AllowOverwrite:    true,
-				MinifyWhitespace:  true,
-				MinifyIdentifiers: true,
-				Write:             false,
-			})
+			result = EsbuildJs(indexFile, outfile)
 		} else if ext == ".css" {
-			result = api.Build(api.BuildOptions{
-				EntryPoints:       []string{indexFile},
-				Outfile:           outfile,
-				Loader:            map[string]api.Loader{".css": api.LoaderCSS},
-				EntryNames:        "[name]-[hash]",
-				Sourcemap:         api.SourceMapLinked,
-				Bundle:            true,
-				AllowOverwrite:    true,
-				MinifyWhitespace:  true,
-				MinifyIdentifiers: true,
-				Write:             false,
-			})
+			result = EsbuildCss(indexFile, outfile)
 		}
 
 		if len(result.Errors) > 0 {

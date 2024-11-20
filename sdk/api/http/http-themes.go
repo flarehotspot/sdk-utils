@@ -29,7 +29,6 @@ type FlashMsg struct {
 }
 
 type PageAssets struct {
-	PolyfillJsSrc string
 	GlobalJsSrc   string
 	GlobalCssHref string
 	ThemeJsSrc    string
