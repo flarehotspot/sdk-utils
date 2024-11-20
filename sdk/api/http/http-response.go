@@ -29,8 +29,8 @@ type ViewPage struct {
 	PageContent templ.Component
 }
 
-// HttpResponse is used to respond to http requests.
-type HttpResponse interface {
+// IHttpResponse is used to respond to http requests.
+type IHttpResponse interface {
 
 	// Used to render views from /resources/views/portal directory from your plugin.
 	// For example if you have a view in /resources/views/portal/payment/index.html,

@@ -12,7 +12,7 @@ var (
 	ErrNotBasicType = fmt.Errorf("field type is not a basic type, i.e. string, number, bool")
 )
 
-func ParseBasicValue(fld sdkforms.FormField, valstr string) (val interface{}, err error) {
+func ParseBasicValue(fld sdkforms.IFormField, valstr string) (val interface{}, err error) {
 	switch fld.GetType() {
 	case sdkforms.FormFieldTypeText:
 		val = valstr
@@ -32,7 +32,7 @@ func ParseBasicValue(fld sdkforms.FormField, valstr string) (val interface{}, er
 	return
 }
 
-func ParseListFieldValue(fld sdkforms.FormField, valstr []string) (val interface{}, err error) {
+func ParseListFieldValue(fld sdkforms.IFormField, valstr []string) (val interface{}, err error) {
 	listField, ok := fld.(sdkforms.ListField)
 	if !ok {
 		err = fmt.Errorf("field %s is not a list field", fld.GetName())
@@ -81,7 +81,7 @@ func ParseListFieldValue(fld sdkforms.FormField, valstr []string) (val interface
 	return
 }
 
-func ParseMultiFieldValue(sec sdkforms.FormSection, f sdkforms.FormField, form url.Values) (val [][]sdkforms.FieldData, err error) {
+func ParseMultiFieldValue(sec sdkforms.FormSection, f sdkforms.IFormField, form url.Values) (val [][]sdkforms.FieldData, err error) {
 	fld, ok := f.(sdkforms.MultiField)
 	if !ok {
 		err = errors.New(fmt.Sprintf("field %s in section %s is not a multi-field", f.GetName(), sec.Name))

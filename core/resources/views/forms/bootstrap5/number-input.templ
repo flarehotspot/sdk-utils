@@ -22,7 +22,7 @@ templ NumberInputField(attrs NumberInputFieldAttrs) {
 	}
 }
 
-func getNumberInputFieldAttrs(form sdkhttp.IHttpForm, sec sdkforms.FormSection, fld sdkforms.FormField) (attrs NumberInputFieldAttrs) {
+func getNumberInputFieldAttrs(form sdkhttp.IHttpForm, sec sdkforms.FormSection, fld sdkforms.IFormField) (attrs NumberInputFieldAttrs) {
 	attrs.Label = fld.GetLabel()
 	attrs.Name = fmt.Sprintf("%s:%s", sec.Name, fld.GetName())
 

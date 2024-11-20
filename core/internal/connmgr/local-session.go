@@ -14,7 +14,7 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-func NewLocalSession(dtb *db.Database, mdls *models.Models, s *models.Session) connmgr.SessionSource {
+func NewLocalSession(dtb *db.Database, mdls *models.Models, s *models.Session) connmgr.ISessionSource {
 	ls := &LocalSession{db: dtb, mdls: mdls}
 	ls.load(s)
 	return ls

@@ -10,8 +10,8 @@ import (
 func GetThemeForm(g *plugins.CoreGlobals) (form sdkforms.Form, err error) {
 
 	allPlugins := g.PluginMgr.All()
-	adminThemes := []sdkplugin.PluginApi{}
-	portalThemes := []sdkplugin.PluginApi{}
+	adminThemes := []sdkplugin.IPluginApi{}
+	portalThemes := []sdkplugin.IPluginApi{}
 
 	cfg, err := config.ReadThemesConfig()
 	if err != nil {
@@ -139,7 +139,7 @@ func GetThemeForm(g *plugins.CoreGlobals) (form sdkforms.Form, err error) {
 		Sections: []sdkforms.FormSection{
 			{
 				Name: "themes",
-				Fields: []sdkforms.FormField{
+				Fields: []sdkforms.IFormField{
 					portalThemesField,
 					adminThemesField,
 					multiField,

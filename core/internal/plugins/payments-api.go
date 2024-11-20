@@ -22,7 +22,7 @@ type PaymentsApi struct {
 	paymentsMgr *PaymentsMgr
 }
 
-func (self *PaymentsApi) NewPaymentProvider(provider sdkpayments.PaymentProvider) {
+func (self *PaymentsApi) NewPaymentProvider(provider sdkpayments.IPaymentProvider) {
 	log.Println("Registering payment method:", provider.Name())
 	self.paymentsMgr.NewPaymentProvider(self.api, provider)
 }
@@ -61,7 +61,7 @@ func (self *PaymentsApi) Checkout(w http.ResponseWriter, r *http.Request, p sdkp
 	purMw(http.HandlerFunc(handler)).ServeHTTP(w, r)
 }
 
-func (self *PaymentsApi) GetPendingPurchase(r *http.Request) (sdkpayments.Purchase, error) {
+func (self *PaymentsApi) GetPendingPurchase(r *http.Request) (sdkpayments.IPurchase, error) {
 	mdls := self.api.models
 	clnt, err := helpers.CurrentClient(self.api.ClntReg, r)
 	if err != nil {

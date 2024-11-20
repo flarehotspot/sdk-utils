@@ -22,7 +22,7 @@ type HttpAuth struct {
 	api *PluginApi
 }
 
-func (self *HttpAuth) CurrentAcct(r *http.Request) (sdkacct.Account, error) {
+func (self *HttpAuth) CurrentAcct(r *http.Request) (sdkacct.IAccount, error) {
 	return helpers.CurrentAcct(r)
 }
 
@@ -31,7 +31,7 @@ func (self *HttpAuth) IsAuthenticated(r *http.Request) bool {
 	return err == nil
 }
 
-func (self *HttpAuth) Authenticate(username string, password string) (sdkacct.Account, error) {
+func (self *HttpAuth) Authenticate(username string, password string) (sdkacct.IAccount, error) {
 	acct, err := webutil.AuthenticateAdmin(username, password)
 	if err != nil {
 		err = errors.New(self.api.CoreAPI.Utl.Translate("error", "invalid_login"))
@@ -41,7 +41,7 @@ func (self *HttpAuth) Authenticate(username string, password string) (sdkacct.Ac
 	return acct, nil
 }
 
-func (self *HttpAuth) SignIn(w http.ResponseWriter, acct sdkacct.Account) error {
+func (self *HttpAuth) SignIn(w http.ResponseWriter, acct sdkacct.IAccount) error {
 	appcfg, err := config.ReadApplicationConfig()
 	if err != nil {
 		return err

@@ -11,9 +11,9 @@ import (
 	"net/http"
 )
 
-// HttpHelpers are methods available in html templates as .Helpers.
+// IHttpHelpers are methods available in html templates as .Helpers.
 // For example, to use the Translate() method in html templates, use <% .Helpers.Translate "label" "network_settings" %>.
-type HttpHelpers interface {
+type IHttpHelpers interface {
 
 	// Returns the uri of a file defined in asset manifest
 	AssetPath(path string) (uri string)

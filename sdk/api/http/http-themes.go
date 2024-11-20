@@ -16,7 +16,7 @@ const (
 	CssLibBootstrap5 CssLib = "bootstrap5"
 )
 
-type HttpThemesApi interface {
+type IHttpThemesApi interface {
 	NewAdminTheme(AdminThemeOpts)
 	NewPortalTheme(PortalThemeOpts)
 }

@@ -6,7 +6,7 @@ import (
 	"sdk/api/http"
 )
 
-templ MultiInputField(form sdkhttp.IHttpForm, sec sdkforms.FormSection, fld sdkforms.FormField) {
+templ MultiInputField(form sdkhttp.IHttpForm, sec sdkforms.FormSection, fld sdkforms.IFormField) {
 	<legend>{ fld.GetLabel() }</legend>
 	{{ mfval, err := form.GetMultiField(sec.Name, fld.GetName()) }}
 	if err != nil {
@@ -74,10 +74,10 @@ templ multiFieldCol(sec sdkforms.FormSection, fld sdkforms.MultiField, mfval sdk
 					{{ val, err = mfval.GetBoolValue(row, col.Name) }}
 				}
 				<!-- <input type="text" class="form-control" name={ colName } placeholder={ col.Label } aria-label={ col.Label } value={ fmt.Sprintf("%.2f", val) }/> -->
-                <select class="form-control" name={ colName }>
-                    <option value="true" selected?={ val }>Yes</option>
-                    <option value="false" selected?={ !val }>No</option>
-                </select>
+				<select class="form-control" name={ colName }>
+					<option value="true" selected?={ val }>Yes</option>
+					<option value="false" selected?={ !val }>No</option>
+				</select>
 				if err != nil {
 					<p class="text text-danger text-small">{ fmt.Sprintf("unable to get number value from field %s, column %s: %+v", fld.Name, col.Name, err) }</p>
 				}
@@ -87,6 +87,6 @@ templ multiFieldCol(sec sdkforms.FormSection, fld sdkforms.MultiField, mfval sdk
 	</div>
 }
 
-func mfColName(sec sdkforms.FormSection, fld sdkforms.FormField, col sdkforms.MultiFieldCol) string {
+func mfColName(sec sdkforms.FormSection, fld sdkforms.IFormField, col sdkforms.MultiFieldCol) string {
 	return sec.Name + ":" + fld.GetName() + ":" + col.Name
 }

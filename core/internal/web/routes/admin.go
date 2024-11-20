@@ -24,13 +24,13 @@ func AdminRoutes(g *plugins.CoreGlobals) {
 	rootR.Handle("/login", adminLoginCtrl).Methods("GET").Name("admin:login")
 	rootR.Handle("/login", adminAuthCtrl).Methods("POST").Name("admin:authenticate")
 
-	adminR.Group("/forms", func(subrouter sdkhttp.HttpRouterInstance) {
+	adminR.Group("/forms", func(subrouter sdkhttp.IHttpRouterInstance) {
 		subrouter.Post("/save", adminFormsCtrl.SaveForm).Queries("pkg", "{pkg}", "name", "{name}").Name("admin:forms:save")
 	})
 
 	adminR.Get("/events", adminSseCtrl).Name("admin:sse")
 
-	adminR.Group("/themes", func(subrouter sdkhttp.HttpRouterInstance) {
+	adminR.Group("/themes", func(subrouter sdkhttp.IHttpRouterInstance) {
 		subrouter.Get("/index", adminctrl.GetAvailableThemes(g)).Name("admin:themes:index")
 		subrouter.Get("/save", adminctrl.SaveThemeSettings(g)).Name("admin:themes:save")
 	})
