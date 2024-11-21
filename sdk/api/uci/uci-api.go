@@ -8,9 +8,9 @@ package sdkuci
 
 import "github.com/digineo/go-uci"
 
-type UciApi interface {
+type IUciApi interface {
 	Uci() uci.Tree
-	Network() NetworkApi
-	Dhcp() DhcpApi
-	Wireless() WirelessApi
+	Network() INetworkApi
+	Dhcp() IDhcpApi
+	Wireless() IWirelessApi
 }

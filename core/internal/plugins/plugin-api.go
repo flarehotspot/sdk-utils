@@ -141,47 +141,47 @@ func (self *PluginApi) Acct() sdkacct.AccountsApi {
 	return self.AcctAPI
 }
 
-func (self *PluginApi) Http() sdkhttp.HttpApi {
+func (self *PluginApi) Http() sdkhttp.IHttpApi {
 	return self.HttpAPI
 }
 
-func (self *PluginApi) Config() sdkcfg.ConfigApi {
+func (self *PluginApi) Config() sdkcfg.IConfigApi {
 	return self.ConfigAPI
 }
 
-func (self *PluginApi) Payments() sdkpayments.PaymentsApi {
+func (self *PluginApi) Payments() sdkpayments.IPaymentsApi {
 	return self.PaymentsAPI
 }
 
-func (self *PluginApi) Ads() sdkads.AdsApi {
+func (self *PluginApi) Ads() sdkads.IAdsApi {
 	return self.AdsAPI
 }
 
-func (self *PluginApi) InAppPurchases() sdkinappur.InAppPurchasesApi {
+func (self *PluginApi) InAppPurchases() sdkinappur.IInAppPurchasesApi {
 	return self.InAppPurchaseAPI
 }
 
-func (self *PluginApi) PluginsMgr() sdkplugin.PluginsMgrApi {
+func (self *PluginApi) PluginsMgr() sdkplugin.IPluginsMgrApi {
 	return self.PluginsMgrApi
 }
 
-func (self *PluginApi) Network() sdknet.NetworkApi {
+func (self *PluginApi) Network() sdknet.INetworkApi {
 	return self.NetworkAPI
 }
 
-func (self *PluginApi) DeviceHooks() sdkconnmgr.DeviceHooksApi {
+func (self *PluginApi) DeviceHooks() sdkconnmgr.IDeviceHooksApi {
 	return self.ClntReg
 }
 
-func (self *PluginApi) SessionsMgr() sdkconnmgr.SessionsMgrApi {
+func (self *PluginApi) SessionsMgr() sdkconnmgr.ISessionsMgrApi {
 	return self.ClntMgr
 }
 
-func (self *PluginApi) Uci() sdkuci.UciApi {
+func (self *PluginApi) Uci() sdkuci.IUciApi {
 	return self.UciAPI
 }
 
-func (self *PluginApi) Themes() sdkhttp.HttpThemesApi {
+func (self *PluginApi) Themes() sdkhttp.IHttpThemesApi {
 	return self.ThemesAPI
 }
 
@@ -196,7 +196,7 @@ func (self *PluginApi) Features() []string {
 	return features
 }
 
-func (self *PluginApi) Logger() sdklogger.LoggerApi {
+func (self *PluginApi) Logger() sdklogger.ILoggerApi {
 	return self.LoggerAPI
 }
 

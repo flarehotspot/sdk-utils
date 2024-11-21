@@ -7,13 +7,15 @@ import (
 	"github.com/a-h/templ"
 )
 
-type HttpFormApi interface {
+type IHttpFormApi interface {
 	RegisterHttpForms(forms ...sdkforms.Form) (err error)
 	GetForm(name string) (form IHttpForm, err error)
 }
 
 type IHttpForm interface {
 	Template(r *http.Request) templ.Component
+
+	JsonData() (sdkforms.JsonData, error)
 
 	GetSections() []sdkforms.FormSection
 

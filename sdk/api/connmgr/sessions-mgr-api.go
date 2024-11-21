@@ -12,18 +12,18 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-// SessionsMgrApi is used to manage client devices.
-type SessionsMgrApi interface {
+// ISessionsMgrApi is used to manage client devices.
+type ISessionsMgrApi interface {
 
 	// Connects a client device to the internet.
-	Connect(ctx context.Context, clnt ClientDevice, notify string) error
+	Connect(ctx context.Context, clnt IClientDevice, notify string) error
 
 	// Disconnects a client device from the internet.
 	// If notify is not nil, then the client device will be notified of the disconnection.
-	Disconnect(ctx context.Context, clnt ClientDevice, notify string) error
+	Disconnect(ctx context.Context, clnt IClientDevice, notify string) error
 
 	// Checks if a client device is connected to the internet.
-	IsConnected(clnt ClientDevice) (connected bool)
+	IsConnected(clnt IClientDevice) (connected bool)
 
 	// Create a session for the client device
 	CreateSession(
@@ -39,11 +39,11 @@ type SessionsMgrApi interface {
 	) error
 
 	// Get the current running session of a client device.
-	CurrSession(clnt ClientDevice) (cs ClientSession, ok bool)
+	CurrSession(clnt IClientDevice) (cs IClientSession, ok bool)
 
 	// Returns unconsumed session (if any) for the client device.
-	GetSession(ctx context.Context, clnt ClientDevice) (ClientSession, error)
+	GetSession(ctx context.Context, clnt IClientDevice) (IClientSession, error)
 
 	// Register a hook to find a session for a client device.
-	RegisterSessionProvider(SessionProvider)
+	RegisterSessionProvider(ISessionProvider)
 }

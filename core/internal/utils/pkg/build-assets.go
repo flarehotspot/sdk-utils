@@ -59,17 +59,10 @@ func BuildAssets(pluginDir string) (err error) {
 		return
 	}
 
-	// link core js libs
-	libSrc := filepath.Join(sdkpaths.CoreDir, "resources/assets/lib")
-	libDest := filepath.Join(pluginDir, "node_modules/@flarehotspot/lib")
-	if !sdkfs.Exists(libDest) {
-		if err = sdkfs.EnsureDir(filepath.Dir(libDest)); err != nil {
-			return
-		}
-		if err = os.Symlink(libSrc, libDest); err != nil {
-			return
-		}
+	if err = LinkNodeModulesLib(pluginDir); err != nil {
+		return
 	}
+
 	defer os.RemoveAll(filepath.Join(pluginDir, "node_modules"))
 
 	outManifest := OutputManifest{}
@@ -82,7 +75,7 @@ func BuildAssets(pluginDir string) (err error) {
 		}
 		fmt.Printf("Compiling assets manifest: %+v\n", manifest)
 
-		if results, err := compileManifest(pluginDir, manifest); err != nil {
+		if results, err := compileManifest(pluginDir, manifest, api.ES2017); err != nil {
 			return err
 		} else {
 			outManifest.AdminAssets = results
@@ -97,7 +90,7 @@ func BuildAssets(pluginDir string) (err error) {
 		}
 		fmt.Printf("Compiling assets manifest: %+v\n", manifest)
 
-		if results, err := compileManifest(pluginDir, manifest); err != nil {
+		if results, err := compileManifest(pluginDir, manifest, api.ES5); err != nil {
 			return err
 		} else {
 			outManifest.PortalAssets = results
@@ -116,7 +109,7 @@ func BuildAssets(pluginDir string) (err error) {
 	return nil
 }
 
-func compileManifest(pluginDir string, manifest Manifest) (results CompileResults, err error) {
+func compileManifest(pluginDir string, manifest Manifest, target api.Target) (results CompileResults, err error) {
 	results = CompileResults{
 		Scripts: make(map[string]string),
 		Styles:  make(map[string]string),
@@ -190,7 +183,7 @@ func compileManifest(pluginDir string, manifest Manifest) (results CompileResult
 
 		var result api.BuildResult
 		if ext == ".js" {
-			result = EsbuildJs(indexFile, outfile)
+			result = EsbuildJs(indexFile, outfile, target)
 		} else if ext == ".css" {
 			result = EsbuildCss(indexFile, outfile)
 		}
@@ -216,9 +209,11 @@ func compileManifest(pluginDir string, manifest Manifest) (results CompileResult
 			}
 			if filepath.Ext(out.Path) == ext {
 				fileIndex := filepath.Join(strings.TrimPrefix(ext, "."), f)
-				if ext == ".js" {
+
+				switch filepath.Ext(out.Path) {
+				case ".js":
 					results.Scripts[filename] = fileIndex
-				} else if ext == ".css" {
+				case ".css":
 					results.Styles[filename] = fileIndex
 				}
 			}

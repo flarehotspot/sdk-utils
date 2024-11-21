@@ -12,31 +12,31 @@ import (
 	sdkconnmgr "sdk/api/connmgr"
 )
 
-// HttpApi is used to process and respond to http requests.
-type HttpApi interface {
+// IHttpApi is used to process and respond to http requests.
+type IHttpApi interface {
 
 	// Returns the auth API.
-	Auth() HttpAuth
+	Auth() IHttpAuth
 
 	// Returns helper methods for views and handlers.
-	Helpers() HttpHelpers
+	Helpers() IHttpHelpers
 
-	Forms() HttpFormApi
+	Forms() IHttpFormApi
 
 	// Returns the built in http middlewares
-	Middlewares() HttpMiddlewares
+	Middlewares() IHttpMiddlewares
 
 	// Returns the router API.
-	HttpRouter() HttpRouterApi
+	HttpRouter() IHttpRouterApi
 
 	// Returns the http response writer API.
-	HttpResponse() HttpResponse
+	HttpResponse() IHttpResponse
 
 	// Returns the navs API.
-	Navs() NavsApi
+	Navs() INavpsApi
 
 	// Returns the current client device from http request.
-	GetClientDevice(r *http.Request) (clnt sdkconnmgr.ClientDevice, err error)
+	GetClientDevice(r *http.Request) (clnt sdkconnmgr.IClientDevice, err error)
 
 	// Returns the http variables in your routes. For example, if your route path is "/some/path/{varname}",
 	// then you can get the value of "varname" by calling GetMuxVars(r)["varname"].

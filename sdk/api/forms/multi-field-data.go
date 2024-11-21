@@ -3,6 +3,7 @@ package sdkforms
 import (
 	"errors"
 	"fmt"
+	"reflect"
 )
 
 type MultiFieldData struct {
@@ -36,10 +37,27 @@ func (f MultiFieldData) GetStringValue(row int, name string) (val string, err er
 
 	val, ok := v.(string)
 	if !ok {
-		return "", errors.New(fmt.Sprintf("field %s in row %d in multi-field is not a string", name, row))
+		return "", errors.New(fmt.Sprintf("field %s in row %d in multi-field is not a string, instead %T", name, row, v))
 	}
 
 	return val, nil
+}
+
+func (f MultiFieldData) GetIntValue(row int, name string) (val int, err error) {
+	v, err := f.GetValue(row, name)
+	if err != nil {
+		return 0, err
+	}
+
+	t := reflect.TypeOf(v)
+	switch t.Kind() {
+	case reflect.Float64:
+		return int(v.(float64)), nil
+	case reflect.Int:
+		return v.(int), nil
+	default:
+		return 0, nil
+	}
 }
 
 func (f MultiFieldData) GetFloatValue(row int, name string) (val float64, err error) {
@@ -48,12 +66,15 @@ func (f MultiFieldData) GetFloatValue(row int, name string) (val float64, err er
 		return 0, err
 	}
 
-	val, ok := v.(float64)
-	if !ok {
-		return 0, errors.New(fmt.Sprintf("field %s in row %d in multi-field is not float64", name, row))
+	t := reflect.TypeOf(v)
+	switch t.Kind() {
+	case reflect.Float64:
+		return v.(float64), nil
+	case reflect.Int:
+		return float64(v.(int)), nil
+	default:
+		return 0, nil
 	}
-
-	return val, nil
 }
 
 func (f MultiFieldData) GetBoolValue(row int, name string) (val bool, err error) {

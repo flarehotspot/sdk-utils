@@ -34,11 +34,11 @@ func (self *HttpRouterApi) Initialize() {
 	self.adminRouter.Use(self.api.HttpAPI.middlewares.AdminAuth())
 }
 
-func (self *HttpRouterApi) AdminRouter() sdkhttp.HttpRouterInstance {
+func (self *HttpRouterApi) AdminRouter() sdkhttp.IHttpRouterInstance {
 	return self.adminRouter
 }
 
-func (self *HttpRouterApi) PluginRouter() sdkhttp.HttpRouterInstance {
+func (self *HttpRouterApi) PluginRouter() sdkhttp.IHttpRouterInstance {
 	return self.pluginRouter
 }
 

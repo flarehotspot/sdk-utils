@@ -20,7 +20,11 @@ func NewDeviceModel(database *db.Database, mdls *Models) *DeviceModel {
 }
 
 func (self *DeviceModel) Create(ctx context.Context, mac string, ip string, hostname string) (*Device, error) {
-	dId, err := self.db.Queries.CreateDevice(ctx, sqlc.CreateDeviceParams{})
+	dId, err := self.db.Queries.CreateDevice(ctx, sqlc.CreateDeviceParams{
+		MacAddress: mac,
+		IpAddress:  ip,
+		Hostname:   pgtype.Text{String: hostname},
+	})
 	if err != nil {
 		log.Println("error creating new device:", err)
 		return nil, err

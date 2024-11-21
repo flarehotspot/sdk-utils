@@ -8,8 +8,8 @@ package sdkhttp
 
 import "net/http"
 
-// HttpMiddlewares contains http middlewares for admin authentication, mobile device details, etc.
-type HttpMiddlewares interface {
+// IHttpMiddlewares contains http middlewares for admin authentication, mobile device details, etc.
+type IHttpMiddlewares interface {
 	// Returns the middleware for admin authentication.
 	AdminAuth() func(next http.Handler) http.Handler
 

@@ -3,6 +3,7 @@ package sdkforms
 type IMultiField interface {
 	NumRows() int
 	GetStringValue(row int, name string) (string, error)
+	GetIntValue(row int, name string) (int, error)
 	GetFloatValue(row int, name string) (float64, error)
 	GetBoolValue(row int, name string) (bool, error)
 }

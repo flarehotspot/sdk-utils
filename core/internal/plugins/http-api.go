@@ -48,31 +48,31 @@ func (self *HttpApi) Initialize() {
 	self.httpRouter.Initialize()
 }
 
-func (self *HttpApi) GetClientDevice(r *http.Request) (sdkconnmgr.ClientDevice, error) {
+func (self *HttpApi) GetClientDevice(r *http.Request) (sdkconnmgr.IClientDevice, error) {
 	return helpers.CurrentClient(self.api.ClntReg, r)
 }
 
-func (self *HttpApi) Auth() sdkhttp.HttpAuth {
+func (self *HttpApi) Auth() sdkhttp.IHttpAuth {
 	return self.auth
 }
 
-func (self *HttpApi) HttpRouter() sdkhttp.HttpRouterApi {
+func (self *HttpApi) HttpRouter() sdkhttp.IHttpRouterApi {
 	return self.httpRouter
 }
 
-func (self *HttpApi) Forms() sdkhttp.HttpFormApi {
+func (self *HttpApi) Forms() sdkhttp.IHttpFormApi {
 	return self.formsApi
 }
 
-func (self *HttpApi) Helpers() sdkhttp.HttpHelpers {
+func (self *HttpApi) Helpers() sdkhttp.IHttpHelpers {
 	return NewHttpHelpers(self.api)
 }
 
-func (self *HttpApi) Middlewares() sdkhttp.HttpMiddlewares {
+func (self *HttpApi) Middlewares() sdkhttp.IHttpMiddlewares {
 	return self.middlewares
 }
 
-func (self *HttpApi) HttpResponse() sdkhttp.HttpResponse {
+func (self *HttpApi) HttpResponse() sdkhttp.IHttpResponse {
 	return self.httpResp
 }
 
@@ -80,6 +80,6 @@ func (self *HttpApi) MuxVars(r *http.Request) map[string]string {
 	return mux.Vars(r)
 }
 
-func (self *HttpApi) Navs() sdkhttp.NavsApi {
+func (self *HttpApi) Navs() sdkhttp.INavpsApi {
 	return self.navsApi
 }

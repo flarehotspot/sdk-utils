@@ -10,7 +10,7 @@ import (
 	"reflect"
 )
 
-templ ListInputField(form sdkhttp.IHttpForm, sec sdkforms.FormSection, fld sdkforms.FormField) {
+templ ListInputField(form sdkhttp.IHttpForm, sec sdkforms.FormSection, fld sdkforms.IFormField) {
 	{{ lf, ok := fld.(sdkforms.ListField) }}
 	if ok {
 		@listOptionFields(form, sec, lf)
@@ -66,7 +66,7 @@ func isListOptSelected(form sdkhttp.IHttpForm, sec sdkforms.FormSection, lf sdkf
 			}
 			return val == v
 		}
-	case sdkforms.FormFieldTypeNumber:
+	case sdkforms.FormFieldTypeDecimal:
 		var v float64
 		k := reflect.TypeOf(opt.Value).Kind()
 
@@ -105,7 +105,7 @@ func parseListOptValue(lf sdkforms.ListField, opt sdkforms.ListOption) (val stri
 			return ""
 		}
 		return v
-	case sdkforms.FormFieldTypeNumber:
+	case sdkforms.FormFieldTypeDecimal:
 		t := reflect.TypeOf(opt.Value)
 		switch t.Kind() {
 		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32:
@@ -118,11 +118,11 @@ func parseListOptValue(lf sdkforms.ListField, opt sdkforms.ListOption) (val stri
 	}
 	return
 }
-func getListInputField(fld sdkforms.FormField) (lf sdkforms.ListField) {
+func getListInputField(fld sdkforms.IFormField) (lf sdkforms.ListField) {
 	lf, _ = fld.(sdkforms.ListField)
 	return lf
 }
-func getListFieldInputType(fld sdkforms.FormField) string {
+func getListFieldInputType(fld sdkforms.IFormField) string {
 	listField, ok := fld.(sdkforms.ListField)
 	if !ok {
 		return "not a list field"

@@ -14,7 +14,7 @@ const (
 	RoutePayments    = "save.settings"
 )
 
-func SetupRoutes(api sdkplugin.PluginApi) {
+func SetupRoutes(api sdkplugin.IPluginApi) {
 	// pluginRouter := api.Http().HttpRouter().PluginRouter()
 	adminRouter := api.Http().HttpRouter().AdminRouter()
 	// pluginRouter.Get("/test", controllers.IndexCtrl(api)).Name("index")

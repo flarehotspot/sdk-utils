@@ -12,8 +12,8 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-// ClientDevice represents a client device connected to the network.
-type ClientDevice interface {
+// IClientDevice represents a client device connected to the network.
+type IClientDevice interface {
 
 	// Returns the database id of the client device ID.
 	Id() pgtype.UUID

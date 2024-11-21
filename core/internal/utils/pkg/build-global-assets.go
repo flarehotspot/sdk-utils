@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/evanw/esbuild/pkg/api"
 	sdkfs "github.com/flarehotspot/go-utils/fs"
 	sdkpaths "github.com/flarehotspot/go-utils/paths"
 )
@@ -49,7 +50,7 @@ func BuildGlobalAssets() (err error) {
 			return
 		}
 
-		if resultFile, err = compileGlobalJsAssets(manifest.Js); err != nil {
+		if resultFile, err = compileGlobalJsAssets(manifest.Js, api.ES2017); err != nil {
 			return
 		}
 		bundleFile.AdminJsFile = resultFile
@@ -67,7 +68,7 @@ func BuildGlobalAssets() (err error) {
 			return
 		}
 
-		if resultFile, err = compileGlobalJsAssets(manifest.Js); err != nil {
+		if resultFile, err = compileGlobalJsAssets(manifest.Js, api.ES5); err != nil {
 			return
 		}
 		bundleFile.PortalJsFile = resultFile
@@ -85,7 +86,7 @@ func BuildGlobalAssets() (err error) {
 	return
 }
 
-func compileGlobalJsAssets(jsfiles []string) (resultFile string, err error) {
+func compileGlobalJsAssets(jsfiles []string, target api.Target) (resultFile string, err error) {
 	distPath := filepath.Join(CoreGlobalsDist, "js")
 	if err = sdkfs.EnsureDir(distPath); err != nil {
 		return
@@ -109,7 +110,7 @@ func compileGlobalJsAssets(jsfiles []string) (resultFile string, err error) {
 	defer os.Remove(indexFile)
 
 	outfile := filepath.Join(distPath, "globals.js")
-	result := EsbuildJs(indexFile, outfile)
+	result := EsbuildJs(indexFile, outfile, target)
 
 	if len(result.Errors) > 0 {
 		err = fmt.Errorf("failed to compile global js file: %v", result.Errors)

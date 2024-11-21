@@ -1,20 +1,24 @@
 package pkg
 
-import "github.com/evanw/esbuild/pkg/api"
+import (
+	"core/env"
 
-func EsbuildJs(indexfile string, outfile string) (resulti api.BuildResult) {
+	"github.com/evanw/esbuild/pkg/api"
+)
 
+func EsbuildJs(indexfile string, outfile string, target api.Target) (resulti api.BuildResult) {
+	minify := env.GO_ENV == env.ENV_PRODUCTION
 	result := api.Build(api.BuildOptions{
 		EntryPoints:       []string{indexfile},
 		Outfile:           outfile,
 		Platform:          api.PlatformBrowser,
-		Target:            api.ES2017,
+		Target:            target,
 		EntryNames:        "[name]-[hash]",
 		Sourcemap:         api.SourceMapLinked,
 		Bundle:            true,
 		AllowOverwrite:    true,
-		MinifyWhitespace:  true,
-		MinifyIdentifiers: true,
+		MinifyWhitespace:  minify,
+		MinifyIdentifiers: minify,
 		Write:             false,
 	})
 
@@ -22,17 +26,28 @@ func EsbuildJs(indexfile string, outfile string) (resulti api.BuildResult) {
 }
 
 func EsbuildCss(indexfile string, outfile string) (result api.BuildResult) {
-
+	minify := env.GO_ENV == env.ENV_PRODUCTION
 	result = api.Build(api.BuildOptions{
-		EntryPoints:       []string{indexfile},
-		Outfile:           outfile,
-		Loader:            map[string]api.Loader{".css": api.LoaderCSS},
+		EntryPoints: []string{indexfile},
+		Outfile:     outfile,
+		Loader: map[string]api.Loader{
+			".css":   api.LoaderCSS,
+			".eot":   api.LoaderFile,
+			".ttf":   api.LoaderFile,
+			".woff":  api.LoaderFile,
+			".woff2": api.LoaderFile,
+			".svg":   api.LoaderFile,
+			".jpg":   api.LoaderFile,
+			".jpeg":  api.LoaderFile,
+			".png":   api.LoaderFile,
+			".gif":   api.LoaderFile,
+		},
 		EntryNames:        "[name]-[hash]",
 		Sourcemap:         api.SourceMapLinked,
 		Bundle:            true,
 		AllowOverwrite:    true,
-		MinifyWhitespace:  true,
-		MinifyIdentifiers: true,
+		MinifyWhitespace:  minify,
+		MinifyIdentifiers: minify,
 		Write:             false,
 	})
 
