@@ -13,6 +13,9 @@ templ AdminLayout(api sdkplugin.IPluginApi, data sdkhttp.AdminLayoutData) {
 			<link rel="stylesheet" href={ data.Layout.Assets.GlobalCssHref }/>
 			<link rel="stylesheet" href={ data.Layout.Assets.ThemeCssHref }/>
 			<link rel="stylesheet" href={ data.Layout.Assets.PageCssHref }/>
+			<script src={ data.Layout.Assets.GlobalJsSrc }></script>
+			<script src={ data.Layout.Assets.ThemeJsSrc }></script>
+			<script src={ data.Layout.Assets.PageJsSrc }></script>
 		</head>
 		<body>
 			@colorSchemeToggle()
@@ -20,10 +23,6 @@ templ AdminLayout(api sdkplugin.IPluginApi, data sdkhttp.AdminLayoutData) {
 			<main class="container">
 				@data.Layout.PageContent
 			</main>
-			<script src={ data.Layout.Assets.PolyfillJsSrc }></script>
-			<script src={ data.Layout.Assets.GlobalJsSrc }></script>
-			<script src={ data.Layout.Assets.ThemeJsSrc }></script>
-			<script src={ data.Layout.Assets.PageJsSrc }></script>
 		</body>
 	</html>
 }

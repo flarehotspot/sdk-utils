@@ -15,6 +15,8 @@ type IHttpFormApi interface {
 type IHttpForm interface {
 	Template(r *http.Request) templ.Component
 
+	JsonData() (sdkforms.JsonData, error)
+
 	GetSections() []sdkforms.FormSection
 
 	GetStringValue(section string, name string) (string, error)

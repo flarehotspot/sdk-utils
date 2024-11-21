@@ -66,7 +66,7 @@ func isListOptSelected(form sdkhttp.IHttpForm, sec sdkforms.FormSection, lf sdkf
 			}
 			return val == v
 		}
-	case sdkforms.FormFieldTypeNumber:
+	case sdkforms.FormFieldTypeDecimal:
 		var v float64
 		k := reflect.TypeOf(opt.Value).Kind()
 
@@ -105,7 +105,7 @@ func parseListOptValue(lf sdkforms.ListField, opt sdkforms.ListOption) (val stri
 			return ""
 		}
 		return v
-	case sdkforms.FormFieldTypeNumber:
+	case sdkforms.FormFieldTypeDecimal:
 		t := reflect.TypeOf(opt.Value)
 		switch t.Kind() {
 		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32:

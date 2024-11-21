@@ -1,11 +1,6 @@
 {
   "globals.js": [
-    "./lib/vendor/jquery-1.12.4.min.js"
   ],
-  "app.js": [
-    "./portal/test.js"
-  ],
-  "app.css": [
-    "./portal/test.css"
-  ]
+  "app.js": [],
+  "app.css": []
 }

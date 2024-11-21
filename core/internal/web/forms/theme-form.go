@@ -78,20 +78,26 @@ func GetThemeForm(g *plugins.CoreGlobals) (form sdkforms.Form, err error) {
 				},
 				{
 					Name:       "col2",
-					Label:      "Column 2 (number)",
-					Type:       sdkforms.FormFieldTypeNumber,
-					DefaultVal: 1,
+					Label:      "Column 2 (decimal)",
+					Type:       sdkforms.FormFieldTypeDecimal,
+					DefaultVal: 1.0,
 				},
 				{
 					Name:       "col3",
-					Label:      "Column 3 (boolean)",
+					Label:      "Column 3 (integer)",
+					Type:       sdkforms.FormFieldTypeInteger,
+					DefaultVal: 2,
+				},
+				{
+					Name:       "col4",
+					Label:      "Column 4 (boolean)",
 					Type:       sdkforms.FormFieldTypeBoolean,
 					DefaultVal: true,
 				},
 			}
 			return cols
 		},
-		DefaultVal: [][]sdkforms.FieldData{{}},
+		DefaultVal: sdkforms.MultiFieldData{},
 	}
 
 	listFieldTxt := sdkforms.ListField{
@@ -117,20 +123,46 @@ func GetThemeForm(g *plugins.CoreGlobals) (form sdkforms.Form, err error) {
 	listFieldNum := sdkforms.ListField{
 		Name:       "list_field_num",
 		Label:      "List Field (number)",
-		Type:       sdkforms.FormFieldTypeNumber,
-		DefaultVal: 100,
+		Type:       sdkforms.FormFieldTypeDecimal,
+		DefaultVal: 100.0,
 		Options: func() []sdkforms.ListOption {
 			return []sdkforms.ListOption{
 				{
 					Label: "100",
-					Value: 100,
+					Value: 100.0,
 				},
 				{
 					Label: "200",
-					Value: 200,
+					Value: 200.0,
 				},
 			}
 		},
+	}
+
+	textField := sdkforms.TextField{
+		Name:       "text_field",
+		Label:      "Text Field",
+		DefaultVal: "hello",
+	}
+
+	intField := sdkforms.IntegerField{
+		Name:       "int_field",
+		Label:      "Int Field",
+		DefaultVal: 123,
+	}
+
+	decimalField := sdkforms.DecimalField{
+		Name:       "decimal_field",
+		Label:      "Decimal Field",
+		Step:       0.1,
+		Precision:  2,
+		DefaultVal: 123,
+	}
+
+	boolField := sdkforms.BooleanField{
+		Name:       "boolean_field",
+		Label:      "Boolean Field",
+		DefaultVal: true,
 	}
 
 	form = sdkforms.Form{
@@ -140,6 +172,10 @@ func GetThemeForm(g *plugins.CoreGlobals) (form sdkforms.Form, err error) {
 			{
 				Name: "themes",
 				Fields: []sdkforms.IFormField{
+					textField,
+					intField,
+					decimalField,
+					boolField,
 					portalThemesField,
 					adminThemesField,
 					multiField,

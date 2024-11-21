@@ -1,6 +1,6 @@
 {
   "js": [
-    "./lib/vendor/jquery-1.12.4.min.js"
+    "./admin/js/globals.js"
   ],
   "css": []
 }

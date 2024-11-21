@@ -13,15 +13,17 @@ import (
 )
 
 const (
-	CssLibBootstrap5 CssLib = "bootstrap5"
+	CssLibBootstrap5 AdminCssLib  = "bootstrap5"
+	CssLibBootstrap3 PortalCssLib = "bootstrap3"
 )
+
+type AdminCssLib string
+type PortalCssLib string
 
 type IHttpThemesApi interface {
 	NewAdminTheme(AdminThemeOpts)
 	NewPortalTheme(PortalThemeOpts)
 }
-
-type CssLib string
 
 type FlashMsg struct {
 	Type    string
@@ -29,7 +31,6 @@ type FlashMsg struct {
 }
 
 type PageAssets struct {
-	PolyfillJsSrc string
 	GlobalJsSrc   string
 	GlobalCssHref string
 	ThemeJsSrc    string
@@ -66,7 +67,7 @@ type PortalIndexData struct {
 type AdminThemeOpts struct {
 	JsFile           string
 	CssFile          string
-	CssLib           CssLib
+	CssLib           AdminCssLib
 	LayoutFactory    func(w http.ResponseWriter, r *http.Request, data AdminLayoutData) templ.Component
 	IndexPageFactory func(w http.ResponseWriter, r *http.Request) ViewPage
 }
@@ -74,7 +75,7 @@ type AdminThemeOpts struct {
 type PortalThemeOpts struct {
 	JsFile           string
 	CssFile          string
-	CssLib           CssLib
+	CssLib           PortalCssLib
 	LayoutFactory    func(w http.ResponseWriter, r *http.Request, data PortalLayoutData) templ.Component
 	LoginPageFactory func(w http.ResponseWriter, r *http.Request, data LoginPageData) ViewPage
 	IndexPageFactory func(w http.ResponseWriter, r *http.Request, data PortalIndexData) ViewPage

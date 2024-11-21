@@ -50,7 +50,7 @@ func BuildGlobalAssets() (err error) {
 			return
 		}
 
-		if resultFile, err = compileGlobalJsAssets(manifest.Js); err != nil {
+		if resultFile, err = compileGlobalJsAssets(manifest.Js, api.ES2017); err != nil {
 			return
 		}
 		bundleFile.AdminJsFile = resultFile
@@ -68,7 +68,7 @@ func BuildGlobalAssets() (err error) {
 			return
 		}
 
-		if resultFile, err = compileGlobalJsAssets(manifest.Js); err != nil {
+		if resultFile, err = compileGlobalJsAssets(manifest.Js, api.ES5); err != nil {
 			return
 		}
 		bundleFile.PortalJsFile = resultFile
@@ -86,43 +86,31 @@ func BuildGlobalAssets() (err error) {
 	return
 }
 
-func compileGlobalJsAssets(jsfiles []string) (resultFile string, err error) {
+func compileGlobalJsAssets(jsfiles []string, target api.Target) (resultFile string, err error) {
 	distPath := filepath.Join(CoreGlobalsDist, "js")
 	if err = sdkfs.EnsureDir(distPath); err != nil {
 		return
 	}
 
-	indexjsFile := filepath.Join(distPath, "globals.index.js")
+	indexFile := filepath.Join(distPath, "globals.index.js")
 	indexjs := ""
 	for _, js := range jsfiles {
 		var relPath string
 		jsPath := filepath.Join(CoreAssetsDir, js)
-		relPath, err = sdkpaths.RelativeFromTo(indexjsFile, jsPath)
+		relPath, err = sdkpaths.RelativeFromTo(indexFile, jsPath)
 		if err != nil {
 			return
 		}
 		indexjs += "require('" + relPath + "');\n"
 	}
 
-	if err = os.WriteFile(indexjsFile, []byte(indexjs), sdkfs.PermFile); err != nil {
+	if err = os.WriteFile(indexFile, []byte(indexjs), sdkfs.PermFile); err != nil {
 		return
 	}
-	defer os.Remove(indexjsFile)
+	defer os.Remove(indexFile)
 
 	outfile := filepath.Join(distPath, "globals.js")
-	result := api.Build(api.BuildOptions{
-		EntryPoints:       []string{indexjsFile},
-		Outfile:           outfile,
-		Platform:          api.PlatformBrowser,
-		Target:            api.ES5,
-		EntryNames:        "[name]-[hash]",
-		Sourcemap:         api.SourceMapLinked,
-		Bundle:            true,
-		AllowOverwrite:    true,
-		MinifyWhitespace:  true,
-		MinifyIdentifiers: true,
-		Write:             false,
-	})
+	result := EsbuildJs(indexFile, outfile, target)
 
 	if len(result.Errors) > 0 {
 		err = fmt.Errorf("failed to compile global js file: %v", result.Errors)
@@ -177,18 +165,7 @@ func compileGlobalCssAssets(cssFiles []string) (resultFile string, err error) {
 	defer os.Remove(indexFile)
 
 	outfile := filepath.Join(distPath, "globals.css")
-	result := api.Build(api.BuildOptions{
-		EntryPoints:       []string{indexFile},
-		Outfile:           outfile,
-		Loader:            map[string]api.Loader{".css": api.LoaderCSS},
-		EntryNames:        "[name]-[hash]",
-		Sourcemap:         api.SourceMapLinked,
-		Bundle:            true,
-		AllowOverwrite:    true,
-		MinifyWhitespace:  true,
-		MinifyIdentifiers: true,
-		Write:             false,
-	})
+	result := EsbuildCss(indexFile, outfile)
 
 	if len(result.Errors) > 0 {
 		err = fmt.Errorf("failed to compile global css file: %v", result.Errors)

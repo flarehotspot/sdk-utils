@@ -1,7 +1,4 @@
 {
   "globals.js": [
-    "./lib/vendor/jquery-1.12.4.min.js",
-    "./lib/vendor/promise-polyfill.min.js",
-    "./lib/vendor/event-source.polyfill.min.js"
   ]
 }
