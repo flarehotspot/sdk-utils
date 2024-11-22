@@ -56,6 +56,8 @@ func InitPlugins(g *plugins.CoreGlobals) {
 			}
 		}
 
+		// TODO: handle broken plugins
+
 		if installed && !recompile {
 			bp.AppendLog(fmt.Sprintf("%s: Plugin is already installed", info.Package))
 			continue
@@ -66,6 +68,7 @@ func InitPlugins(g *plugins.CoreGlobals) {
 				bp.AppendLog(fmt.Sprintf("%s: Error creating backup for plugin: %s", info.Package, err.Error()))
 				continue
 			}
+
 			if err := os.RemoveAll(path); err != nil {
 				bp.AppendLog(fmt.Sprintf("%s: Error removing plugin: %s", info.Package, err.Error()))
 				continue
