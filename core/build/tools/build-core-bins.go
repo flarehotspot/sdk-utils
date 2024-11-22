@@ -37,7 +37,9 @@ func BuildCore() {
 	workdir := filepath.Join(sdkpaths.TmpDir, "b/core", sdkstr.Rand(16))
 	defer os.RemoveAll(workdir)
 
-	cmd := exec.Command("sqlc", "generate")
+	InstallSqlc()
+
+	cmd := exec.Command(sdkpaths.SqlcBin, "generate")
 	cmd.Dir = sdkpaths.AppDir
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
