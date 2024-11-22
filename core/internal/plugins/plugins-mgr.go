@@ -45,11 +45,12 @@ func (self *PluginsMgr) Plugins() []*PluginApi {
 }
 
 func (self *PluginsMgr) RegisterPlugin(p *PluginApi) {
-
 	if p.Pkg() != self.CoreAPI.Pkg() {
 		err := p.Init()
 		if err != nil {
 			log.Println("Error initializing plugin: "+p.Dir(), err)
+			// TODO: set plugin as broken
+			return
 		}
 
 		p.Initialize(self.CoreAPI)
