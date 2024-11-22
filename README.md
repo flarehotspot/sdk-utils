@@ -37,7 +37,7 @@ unzip openwrt-files.zip -d openwrt-files
 # Installing Go
 ```sh
 curl -sSL https://github.com/moovweb/gvm/raw/master/binscripts/gvm-installer | bash
-gvm install "$(cat .go-version)"
+gvm install "go$(cat .go-version)"
 cd ../flarehotspot # load go version
 ```
 
@@ -58,18 +58,10 @@ password: admin
 
 # Flare CLI
 
-There are two Flare CLI tools:
-
-Install the `flare` sdk CLI:
+Install the `flare` CLI:
 ```sh
-go install ./core/devkit/cli/flare.go
-flare --help
-```
-
-Install the `flare-internal` CLI:
-```sh
-go install ./core/internal/cli/flare-internal.go
-flare-internal --help
+go run ./core/cmd/build-cli/main.go
+./bin/flare -h
 ```
 
 # Documentation
