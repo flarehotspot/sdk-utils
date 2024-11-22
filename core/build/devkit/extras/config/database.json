@@ -1,6 +1,0 @@
-{
-  "host": "mariadb",
-  "database": "flarehotspot_dev",
-  "username": "root",
-  "password": "root"
-}
