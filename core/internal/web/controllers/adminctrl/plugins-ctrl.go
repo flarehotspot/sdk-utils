@@ -219,7 +219,7 @@ func getInstalledPlugins() []PluginData {
 	plugins := []PluginData{}
 
 	for _, src := range sources {
-		info, err := pkg.GetPluginInfo(src.Def)
+		info, err := pkg.GetInfoFromDef(src.Def)
 		if err != nil {
 			return nil
 		}

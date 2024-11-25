@@ -36,7 +36,7 @@ func NewPluginApi(dir string, pmgr *PluginsMgr, trfkMgr *network.TrafficMgr) *Pl
 
 	pluginApi.Utl = NewPluginUtils(pluginApi)
 
-	info, err := pkg.GetSrcInfo(dir)
+	info, err := pkg.GetInfoFromPath(dir)
 	if err != nil {
 		log.Println("Error getting plugin info: ", err.Error())
 		return nil
@@ -114,7 +114,7 @@ func (self *PluginApi) Version() string {
 }
 
 func (self *PluginApi) Description() string {
-	info, err := pkg.GetSrcInfo(self.dir)
+	info, err := pkg.GetInfoFromPath(self.dir)
 	if err != nil {
 		return ""
 	}

@@ -22,7 +22,7 @@ func BuildLocalPlugins() error {
 			return err
 		}
 
-		info, err := GetSrcInfo(pluginPath)
+		info, err := GetInfoFromPath(pluginPath)
 		if err != nil {
 			return err
 		}

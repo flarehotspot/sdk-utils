@@ -14,6 +14,7 @@ import (
 
 	sdkfs "github.com/flarehotspot/go-utils/fs"
 	paths "github.com/flarehotspot/go-utils/paths"
+	sdkpaths "github.com/flarehotspot/go-utils/paths"
 )
 
 var (
@@ -89,7 +90,7 @@ func InsalledPluginsDef() PluginDefList {
 	var list PluginDefList
 	paths := InstalledDirList()
 	for _, p := range paths {
-		info, err := GetSrcInfo(p)
+		info, err := GetInfoFromPath(p)
 		if err != nil {
 			log.Println("Error reading plugin info: ", err)
 			continue
@@ -145,17 +146,27 @@ func InstalledDirList() []string {
 	return pluginList
 }
 
-func WriteMetadata(def PluginSrcDef, installPath string) error {
-	metapath := filepath.Join(installPath, "metadata.json")
+func GetMetaDataPath(pkg string) string {
+	return filepath.Join(sdkpaths.ConfigDir, "plugins", pkg, "metadata.json")
+}
+
+func WriteMetadata(def PluginSrcDef, pkg string) error {
+	metapath := GetMetaDataPath(pkg)
 	metadata := PluginMetadata{
 		Def: def,
 	}
 
-	if err := sdkfs.EnsureDir(installPath); err != nil {
+	if err := sdkfs.EnsureDir(filepath.Dir(metapath)); err != nil {
 		return err
 	}
 
 	return sdkfs.WriteJson(metapath, metadata)
+}
+
+func ReadMetadata(pkg string) (metadata PluginMetadata, err error) {
+	metapath := GetMetaDataPath(pkg)
+	err = sdkfs.ReadJson(metapath, &metadata)
+	return
 }
 
 func IsPackageInstalled(pkg string) bool {
@@ -177,7 +188,7 @@ func InstalledPluginsList() []PluginInstallData {
 	marks := []PluginInstallData{}
 	list := InstalledDirList()
 	for _, p := range list {
-		info, err := GetSrcInfo(p)
+		info, err := GetInfoFromPath(p)
 		if err != nil {
 			log.Println("Error reading plugin info: ", err)
 			continue
@@ -213,7 +224,7 @@ func NeedsRecompile(def PluginSrcDef) bool {
 		return true
 	}
 
-	info, err := GetSrcInfo(path)
+	info, err := GetInfoFromPath(path)
 	if err != nil {
 		return true
 	}
@@ -290,13 +301,6 @@ func RemovePendingUpdate(pkg string) error {
 	return os.RemoveAll(GetPendingUpdatePath(pkg))
 }
 
-func ReadMetadata(pkg string) (PluginMetadata, error) {
-	var metadata PluginMetadata
-	installPath := GetInstallPath(pkg)
-	err := sdkfs.ReadJson(filepath.Join(installPath, "metadata.json"), &metadata)
-	return metadata, err
-}
-
 func ValidateSrcPath(src string) error {
 	requiredFiles := []string{"plugin.json", "go.mod", "main.go"}
 
@@ -309,7 +313,7 @@ func ValidateSrcPath(src string) error {
 }
 
 func ValidateInstallPath(src string) error {
-	requiredFiles := []string{"plugin.json", "go.mod", "plugin.so", "metadata.json"}
+	requiredFiles := []string{"plugin.json", "go.mod", "plugin.so"}
 
 	for _, f := range requiredFiles {
 		if !sdkfs.Exists(filepath.Join(src, f)) {

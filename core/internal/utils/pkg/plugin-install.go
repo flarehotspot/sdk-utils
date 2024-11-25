@@ -32,7 +32,6 @@ var PLuginFiles = []PluginFile{
 	{File: "LICENSE.txt", Optional: false},
 	{File: "plugin.json", Optional: false},
 	{File: "plugin.so", Optional: false},
-	{File: "metadata.json", Optional: true},
 	{File: "resources/assets/dist", Optional: true},
 	{File: "resources/migrations", Optional: true},
 	{File: "resources/translations", Optional: true},
@@ -56,20 +55,20 @@ func InstallSrcDef(w io.Writer, def PluginSrcDef) (info sdkplugin.PluginInfo, er
 	return info, err
 }
 
-func InstallFromLocalPath(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, error) {
+func InstallFromLocalPath(w io.Writer, def PluginSrcDef) (info sdkplugin.PluginInfo, err error) {
 	w.Write([]byte("Installing plugin from local path: " + def.LocalPath))
 
-	info, err := GetSrcInfo(def.LocalPath)
+	info, err = GetInfoFromPath(def.LocalPath)
 	if err != nil {
-		return sdkplugin.PluginInfo{}, err
+		return
 	}
 
 	err = InstallPlugin(def.LocalPath, InstallOpts{Def: def, RemoveSrc: false})
 	if err != nil {
-		return sdkplugin.PluginInfo{}, err
+		return
 	}
 
-	return info, nil
+	return
 }
 
 func InstallFromZipFile(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, error) {
@@ -93,7 +92,7 @@ func InstallFromZipFile(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, er
 	}
 
 	// read the plugin.json
-	info, err := GetSrcInfo(newWorkPath)
+	info, err := GetInfoFromPath(newWorkPath)
 	if err != nil {
 		log.Println("Error getting plugin info: ", err)
 		return sdkplugin.PluginInfo{}, err
@@ -147,7 +146,7 @@ func InstallFromPluginStore(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo
 		log.Println("Error: ", err)
 		return sdkplugin.PluginInfo{}, err
 	}
-	info, err := GetSrcInfo(newWorkPath)
+	info, err := GetInfoFromPath(newWorkPath)
 	if err != nil {
 		log.Println("Error getting plugin info: ", err)
 		return sdkplugin.PluginInfo{}, err
@@ -184,7 +183,7 @@ func InstallFromGitSrc(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, err
 		return sdkplugin.PluginInfo{}, err
 	}
 
-	info, err := GetSrcInfo(clonePath)
+	info, err := GetInfoFromPath(clonePath)
 	if err != nil {
 		log.Println("Error getting plugin info: ", err)
 		return sdkplugin.PluginInfo{}, err
@@ -229,7 +228,7 @@ func InstallPlugin(src string, opts InstallOpts) error {
 		return err
 	}
 
-	info, err := GetSrcInfo(src)
+	info, err := GetInfoFromPath(src)
 	if err != nil {
 		return err
 	}
@@ -239,7 +238,7 @@ func InstallPlugin(src string, opts InstallOpts) error {
 		installPath = GetPendingUpdatePath(info.Package)
 	}
 
-	if err := WriteMetadata(opts.Def, installPath); err != nil {
+	if err := WriteMetadata(opts.Def, info.Package); err != nil {
 		return err
 	}
 

@@ -32,7 +32,7 @@ func InitPlugins(g *plugins.CoreGlobals) {
 		recompile := pkg.NeedsRecompile(def)
 		installed = installed && (pkg.ValidateInstallPath(path) == nil)
 		if installed {
-			info, _ = pkg.GetSrcInfo(path)
+			info, _ = pkg.GetInfoFromPath(path)
 		}
 
 		if pkg.IsToBeRemoved(info.Package) {
