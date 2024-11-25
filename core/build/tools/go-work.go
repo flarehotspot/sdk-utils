@@ -12,7 +12,7 @@ import (
 )
 
 func CreateGoWorkspace() {
-	goVersion := sdkruntime.GO_VERSION
+	goVersion := sdkruntime.GO_SHORT_VERSION
 	goWork := fmt.Sprintf(`go %s
 
 use (
