@@ -8,16 +8,16 @@ import (
 	sdkpaths "github.com/flarehotspot/go-utils/paths"
 )
 
-func GetPluginInfo(def PluginSrcDef) (sdkplugin.PluginInfo, error) {
+func GetInfoFromDef(def PluginSrcDef) (sdkplugin.PluginInfo, error) {
 	path, ok := FindDefInstallPath(def)
 	if !ok {
 		return sdkplugin.PluginInfo{}, ErrNotInstalled
 	}
 
-	return GetSrcInfo(path)
+	return GetInfoFromPath(path)
 }
 
-func GetSrcInfo(src string) (sdkplugin.PluginInfo, error) {
+func GetInfoFromPath(src string) (sdkplugin.PluginInfo, error) {
 	var info sdkplugin.PluginInfo
 	if err := sdkfs.ReadJson(filepath.Join(src, "plugin.json"), &info); err != nil {
 		return sdkplugin.PluginInfo{}, err

@@ -25,7 +25,7 @@ func BuildFromLocal(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, error)
 		return sdkplugin.PluginInfo{}, err
 	}
 
-	info, err := GetPluginInfo(def)
+	info, err := GetInfoFromDef(def)
 	if err != nil {
 		return sdkplugin.PluginInfo{}, err
 	}
@@ -65,7 +65,7 @@ func BuildFromGit(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, error) {
 		return sdkplugin.PluginInfo{}, err
 	}
 
-	info, err := GetPluginInfo(def)
+	info, err := GetInfoFromDef(def)
 	if err != nil {
 		return sdkplugin.PluginInfo{}, err
 	}
