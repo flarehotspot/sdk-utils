@@ -24,7 +24,7 @@ type Account struct {
 }
 
 // return the file path of yaml file
-func (acct *Account) YamlFile() string {
+func (acct *Account) JsonFile() string {
 	return FilepathForUser(acct.Uname)
 }
 
@@ -79,7 +79,7 @@ func (acct *Account) Save() error {
 	if err != nil {
 		return err
 	}
-	return os.WriteFile(acct.YamlFile(), b, sdkfs.PermFile)
+	return os.WriteFile(acct.JsonFile(), b, sdkfs.PermFile)
 }
 
 // Update updates the account with new username, password and permissions
