@@ -1,6 +1,7 @@
 package adminctrl
 
 import (
+	"core/internal/config"
 	"core/internal/plugins"
 	"core/internal/utils/pkg"
 	"net/http"
@@ -18,7 +19,7 @@ type PluginRelease struct {
 type PluginData struct {
 	Id                 int
 	Info               sdkplugin.PluginInfo
-	Src                pkg.PluginInstallData
+	Src                config.PluginSrcDef
 	HasPendingUpdate   bool
 	HasUpdates         bool
 	ToBeRemoved        bool
@@ -218,15 +219,15 @@ func getInstalledPlugins() []PluginData {
 	sources := pkg.InstalledPluginsList()
 	plugins := []PluginData{}
 
-	for _, src := range sources {
-		info, err := pkg.GetInfoFromDef(src.Def)
+	for _, def := range sources {
+		info, err := pkg.GetInfoFromDef(def)
 		if err != nil {
 			return nil
 		}
 
 		p := PluginData{
 			Info:             info,
-			Src:              src,
+			Src:              def,
 			HasPendingUpdate: pkg.HasPendingUpdate(info.Package),
 			ToBeRemoved:      pkg.IsToBeRemoved(info.Package),
 		}

@@ -2,6 +2,7 @@ package pkg
 
 import (
 	"core/env"
+	"core/internal/config"
 	"core/internal/utils/cmd"
 	"core/internal/utils/encdisk"
 	"core/internal/utils/git"
@@ -19,7 +20,7 @@ import (
 	sdkstr "github.com/flarehotspot/go-utils/strings"
 )
 
-func BuildFromLocal(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, error) {
+func BuildFromLocal(w io.Writer, def config.PluginSrcDef) (sdkplugin.PluginInfo, error) {
 	err := InstallPlugin(def.LocalPath, InstallOpts{RemoveSrc: false})
 	if err != nil {
 		return sdkplugin.PluginInfo{}, err
@@ -32,14 +33,14 @@ func BuildFromLocal(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, error)
 
 	// TODO: remove logs
 	log.Println("Marking plugins..")
-	if err := WriteMetadata(def, GetInstallPath(info.Package)); err != nil {
+	if err := WriteMetadata(def, info.Package, GetInstallPath(info.Package)); err != nil {
 		return sdkplugin.PluginInfo{}, err
 	}
 
 	return info, nil
 }
 
-func BuildFromGit(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, error) {
+func BuildFromGit(w io.Writer, def config.PluginSrcDef) (sdkplugin.PluginInfo, error) {
 	dev := sdkstr.Slugify(sdkstr.Rand(16), "_")
 	parentpath := RandomPluginPath()
 	diskfile := filepath.Join(parentpath, "plugin-clone", "disk", dev)
@@ -71,7 +72,7 @@ func BuildFromGit(w io.Writer, def PluginSrcDef) (sdkplugin.PluginInfo, error) {
 	}
 
 	installPath := GetInstallPath(info.Package)
-	if err := WriteMetadata(def, installPath); err != nil {
+	if err := WriteMetadata(def, info.Package, installPath); err != nil {
 		return sdkplugin.PluginInfo{}, err
 	}
 
@@ -212,7 +213,7 @@ func BuildGoModule(gofile string, outfile string, params *GoBuildArgs) error {
 }
 
 type InstallOpts struct {
-	Def       PluginSrcDef
+	Def       config.PluginSrcDef
 	RemoveSrc bool
 	Encrypt   bool
 }

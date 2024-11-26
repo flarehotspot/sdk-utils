@@ -1,6 +1,7 @@
 package pkg
 
 import (
+	"core/internal/config"
 	"path/filepath"
 	sdkplugin "sdk/api/plugin"
 
@@ -8,7 +9,7 @@ import (
 	sdkpaths "github.com/flarehotspot/go-utils/paths"
 )
 
-func GetInfoFromDef(def PluginSrcDef) (sdkplugin.PluginInfo, error) {
+func GetInfoFromDef(def config.PluginSrcDef) (sdkplugin.PluginInfo, error) {
 	path, ok := FindDefInstallPath(def)
 	if !ok {
 		return sdkplugin.PluginInfo{}, ErrNotInstalled
