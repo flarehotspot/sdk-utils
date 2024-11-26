@@ -168,6 +168,7 @@ func GetThemeForm(g *plugins.CoreGlobals) (form sdkforms.Form, err error) {
 	form = sdkforms.Form{
 		Name:          "themes",
 		CallbackRoute: "admin:themes:save",
+		SubmitLabel:   "Save",
 		Sections: []sdkforms.FormSection{
 			{
 				Name: "themes",
