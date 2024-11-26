@@ -41,8 +41,8 @@ type HttpFormInstance struct {
 func (self *HttpFormInstance) Template(r *http.Request) templ.Component {
 	csrfTag := self.api.HttpAPI.Helpers().CsrfHtmlTag(r)
 	submitText := "Submit"
-	if self.form.SubmitLabel != nil {
-		submitText = self.form.SubmitLabel()
+	if self.form.SubmitLabel != "" {
+		submitText = self.form.SubmitLabel
 	}
 
 	return formsview.HtmlForm(self, csrfTag, self.getSubmitUrl(), submitText)
