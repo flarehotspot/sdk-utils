@@ -6,7 +6,7 @@ import (
 	"sdk/api/http"
 )
 
-templ HtmlForm(form sdkhttp.IHttpForm, csrfTag string, submitUrl string) {
+templ HtmlForm(form sdkhttp.IHttpForm, csrfTag string, submitUrl string, submitText string) {
 	{{ json, err := form.JsonData() }}
 	if err != nil {
 		<p>Error: { err.Error() }</p>
@@ -37,7 +37,9 @@ templ HtmlForm(form sdkhttp.IHttpForm, csrfTag string, submitUrl string) {
 			}
 			<hr/>
 		}
-		<button type="submit">Submit</button>
+		<button type="submit">
+            { submitText }
+        </button>
 	</form>
 	<script type="text/javascript">
   var str = document.getElementById('form').getAttribute('data-json');

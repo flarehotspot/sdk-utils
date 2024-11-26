@@ -35,6 +35,7 @@ type Form struct {
 	Name          string
 	CallbackRoute string
 	Sections      []FormSection
+	SubmitLabel   func() string
 }
 
 type JsonData []JsonSection
