@@ -316,11 +316,7 @@ func FindDefInstallPath(def config.PluginSrcDef) (installPath string, ok bool) {
 	}
 
 	for pkg, cfgdef := range cfg.Plugins {
-		if (def.Src == config.PluginSrcSystem || def.Src == config.PluginSrcLocal) && def.Src == cfgdef.Src && def.LocalPath == cfgdef.LocalPath {
-			return GetInstallPath(pkg), true
-		}
-
-		if def.Src == config.PluginSrcGit && def.GitURL == cfgdef.GitURL {
+		if def.Equal(cfgdef) {
 			return GetInstallPath(pkg), true
 		}
 	}
