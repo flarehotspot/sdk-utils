@@ -13,6 +13,7 @@ import (
 	"strings"
 	"syscall"
 
+	"core/internal/config"
 	rpc "core/internal/rpc"
 	"core/internal/utils/pkg"
 
@@ -235,17 +236,17 @@ func UpdateCore(localUpdateFiles UpdateFiles) error {
 	return nil
 }
 
-func CheckForPluginUpdates(pDatum *pkg.PluginInstallData, pInfo sdkplugin.PluginInfo) (bool, error) {
-	switch pDatum.Def.Src {
+func CheckForPluginUpdates(def config.PluginSrcDef, info sdkplugin.PluginInfo) (bool, error) {
+	switch def.Src {
 	case "git":
-		hasUpdates, err := CheckUpdatesFromGithub(pDatum, pInfo)
+		hasUpdates, err := CheckUpdatesFromGithub(def, info)
 		if err != nil {
 			log.Println("Error checking plugin updates from github: ", err)
 			return false, err
 		}
 		return hasUpdates, nil
 	case "store":
-		hasUpdates, err := CheckUpdatesFromStore(&pDatum.Def, pInfo)
+		hasUpdates, err := CheckUpdatesFromStore(def, info)
 		if err != nil {
 			log.Println("Error checking plugin updates from store: ", err)
 			return false, err
@@ -256,9 +257,9 @@ func CheckForPluginUpdates(pDatum *pkg.PluginInstallData, pInfo sdkplugin.Plugin
 	}
 }
 
-func CheckUpdatesFromGithub(pDatum *pkg.PluginInstallData, pInfo sdkplugin.PluginInfo) (bool, error) {
-	author := pkg.GetAuthorNameFromGitUrl(*pDatum)
-	repo := pkg.GetRepoFromGitUrl(*pDatum)
+func CheckUpdatesFromGithub(def config.PluginSrcDef, info sdkplugin.PluginInfo) (bool, error) {
+	author := pkg.GetAuthorNameFromGitUrl(def)
+	repo := pkg.GetRepoFromGitUrl(def)
 
 	// NOTE: release tags should adhere to semver
 
@@ -296,7 +297,7 @@ func CheckUpdatesFromGithub(pDatum *pkg.PluginInstallData, pInfo sdkplugin.Plugi
 	}
 	fmt.Printf("Latest plugin release version: %v\n", latestPRVersion)
 
-	currentPRVersion, err := sdksemver.ParseVersion(pInfo.Version)
+	currentPRVersion, err := sdksemver.ParseVersion(info.Version)
 	if err != nil {
 		log.Println("Error parsing string version to semver version: ", err)
 		return false, err
@@ -305,25 +306,25 @@ func CheckUpdatesFromGithub(pDatum *pkg.PluginInstallData, pInfo sdkplugin.Plugi
 	return sdksemver.HasUpdates(currentPRVersion, latestPRVersion), nil
 }
 
-func CheckUpdatesFromStore(p *pkg.PluginSrcDef, pinfo sdkplugin.PluginInfo) (bool, error) {
+func CheckUpdatesFromStore(def config.PluginSrcDef, info sdkplugin.PluginInfo) (bool, error) {
 	// fetch latest plugin release from flare-server rpc
 	srv, ctx := rpc.GetCoreMachineTwirpServiceAndCtx()
 	qPlugins, err := srv.FetchLatestValidPRByPackage(ctx, &rpc.FetchLatestValidPRByPackageRequest{
-		PluginPackage: p.StorePackage,
+		PluginPackage: def.StorePackage,
 	})
 	if err != nil {
 		log.Println("Error fetching latest plugin release: ", err)
 		return false, err
 	}
 
-	currVersion, err := sdksemver.ParseVersion(pinfo.Version)
+	currVersion, err := sdksemver.ParseVersion(info.Version)
 	if err != nil {
-		log.Printf("Error parsing raw version of plugin: %s: %s\n", pinfo.Package, err.Error())
+		log.Printf("Error parsing raw version of plugin: %s: %s\n", info.Package, err.Error())
 		return false, err
 	}
 
 	// update plugin release zip file url def temporarily
-	p.StoreZipUrl = qPlugins.PluginRelease.ZipFileUrl
+	// def.StoreZipUrl = qPlugins.PluginRelease.ZipFileUrl
 
 	latestVersion := sdksemver.Version{
 		Major: int(qPlugins.PluginRelease.Major),

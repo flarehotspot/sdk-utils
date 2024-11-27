@@ -21,7 +21,7 @@ CMD cp go.work.default go.work && \
         -r '\.(go|templ|js|css|json)$' \
         -R 'assets\/dist\/.*' \
         -R 'db/sqlc/.*' \
-        -R 'config\/.*' \
+        -R '^config\/.*\.json$' \
         -R 'node_modules' \
         -R '_templ\.go$' \
         -R 'core\/main\.go' \

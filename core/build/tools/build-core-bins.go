@@ -21,7 +21,7 @@ func BuildCoreBins() {
 	tags := sdkstr.Slugify(env.BuildTags, "-")
 
 	build := &BuildOutput{
-		OutputDirName: filepath.Join("core-binaries", fmt.Sprintf("%s-%s-go%s-%s", pkg.CoreInfo().Version, sdkruntime.GOARCH, goversion, tags)),
+		OutputDirName: filepath.Join("core-binaries", fmt.Sprintf("%s-%s-go%s-%s", pkg.GetCoreInfo().Version, sdkruntime.GOARCH, goversion, tags)),
 		Files: []string{
 			"bin/flare",
 			"core/plugin.so",
