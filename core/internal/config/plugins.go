@@ -47,10 +47,13 @@ func (def PluginSrcDef) String() string {
 }
 
 func (def PluginSrcDef) Equal(compare PluginSrcDef) bool {
-	if (def.Src == PluginSrcLocal || def.Src == PluginSrcSystem) && def.LocalPath == compare.LocalPath {
+	if (def.Src == PluginSrcLocal || def.Src == PluginSrcSystem) && compare.Src == def.Src && def.LocalPath == compare.LocalPath {
 		return true
 	}
-	if def.Src == PluginSrcGit && git.NeutralizeUrl(def.GitURL) == git.NeutralizeUrl(compare.GitURL) {
+	if def.Src == PluginSrcGit && compare.Src == PluginSrcGit && git.NeutralizeUrl(def.GitURL) == git.NeutralizeUrl(compare.GitURL) {
+		return true
+	}
+	if def.Src == PluginSrcStore && compare.Src == PluginSrcStore && def.StorePackage == compare.StorePackage {
 		return true
 	}
 	return false
