@@ -45,8 +45,6 @@ func InstallSrcDef(w io.Writer, def config.PluginSrcDef) (info sdkplugin.PluginI
 		info, err = InstallFromGitSrc(w, def)
 	case config.PluginSrcLocal, config.PluginSrcSystem:
 		info, err = InstallFromLocalPath(w, def)
-	case config.PluginSrcZip:
-		info, err = InstallFromZipFile(w, def)
 	case config.PluginSrcStore:
 		info, err = InstallFromPluginStore(w, def)
 	default:
@@ -72,43 +70,43 @@ func InstallFromLocalPath(w io.Writer, def config.PluginSrcDef) (info sdkplugin.
 	return
 }
 
-func InstallFromZipFile(w io.Writer, def config.PluginSrcDef) (info sdkplugin.PluginInfo, err error) {
-	w.Write([]byte("Installing zipped plugin from local path: " + def.LocalPath))
+// func InstallFromZipFile(w io.Writer, def config.PluginSrcDef) (info sdkplugin.PluginInfo, err error) {
+// 	w.Write([]byte("Installing zipped plugin from local path: " + def.LocalPath))
 
-	// prepare path
-	randomPath := RandomPluginPath()
-	workPath := filepath.Join(randomPath, "workpath")
+// 	// prepare path
+// 	randomPath := RandomPluginPath()
+// 	workPath := filepath.Join(randomPath, "workpath")
 
-	// extract compressed plugin release
-	sdkextract.Extract(def.LocalZipFile, workPath)
+// 	// extract compressed plugin release
+// 	sdkextract.Extract(def.LocalZipFile, workPath)
 
-	if err = os.RemoveAll(filepath.Dir(def.LocalZipFile)); err != nil {
-		return
-	}
+// 	if err = os.RemoveAll(filepath.Dir(def.LocalZipFile)); err != nil {
+// 		return
+// 	}
 
-	// gets the plugin release source path
-	newWorkPath, err := FindPluginSrc(workPath)
-	if err != nil {
-		err = errors.New("Unable to find plugin source in: " + workPath)
-		log.Println("Error: ", err)
-		return sdkplugin.PluginInfo{}, err
-	}
+// 	// gets the plugin release source path
+// 	newWorkPath, err := FindPluginSrc(workPath)
+// 	if err != nil {
+// 		err = errors.New("Unable to find plugin source in: " + workPath)
+// 		log.Println("Error: ", err)
+// 		return sdkplugin.PluginInfo{}, err
+// 	}
 
-	// read the plugin.json
-	info, err = GetInfoFromPath(newWorkPath)
-	if err != nil {
-		log.Println("Error getting plugin info: ", err)
-		return
-	}
+// 	// read the plugin.json
+// 	info, err = GetInfoFromPath(newWorkPath)
+// 	if err != nil {
+// 		log.Println("Error getting plugin info: ", err)
+// 		return
+// 	}
 
-	def.LocalPath = filepath.Join(GetInstallPath(info.Package))
+// 	def.LocalPath = filepath.Join(GetInstallPath(info.Package))
 
-	if err := InstallPlugin(newWorkPath, InstallOpts{Def: def, RemoveSrc: false}); err != nil {
-		return sdkplugin.PluginInfo{}, err
-	}
+// 	if err := InstallPlugin(newWorkPath, InstallOpts{Def: def, RemoveSrc: false}); err != nil {
+// 		return sdkplugin.PluginInfo{}, err
+// 	}
 
-	return info, nil
-}
+// 	return info, nil
+// }
 
 func InstallFromPluginStore(w io.Writer, def config.PluginSrcDef) (sdkplugin.PluginInfo, error) {
 	w.Write([]byte("Installing plugin from store: " + def.StorePackage))
@@ -239,7 +237,6 @@ func InstallPlugin(src string, opts InstallOpts) error {
 
 	installPath := GetInstallPath(info.Package)
 	if err := ValidateInstallPath(installPath); err == nil {
-		log.Println("Error building plugin: ", err)
 		installPath = GetPendingUpdatePath(info.Package)
 	}
 
@@ -284,12 +281,12 @@ func IsToBeRemoved(pkg string) bool {
 }
 
 func RemovePlugin(pkg string) error {
-	def, err := ReadMetadata(pkg)
+	meta, err := ReadMetadata(pkg)
 	if err != nil {
 		return err
 	}
-	if def.Src == config.PluginSrcLocal || def.Src == config.PluginSrcSystem {
-		return os.RemoveAll(def.LocalPath)
+	if meta.Def.Src == config.PluginSrcLocal || meta.Def.Src == config.PluginSrcSystem {
+		return os.RemoveAll(meta.Def.LocalPath)
 	}
 	if err := os.RemoveAll(GetInstallPath(pkg)); err != nil {
 		return err

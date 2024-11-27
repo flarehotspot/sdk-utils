@@ -15,23 +15,22 @@ const (
 	PluginSrcStore  string = "store"
 	PluginSrcSystem string = "system"
 	PluginSrcLocal  string = "local"
-	PluginSrcZip    string = "zip"
 )
 
 type PluginMetadata struct {
-	Def PluginSrcDef
+	Package     string
+	Def         PluginSrcDef
+	InstallPath string
 }
 
 type PluginSrcDef struct {
-	Src                string // git | store | system | local | zip
+	Src                string // git | store | system | local
 	StorePackage       string // if src is "store"
 	StorePluginVersion string // if src is "store"
 	StoreZipUrl        string // if src is "store"
 	GitURL             string // if src is "git"
 	GitRef             string // can be a branch, tag or commit hash
-	LocalZipFile       string // if src is "zip"
 	LocalPath          string // if src is "local or system"
-	InstallPath        string // where the plugin is installed
 }
 
 func (def PluginSrcDef) String() string {
@@ -41,8 +40,6 @@ func (def PluginSrcDef) String() string {
 	case PluginSrcStore:
 		return def.StorePackage + "@" + def.StorePluginVersion
 	case PluginSrcSystem, PluginSrcLocal:
-		return def.LocalPath
-	case PluginSrcZip:
 		return def.LocalPath
 	default:
 		return "unknown plugin source: " + def.Src
@@ -60,12 +57,12 @@ func (def PluginSrcDef) Equal(compare PluginSrcDef) bool {
 }
 
 type PluginsConfig struct {
-	Recompile []string                `json:"recompile"`
-	Plugins   map[string]PluginSrcDef `json:"plugins"`
+	Recompile []string         `json:"recompile"`
+	Metadata  []PluginMetadata `json:"metadata"`
 }
 
 func ReadPluginsConfig() (PluginsConfig, error) {
-	empTyCfg := PluginsConfig{Recompile: []string{}, Plugins: map[string]PluginSrcDef{}}
+	empTyCfg := PluginsConfig{Recompile: []string{}, Metadata: []PluginMetadata{}}
 	cfg, err := q.Exec(func() (interface{}, error) {
 		var cfg PluginsConfig
 		err := readConfigFile(jsonFile, &cfg)
@@ -80,8 +77,8 @@ func ReadPluginsConfig() (PluginsConfig, error) {
 	}
 
 	pluginsCfg := cfg.(PluginsConfig)
-	if pluginsCfg.Plugins == nil {
-		pluginsCfg.Plugins = map[string]PluginSrcDef{}
+	if pluginsCfg.Metadata == nil {
+		pluginsCfg.Metadata = empTyCfg.Metadata
 	}
 
 	return pluginsCfg, nil

@@ -34,7 +34,7 @@ func MakePluginInitMono() {
 	pluginPaths := []string{"core"}
 	pluginDirs := pkg.LocalPluginPaths()
 	pluginPaths = append(pluginPaths, pluginDirs...)
-	coreInfo := pkg.CoreInfo()
+	coreInfo := pkg.GetCoreInfo()
 
 	pluginMods := []PluginModule{}
 	for _, dir := range pluginDirs {

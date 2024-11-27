@@ -13,7 +13,7 @@ import (
 )
 
 func SyncCoreVersion() {
-	version := pkg.CoreInfo().Version
+	version := pkg.GetCoreInfo().Version
 	packageJson := "package.json"
 	var pkg map[string]interface{}
 	err := sdkfs.ReadJson(packageJson, &pkg)

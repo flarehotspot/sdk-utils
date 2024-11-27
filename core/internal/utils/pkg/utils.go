@@ -19,23 +19,6 @@ var (
 	ErrNotInstalled = errors.New("Plugin is not installed")
 )
 
-func PluginsUserList() (list []config.PluginSrcDef) {
-	cfg, err := config.ReadPluginsConfig()
-	if err != nil {
-		return list
-	}
-
-	list = make([]config.PluginSrcDef, len(cfg.Plugins))
-
-	i := 0
-	for _, def := range cfg.Plugins {
-		list[i] = def
-		i++
-	}
-
-	return
-}
-
 func IsDefInList(defs []config.PluginSrcDef, def config.PluginSrcDef) bool {
 	for _, i := range defs {
 		if i.Equal(def) {
@@ -76,7 +59,14 @@ func InsalledPluginsDef() []config.PluginSrcDef {
 			continue
 		}
 		metadata, err := ReadMetadata(info.Package)
-		list = append(list, metadata)
+		if err != nil {
+			log.Println("Error reading plugin metadata: ", err)
+			continue
+		}
+
+		if info.Package == metadata.Package {
+			list = append(list, metadata.Def)
+		}
 	}
 	return list
 }
@@ -136,24 +126,29 @@ func WriteMetadata(def config.PluginSrcDef, pkg string, installPath string) erro
 		return err
 	}
 
-	def.InstallPath = installPath
-	cfg.Plugins[pkg] = def
+	meta := config.PluginMetadata{
+		Def:         def,
+		InstallPath: installPath,
+	}
+
+	cfg.Metadata = append(cfg.Metadata, meta)
 
 	return config.WritePluginsConfig(cfg)
 }
 
-func ReadMetadata(pkg string) (metadata config.PluginSrcDef, err error) {
+func ReadMetadata(pkg string) (metadata config.PluginMetadata, err error) {
 	cfg, err := config.ReadPluginsConfig()
 	if err != nil {
 		return
 	}
-	metadata, ok := cfg.Plugins[pkg]
-	if !ok {
-		err = errors.New("Plugin metadata not found")
-		return
+
+	for _, m := range cfg.Metadata {
+		if m.Package == pkg {
+			return m, nil
+		}
 	}
 
-	return
+	return metadata, ErrNotInstalled
 }
 
 func IsPackageInstalled(pkg string) bool {
@@ -163,20 +158,25 @@ func IsPackageInstalled(pkg string) bool {
 }
 
 func IsSrcDefInstalled(def config.PluginSrcDef) bool {
-	err := ValidateInstallPath(def.InstallPath)
+	installPath, ok := FindDefInstallPath(def)
+	if !ok {
+		return false
+	}
+
+	err := ValidateInstallPath(installPath)
 	return err == nil
 }
 
-func InstalledPluginsList() (list []config.PluginSrcDef) {
+func InstalledPluginsList() (list []config.PluginMetadata) {
 	cfg, err := config.ReadPluginsConfig()
 	if err != nil {
 		return list
 	}
 
-	list = []config.PluginSrcDef{}
-	for _, def := range cfg.Plugins {
-		if IsSrcDefInstalled(def) {
-			list = append(list, def)
+	list = []config.PluginMetadata{}
+	for _, m := range cfg.Metadata {
+		if IsSrcDefInstalled(m.Def) {
+			list = append(list, m)
 		}
 	}
 
@@ -188,14 +188,14 @@ func NeedsRecompile(def config.PluginSrcDef) bool {
 		return true
 	}
 
-	cfg, err := config.ReadPluginsConfig()
+	info, err := GetInfoFromDef(def)
 	if err != nil {
-		log.Println("Error reading plugins config: ", err)
 		return true
 	}
 
-	info, err := GetInfoFromPath(def.InstallPath)
+	cfg, err := config.ReadPluginsConfig()
 	if err != nil {
+		log.Println("Error reading plugins config: ", err)
 		return true
 	}
 
@@ -315,9 +315,9 @@ func FindDefInstallPath(def config.PluginSrcDef) (installPath string, ok bool) {
 		return
 	}
 
-	for pkg, cfgdef := range cfg.Plugins {
-		if def.Equal(cfgdef) {
-			return GetInstallPath(pkg), true
+	for _, meta := range cfg.Metadata {
+		if def.Equal(meta.Def) {
+			return GetInstallPath(meta.Package), true
 		}
 	}
 

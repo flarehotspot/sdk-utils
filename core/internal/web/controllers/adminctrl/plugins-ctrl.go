@@ -3,7 +3,6 @@ package adminctrl
 import (
 	"core/internal/config"
 	"core/internal/plugins"
-	"core/internal/utils/pkg"
 	"net/http"
 	sdkplugin "sdk/api/plugin"
 )
@@ -215,28 +214,28 @@ func PluginsInstallCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 	}
 }
 
-func getInstalledPlugins() []PluginData {
-	sources := pkg.InstalledPluginsList()
-	plugins := []PluginData{}
+// func getInstalledPlugins() []PluginData {
+// sources := pkg.InstalledPluginsList()
+// plugins := []PluginData{}
 
-	for _, def := range sources {
-		info, err := pkg.GetInfoFromDef(def)
-		if err != nil {
-			return nil
-		}
+// for _, def := range sources {
+// 	info, err := pkg.GetInfoFromDef(def)
+// 	if err != nil {
+// 		return nil
+// 	}
 
-		p := PluginData{
-			Info:             info,
-			Src:              def,
-			HasPendingUpdate: pkg.HasPendingUpdate(info.Package),
-			ToBeRemoved:      pkg.IsToBeRemoved(info.Package),
-		}
+// 	p := PluginData{
+// 		Info:             info,
+// 		Src:              def,
+// 		HasPendingUpdate: pkg.HasPendingUpdate(info.Package),
+// 		ToBeRemoved:      pkg.IsToBeRemoved(info.Package),
+// 	}
 
-		plugins = append(plugins, p)
-	}
+// 	plugins = append(plugins, p)
+// }
 
-	return plugins
-}
+// return plugins
+// }
 
 func UninstallPluginCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {

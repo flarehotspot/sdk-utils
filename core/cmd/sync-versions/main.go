@@ -13,7 +13,7 @@ import (
 func main() {
 	tools.SyncCoreVersion()
 	tools.SyncGoVersion()
-	version := pkg.CoreInfo().Version
+	version := pkg.GetCoreInfo().Version
 	releaseNotePath := filepath.Join(sdkpaths.CoreDir, "build", "release-notes", version+".md")
 	if !sdkfs.Exists(releaseNotePath) {
 		if err := os.WriteFile(releaseNotePath, []byte("## "+version+"\n\n"), 0644); err != nil {
