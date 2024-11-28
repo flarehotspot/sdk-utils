@@ -16,10 +16,10 @@ import (
 type BuildOutput struct {
 	OutputDirName string
 	Files         []string
-	ExtraFiles    []ExtraFiles
+	ExtraFiles    []CustomFiles
 }
 
-type ExtraFiles struct {
+type CustomFiles struct {
 	Src  string
 	Dest string
 }

@@ -16,7 +16,7 @@ func main() {
 			// "utils",
 			"go.work.default",
 		},
-		ExtraFiles: []tools.ExtraFiles{
+		ExtraFiles: []tools.CustomFiles{
 			{
 				Src:  "go.work.default",
 				Dest: "go.work",
