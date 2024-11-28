@@ -31,12 +31,12 @@ type PluginFile struct {
 
 var PLuginFiles = []PluginFile{
 	{File: "LICENSE.txt", Optional: false},
+	{File: "go.mod", Optional: false},
 	{File: "plugin.json", Optional: false},
 	{File: "plugin.so", Optional: false},
 	{File: "resources/assets/dist", Optional: true},
 	{File: "resources/migrations", Optional: true},
 	{File: "resources/translations", Optional: true},
-	{File: "go.mod", Optional: false},
 }
 
 func InstallSrcDef(w io.Writer, def config.PluginSrcDef) (info sdkplugin.PluginInfo, err error) {
