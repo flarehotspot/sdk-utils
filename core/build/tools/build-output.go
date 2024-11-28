@@ -16,7 +16,7 @@ import (
 type BuildOutput struct {
 	OutputDirName string
 	Files         []string
-	ExtraFiles    []CustomFiles
+	CustomFiles   []CustomFiles
 }
 
 type CustomFiles struct {
@@ -47,7 +47,7 @@ func (b *BuildOutput) Run() error {
 		contentList = append(contentList, entry)
 	}
 
-	for _, entry := range b.ExtraFiles {
+	for _, entry := range b.CustomFiles {
 		srcPath := filepath.Join(sdkpaths.AppDir, entry.Src)
 		destPath := filepath.Join(b.outputPath(), entry.Dest)
 		if err := b.copy(srcPath, destPath); err != nil {

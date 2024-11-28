@@ -13,10 +13,9 @@ func main() {
 			"core/resources",
 			"plugins/system",
 			"sdk",
-			// "utils",
 			"go.work.default",
 		},
-		ExtraFiles: []tools.CustomFiles{
+		CustomFiles: []tools.CustomFiles{
 			{
 				Src:  "go.work.default",
 				Dest: "go.work",
