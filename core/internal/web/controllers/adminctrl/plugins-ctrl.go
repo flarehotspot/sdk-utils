@@ -1,10 +1,11 @@
 package adminctrl
 
 import (
-	"core/internal/config"
 	"core/internal/plugins"
 	"net/http"
 	sdkplugin "sdk/api/plugin"
+
+	sdkpkg "github.com/flarehotspot/go-utils/pkg"
 )
 
 type PluginRelease struct {
@@ -18,7 +19,7 @@ type PluginRelease struct {
 type PluginData struct {
 	Id                 int
 	Info               sdkplugin.PluginInfo
-	Src                config.PluginSrcDef
+	Src                sdkpkg.PluginSrcDef
 	HasPendingUpdate   bool
 	HasUpdates         bool
 	ToBeRemoved        bool

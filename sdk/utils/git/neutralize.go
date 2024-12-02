@@ -1,4 +1,4 @@
-package git
+package sdkgit
 
 import "strings"
 
