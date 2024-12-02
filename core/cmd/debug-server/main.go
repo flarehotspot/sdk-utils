@@ -1,6 +1,7 @@
 package main
 
 import (
+	"core/env"
 	"core/internal/utils/pkg"
 	"fmt"
 	"os"
@@ -12,7 +13,7 @@ import (
 
 func main() {
 	goBin := pkg.GoBin()
-	buildArgs := sdkpkg.DefaultBuildArgs()
+	buildArgs := sdkpkg.DefaultBuildArgs(env.BuildTags)
 	runCmd := []string{"run"}
 	runCmd = append(runCmd, buildArgs...)
 	runCmd = append(runCmd, "main/main.go")

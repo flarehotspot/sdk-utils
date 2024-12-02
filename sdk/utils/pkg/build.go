@@ -14,6 +14,7 @@ type GoBuildOpts struct {
 	GoBinPath string
 	WorkDir   string
 	Env       []string
+	BuildTags string
 	ExtraArgs []string
 }
 
@@ -25,7 +26,7 @@ func BuildGoModule(gofile string, outfile string, opts GoBuildOpts) error {
 	fmt.Println("Building go module: " + sdkpaths.StripRoot(filepath.Join(opts.WorkDir, gofile)))
 
 	goBin := opts.GoBinPath
-	buildArgs := DefaultBuildArgs()
+	buildArgs := DefaultBuildArgs(opts.BuildTags)
 	buildArgs = append(buildArgs, opts.ExtraArgs...)
 
 	buildCmd := []string{"build"}
@@ -38,9 +39,9 @@ func BuildGoModule(gofile string, outfile string, opts GoBuildOpts) error {
 	}
 
 	fmt.Printf(`Build working directory: %s`+"\n", sdkpaths.StripRoot(opts.WorkDir))
+	fmt.Printf("Executing: %s\n", cmdstr)
 
 	var stderr strings.Builder
-
 	cmd := exec.Command("sh", "-c", cmdstr)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = &stderr
@@ -56,11 +57,13 @@ func BuildGoModule(gofile string, outfile string, opts GoBuildOpts) error {
 	return nil
 }
 
-func DefaultBuildArgs() []string {
+// DefaultBuildArgs returns the go build arguments with tags: go build -tags=[tags]
+func DefaultBuildArgs(tags string) []string {
 	args := []string{}
 	args = append(args, `-ldflags="-s -w"`, "-trimpath", "-buildvcs=false")
-
-	fmt.Println("Build args: ", args)
+	if tags != "" {
+		args = append(args, fmt.Sprintf("-tags='%s'", tags))
+	}
 
 	return args
 }

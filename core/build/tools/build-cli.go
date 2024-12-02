@@ -36,12 +36,11 @@ func BuildFlareCLI() {
 		cliPath := b.File
 		workdir, _ := os.Getwd()
 		envs := []string{"GOOS=" + b.GOOS, "GOARCH=" + b.GOARCH}
-		extraArgs := []string{"-tags=" + env.BuildTags}
 		opts := sdkpkg.GoBuildOpts{
 			GoBinPath: pkg.GoBin(),
 			WorkDir:   workdir,
 			Env:       envs,
-			ExtraArgs: extraArgs,
+			BuildTags: env.BuildTags,
 		}
 
 		if err := sdkpkg.BuildGoModule(cliFile, cliPath, opts); err != nil {

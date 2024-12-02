@@ -155,12 +155,7 @@ use (
 
 	gofile := "main.go"
 	outfile := "plugin.so"
-	args := sdkpkg.GoBuildOpts{
-		GoBinPath: GoBin(),
-		WorkDir:   buildpath,
-		ExtraArgs: []string{"-buildmode=plugin", fmt.Sprintf("-tags='%s'", env.BuildTags)},
-	}
-	if err := sdkpkg.BuildGoModule(gofile, outfile, args); err != nil {
+	if err := BuildGoPlugin(gofile, outfile, buildpath, nil); err != nil {
 		return err
 	}
 
@@ -174,27 +169,22 @@ use (
 	return nil
 }
 
-func BuildGoModule(gofile string, outfile string, workdir string, envs []string) error {
-
-	fmt.Println("Building go module: " + sdkpaths.StripRoot(filepath.Join(workdir, gofile)))
-
+func BuildGoPlugin(gofile string, outfile string, workdir string, envs []string) error {
 	goBin := GoBin()
-	extraArgs := []string{"-buildmode=plugin", fmt.Sprintf("-tags='%s'", env.BuildTags)}
+	extraArgs := []string{"-buildmode=plugin"}
 
 	buildOpts := sdkpkg.GoBuildOpts{
 		GoBinPath: goBin,
 		WorkDir:   workdir,
 		Env:       envs,
+		BuildTags: env.BuildTags,
 		ExtraArgs: extraArgs,
 	}
-
-	fmt.Printf(`Build working directory: %s`+"\n", sdkpaths.StripRoot(workdir))
 
 	if err := sdkpkg.BuildGoModule(gofile, outfile, buildOpts); err != nil {
 		return err
 	}
 
-	fmt.Println("Module built successfully: " + sdkpaths.StripRoot(filepath.Join(workdir, outfile)))
 	return nil
 }
 
