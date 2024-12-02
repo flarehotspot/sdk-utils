@@ -13,13 +13,13 @@ import (
 	"strings"
 	"syscall"
 
-	"core/internal/config"
 	rpc "core/internal/rpc"
 	"core/internal/utils/pkg"
 
 	sdkextract "github.com/flarehotspot/go-utils/extract"
 	sdkfs "github.com/flarehotspot/go-utils/fs"
 	sdkpaths "github.com/flarehotspot/go-utils/paths"
+	sdkpkg "github.com/flarehotspot/go-utils/pkg"
 	sdksemver "github.com/flarehotspot/go-utils/semver"
 )
 
@@ -236,7 +236,7 @@ func UpdateCore(localUpdateFiles UpdateFiles) error {
 	return nil
 }
 
-func CheckForPluginUpdates(def config.PluginSrcDef, info sdkplugin.PluginInfo) (bool, error) {
+func CheckForPluginUpdates(def sdkpkg.PluginSrcDef, info sdkplugin.PluginInfo) (bool, error) {
 	switch def.Src {
 	case "git":
 		hasUpdates, err := CheckUpdatesFromGithub(def, info)
@@ -257,7 +257,7 @@ func CheckForPluginUpdates(def config.PluginSrcDef, info sdkplugin.PluginInfo) (
 	}
 }
 
-func CheckUpdatesFromGithub(def config.PluginSrcDef, info sdkplugin.PluginInfo) (bool, error) {
+func CheckUpdatesFromGithub(def sdkpkg.PluginSrcDef, info sdkplugin.PluginInfo) (bool, error) {
 	author := pkg.GetAuthorNameFromGitUrl(def)
 	repo := pkg.GetRepoFromGitUrl(def)
 
@@ -306,7 +306,7 @@ func CheckUpdatesFromGithub(def config.PluginSrcDef, info sdkplugin.PluginInfo) 
 	return sdksemver.HasUpdates(currentPRVersion, latestPRVersion), nil
 }
 
-func CheckUpdatesFromStore(def config.PluginSrcDef, info sdkplugin.PluginInfo) (bool, error) {
+func CheckUpdatesFromStore(def sdkpkg.PluginSrcDef, info sdkplugin.PluginInfo) (bool, error) {
 	// fetch latest plugin release from flare-server rpc
 	srv, ctx := rpc.GetCoreMachineTwirpServiceAndCtx()
 	qPlugins, err := srv.FetchLatestValidPRByPackage(ctx, &rpc.FetchLatestValidPRByPackageRequest{

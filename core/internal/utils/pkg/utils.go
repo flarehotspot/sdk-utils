@@ -13,13 +13,14 @@ import (
 	sdkfs "github.com/flarehotspot/go-utils/fs"
 	paths "github.com/flarehotspot/go-utils/paths"
 	sdkpaths "github.com/flarehotspot/go-utils/paths"
+	sdkpkg "github.com/flarehotspot/go-utils/pkg"
 )
 
 var (
 	ErrNotInstalled = errors.New("Plugin is not installed")
 )
 
-func IsDefInList(defs []config.PluginSrcDef, def config.PluginSrcDef) bool {
+func IsDefInList(defs []sdkpkg.PluginSrcDef, def sdkpkg.PluginSrcDef) bool {
 	for _, i := range defs {
 		if i.Equal(def) {
 			return true
@@ -28,7 +29,7 @@ func IsDefInList(defs []config.PluginSrcDef, def config.PluginSrcDef) bool {
 	return false
 }
 
-func AllPluginDef() []config.PluginSrcDef {
+func AllPluginDef() []sdkpkg.PluginSrcDef {
 	list := InsalledPluginsDef()
 	localPlugins := LocalPlugins()
 	for _, loc := range localPlugins {
@@ -39,18 +40,18 @@ func AllPluginDef() []config.PluginSrcDef {
 	return list
 }
 
-func LocalPlugins() []config.PluginSrcDef {
-	list := []config.PluginSrcDef{}
+func LocalPlugins() []sdkpkg.PluginSrcDef {
+	list := []sdkpkg.PluginSrcDef{}
 	paths := LocalPluginPaths()
 	for _, p := range paths {
-		list = append(list, config.PluginSrcDef{Src: config.PluginSrcLocal, LocalPath: p})
+		list = append(list, sdkpkg.PluginSrcDef{Src: sdkpkg.PluginSrcLocal, LocalPath: p})
 	}
 	log.Println("local plugins list: ", list)
 	return list
 }
 
-func InsalledPluginsDef() []config.PluginSrcDef {
-	list := []config.PluginSrcDef{}
+func InsalledPluginsDef() []sdkpkg.PluginSrcDef {
+	list := []sdkpkg.PluginSrcDef{}
 	paths := InstalledDirList()
 	for _, p := range paths {
 		info, err := GetInfoFromPath(p)
@@ -120,13 +121,13 @@ func GetMetaDataPath(pkg string) string {
 	return filepath.Join(sdkpaths.ConfigDir, "plugins", pkg, "metadata.json")
 }
 
-func WriteMetadata(def config.PluginSrcDef, pkg string, installPath string) error {
+func WriteMetadata(def sdkpkg.PluginSrcDef, pkg string, installPath string) error {
 	cfg, err := config.ReadPluginsConfig()
 	if err != nil {
 		return err
 	}
 
-	meta := config.PluginMetadata{
+	meta := sdkpkg.PluginMetadata{
 		Def:         def,
 		InstallPath: installPath,
 	}
@@ -136,7 +137,7 @@ func WriteMetadata(def config.PluginSrcDef, pkg string, installPath string) erro
 	return config.WritePluginsConfig(cfg)
 }
 
-func ReadMetadata(pkg string) (metadata config.PluginMetadata, err error) {
+func ReadMetadata(pkg string) (metadata sdkpkg.PluginMetadata, err error) {
 	cfg, err := config.ReadPluginsConfig()
 	if err != nil {
 		return
@@ -157,7 +158,7 @@ func IsPackageInstalled(pkg string) bool {
 	return err == nil
 }
 
-func IsSrcDefInstalled(def config.PluginSrcDef) bool {
+func IsSrcDefInstalled(def sdkpkg.PluginSrcDef) bool {
 	installPath, ok := FindDefInstallPath(def)
 	if !ok {
 		return false
@@ -167,13 +168,13 @@ func IsSrcDefInstalled(def config.PluginSrcDef) bool {
 	return err == nil
 }
 
-func InstalledPluginsList() (list []config.PluginMetadata) {
+func InstalledPluginsList() (list []sdkpkg.PluginMetadata) {
 	cfg, err := config.ReadPluginsConfig()
 	if err != nil {
 		return list
 	}
 
-	list = []config.PluginMetadata{}
+	list = []sdkpkg.PluginMetadata{}
 	for _, m := range cfg.Metadata {
 		if IsSrcDefInstalled(m.Def) {
 			list = append(list, m)
@@ -183,8 +184,8 @@ func InstalledPluginsList() (list []config.PluginMetadata) {
 	return
 }
 
-func NeedsRecompile(def config.PluginSrcDef) bool {
-	if env.GO_ENV == env.ENV_DEV && (def.Src == config.PluginSrcLocal || def.Src == config.PluginSrcSystem) {
+func NeedsRecompile(def sdkpkg.PluginSrcDef) bool {
+	if env.GO_ENV == env.ENV_DEV && (def.Src == sdkpkg.PluginSrcLocal || def.Src == sdkpkg.PluginSrcSystem) {
 		return true
 	}
 
@@ -309,7 +310,7 @@ func FindPluginSrc(dir string) (string, error) {
 	return "", errors.New("Can't find plugin.json in " + paths.StripRoot(dir))
 }
 
-func FindDefInstallPath(def config.PluginSrcDef) (installPath string, ok bool) {
+func FindDefInstallPath(def sdkpkg.PluginSrcDef) (installPath string, ok bool) {
 	cfg, err := config.ReadPluginsConfig()
 	if err != nil {
 		return
@@ -324,11 +325,11 @@ func FindDefInstallPath(def config.PluginSrcDef) (installPath string, ok bool) {
 	return "", false
 }
 
-func GetAuthorNameFromGitUrl(def config.PluginSrcDef) string {
+func GetAuthorNameFromGitUrl(def sdkpkg.PluginSrcDef) string {
 	return strings.Split(strings.TrimPrefix(def.GitURL, "https://github.com/"), "/")[0]
 }
 
-func GetRepoFromGitUrl(def config.PluginSrcDef) string {
+func GetRepoFromGitUrl(def sdkpkg.PluginSrcDef) string {
 	return strings.Split(strings.TrimPrefix(def.GitURL, fmt.Sprintf("https://github.com/%s/", GetAuthorNameFromGitUrl(def))), "/")[0]
 }
 

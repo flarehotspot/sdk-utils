@@ -1,7 +1,6 @@
 package pkg
 
 import (
-	"core/internal/config"
 	"core/internal/utils/download"
 	"errors"
 	"io"
@@ -10,9 +9,10 @@ import (
 	"path/filepath"
 
 	sdkextract "github.com/flarehotspot/go-utils/extract"
+	sdkgit "github.com/flarehotspot/go-utils/git"
+	sdkpkg "github.com/flarehotspot/go-utils/pkg"
 
 	"core/internal/utils/encdisk"
-	"core/internal/utils/git"
 	sdkplugin "sdk/api/plugin"
 
 	sdkfs "github.com/flarehotspot/go-utils/fs"
@@ -21,7 +21,7 @@ import (
 )
 
 type PluginMetadata struct {
-	Def config.PluginSrcDef
+	Def sdkpkg.PluginSrcDef
 }
 
 type PluginFile struct {
@@ -39,13 +39,13 @@ var PLuginFiles = []PluginFile{
 	{File: "resources/translations", Optional: true},
 }
 
-func InstallSrcDef(w io.Writer, def config.PluginSrcDef) (info sdkplugin.PluginInfo, err error) {
+func InstallSrcDef(w io.Writer, def sdkpkg.PluginSrcDef) (info sdkplugin.PluginInfo, err error) {
 	switch def.Src {
-	case config.PluginSrcGit:
+	case sdkpkg.PluginSrcGit:
 		info, err = InstallFromGitSrc(w, def)
-	case config.PluginSrcLocal, config.PluginSrcSystem:
+	case sdkpkg.PluginSrcLocal, sdkpkg.PluginSrcSystem:
 		info, err = InstallFromLocalPath(w, def)
-	case config.PluginSrcStore:
+	case sdkpkg.PluginSrcStore:
 		info, err = InstallFromPluginStore(w, def)
 	default:
 		return sdkplugin.PluginInfo{}, errors.New("Invalid plugin source: " + def.Src)
@@ -54,7 +54,7 @@ func InstallSrcDef(w io.Writer, def config.PluginSrcDef) (info sdkplugin.PluginI
 	return info, err
 }
 
-func InstallFromLocalPath(w io.Writer, def config.PluginSrcDef) (info sdkplugin.PluginInfo, err error) {
+func InstallFromLocalPath(w io.Writer, def sdkpkg.PluginSrcDef) (info sdkplugin.PluginInfo, err error) {
 	w.Write([]byte("Installing plugin from local path: " + def.LocalPath))
 
 	info, err = GetInfoFromPath(def.LocalPath)
@@ -108,7 +108,7 @@ func InstallFromLocalPath(w io.Writer, def config.PluginSrcDef) (info sdkplugin.
 // 	return info, nil
 // }
 
-func InstallFromPluginStore(w io.Writer, def config.PluginSrcDef) (sdkplugin.PluginInfo, error) {
+func InstallFromPluginStore(w io.Writer, def sdkpkg.PluginSrcDef) (sdkplugin.PluginInfo, error) {
 	w.Write([]byte("Installing plugin from store: " + def.StorePackage))
 
 	// prepare path
@@ -160,7 +160,7 @@ func InstallFromPluginStore(w io.Writer, def config.PluginSrcDef) (sdkplugin.Plu
 	return info, nil
 }
 
-func InstallFromGitSrc(w io.Writer, def config.PluginSrcDef) (sdkplugin.PluginInfo, error) {
+func InstallFromGitSrc(w io.Writer, def sdkpkg.PluginSrcDef) (sdkplugin.PluginInfo, error) {
 	log.Println("Installing plugin from git source: " + def.String())
 	randomPath := RandomPluginPath()
 	diskfile := filepath.Join(randomPath, "disk")
@@ -176,10 +176,10 @@ func InstallFromGitSrc(w io.Writer, def config.PluginSrcDef) (sdkplugin.PluginIn
 
 	defer mnt.Unmount()
 
-	repo := git.RepoSource{URL: def.GitURL, Ref: def.GitRef}
+	repo := sdkgit.RepoSource{URL: def.GitURL, Ref: def.GitRef}
 
 	log.Println("Cloning plugin from git: " + def.GitURL)
-	if err := git.Clone(w, repo, clonePath); err != nil {
+	if err := sdkgit.Clone(w, repo, clonePath); err != nil {
 		log.Println("Error cloning: ", err)
 		return sdkplugin.PluginInfo{}, err
 	}
@@ -285,7 +285,7 @@ func RemovePlugin(pkg string) error {
 	if err != nil {
 		return err
 	}
-	if meta.Def.Src == config.PluginSrcLocal || meta.Def.Src == config.PluginSrcSystem {
+	if meta.Def.Src == sdkpkg.PluginSrcLocal || meta.Def.Src == sdkpkg.PluginSrcSystem {
 		return os.RemoveAll(meta.Def.LocalPath)
 	}
 	if err := os.RemoveAll(GetInstallPath(pkg)); err != nil {

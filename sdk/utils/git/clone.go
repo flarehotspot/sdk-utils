@@ -1,8 +1,6 @@
-package git
+package sdkgit
 
 import (
-	"core/internal/utils/cmd"
-	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -61,11 +59,12 @@ func Clone(w io.Writer, repo RepoSource, clonePath string) error {
 	} else {
 		// Clone the repository using the "git clone" command with the provided URL
 		var stderr strings.Builder
-		if err := cmd.Exec(fmt.Sprintf("git clone %s %s", repo.URL, clonePath), &cmd.ExecOpts{
-			Stdout: w,
-			Stderr: &stderr,
-		}); err != nil {
-			return errors.New(fmt.Sprintf("Error: %s\nStderr: %s", err.Error(), stderr.String()))
+
+		cmd := exec.Command("git", "clone", repo.URL, clonePath)
+		cmd.Stderr = &stderr
+
+		if err := cmd.Run(); err != nil {
+			return fmt.Errorf("Error: %s\nStderr: %s", err.Error(), stderr.String())
 		}
 
 		log.Printf("Repository cloned to %s", clonePath)

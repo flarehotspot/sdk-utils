@@ -2,10 +2,8 @@ package pkg
 
 import (
 	"core/env"
-	"core/internal/config"
 	"core/internal/utils/cmd"
 	"core/internal/utils/encdisk"
-	"core/internal/utils/git"
 	"errors"
 	"fmt"
 	"io"
@@ -15,12 +13,14 @@ import (
 	sdkplugin "sdk/api/plugin"
 
 	sdkfs "github.com/flarehotspot/go-utils/fs"
+	sdkgit "github.com/flarehotspot/go-utils/git"
 	sdkpaths "github.com/flarehotspot/go-utils/paths"
+	sdkpkg "github.com/flarehotspot/go-utils/pkg"
 	sdkruntime "github.com/flarehotspot/go-utils/runtime"
 	sdkstr "github.com/flarehotspot/go-utils/strings"
 )
 
-func BuildFromLocal(w io.Writer, def config.PluginSrcDef) (sdkplugin.PluginInfo, error) {
+func BuildFromLocal(w io.Writer, def sdkpkg.PluginSrcDef) (sdkplugin.PluginInfo, error) {
 	err := InstallPlugin(def.LocalPath, InstallOpts{RemoveSrc: false})
 	if err != nil {
 		return sdkplugin.PluginInfo{}, err
@@ -40,7 +40,7 @@ func BuildFromLocal(w io.Writer, def config.PluginSrcDef) (sdkplugin.PluginInfo,
 	return info, nil
 }
 
-func BuildFromGit(w io.Writer, def config.PluginSrcDef) (sdkplugin.PluginInfo, error) {
+func BuildFromGit(w io.Writer, def sdkpkg.PluginSrcDef) (sdkplugin.PluginInfo, error) {
 	dev := sdkstr.Slugify(sdkstr.Rand(16), "_")
 	parentpath := RandomPluginPath()
 	diskfile := filepath.Join(parentpath, "plugin-clone", "disk", dev)
@@ -52,9 +52,9 @@ func BuildFromGit(w io.Writer, def config.PluginSrcDef) (sdkplugin.PluginInfo, e
 	}
 
 	w.Write([]byte("Cloning plugin from git: " + def.GitURL))
-	repo := git.RepoSource{URL: def.GitURL, Ref: def.GitRef}
+	repo := sdkgit.RepoSource{URL: def.GitURL, Ref: def.GitRef}
 
-	if err := git.Clone(w, repo, clonepath); err != nil {
+	if err := sdkgit.Clone(w, repo, clonepath); err != nil {
 		return sdkplugin.PluginInfo{}, err
 	}
 
@@ -213,7 +213,7 @@ func BuildGoModule(gofile string, outfile string, params *GoBuildArgs) error {
 }
 
 type InstallOpts struct {
-	Def       config.PluginSrcDef
+	Def       sdkpkg.PluginSrcDef
 	RemoveSrc bool
 	Encrypt   bool
 }

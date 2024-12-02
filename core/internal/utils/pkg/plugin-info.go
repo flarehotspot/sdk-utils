@@ -1,15 +1,15 @@
 package pkg
 
 import (
-	"core/internal/config"
 	"path/filepath"
 	sdkplugin "sdk/api/plugin"
 
 	sdkfs "github.com/flarehotspot/go-utils/fs"
 	sdkpaths "github.com/flarehotspot/go-utils/paths"
+	sdkpkg "github.com/flarehotspot/go-utils/pkg"
 )
 
-func GetInfoFromDef(def config.PluginSrcDef) (info sdkplugin.PluginInfo, err error) {
+func GetInfoFromDef(def sdkpkg.PluginSrcDef) (info sdkplugin.PluginInfo, err error) {
 	path, ok := FindDefInstallPath(def)
 	if !ok {
 		return info, ErrNotInstalled
