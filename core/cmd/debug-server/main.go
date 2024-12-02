@@ -1,16 +1,19 @@
 package main
 
 import (
+	"core/env"
 	"core/internal/utils/pkg"
 	"fmt"
 	"os"
 	"os/exec"
 	"strings"
+
+	sdkpkg "github.com/flarehotspot/go-utils/pkg"
 )
 
 func main() {
 	goBin := pkg.GoBin()
-	buildArgs := pkg.BuildArgs()
+	buildArgs := sdkpkg.DefaultBuildArgs(env.BuildTags)
 	runCmd := []string{"run"}
 	runCmd = append(runCmd, buildArgs...)
 	runCmd = append(runCmd, "main/main.go")

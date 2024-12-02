@@ -2,7 +2,6 @@ package pkg
 
 import (
 	"core/env"
-	"core/internal/utils/cmd"
 	"core/internal/utils/encdisk"
 	"errors"
 	"fmt"
@@ -156,8 +155,7 @@ use (
 
 	gofile := "main.go"
 	outfile := "plugin.so"
-	args := &GoBuildArgs{WorkDir: buildpath, ExtraArgs: []string{"-buildmode=plugin"}}
-	if err := BuildGoModule(gofile, outfile, args); err != nil {
+	if err := BuildGoPlugin(gofile, outfile, buildpath, nil); err != nil {
 		return err
 	}
 
@@ -171,44 +169,22 @@ use (
 	return nil
 }
 
-type GoBuildArgs struct {
-	WorkDir   string
-	Env       []string
-	ExtraArgs []string
-}
-
-func BuildGoModule(gofile string, outfile string, params *GoBuildArgs) error {
-	if params == nil {
-		params = &GoBuildArgs{}
-	}
-
-	fmt.Println("Building go module: " + sdkpaths.StripRoot(filepath.Join(params.WorkDir, gofile)))
-
+func BuildGoPlugin(gofile string, outfile string, workdir string, envs []string) error {
 	goBin := GoBin()
-	buildArgs := BuildArgs()
-	buildArgs = append(buildArgs, params.ExtraArgs...)
+	extraArgs := []string{"-buildmode=plugin"}
 
-	buildCmd := []string{"build"}
-	buildCmd = append(buildCmd, buildArgs...)
-	buildCmd = append(buildCmd, "-o", outfile, gofile)
-
-	cmdstr := goBin
-	for _, arg := range buildCmd {
-		cmdstr += " " + arg
+	buildOpts := sdkpkg.GoBuildOpts{
+		GoBinPath: goBin,
+		WorkDir:   workdir,
+		Env:       envs,
+		BuildTags: env.BuildTags,
+		ExtraArgs: extraArgs,
 	}
 
-	fmt.Printf(`Build working directory: %s`+"\n", sdkpaths.StripRoot(params.WorkDir))
-
-	err := cmd.Exec(cmdstr, &cmd.ExecOpts{
-		Stdout: os.Stdout,
-		Env:    append(os.Environ(), params.Env...),
-		Dir:    params.WorkDir,
-	})
-	if err != nil {
+	if err := sdkpkg.BuildGoModule(gofile, outfile, buildOpts); err != nil {
 		return err
 	}
 
-	fmt.Println("Module built successfully: " + sdkpaths.StripRoot(filepath.Join(params.WorkDir, outfile)))
 	return nil
 }
 
