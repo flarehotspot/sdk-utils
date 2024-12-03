@@ -30,9 +30,9 @@ func Extract(file string, dest string) error {
 	// identify compression format
 	switch {
 	case bytes.HasPrefix(buf, MagicNumZip):
-		return sdktargz.UntarGz(file, dest)
-	case bytes.HasPrefix(buf, MagicNumGzip):
 		return sdkunzip.Unzip(file, dest)
+	case bytes.HasPrefix(buf, MagicNumGzip):
+		return sdktargz.UntarGz(file, dest)
 	}
 
 	return ErrUnknownCompressionFormat
