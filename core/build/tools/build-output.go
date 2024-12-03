@@ -8,8 +8,6 @@ import (
 	sdkfs "github.com/flarehotspot/go-utils/fs"
 	sdkpaths "github.com/flarehotspot/go-utils/paths"
 	sdkruntime "github.com/flarehotspot/go-utils/runtime"
-
-	// sdkzip "github.com/flarehotspot/go-utils/zip"
 	sdktargz "github.com/flarehotspot/go-utils/targz"
 )
 
@@ -99,10 +97,6 @@ func (b *BuildOutput) copy(srcPath string, destPath string) error {
 
 func (b *BuildOutput) outputPath() string {
 	return filepath.Join(sdkpaths.AppDir, "output", b.OutputDirName)
-}
-
-func (b *BuildOutput) zipFilePath() string {
-	return filepath.Join(b.outputPath() + ".zip")
 }
 
 func (b *BuildOutput) targzFilePath() string {
