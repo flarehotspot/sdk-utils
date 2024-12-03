@@ -26,9 +26,9 @@ var (
 	PublicDir   = filepath.Join(AppDir, "public")
 	LogsDir     = filepath.Join(AppDir, "logs")
 	SdkDir      = filepath.Join(AppDir, "sdk")
-	TmpDir      = filepath.Join(AppDir, ".tmp")
+	TmpDir      = filepath.Join("/var/tmp/flare.tmp")
 	CacheDir    = filepath.Join(TmpDir, "cache")
-	UploadsDir  = filepath.Join(TmpDir, "uploads")
+	SqlcBin     = filepath.Join(AppDir, "bin", "sqlc")
 )
 
 // StripRoot removes the project root directory prefix from absolute paths

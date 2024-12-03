@@ -3,6 +3,7 @@ package sdktargz
 import (
 	"archive/tar"
 	"compress/gzip"
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -53,11 +54,12 @@ func TarGz(sourceDir, outputFile string) error {
 			if err != nil {
 				return err
 			}
-			defer file.Close()
 
-			if _, err := io.Copy(tw, file); err != nil {
+			if _, err = io.Copy(tw, file); err != nil {
+				file.Close() // dont use defer
 				return err
 			}
+			file.Close() // dont use defer
 		}
 
 		return nil
@@ -90,6 +92,7 @@ func UntarGz(tarGzFile, outputDir string) error {
 		if err == io.EOF {
 			break // End of archive
 		}
+
 		if err != nil {
 			return err
 		}
@@ -110,11 +113,17 @@ func UntarGz(tarGzFile, outputDir string) error {
 		if err != nil {
 			return err
 		}
-		defer file.Close()
 
-		if _, err := io.Copy(file, tr); err != nil {
+		if _, err = io.Copy(file, tr); err != nil {
+			file.Close() // dont use defer
 			return err
 		}
+
+		file.Close() // dont use defer
+
+		fmt.Printf("Extracted: %s\n", outputPath)
+
+		return err
 	}
 
 	return nil
