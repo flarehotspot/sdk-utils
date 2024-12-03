@@ -294,22 +294,6 @@ func ValidateInstallPath(src string) error {
 	return nil
 }
 
-func FindPluginSrc(dir string) (string, error) {
-	files := []string{}
-	err := sdkfs.LsFiles(dir, &files, true)
-	if err != nil {
-		return dir, err
-	}
-
-	for _, f := range files {
-		if filepath.Base(f) == "plugin.json" {
-			return filepath.Dir(f), nil
-		}
-	}
-
-	return "", errors.New("Can't find plugin.json in " + paths.StripRoot(dir))
-}
-
 func FindDefInstallPath(def sdkpkg.PluginSrcDef) (installPath string, ok bool) {
 	cfg, err := config.ReadPluginsConfig()
 	if err != nil {

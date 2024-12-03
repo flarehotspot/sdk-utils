@@ -6,12 +6,13 @@ import (
 
 	sdkfs "github.com/flarehotspot/go-utils/fs"
 	sdkpaths "github.com/flarehotspot/go-utils/paths"
+	sdkpkg "github.com/flarehotspot/go-utils/pkg"
 )
 
 func BuildLocalPlugins() error {
 	pluginPaths := LocalPluginPaths()
 	for _, searchPath := range pluginPaths {
-		pluginPath, err := FindPluginSrc(searchPath)
+		pluginPath, err := sdkpkg.FindPluginSrc(searchPath)
 		if err != nil {
 			return err
 		}

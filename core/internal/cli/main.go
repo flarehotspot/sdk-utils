@@ -16,6 +16,7 @@ import (
 	"core/internal/utils/updates"
 
 	sdkpaths "github.com/flarehotspot/go-utils/paths"
+	sdkpkg "github.com/flarehotspot/go-utils/pkg"
 )
 
 var (
@@ -167,7 +168,7 @@ func BuildPlugin() {
 		err = pkg.BuildLocalPlugins()
 	} else {
 		searchPath := os.Args[2]
-		pluginPath, err := pkg.FindPluginSrc(searchPath)
+		pluginPath, err := sdkpkg.FindPluginSrc(searchPath)
 		if err != nil {
 			log.Fatalf("Error finding plugin source in %s: %s\n", searchPath, err.Error())
 			return
