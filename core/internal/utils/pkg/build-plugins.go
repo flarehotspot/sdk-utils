@@ -28,7 +28,7 @@ func BuildLocalPlugins() error {
 			return err
 		}
 
-		info, err := GetInfoFromPath(pluginPath)
+		info, err := sdkpkg.GetInfoFromPath(pluginPath)
 		if err != nil {
 			return err
 		}

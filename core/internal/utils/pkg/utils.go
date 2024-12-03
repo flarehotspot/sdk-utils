@@ -54,7 +54,7 @@ func InsalledPluginsDef() []sdkpkg.PluginSrcDef {
 	list := []sdkpkg.PluginSrcDef{}
 	paths := InstalledDirList()
 	for _, p := range paths {
-		info, err := GetInfoFromPath(p)
+		info, err := sdkpkg.GetInfoFromPath(p)
 		if err != nil {
 			log.Println("Error reading plugin info: ", err)
 			continue

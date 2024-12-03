@@ -10,6 +10,8 @@ import (
 
 	"core/internal/plugins"
 	"core/internal/utils/pkg"
+
+	sdkpkg "github.com/flarehotspot/go-utils/pkg"
 )
 
 type InstallStatus struct {
@@ -32,7 +34,7 @@ func InitPlugins(g *plugins.CoreGlobals) {
 		recompile := pkg.NeedsRecompile(def)
 		installed = installed && (pkg.ValidateInstallPath(path) == nil)
 		if installed {
-			info, _ = pkg.GetInfoFromPath(path)
+			info, _ = sdkpkg.GetInfoFromPath(path)
 		}
 
 		if pkg.IsToBeRemoved(info.Package) {

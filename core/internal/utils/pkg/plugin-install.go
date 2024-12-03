@@ -57,7 +57,7 @@ func InstallSrcDef(w io.Writer, def sdkpkg.PluginSrcDef) (info sdkplugin.PluginI
 func InstallFromLocalPath(w io.Writer, def sdkpkg.PluginSrcDef) (info sdkplugin.PluginInfo, err error) {
 	w.Write([]byte("Installing plugin from local path: " + def.LocalPath))
 
-	info, err = GetInfoFromPath(def.LocalPath)
+	info, err = sdkpkg.GetInfoFromPath(def.LocalPath)
 	if err != nil {
 		return
 	}
@@ -147,7 +147,7 @@ func InstallFromPluginStore(w io.Writer, def sdkpkg.PluginSrcDef) (sdkplugin.Plu
 		log.Println("Error: ", err)
 		return sdkplugin.PluginInfo{}, err
 	}
-	info, err := GetInfoFromPath(newWorkPath)
+	info, err := sdkpkg.GetInfoFromPath(newWorkPath)
 	if err != nil {
 		log.Println("Error getting plugin info: ", err)
 		return sdkplugin.PluginInfo{}, err
@@ -184,7 +184,7 @@ func InstallFromGitSrc(w io.Writer, def sdkpkg.PluginSrcDef) (sdkplugin.PluginIn
 		return sdkplugin.PluginInfo{}, err
 	}
 
-	info, err := GetInfoFromPath(clonePath)
+	info, err := sdkpkg.GetInfoFromPath(clonePath)
 	if err != nil {
 		log.Println("Error getting plugin info: ", err)
 		return sdkplugin.PluginInfo{}, err
@@ -229,7 +229,7 @@ func InstallPlugin(src string, opts InstallOpts) error {
 		return err
 	}
 
-	info, err := GetInfoFromPath(src)
+	info, err := sdkpkg.GetInfoFromPath(src)
 	if err != nil {
 		log.Println("Error building plugin: ", err)
 		return err

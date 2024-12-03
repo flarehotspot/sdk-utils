@@ -15,16 +15,7 @@ func GetInfoFromDef(def sdkpkg.PluginSrcDef) (info sdkplugin.PluginInfo, err err
 		return info, ErrNotInstalled
 	}
 
-	return GetInfoFromPath(path)
-}
-
-func GetInfoFromPath(src string) (sdkplugin.PluginInfo, error) {
-	var info sdkplugin.PluginInfo
-	if err := sdkfs.ReadJson(filepath.Join(src, "plugin.json"), &info); err != nil {
-		return sdkplugin.PluginInfo{}, err
-	}
-
-	return info, nil
+	return sdkpkg.GetInfoFromPath(path)
 }
 
 func GetCoreInfo() sdkplugin.PluginInfo {
