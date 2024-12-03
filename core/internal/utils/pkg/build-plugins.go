@@ -10,7 +10,12 @@ import (
 
 func BuildLocalPlugins() error {
 	pluginPaths := LocalPluginPaths()
-	for _, pluginPath := range pluginPaths {
+	for _, searchPath := range pluginPaths {
+		pluginPath, err := FindPluginSrc(searchPath)
+		if err != nil {
+			return err
+		}
+
 		workdir := filepath.Join(sdkpaths.TmpDir, "builds", filepath.Base(pluginPath))
 		defer os.RemoveAll(workdir)
 
