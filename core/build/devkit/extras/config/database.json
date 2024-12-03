@@ -1,5 +1,5 @@
 {
-    "host": "postgres",
+    "host": "postgres15",
     "database": "flarehotspot_dev",
     "username": "postgres",
     "password": "postgres"

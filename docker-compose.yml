@@ -9,7 +9,7 @@ services:
       - ./core/build/devkit/extras/config/database.json:/build/config/database.json
       - /var/tmp/flare.tmp:/var/tmp/flare.tmp
     depends_on:
-      postgres:
+      postgres15:
         condition: service_healthy
     ports:
       - 3000:3000
@@ -18,10 +18,10 @@ services:
         aliases:
           - rpc-machines.flarehotspot-dev.com
 
-  postgres:
-    image: postgres:latest
+  postgres15:
+    image: postgres:15
     volumes:
-      - postgres:/var/lib/postgresql/data
+      - postgres15:/var/lib/postgresql/data
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
@@ -41,7 +41,7 @@ services:
     ports:
       - 8081:80
     depends_on:
-      - postgres
+      - postgres15
     environment:
       - PGADMIN_DEFAULT_EMAIL=admin@pg.com
       - PGADMIN_DEFAULT_PASSWORD=admin
@@ -49,7 +49,7 @@ services:
       flare_network:
 
 volumes:
-  postgres:
+  postgres15:
 
 networks:
   flare_network:
