@@ -22,6 +22,7 @@ import (
 	sdkplugin "sdk/api/plugin"
 	sdkuci "sdk/api/uci"
 
+	sdkpkg "github.com/flarehotspot/go-utils/pkg"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -36,7 +37,7 @@ func NewPluginApi(dir string, pmgr *PluginsMgr, trfkMgr *network.TrafficMgr) *Pl
 
 	pluginApi.Utl = NewPluginUtils(pluginApi)
 
-	info, err := pkg.GetInfoFromPath(dir)
+	info, err := sdkpkg.GetInfoFromPath(dir)
 	if err != nil {
 		log.Println("Error getting plugin info: ", err.Error())
 		return nil
@@ -114,7 +115,7 @@ func (self *PluginApi) Version() string {
 }
 
 func (self *PluginApi) Description() string {
-	info, err := pkg.GetInfoFromPath(self.dir)
+	info, err := sdkpkg.GetInfoFromPath(self.dir)
 	if err != nil {
 		return ""
 	}

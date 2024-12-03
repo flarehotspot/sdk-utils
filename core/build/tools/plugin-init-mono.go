@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	sdkfs "github.com/flarehotspot/go-utils/fs"
+	sdkpkg "github.com/flarehotspot/go-utils/pkg"
 	sdkstr "github.com/flarehotspot/go-utils/strings"
 )
 
@@ -102,7 +103,7 @@ func getGoModule(pluginDir string) string {
 }
 
 func getPackage(pluginDir string) string {
-	info, err := pkg.GetInfoFromPath(pluginDir)
+	info, err := sdkpkg.GetInfoFromPath(pluginDir)
 	if err != nil {
 		panic(err)
 	}
