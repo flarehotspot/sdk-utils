@@ -13,7 +13,6 @@ import (
 	sdkpkg "github.com/flarehotspot/go-utils/pkg"
 
 	"core/internal/utils/encdisk"
-	sdkplugin "sdk/api/plugin"
 
 	sdkfs "github.com/flarehotspot/go-utils/fs"
 	sdkpaths "github.com/flarehotspot/go-utils/paths"
@@ -39,7 +38,7 @@ var PLuginFiles = []PluginFile{
 	{File: "resources/translations", Optional: true},
 }
 
-func InstallSrcDef(w io.Writer, def sdkpkg.PluginSrcDef) (info sdkplugin.PluginInfo, err error) {
+func InstallSrcDef(w io.Writer, def sdkpkg.PluginSrcDef) (info sdkpkg.PluginInfo, err error) {
 	switch def.Src {
 	case sdkpkg.PluginSrcGit:
 		info, err = InstallFromGitSrc(w, def)
@@ -48,13 +47,13 @@ func InstallSrcDef(w io.Writer, def sdkpkg.PluginSrcDef) (info sdkplugin.PluginI
 	case sdkpkg.PluginSrcStore:
 		info, err = InstallFromPluginStore(w, def)
 	default:
-		return sdkplugin.PluginInfo{}, errors.New("Invalid plugin source: " + def.Src)
+		return sdkpkg.PluginInfo{}, errors.New("Invalid plugin source: " + def.Src)
 	}
 
 	return info, err
 }
 
-func InstallFromLocalPath(w io.Writer, def sdkpkg.PluginSrcDef) (info sdkplugin.PluginInfo, err error) {
+func InstallFromLocalPath(w io.Writer, def sdkpkg.PluginSrcDef) (info sdkpkg.PluginInfo, err error) {
 	w.Write([]byte("Installing plugin from local path: " + def.LocalPath))
 
 	info, err = sdkpkg.GetInfoFromPath(def.LocalPath)
@@ -70,7 +69,7 @@ func InstallFromLocalPath(w io.Writer, def sdkpkg.PluginSrcDef) (info sdkplugin.
 	return
 }
 
-// func InstallFromZipFile(w io.Writer, def config.PluginSrcDef) (info sdkplugin.PluginInfo, err error) {
+// func InstallFromZipFile(w io.Writer, def config.PluginSrcDef) (info sdkpkg.PluginInfo, err error) {
 // 	w.Write([]byte("Installing zipped plugin from local path: " + def.LocalPath))
 
 // 	// prepare path
@@ -89,7 +88,7 @@ func InstallFromLocalPath(w io.Writer, def sdkpkg.PluginSrcDef) (info sdkplugin.
 // 	if err != nil {
 // 		err = errors.New("Unable to find plugin source in: " + workPath)
 // 		log.Println("Error: ", err)
-// 		return sdkplugin.PluginInfo{}, err
+// 		return sdkpkg.PluginInfo{}, err
 // 	}
 
 // 	// read the plugin.json
@@ -102,13 +101,13 @@ func InstallFromLocalPath(w io.Writer, def sdkpkg.PluginSrcDef) (info sdkplugin.
 // 	def.LocalPath = filepath.Join(GetInstallPath(info.Package))
 
 // 	if err := InstallPlugin(newWorkPath, InstallOpts{Def: def, RemoveSrc: false}); err != nil {
-// 		return sdkplugin.PluginInfo{}, err
+// 		return sdkpkg.PluginInfo{}, err
 // 	}
 
 // 	return info, nil
 // }
 
-func InstallFromPluginStore(w io.Writer, def sdkpkg.PluginSrcDef) (sdkplugin.PluginInfo, error) {
+func InstallFromPluginStore(w io.Writer, def sdkpkg.PluginSrcDef) (sdkpkg.PluginInfo, error) {
 	w.Write([]byte("Installing plugin from store: " + def.StorePackage))
 
 	// prepare path
@@ -123,7 +122,7 @@ func InstallFromPluginStore(w io.Writer, def sdkpkg.PluginSrcDef) (sdkplugin.Plu
 	mnt := encdisk.NewEncrypedDisk(diskfile, mountpath, dev)
 	if err := mnt.Mount(); err != nil {
 		log.Println("Error mounting disk: ", err)
-		return sdkplugin.PluginInfo{}, err
+		return sdkpkg.PluginInfo{}, err
 	}
 	defer mnt.Unmount()
 
@@ -132,7 +131,7 @@ func InstallFromPluginStore(w io.Writer, def sdkpkg.PluginSrcDef) (sdkplugin.Plu
 	downloader := download.NewDownloader(def.StoreZipUrl, clonePath)
 	if err := downloader.Download(); err != nil {
 		log.Println("Error: ", err)
-		return sdkplugin.PluginInfo{}, err
+		return sdkpkg.PluginInfo{}, err
 	}
 
 	// extract compressed plugin release
@@ -145,22 +144,22 @@ func InstallFromPluginStore(w io.Writer, def sdkpkg.PluginSrcDef) (sdkplugin.Plu
 	if err != nil {
 		err = errors.New("Unable to find plugin source in: " + workPath)
 		log.Println("Error: ", err)
-		return sdkplugin.PluginInfo{}, err
+		return sdkpkg.PluginInfo{}, err
 	}
 	info, err := sdkpkg.GetInfoFromPath(newWorkPath)
 	if err != nil {
 		log.Println("Error getting plugin info: ", err)
-		return sdkplugin.PluginInfo{}, err
+		return sdkpkg.PluginInfo{}, err
 	}
 
 	if err := InstallPlugin(newWorkPath, InstallOpts{Def: def, RemoveSrc: false}); err != nil {
-		return sdkplugin.PluginInfo{}, err
+		return sdkpkg.PluginInfo{}, err
 	}
 
 	return info, nil
 }
 
-func InstallFromGitSrc(w io.Writer, def sdkpkg.PluginSrcDef) (sdkplugin.PluginInfo, error) {
+func InstallFromGitSrc(w io.Writer, def sdkpkg.PluginSrcDef) (sdkpkg.PluginInfo, error) {
 	log.Println("Installing plugin from git source: " + def.String())
 	randomPath := RandomPluginPath()
 	diskfile := filepath.Join(randomPath, "disk")
@@ -171,7 +170,7 @@ func InstallFromGitSrc(w io.Writer, def sdkpkg.PluginSrcDef) (sdkplugin.PluginIn
 	mnt := encdisk.NewEncrypedDisk(diskfile, mountpath, dev)
 	if err := mnt.Mount(); err != nil {
 		log.Println("Error mounting disk: ", err)
-		return sdkplugin.PluginInfo{}, err
+		return sdkpkg.PluginInfo{}, err
 	}
 
 	defer mnt.Unmount()
@@ -181,17 +180,17 @@ func InstallFromGitSrc(w io.Writer, def sdkpkg.PluginSrcDef) (sdkplugin.PluginIn
 	log.Println("Cloning plugin from git: " + def.GitURL)
 	if err := sdkgit.Clone(w, repo, clonePath); err != nil {
 		log.Println("Error cloning: ", err)
-		return sdkplugin.PluginInfo{}, err
+		return sdkpkg.PluginInfo{}, err
 	}
 
 	info, err := sdkpkg.GetInfoFromPath(clonePath)
 	if err != nil {
 		log.Println("Error getting plugin info: ", err)
-		return sdkplugin.PluginInfo{}, err
+		return sdkpkg.PluginInfo{}, err
 	}
 
 	if err := InstallPlugin(clonePath, InstallOpts{Def: def, RemoveSrc: false}); err != nil {
-		return sdkplugin.PluginInfo{}, err
+		return sdkpkg.PluginInfo{}, err
 	}
 
 	return info, nil

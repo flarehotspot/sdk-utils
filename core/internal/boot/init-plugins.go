@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	sdkplugin "sdk/api/plugin"
 
 	"core/internal/plugins"
 	"core/internal/utils/pkg"
@@ -29,7 +28,7 @@ func InitPlugins(g *plugins.CoreGlobals) {
 	inst := &InstallStatus{bp: bp}
 
 	for _, def := range pkg.AllPluginDef() {
-		var info sdkplugin.PluginInfo
+		var info sdkpkg.PluginInfo
 		path, installed := pkg.FindDefInstallPath(def)
 		recompile := pkg.NeedsRecompile(def)
 		installed = installed && (pkg.ValidateInstallPath(path) == nil)

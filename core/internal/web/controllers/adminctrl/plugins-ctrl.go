@@ -3,7 +3,6 @@ package adminctrl
 import (
 	"core/internal/plugins"
 	"net/http"
-	sdkplugin "sdk/api/plugin"
 
 	sdkpkg "github.com/flarehotspot/go-utils/pkg"
 )
@@ -18,7 +17,7 @@ type PluginRelease struct {
 
 type PluginData struct {
 	Id                 int
-	Info               sdkplugin.PluginInfo
+	Info               sdkpkg.PluginInfo
 	Src                sdkpkg.PluginSrcDef
 	HasPendingUpdate   bool
 	HasUpdates         bool
@@ -61,7 +60,7 @@ func PluginsStoreIndexCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 		// for _, qP := range qPlugins.Plugins {
 		// 	pluginsData = append(pluginsData, PluginData{
 		// 		Id: int(qP.PluginId),
-		// 		Info: sdkplugin.PluginInfo{
+		// 		Info: sdkpkg.PluginInfo{
 		// 			Name:        qP.Name,
 		// 			Package:     qP.Package,
 		// 			Description: "",
@@ -117,7 +116,7 @@ func ViewPluginCtrl(g *plugins.CoreGlobals) http.HandlerFunc {
 
 		// plugin := PluginData{
 		// 	Id: int(qPlugin.Plugin.PluginId),
-		// 	Info: sdkplugin.PluginInfo{
+		// 	Info: sdkpkg.PluginInfo{
 		// 		Name:        qPlugin.Plugin.Name,
 		// 		Package:     qPlugin.Plugin.Package,
 		// 		Description: "", // TODO: add the description

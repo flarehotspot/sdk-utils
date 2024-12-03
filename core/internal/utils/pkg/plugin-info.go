@@ -2,14 +2,13 @@ package pkg
 
 import (
 	"path/filepath"
-	sdkplugin "sdk/api/plugin"
 
 	sdkfs "github.com/flarehotspot/go-utils/fs"
 	sdkpaths "github.com/flarehotspot/go-utils/paths"
 	sdkpkg "github.com/flarehotspot/go-utils/pkg"
 )
 
-func GetInfoFromDef(def sdkpkg.PluginSrcDef) (info sdkplugin.PluginInfo, err error) {
+func GetInfoFromDef(def sdkpkg.PluginSrcDef) (info sdkpkg.PluginInfo, err error) {
 	path, ok := FindDefInstallPath(def)
 	if !ok {
 		return info, ErrNotInstalled
@@ -18,9 +17,9 @@ func GetInfoFromDef(def sdkpkg.PluginSrcDef) (info sdkplugin.PluginInfo, err err
 	return sdkpkg.GetInfoFromPath(path)
 }
 
-func GetCoreInfo() sdkplugin.PluginInfo {
+func GetCoreInfo() sdkpkg.PluginInfo {
 	pluginJsonPath := filepath.Join(sdkpaths.CoreDir, "plugin.json")
-	var pluginDef sdkplugin.PluginInfo
+	var pluginDef sdkpkg.PluginInfo
 	if err := sdkfs.ReadJson(pluginJsonPath, &pluginDef); err != nil {
 		panic(err)
 	}

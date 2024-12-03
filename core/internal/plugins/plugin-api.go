@@ -63,7 +63,7 @@ func NewPluginApi(dir string, pmgr *PluginsMgr, trfkMgr *network.TrafficMgr) *Pl
 }
 
 type PluginApi struct {
-	info             *sdkplugin.PluginInfo
+	info             *sdkpkg.PluginInfo
 	dir              string
 	db               *db.Database
 	models           *models.Models
