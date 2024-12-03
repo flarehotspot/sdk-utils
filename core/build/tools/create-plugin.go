@@ -5,15 +5,14 @@ import (
 	"os"
 	"path/filepath"
 
-	sdkplugin "sdk/api/plugin"
-
 	sdkfs "github.com/flarehotspot/go-utils/fs"
+	sdkpkg "github.com/flarehotspot/go-utils/pkg"
 	sdkruntime "github.com/flarehotspot/go-utils/runtime"
 	sdkstr "github.com/flarehotspot/go-utils/strings"
 )
 
 func CreatePlugin(pack string, name string, desc string) {
-	info := sdkplugin.PluginInfo{
+	info := sdkpkg.PluginInfo{
 		Name:        name,
 		Package:     pack,
 		Description: desc,

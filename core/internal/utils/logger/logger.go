@@ -18,10 +18,10 @@ import (
 	"time"
 
 	jobque "core/internal/utils/job-que"
-	sdkplugin "sdk/api/plugin"
 
 	sdkfs "github.com/flarehotspot/go-utils/fs"
 	sdkpaths "github.com/flarehotspot/go-utils/paths"
+	sdkpkg "github.com/flarehotspot/go-utils/pkg"
 	sdkstr "github.com/flarehotspot/go-utils/strings"
 
 	"github.com/flarehotspot/go-utils/wsv"
@@ -249,7 +249,7 @@ func parseLog(logLine []string) (*LogLine, error) {
 		pluginpath = strings.Join(subpaths[:1], "/")
 	}
 
-	var pluginInfo sdkplugin.PluginInfo
+	var pluginInfo sdkpkg.PluginInfo
 	err := sdkfs.ReadJson(filepath.Join(pluginpath, "plugin.json"), &pluginInfo)
 	if err != nil {
 		return nil, err

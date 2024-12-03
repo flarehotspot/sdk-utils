@@ -9,7 +9,6 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	sdkplugin "sdk/api/plugin"
 
 	sdkfs "github.com/flarehotspot/go-utils/fs"
 	sdkgit "github.com/flarehotspot/go-utils/git"
@@ -19,27 +18,27 @@ import (
 	sdkstr "github.com/flarehotspot/go-utils/strings"
 )
 
-func BuildFromLocal(w io.Writer, def sdkpkg.PluginSrcDef) (sdkplugin.PluginInfo, error) {
+func BuildFromLocal(w io.Writer, def sdkpkg.PluginSrcDef) (sdkpkg.PluginInfo, error) {
 	err := InstallPlugin(def.LocalPath, InstallOpts{RemoveSrc: false})
 	if err != nil {
-		return sdkplugin.PluginInfo{}, err
+		return sdkpkg.PluginInfo{}, err
 	}
 
 	info, err := GetInfoFromDef(def)
 	if err != nil {
-		return sdkplugin.PluginInfo{}, err
+		return sdkpkg.PluginInfo{}, err
 	}
 
 	// TODO: remove logs
 	log.Println("Marking plugins..")
 	if err := WriteMetadata(def, info.Package, GetInstallPath(info.Package)); err != nil {
-		return sdkplugin.PluginInfo{}, err
+		return sdkpkg.PluginInfo{}, err
 	}
 
 	return info, nil
 }
 
-func BuildFromGit(w io.Writer, def sdkpkg.PluginSrcDef) (sdkplugin.PluginInfo, error) {
+func BuildFromGit(w io.Writer, def sdkpkg.PluginSrcDef) (sdkpkg.PluginInfo, error) {
 	dev := sdkstr.Slugify(sdkstr.Rand(16), "_")
 	parentpath := RandomPluginPath()
 	diskfile := filepath.Join(parentpath, "plugin-clone", "disk", dev)
@@ -47,32 +46,32 @@ func BuildFromGit(w io.Writer, def sdkpkg.PluginSrcDef) (sdkplugin.PluginInfo, e
 	clonepath := filepath.Join(mountpath, "clone")
 	mnt := encdisk.NewEncrypedDisk(diskfile, mountpath, dev)
 	if err := mnt.Mount(); err != nil {
-		return sdkplugin.PluginInfo{}, err
+		return sdkpkg.PluginInfo{}, err
 	}
 
 	w.Write([]byte("Cloning plugin from git: " + def.GitURL))
 	repo := sdkgit.RepoSource{URL: def.GitURL, Ref: def.GitRef}
 
 	if err := sdkgit.Clone(w, repo, clonepath); err != nil {
-		return sdkplugin.PluginInfo{}, err
+		return sdkpkg.PluginInfo{}, err
 	}
 
 	if err := InstallPlugin(clonepath, InstallOpts{}); err != nil {
-		return sdkplugin.PluginInfo{}, err
+		return sdkpkg.PluginInfo{}, err
 	}
 
 	if err := mnt.Unmount(); err != nil {
-		return sdkplugin.PluginInfo{}, err
+		return sdkpkg.PluginInfo{}, err
 	}
 
 	info, err := GetInfoFromDef(def)
 	if err != nil {
-		return sdkplugin.PluginInfo{}, err
+		return sdkpkg.PluginInfo{}, err
 	}
 
 	installPath := GetInstallPath(info.Package)
 	if err := WriteMetadata(def, info.Package, installPath); err != nil {
-		return sdkplugin.PluginInfo{}, err
+		return sdkpkg.PluginInfo{}, err
 	}
 
 	return info, nil
@@ -87,7 +86,7 @@ func BuildPluginSo(pluginSrcDir string, workdir string) error {
 		return errors.New("Build plugin error: no build path")
 	}
 
-	var info sdkplugin.PluginInfo
+	var info sdkpkg.PluginInfo
 
 	pluginSoPath := filepath.Join(pluginSrcDir, "plugin.so")
 	if err := sdkfs.ReadJson(filepath.Join(pluginSrcDir, "plugin.json"), &info); err != nil {

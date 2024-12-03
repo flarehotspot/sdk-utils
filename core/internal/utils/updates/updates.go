@@ -9,7 +9,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	sdkplugin "sdk/api/plugin"
 	"strings"
 	"syscall"
 
@@ -236,7 +235,7 @@ func UpdateCore(localUpdateFiles UpdateFiles) error {
 	return nil
 }
 
-func CheckForPluginUpdates(def sdkpkg.PluginSrcDef, info sdkplugin.PluginInfo) (bool, error) {
+func CheckForPluginUpdates(def sdkpkg.PluginSrcDef, info sdkpkg.PluginInfo) (bool, error) {
 	switch def.Src {
 	case "git":
 		hasUpdates, err := CheckUpdatesFromGithub(def, info)
@@ -257,7 +256,7 @@ func CheckForPluginUpdates(def sdkpkg.PluginSrcDef, info sdkplugin.PluginInfo) (
 	}
 }
 
-func CheckUpdatesFromGithub(def sdkpkg.PluginSrcDef, info sdkplugin.PluginInfo) (bool, error) {
+func CheckUpdatesFromGithub(def sdkpkg.PluginSrcDef, info sdkpkg.PluginInfo) (bool, error) {
 	author := pkg.GetAuthorNameFromGitUrl(def)
 	repo := pkg.GetRepoFromGitUrl(def)
 
@@ -306,7 +305,7 @@ func CheckUpdatesFromGithub(def sdkpkg.PluginSrcDef, info sdkplugin.PluginInfo) 
 	return sdksemver.HasUpdates(currentPRVersion, latestPRVersion), nil
 }
 
-func CheckUpdatesFromStore(def sdkpkg.PluginSrcDef, info sdkplugin.PluginInfo) (bool, error) {
+func CheckUpdatesFromStore(def sdkpkg.PluginSrcDef, info sdkpkg.PluginInfo) (bool, error) {
 	// fetch latest plugin release from flare-server rpc
 	srv, ctx := rpc.GetCoreMachineTwirpServiceAndCtx()
 	qPlugins, err := srv.FetchLatestValidPRByPackage(ctx, &rpc.FetchLatestValidPRByPackageRequest{
