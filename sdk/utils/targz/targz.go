@@ -3,6 +3,7 @@ package sdktargz
 import (
 	"archive/tar"
 	"compress/gzip"
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -119,6 +120,8 @@ func UntarGz(tarGzFile, outputDir string) error {
 		}
 
 		file.Close() // dont use defer
+
+		fmt.Printf("Extracted: %s\n", outputPath)
 
 		return err
 	}
