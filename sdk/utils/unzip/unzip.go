@@ -40,22 +40,31 @@ func Unzip(src, dest string) error {
 			return err
 		}
 
-		// Open the file in the zip archive
-		srcFile, err := file.Open()
-		if err != nil {
-			return err
-		}
-		defer srcFile.Close()
+		// Make sure to close the files at the end of every iteration
+		err := func(file *zip.File, filePath string) error {
+			// Open the file in the zip archive
+			srcFile, err := file.Open()
+			if err != nil {
+				return err
+			}
+			defer srcFile.Close()
 
-		// Create the destination file
-		destFile, err := os.Create(filePath)
-		if err != nil {
-			return err
-		}
-		defer destFile.Close()
+			// Create the destination file
+			destFile, err := os.Create(filePath)
+			if err != nil {
+				return err
+			}
+			defer destFile.Close()
 
-		// Copy the contents from the zip archive to the destination file
-		if _, err := io.Copy(destFile, srcFile); err != nil {
+			// Copy the contents from the zip archive to the destination file
+			if _, err := io.Copy(destFile, srcFile); err != nil {
+				return err
+			}
+
+			return nil
+		}(file, filePath)
+
+		if err != nil {
 			return err
 		}
 
