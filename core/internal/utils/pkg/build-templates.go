@@ -13,7 +13,13 @@ import (
 
 func BuildTemplates(pluginDir string) (err error) {
 	var templateFiles []string
-	if err = sdkfs.LsFiles(filepath.Join(pluginDir, "resources/views"), &templateFiles, true); err != nil {
+	templatesPath := filepath.Join(pluginDir, "resources/views")
+	if !sdkfs.Exists(templatesPath) {
+		fmt.Println("No templates found in", templatesPath)
+		return nil
+	}
+
+	if err = sdkfs.LsFiles(templatesPath, &templateFiles, true); err != nil {
 		return
 	}
 
