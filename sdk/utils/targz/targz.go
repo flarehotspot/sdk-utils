@@ -122,8 +122,6 @@ func UntarGz(tarGzFile, outputDir string) error {
 		file.Close() // dont use defer
 
 		fmt.Printf("Extracted: %s\n", outputPath)
-
-		return err
 	}
 
 	return nil
