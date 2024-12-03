@@ -166,9 +166,19 @@ func BuildPlugin() {
 	if len(os.Args) < 3 {
 		err = pkg.BuildLocalPlugins()
 	} else {
-		pluginPath := os.Args[2]
+		searchPath := os.Args[2]
+		pluginPath, err := pkg.FindPluginSrc(searchPath)
+		if err != nil {
+			log.Fatalf("Error finding plugin source in %s: %s\n", searchPath, err.Error())
+			return
+		}
+
 		workdir := filepath.Join(sdkpaths.TmpDir, "builds", filepath.Base(pluginPath))
 		err = pkg.BuildPluginSo(pluginPath, workdir)
+		if err != nil {
+			log.Fatalf("Error building plugin: %s\n", err.Error())
+			return
+		}
 	}
 	if err != nil {
 		fmt.Println("Error building plugin: " + err.Error())
