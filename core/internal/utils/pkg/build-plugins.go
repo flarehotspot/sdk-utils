@@ -4,7 +4,6 @@ import (
 	"os"
 	"path/filepath"
 
-	sdkfs "github.com/flarehotspot/go-utils/fs"
 	sdkpaths "github.com/flarehotspot/go-utils/paths"
 	sdkpkg "github.com/flarehotspot/go-utils/pkg"
 )
@@ -39,10 +38,8 @@ func BuildLocalPlugins() error {
 			return err
 		}
 
-		for _, f := range PLuginFiles {
-			if err := sdkfs.Copy(filepath.Join(pluginPath, f.File), filepath.Join(pluginInstallDir, f.File)); err != nil && !f.Optional {
-				return err
-			}
+		if err := sdkpkg.CopyPluginFiles(pluginPath, pluginInstallDir); err != nil {
+			return err
 		}
 
 	}
