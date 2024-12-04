@@ -6,11 +6,12 @@ import (
 	"strings"
 )
 
-// GitSource represents a Git repository source.
+// GitSource represents the parsed components of a Git source URL.
 type GitSource struct {
 	Owner string
 	Repo  string
 	Ref   string
+	Token string // Field for the access token
 }
 
 // ParseGitSource parses a Git source URL into a GitSource struct.
@@ -23,7 +24,7 @@ func ParseGitSource(sourceUrl string) (source GitSource, err error) {
 
 	// Check the URL scheme
 	if u.Scheme != "https" && u.Scheme != "http" && u.Scheme != "git" {
-		return source, errors.New("unsupported URL scheme")
+		return source, errors.New("unsupported URL scheme: " + sourceUrl)
 	}
 
 	// Extract the path components
@@ -43,6 +44,19 @@ func ParseGitSource(sourceUrl string) (source GitSource, err error) {
 	} else if len(pathParts) > 2 {
 		// Assume ref if a third path component exists
 		source.Ref = pathParts[2]
+	}
+
+	// Extract access token if present in the User part of the URL
+	if u.User != nil {
+		username := u.User.Username()
+		if strings.HasPrefix(username, "oauth2:") {
+			source.Token = strings.TrimPrefix(username, "oauth2:")
+		}
+
+		password, ok := u.User.Password()
+		if source.Token == "" && ok {
+			source.Token = password
+		}
 	}
 
 	return source, nil
