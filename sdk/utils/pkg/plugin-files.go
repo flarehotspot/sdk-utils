@@ -22,6 +22,10 @@ var PLuginFiles = []PluginFile{
 }
 
 func CopyPluginFiles(pluginSrc string, dest string) (err error) {
+	if err := sdkfs.EnsureDir(dest); err != nil {
+		return err
+	}
+
 	for _, f := range PLuginFiles {
 		err := sdkfs.Copy(filepath.Join(pluginSrc, f.File), filepath.Join(dest, f.File))
 		if err != nil && !f.Optional {
