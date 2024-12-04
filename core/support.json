@@ -1,7 +1,7 @@
 {
   "support": [
     {
-      "os": "openwrt",
+      "os": "OpenWrt",
       "os_version": "23.05.3",
       "os_arch": "x86_64",
       "go_version": "1.21.13",
