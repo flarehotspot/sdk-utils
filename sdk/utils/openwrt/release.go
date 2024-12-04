@@ -1,9 +1,23 @@
 package sdkopenwrt
 
 import (
-	"core/env"
 	"os"
 	"strings"
+)
+
+const (
+	OpenWrtReleaseFile = "/etc/openwrt_release"
+)
+
+var (
+	MockOpenWrtRelease = OpenWrtRelease{
+		DISTRIB_ID:          "OpenWrt",
+		DISTRIB_RELEASE:     "23.05.3",
+		DISTRIB_REVISION:    "r16279-5cc0535800",
+		DISTRIB_TARGET:      "x86/64",
+		DISTRIB_ARCH:        "x86_64",
+		DISTRIB_DESCRIPTION: "OpenWrt 21.02.0 r16279-5cc0535800",
+	}
 )
 
 type OpenWrtRelease struct {
@@ -17,23 +31,7 @@ type OpenWrtRelease struct {
 }
 
 func ParseOpenWrtRelease() (release OpenWrtRelease, err error) {
-	if env.GO_ENV == env.ENV_PRODUCTION {
-		release, err = readOpenWrtReleaseFile("/etc/openwrt_release")
-	} else {
-		release = OpenWrtRelease{
-			DISTRIB_ID:          "OpenWrt",
-			DISTRIB_RELEASE:     "23.05.3",
-			DISTRIB_REVISION:    "r16279-5cc0535800",
-			DISTRIB_TARGET:      "x86/64",
-			DISTRIB_ARCH:        "x86_64",
-			DISTRIB_DESCRIPTION: "OpenWrt 21.02.0 r16279-5cc0535800",
-		}
-	}
-	return
-}
-
-func readOpenWrtReleaseFile(filepath string) (release OpenWrtRelease, err error) {
-	data, err := os.ReadFile(filepath)
+	data, err := os.ReadFile(OpenWrtReleaseFile)
 	if err != nil {
 		return
 	}
