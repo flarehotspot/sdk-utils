@@ -224,7 +224,7 @@ func InstallPlugin(src string, opts InstallOpts) error {
 		installPath = GetPendingUpdatePath(info.Package)
 	}
 
-	if err := WriteMetadata(opts.Def, info.Package, installPath); err != nil {
+	if err := WriteMetadata(opts.Def, info.Package); err != nil {
 		log.Println("Error building plugin: ", err)
 		return err
 	}

@@ -9,9 +9,9 @@ import (
 )
 
 func BuildLocalPlugins() error {
-	pluginPaths := LocalPluginPaths()
-	for _, searchPath := range pluginPaths {
-		pluginPath, err := sdkpkg.FindPluginSrc(searchPath)
+	pluginDefs := LocalPluginDefs()
+	for _, def := range pluginDefs {
+		pluginPath, err := sdkpkg.FindPluginSrc(def.LocalPath)
 		if err != nil {
 			return err
 		}

@@ -10,9 +10,8 @@ const (
 )
 
 type PluginMetadata struct {
-	Package     string
-	Def         PluginSrcDef
-	InstallPath string
+	Package string
+	Def     PluginSrcDef
 }
 
 type PluginSrcDef struct {

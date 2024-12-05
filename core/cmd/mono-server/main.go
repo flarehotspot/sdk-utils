@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"strings"
 
 	sdkpkg "github.com/flarehotspot/go-utils/pkg"
 )
@@ -17,9 +16,15 @@ func main() {
 	runCmd := []string{"run"}
 	runCmd = append(runCmd, buildArgs...)
 	runCmd = append(runCmd, "main/main.go")
-	fmt.Printf("Executing: %s %s\n", goBin, strings.Join(runCmd, " "))
 
-	cmd := exec.Command(goBin, runCmd...)
+	commandstr := goBin
+	for _, arg := range runCmd {
+		commandstr += " " + arg
+	}
+
+	fmt.Printf("Executing: %s\n", commandstr)
+
+	cmd := exec.Command("sh", "-c", commandstr)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	err := cmd.Run()

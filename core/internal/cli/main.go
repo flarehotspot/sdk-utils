@@ -124,10 +124,17 @@ func CreatePlugin() {
 }
 
 func CreateMigration() {
-	pluginPaths := pkg.LocalPluginPaths()
-	pluginPkgs := make([]string, len(pluginPaths))
-	for i, pluginPath := range pluginPaths {
-		pluginPkgs[i] = filepath.Base(pluginPath)
+	pluginDefs := pkg.LocalPluginDefs()
+	pluginPkgs := make([]string, len(pluginDefs))
+
+	for i, def := range pluginDefs {
+		info, err := sdkpkg.GetInfoFromPath(def.LocalPath)
+		if err != nil {
+			fmt.Println("Warning: Error getting plugin info:", err)
+			continue
+		} else {
+			pluginPkgs[i] = info.Package
+		}
 	}
 
 	pluginNums := make([]string, len(pluginPkgs))
