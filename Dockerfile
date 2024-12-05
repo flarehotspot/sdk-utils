@@ -32,4 +32,4 @@ CMD cp go.work.default go.work && \
         -R 'plugins\/backup\/.*' \
         -R '(.*)mono\.go' \
         -R '\.tmp\/*.' \
-        -s -- sh -c './start-mono.sh' -v
+        -s -- sh -c './start.sh' -v
