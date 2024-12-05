@@ -60,7 +60,7 @@ func BuildGoModule(gofile string, outfile string, opts GoBuildOpts) error {
 // DefaultBuildArgs returns the go build arguments with tags: go build -tags=[tags]
 func DefaultBuildArgs(tags string) []string {
 	args := []string{}
-	args = append(args, `-ldflags='-s -w'`, "-trimpath", "-buildvcs=false")
+	args = append(args, "-ldflags='-s -w'", "-trimpath", "-buildvcs=false")
 	if tags != "" {
 		args = append(args, fmt.Sprintf("-tags='%s'", tags))
 	}
