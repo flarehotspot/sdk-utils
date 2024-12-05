@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	sdkfs "github.com/flarehotspot/go-utils/fs"
+	sdkpaths "github.com/flarehotspot/go-utils/paths"
 	sdkpkg "github.com/flarehotspot/go-utils/pkg"
 	sdkstr "github.com/flarehotspot/go-utils/strings"
 )
@@ -22,10 +23,16 @@ type PluginModule struct {
 func CreateMonoFiles() {
 	CreateGoWorkspace()
 
-	pluginDirs := pkg.LocalPluginPaths()
-	pluginDirs = append(pluginDirs, "core")
-	for _, dir := range pluginDirs {
-		MakePluginMainMono(dir)
+	localDefs := pkg.LocalPluginSrcDefs()
+	systemDefs := pkg.SystemPluginSrcDefs()
+
+	pluginDirs := []string{filepath.Join(sdkpaths.AppDir, "core")}
+	for _, def := range append(systemDefs, localDefs...) {
+		pluginDirs = append(pluginDirs, def.LocalPath)
+	}
+
+	for _, p := range pluginDirs {
+		MakePluginMainMono(p)
 	}
 
 	MakePluginInitMono()
@@ -33,7 +40,14 @@ func CreateMonoFiles() {
 
 func MakePluginInitMono() {
 	pluginPaths := []string{"core"}
-	pluginDirs := pkg.LocalPluginPaths()
+	pluginDirs := []string{}
+
+	localDefs := pkg.LocalPluginSrcDefs()
+	systemDefs := pkg.SystemPluginSrcDefs()
+	for _, def := range append(systemDefs, localDefs...) {
+		pluginDirs = append(pluginDirs, def.LocalPath)
+	}
+
 	pluginPaths = append(pluginPaths, pluginDirs...)
 	coreInfo := pkg.GetCoreInfo()
 

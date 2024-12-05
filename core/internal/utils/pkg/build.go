@@ -19,7 +19,7 @@ import (
 )
 
 func BuildFromLocal(w io.Writer, def sdkpkg.PluginSrcDef) (sdkpkg.PluginInfo, error) {
-	err := InstallPlugin(def.LocalPath, InstallOpts{RemoveSrc: false})
+	err := InstallPlugin(def.LocalPath, InstallOpts{Def: def, RemoveSrc: false})
 	if err != nil {
 		return sdkpkg.PluginInfo{}, err
 	}
@@ -31,7 +31,7 @@ func BuildFromLocal(w io.Writer, def sdkpkg.PluginSrcDef) (sdkpkg.PluginInfo, er
 
 	// TODO: remove logs
 	log.Println("Marking plugins..")
-	if err := WriteMetadata(def, info.Package, GetInstallPath(info.Package)); err != nil {
+	if err := WriteMetadata(def, info.Package); err != nil {
 		return sdkpkg.PluginInfo{}, err
 	}
 
@@ -56,7 +56,7 @@ func BuildFromGit(w io.Writer, def sdkpkg.PluginSrcDef) (sdkpkg.PluginInfo, erro
 		return sdkpkg.PluginInfo{}, err
 	}
 
-	if err := InstallPlugin(clonepath, InstallOpts{}); err != nil {
+	if err := InstallPlugin(clonepath, InstallOpts{Def: def}); err != nil {
 		return sdkpkg.PluginInfo{}, err
 	}
 
@@ -69,8 +69,7 @@ func BuildFromGit(w io.Writer, def sdkpkg.PluginSrcDef) (sdkpkg.PluginInfo, erro
 		return sdkpkg.PluginInfo{}, err
 	}
 
-	installPath := GetInstallPath(info.Package)
-	if err := WriteMetadata(def, info.Package, installPath); err != nil {
+	if err := WriteMetadata(def, info.Package); err != nil {
 		return sdkpkg.PluginInfo{}, err
 	}
 
