@@ -11,7 +11,6 @@ import (
 	"strings"
 
 	sdkfs "github.com/flarehotspot/go-utils/fs"
-	paths "github.com/flarehotspot/go-utils/paths"
 	sdkpaths "github.com/flarehotspot/go-utils/paths"
 	sdkpkg "github.com/flarehotspot/go-utils/pkg"
 )
@@ -29,26 +28,24 @@ func IsDefInList(defs []sdkpkg.PluginSrcDef, def sdkpkg.PluginSrcDef) bool {
 	return false
 }
 
-func AllPluginDef() []sdkpkg.PluginSrcDef {
+func AllPluginSrcDefs() []sdkpkg.PluginSrcDef {
 	list := InsalledPluginsDef()
-	localPlugins := LocalPluginDefs()
-	systemPlugins := SystemPluginsDefs()
-	for _, loc := range localPlugins {
+	localPlugins := LocalPluginSrcDefs()
+	systemPlugins := SystemPluginSrcDefs()
+	alldefs := append(systemPlugins, localPlugins...)
+
+	for _, loc := range alldefs {
 		if !IsDefInList(list, loc) {
 			list = append(list, loc)
 		}
 	}
-	for _, loc := range systemPlugins {
-		if !IsDefInList(list, loc) {
-			list = append(list, loc)
-		}
-	}
+
 	return list
 }
 
-func LocalPluginDefs() []sdkpkg.PluginSrcDef {
+func LocalPluginSrcDefs() []sdkpkg.PluginSrcDef {
 	list := []sdkpkg.PluginSrcDef{}
-	paths := ListPluginSources(filepath.Join(sdkpaths.AppDir, "plugins/local"))
+	paths := ListPluginSrcPaths(filepath.Join(sdkpaths.AppDir, "plugins/local"))
 	for _, p := range paths {
 		list = append(list, sdkpkg.PluginSrcDef{
 			Src:       sdkpkg.PluginSrcLocal,
@@ -59,9 +56,9 @@ func LocalPluginDefs() []sdkpkg.PluginSrcDef {
 	return list
 }
 
-func SystemPluginsDefs() []sdkpkg.PluginSrcDef {
+func SystemPluginSrcDefs() []sdkpkg.PluginSrcDef {
 	list := []sdkpkg.PluginSrcDef{}
-	paths := ListPluginSources(filepath.Join(sdkpaths.AppDir, "plugins/system"))
+	paths := ListPluginSrcPaths(filepath.Join(sdkpaths.AppDir, "plugins/system"))
 	for _, pluginPath := range paths {
 		list = append(list, sdkpkg.PluginSrcDef{
 			Src:       sdkpkg.PluginSrcSystem,
@@ -74,7 +71,7 @@ func SystemPluginsDefs() []sdkpkg.PluginSrcDef {
 
 func InsalledPluginsDef() []sdkpkg.PluginSrcDef {
 	list := []sdkpkg.PluginSrcDef{}
-	paths := InstalledDirList()
+	paths := InstalledPluginDirs()
 	for _, p := range paths {
 		info, err := sdkpkg.GetInfoFromPath(p)
 		if err != nil {
@@ -94,56 +91,10 @@ func InsalledPluginsDef() []sdkpkg.PluginSrcDef {
 	return list
 }
 
-// LocalPluginPaths returns a list of plugin absolute source paths
-// func LocalPluginPaths() []string {
-// 	searchPaths := []string{"plugins/local"}
-// 	pluginPaths := []string{}
-
-// 	for _, sp := range searchPaths {
-// 		if sdkfs.Exists(sp) {
-// 			var dirs []string
-// 			if err := sdkfs.LsDirs(sp, &dirs, false); err != nil {
-// 				continue
-// 			}
-
-// 			for _, dir := range dirs {
-// 				if err := ValidateSrcPath(dir); err == nil {
-// 					pluginPaths = append(pluginPaths, dir)
-// 				}
-// 			}
-// 		}
-// 	}
-
-// 	return pluginPaths
-// }
-
-// SystemPluginPaths returns a list of plugin absolute source paths
-// func SystemPluginPaths() []string {
-// 	searchPaths := []string{"plugins/system"}
-// 	pluginPaths := []string{}
-
-// 	for _, sp := range searchPaths {
-// 		if sdkfs.Exists(sp) {
-// 			var dirs []string
-// 			if err := sdkfs.LsDirs(sp, &dirs, false); err != nil {
-// 				continue
-// 			}
-
-// 			for _, dir := range dirs {
-// 				if err := ValidateSrcPath(dir); err == nil {
-// 					pluginPaths = append(pluginPaths, dir)
-// 				}
-// 			}
-// 		}
-// 	}
-
-// 	return pluginPaths
-// }
-
-func ListPluginSources(sp string) (pluginDirs []string) {
+func ListPluginSrcPaths(searchPath string) (pluginDirs []string) {
 	var list []string
-	if err := sdkfs.LsDirs(sp, &list, false); err != nil {
-		log.Println("Error listing directories in ", sp, ": ", err)
+	if err := sdkfs.LsDirs(searchPath, &list, false); err != nil {
+		log.Println("Error listing directories in ", searchPath, ": ", err)
 		return
 	}
 	for _, p := range list {
@@ -154,9 +105,9 @@ func ListPluginSources(sp string) (pluginDirs []string) {
 	return
 }
 
-// InstalledDirList returns the list of installed plugins in the plugins directory. The path of each plugin is an aboslute path.
-func InstalledDirList() (pluginList []string) {
-	installedPluginsPath := filepath.Join(paths.PluginsDir, "installed")
+// InstalledPluginDirs returns the list of installed plugins in the plugins directory. The path of each plugin is an aboslute path.
+func InstalledPluginDirs() (pluginDirs []string) {
+	installedPluginsPath := filepath.Join(sdkpaths.PluginsDir, "installed")
 
 	// check if plugins/installed directory exists before traversing
 	if !(sdkfs.Exists(installedPluginsPath)) {
@@ -172,7 +123,7 @@ func InstalledDirList() (pluginList []string) {
 
 	for _, p := range list {
 		if err := ValidateInstallPath(p); err != nil {
-			pluginList = append(pluginList, p)
+			pluginDirs = append(pluginDirs, p)
 		}
 	}
 

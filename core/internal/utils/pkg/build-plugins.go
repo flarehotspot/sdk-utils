@@ -9,7 +9,7 @@ import (
 )
 
 func BuildLocalPlugins() error {
-	pluginDefs := LocalPluginDefs()
+	pluginDefs := LocalPluginSrcDefs()
 	for _, def := range pluginDefs {
 		pluginPath, err := sdkpkg.FindPluginSrc(def.LocalPath)
 		if err != nil {

@@ -27,7 +27,7 @@ func InitPlugins(g *plugins.CoreGlobals) {
 	bp := g.BootProgress
 	inst := &InstallStatus{bp: bp}
 
-	for _, def := range pkg.AllPluginDef() {
+	for _, def := range pkg.AllPluginSrcDefs() {
 		var info sdkpkg.PluginInfo
 		path, installed := pkg.FindDefInstallPath(def)
 		recompile := pkg.NeedsRecompile(def)
@@ -99,7 +99,7 @@ func InitPlugins(g *plugins.CoreGlobals) {
 	}
 
 	// Load plugins
-	pluginDirs := pkg.InstalledDirList()
+	pluginDirs := pkg.InstalledPluginDirs()
 	log.Println("Installed plugin directories:", pluginDirs)
 	for _, dir := range pluginDirs {
 		log.Println("Loading plugin from :", dir)

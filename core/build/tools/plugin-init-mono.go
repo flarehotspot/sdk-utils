@@ -23,8 +23,8 @@ type PluginModule struct {
 func CreateMonoFiles() {
 	CreateGoWorkspace()
 
-	localDefs := pkg.LocalPluginDefs()
-	systemDefs := pkg.SystemPluginsDefs()
+	localDefs := pkg.LocalPluginSrcDefs()
+	systemDefs := pkg.SystemPluginSrcDefs()
 
 	pluginDirs := []string{filepath.Join(sdkpaths.AppDir, "core")}
 	for _, def := range append(systemDefs, localDefs...) {
@@ -42,8 +42,8 @@ func MakePluginInitMono() {
 	pluginPaths := []string{"core"}
 	pluginDirs := []string{}
 
-	localDefs := pkg.LocalPluginDefs()
-	systemDefs := pkg.SystemPluginsDefs()
+	localDefs := pkg.LocalPluginSrcDefs()
+	systemDefs := pkg.SystemPluginSrcDefs()
 	for _, def := range append(systemDefs, localDefs...) {
 		pluginDirs = append(pluginDirs, def.LocalPath)
 	}

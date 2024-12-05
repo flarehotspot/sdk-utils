@@ -124,7 +124,7 @@ func CreatePlugin() {
 }
 
 func CreateMigration() {
-	pluginDefs := pkg.LocalPluginDefs()
+	pluginDefs := pkg.LocalPluginSrcDefs()
 	pluginPkgs := make([]string, len(pluginDefs))
 
 	for i, def := range pluginDefs {
