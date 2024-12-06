@@ -35,12 +35,17 @@ func NewDatabase() (*Database, error) {
 		return nil, err
 	}
 
+	cfg, err := config.ReadDatabaseConfig()
+	if err != nil {
+		panic(err)
+	}
+
 	// Wait for the postgres server to be ready
 	maxPortCheckTries := 30
 	portCheckIndex := 0
 	portOK := false
 	for portCheckIndex < maxPortCheckTries {
-		ok := CheckPostgresPort("localhost")
+		ok := CheckPostgresPort(cfg.Host)
 		if ok {
 			portOK = true
 			break
@@ -56,7 +61,7 @@ func NewDatabase() (*Database, error) {
 
 	var db Database
 
-	cfg, err := CreateDb()
+	err = CreateDb()
 	if err != nil {
 		return nil, err
 	}
@@ -117,10 +122,10 @@ func (d *Database) SetSql(db *pgxpool.Pool) {
 	d.db = db
 }
 
-func CreateDb() (*config.DbConfig, error) {
+func CreateDb() (err error) {
 	cfg, err := config.ReadDatabaseConfig()
 	if err != nil {
-		return cfg, err
+		return
 	}
 
 	ctx := context.Background()
@@ -128,22 +133,22 @@ func CreateDb() (*config.DbConfig, error) {
 	connPool, err := pgx.Connect(ctx, cfg.BaseConnStr())
 	if err != nil {
 		log.Println("Error opening database: ", err)
-		return cfg, err
+		return
 	}
 	defer connPool.Close(ctx)
 
 	log.Println("Creating database " + cfg.Database + "...")
 	_, err = connPool.Exec(context.Background(), "CREATE DATABASE "+cfg.Database)
 	if err != nil {
-		if !strings.Contains(err.Error(), "already exists") {
-			log.Println("Unable to create database:", err)
-			return nil, err
+		if strings.Contains(err.Error(), "already exists") {
+			log.Println("Database already exists, skipping creation.")
+			return nil
 		}
-		log.Println("Error creating database: ", err.Error())
-		log.Println("Database already exists, skipping creation.")
+
+		return err
 	}
 
-	return cfg, nil
+	return nil
 }
 
 func CheckPostgresPort(host string) bool {
