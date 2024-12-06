@@ -29,7 +29,7 @@ func IsDefInList(defs []sdkpkg.PluginSrcDef, def sdkpkg.PluginSrcDef) bool {
 }
 
 func AllPluginSrcDefs() []sdkpkg.PluginSrcDef {
-	list := InsalledPluginsDef()
+	list := InstalledPluginsDef()
 	localPlugins := LocalPluginSrcDefs()
 	systemPlugins := SystemPluginSrcDefs()
 	alldefs := append(systemPlugins, localPlugins...)
@@ -45,7 +45,7 @@ func AllPluginSrcDefs() []sdkpkg.PluginSrcDef {
 
 func LocalPluginSrcDefs() []sdkpkg.PluginSrcDef {
 	list := []sdkpkg.PluginSrcDef{}
-	paths := ListPluginSrcPaths(filepath.Join(sdkpaths.AppDir, "plugins/local"))
+	paths := SearchPluginDirs(filepath.Join(sdkpaths.AppDir, "plugins/local"))
 	for _, p := range paths {
 		list = append(list, sdkpkg.PluginSrcDef{
 			Src:       sdkpkg.PluginSrcLocal,
@@ -58,7 +58,7 @@ func LocalPluginSrcDefs() []sdkpkg.PluginSrcDef {
 
 func SystemPluginSrcDefs() []sdkpkg.PluginSrcDef {
 	list := []sdkpkg.PluginSrcDef{}
-	paths := ListPluginSrcPaths(filepath.Join(sdkpaths.AppDir, "plugins/system"))
+	paths := SearchPluginDirs(filepath.Join(sdkpaths.AppDir, "plugins/system"))
 	for _, pluginPath := range paths {
 		list = append(list, sdkpkg.PluginSrcDef{
 			Src:       sdkpkg.PluginSrcSystem,
@@ -69,7 +69,7 @@ func SystemPluginSrcDefs() []sdkpkg.PluginSrcDef {
 	return list
 }
 
-func InsalledPluginsDef() []sdkpkg.PluginSrcDef {
+func InstalledPluginsDef() []sdkpkg.PluginSrcDef {
 	list := []sdkpkg.PluginSrcDef{}
 	paths := InstalledPluginDirs()
 	for _, p := range paths {
@@ -91,7 +91,7 @@ func InsalledPluginsDef() []sdkpkg.PluginSrcDef {
 	return list
 }
 
-func ListPluginSrcPaths(searchPath string) (pluginDirs []string) {
+func SearchPluginDirs(searchPath string) (pluginDirs []string) {
 	var list []string
 	if err := sdkfs.LsDirs(searchPath, &list, false); err != nil {
 		log.Println("Error listing directories in ", searchPath, ": ", err)
@@ -100,6 +100,8 @@ func ListPluginSrcPaths(searchPath string) (pluginDirs []string) {
 	for _, p := range list {
 		if err := ValidateSrcPath(p); err == nil {
 			pluginDirs = append(pluginDirs, p)
+		} else {
+			fmt.Println("Error validating source path: ", p, err)
 		}
 	}
 	return
@@ -122,8 +124,10 @@ func InstalledPluginDirs() (pluginDirs []string) {
 	}
 
 	for _, p := range list {
-		if err := ValidateInstallPath(p); err != nil {
+		if err := ValidateInstallPath(p); err == nil {
 			pluginDirs = append(pluginDirs, p)
+		} else {
+			fmt.Println("Error validating install path: ", p, err)
 		}
 	}
 
