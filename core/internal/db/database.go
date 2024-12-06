@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net"
 	"strings"
 	"sync"
 	"time"
@@ -13,6 +14,7 @@ import (
 	"core/internal/utils/pg"
 
 	sdkstr "github.com/flarehotspot/go-utils/strings"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -24,13 +26,32 @@ type Database struct {
 
 func NewDatabase() (*Database, error) {
 	dbpass := sdkstr.Rand(8)
-	dbname := fmt.Sprintf("flarehotspot_%s", sdkstr.Rand(8))
+	dbname := strings.ToLower(fmt.Sprintf("flarehotspot_%s", sdkstr.Rand(8)))
 
 	// Setup PostgreSQL server
 	err := pg.SetupServer(dbpass, dbname)
 	if err != nil {
 		log.Println("Error installing postgres db: ", err)
 		return nil, err
+	}
+
+	// Wait for the postgres server to be ready
+	maxPortCheckTries := 30
+	portCheckIndex := 0
+	portOK := false
+	for portCheckIndex < maxPortCheckTries {
+		ok := CheckPostgresPort("localhost")
+		if ok {
+			portOK = true
+			break
+		} else {
+			portCheckIndex++
+			time.Sleep(1 * time.Second)
+		}
+	}
+
+	if !portOK {
+		panic("Unable to connect to the local postgres server!")
 	}
 
 	var db Database
@@ -102,13 +123,14 @@ func CreateDb() (*config.DbConfig, error) {
 		return cfg, err
 	}
 
-	log.Println("DB conn string: ", cfg.BaseConnStr())
-	connPool, err := pgxpool.New(context.Background(), cfg.DbUrlString())
+	ctx := context.Background()
+	log.Println("DB base conn string: ", cfg.BaseConnStr())
+	connPool, err := pgx.Connect(ctx, cfg.BaseConnStr())
 	if err != nil {
 		log.Println("Error opening database: ", err)
 		return cfg, err
 	}
-	defer connPool.Close()
+	defer connPool.Close(ctx)
 
 	log.Println("Creating database " + cfg.Database + "...")
 	_, err = connPool.Exec(context.Background(), "CREATE DATABASE "+cfg.Database)
@@ -117,8 +139,23 @@ func CreateDb() (*config.DbConfig, error) {
 			log.Println("Unable to create database:", err)
 			return nil, err
 		}
+		log.Println("Error creating database: ", err.Error())
 		log.Println("Database already exists, skipping creation.")
 	}
 
 	return cfg, nil
+}
+
+func CheckPostgresPort(host string) bool {
+	port := "5432"
+	timeout := 2 * time.Second // Adjust timeout as needed
+
+	address := net.JoinHostPort(host, port)
+	conn, err := net.DialTimeout("tcp", address, timeout)
+	if err != nil {
+		return false // Port is not open
+	}
+	defer conn.Close()
+
+	return true // Port is open
 }

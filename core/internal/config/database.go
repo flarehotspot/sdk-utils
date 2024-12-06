@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"strings"
 )
 
 const databaseJsonFile = "database.json"
@@ -16,25 +17,17 @@ type DbConfig struct {
 }
 
 func (cfg *DbConfig) DbUrlString() string {
-	return fmt.Sprintf("%s/%s?sslmode=disable", cfg.BaseConnStr(), cfg.Database)
+	return fmt.Sprintf("%s database=%s", cfg.BaseConnStr(), cfg.Database)
 }
 
 func (cfg *DbConfig) BaseConnStr() string {
-	var password string
-	if cfg.Password != "" {
-		password = ":" + cfg.Password
-	} else {
-		password = ""
+	if cfg.Port == 0 {
+		cfg.Port = 5432
 	}
 
-	var port string
-	if cfg.Port != 0 {
-		port = fmt.Sprintf(":%d", cfg.Port)
-	} else {
-		port = ""
-	}
+	connStr := fmt.Sprintf("host=%s port=%d user=%s password=%s sslmode=%s", cfg.Host, cfg.Port, cfg.Username, cfg.Password, cfg.SslMode)
 
-	return fmt.Sprintf("postgres://%s%s@%s%s", cfg.Username, password, cfg.Host, port)
+	return connStr
 }
 
 func ReadDatabaseConfig() (*DbConfig, error) {
@@ -47,6 +40,12 @@ func ReadDatabaseConfig() (*DbConfig, error) {
 	if cfg.Host == "" {
 		cfg.Host = "localhost"
 	}
+
+	if cfg.SslMode == "" {
+		cfg.SslMode = "disable"
+	}
+
+	cfg.Database = strings.ToLower(cfg.Database)
 
 	return &cfg, nil
 }

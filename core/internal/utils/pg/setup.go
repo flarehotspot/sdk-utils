@@ -14,20 +14,25 @@ import (
 	gouci "github.com/digineo/go-uci"
 	fs "github.com/flarehotspot/go-utils/fs"
 	sdkfs "github.com/flarehotspot/go-utils/fs"
-	paths "github.com/flarehotspot/go-utils/paths"
+	sdkpaths "github.com/flarehotspot/go-utils/paths"
 )
 
 var (
 	pgDataDir  = "/srv/postgresql/data"
 	pgLogFile  = "/srv/postgresql/data/postgresql.log"
-	pgPassFile = "/tmp/pg-pass"
+	pgPassFile = filepath.Join(sdkpaths.TmpDir, "pg-pass.txt")
 )
 
 // Sets up all necessary postgresql server requirements
 func SetupServer(dbpass string, dbname string) error {
 	// Check if postgres is already setup
-	dbFile := filepath.Join(paths.ConfigDir, "database.json")
-	isInstalled := fs.Exists(pgDataDir) && fs.Exists(dbFile)
+	var hasDbConfig bool
+	_, err := config.ReadDatabaseConfig()
+	if err == nil {
+		hasDbConfig = true
+	}
+
+	isInstalled := fs.Exists(pgDataDir) && hasDbConfig
 	if isInstalled {
 		fmt.Println("Postgres is already setup.")
 		return nil
@@ -63,13 +68,19 @@ func SetupServer(dbpass string, dbname string) error {
 	// don't forget to remove password file
 	defer os.Remove(pgPassFile)
 
-	if err := cmd.Exec("chmod 600 "+pgPassFile, nil); err != nil {
-		return err
-	}
-
 	initDbCmd := fmt.Sprintf("sudo -u postgres LC_COLLATE='C' initdb --pwfile=%s -D %s", pgPassFile, pgDataDir)
 	if err := cmd.Exec(initDbCmd, &cmd.ExecOpts{
 		Stdout: os.Stdout,
+	}); err != nil {
+		return err
+	}
+
+	// Write config file
+	if err := config.WriteDatabaseConfig(config.DbConfig{
+		Host:     "localhost",
+		Username: "postgres",
+		Password: dbpass,
+		Database: dbname,
 	}); err != nil {
 		return err
 	}
@@ -82,16 +93,6 @@ func SetupServer(dbpass string, dbname string) error {
 
 	if err := cmd.Exec("service postgresql start", nil); err != nil {
 		fmt.Println("unable to start postgresql service")
-		return err
-	}
-
-	// Write config file
-	if err := config.WriteDatabaseConfig(config.DbConfig{
-		Host:     "localhost",
-		Username: "postgres",
-		Password: dbpass,
-		Database: dbname,
-	}); err != nil {
 		return err
 	}
 
