@@ -26,8 +26,8 @@ func NewDatabase() (*Database, error) {
 	dbpass := sdkstr.Rand(8)
 	dbname := fmt.Sprintf("flarehotspot_%s", sdkstr.Rand(8))
 
-	// Sets up flarehotspot_.. database
-	err := pg.SetupDb(dbpass, dbname)
+	// Setup PostgreSQL server
+	err := pg.SetupServer(dbpass, dbname)
 	if err != nil {
 		log.Println("Error installing postgres db: ", err)
 		return nil, err
@@ -55,11 +55,13 @@ func NewDatabase() (*Database, error) {
 	openErrorCountThreshold := 5
 	pgPool, err := pgxpool.NewWithConfig(context.Background(), dbConf)
 	for openErrorCount := 0; err != nil && openErrorCount < openErrorCountThreshold; openErrorCount++ {
+		log.Println("Checking database connection...")
 		pgPool, err = pgxpool.New(context.Background(), url)
 		time.Sleep(time.Second * 2)
 		log.Println("Error opening database: ", err)
 	}
 	if err != nil {
+		log.Println("Error connecting to database.")
 		return nil, err
 	}
 
