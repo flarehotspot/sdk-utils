@@ -29,7 +29,11 @@ type CoreGlobals struct {
 
 func NewGlobals() *CoreGlobals {
 	state := &AppState{}
-	db, _ := db.NewDatabase()
+	db, err := db.NewDatabase()
+	if err != nil {
+		panic(err)
+	}
+
 	bp := NewBootProgress()
 	mdls := models.New(db)
 	clntReg := connmgr.NewClientRegister(db, mdls)
