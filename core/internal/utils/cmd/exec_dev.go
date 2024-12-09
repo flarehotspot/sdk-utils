@@ -17,6 +17,7 @@ var (
 		"modprobe",
 		"ip",
 		"tc",
+		"opkg",
 	}
 )
 

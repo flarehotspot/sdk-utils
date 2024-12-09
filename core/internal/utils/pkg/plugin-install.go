@@ -1,16 +1,23 @@
 package pkg
 
 import (
+	"bytes"
+	"core/internal/utils/cmd"
 	"core/internal/utils/download"
+	"core/internal/utils/migrate"
 	"errors"
+	"fmt"
 	"io"
 	"log"
 	"os"
+	"os/exec"
 	"path/filepath"
+	"strings"
 
 	sdkextract "github.com/flarehotspot/go-utils/extract"
 	sdkgit "github.com/flarehotspot/go-utils/git"
 	sdkpkg "github.com/flarehotspot/go-utils/pkg"
+	"github.com/jackc/pgx/v5/pgxpool"
 
 	"core/internal/utils/encdisk"
 
@@ -23,14 +30,14 @@ type PluginMetadata struct {
 	Def sdkpkg.PluginSrcDef
 }
 
-func InstallSrcDef(w io.Writer, def sdkpkg.PluginSrcDef) (info sdkpkg.PluginInfo, err error) {
+func InstallSrcDef(w io.Writer, db *pgxpool.Pool, def sdkpkg.PluginSrcDef) (info sdkpkg.PluginInfo, err error) {
 	switch def.Src {
 	case sdkpkg.PluginSrcGit:
-		info, err = InstallFromGitSrc(w, def)
+		info, err = InstallFromGitSrc(w, db, def)
 	case sdkpkg.PluginSrcLocal, sdkpkg.PluginSrcSystem:
-		info, err = InstallFromLocalPath(w, def)
+		info, err = InstallFromLocalPath(w, db, def)
 	case sdkpkg.PluginSrcStore:
-		info, err = InstallFromPluginStore(w, def)
+		info, err = InstallFromPluginStore(w, db, def)
 	default:
 		return sdkpkg.PluginInfo{}, errors.New("Invalid plugin source: " + def.Src)
 	}
@@ -38,7 +45,7 @@ func InstallSrcDef(w io.Writer, def sdkpkg.PluginSrcDef) (info sdkpkg.PluginInfo
 	return info, err
 }
 
-func InstallFromLocalPath(w io.Writer, def sdkpkg.PluginSrcDef) (info sdkpkg.PluginInfo, err error) {
+func InstallFromLocalPath(w io.Writer, db *pgxpool.Pool, def sdkpkg.PluginSrcDef) (info sdkpkg.PluginInfo, err error) {
 	w.Write([]byte("Installing plugin from local path: " + def.LocalPath))
 
 	info, err = sdkpkg.GetInfoFromPath(def.LocalPath)
@@ -46,7 +53,7 @@ func InstallFromLocalPath(w io.Writer, def sdkpkg.PluginSrcDef) (info sdkpkg.Plu
 		return
 	}
 
-	err = InstallPlugin(def.LocalPath, InstallOpts{Def: def, RemoveSrc: false})
+	err = InstallPlugin(def.LocalPath, db, InstallOpts{Def: def, RemoveSrc: false})
 	if err != nil {
 		return
 	}
@@ -92,7 +99,7 @@ func InstallFromLocalPath(w io.Writer, def sdkpkg.PluginSrcDef) (info sdkpkg.Plu
 // 	return info, nil
 // }
 
-func InstallFromPluginStore(w io.Writer, def sdkpkg.PluginSrcDef) (sdkpkg.PluginInfo, error) {
+func InstallFromPluginStore(w io.Writer, db *pgxpool.Pool, def sdkpkg.PluginSrcDef) (sdkpkg.PluginInfo, error) {
 	w.Write([]byte("Installing plugin from store: " + def.StorePackage))
 
 	// prepare path
@@ -137,14 +144,14 @@ func InstallFromPluginStore(w io.Writer, def sdkpkg.PluginSrcDef) (sdkpkg.Plugin
 		return sdkpkg.PluginInfo{}, err
 	}
 
-	if err := InstallPlugin(newWorkPath, InstallOpts{Def: def, RemoveSrc: false}); err != nil {
+	if err := InstallPlugin(newWorkPath, db, InstallOpts{Def: def, RemoveSrc: false}); err != nil {
 		return sdkpkg.PluginInfo{}, err
 	}
 
 	return info, nil
 }
 
-func InstallFromGitSrc(w io.Writer, def sdkpkg.PluginSrcDef) (sdkpkg.PluginInfo, error) {
+func InstallFromGitSrc(w io.Writer, db *pgxpool.Pool, def sdkpkg.PluginSrcDef) (sdkpkg.PluginInfo, error) {
 	log.Println("Installing plugin from git source: " + def.String())
 	randomPath := RandomPluginPath()
 	diskfile := filepath.Join(randomPath, "disk")
@@ -174,14 +181,14 @@ func InstallFromGitSrc(w io.Writer, def sdkpkg.PluginSrcDef) (sdkpkg.PluginInfo,
 		return sdkpkg.PluginInfo{}, err
 	}
 
-	if err := InstallPlugin(clonePath, InstallOpts{Def: def, RemoveSrc: false}); err != nil {
+	if err := InstallPlugin(clonePath, db, InstallOpts{Def: def, RemoveSrc: false}); err != nil {
 		return sdkpkg.PluginInfo{}, err
 	}
 
 	return info, nil
 }
 
-func InstallPlugin(src string, opts InstallOpts) error {
+func InstallPlugin(src string, db *pgxpool.Pool, opts InstallOpts) error {
 	log.Println("Installing plugin: ", src)
 
 	var buildpath string
@@ -224,6 +231,10 @@ func InstallPlugin(src string, opts InstallOpts) error {
 		installPath = GetPendingUpdatePath(info.Package)
 	}
 
+	if err := InstallSystemPkgs(info.SystemPackages); err != nil {
+		return err
+	}
+
 	if err := WriteMetadata(opts.Def, info.Package); err != nil {
 		log.Println("Error building plugin: ", err)
 		return err
@@ -243,6 +254,75 @@ func InstallPlugin(src string, opts InstallOpts) error {
 
 	log.Println("Plugin installed")
 
+	return nil
+}
+
+func InstallSystemPkgs(packages []string) (err error) {
+	if len(packages) == 0 {
+		return nil
+	}
+
+	if err := cmd.Exec("opkg update", &cmd.ExecOpts{
+		Stdout: os.Stdout,
+		Stderr: os.Stderr,
+	}); err != nil {
+		return err
+	}
+
+	toBeInstalled := []string{}
+	for _, pkg := range packages {
+		installed, err := IsSystemPackageInstalled(pkg)
+		if err != nil {
+			return err
+		}
+		if !installed {
+			toBeInstalled = append(toBeInstalled, pkg)
+		}
+	}
+
+	if err := cmd.Exec("opkg install "+strings.Join(toBeInstalled, " "), &cmd.ExecOpts{
+		Stdout: os.Stdout,
+		Stderr: os.Stderr,
+	}); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// IsPackageInstalled checks if a package is installed on OpenWrt.
+func IsSystemPackageInstalled(opkgPackage string) (bool, error) {
+	// Execute the `opkg list-installed` command
+	cmd := exec.Command("opkg", "list-installed")
+	var output bytes.Buffer
+	cmd.Stdout = &output
+	cmd.Stderr = &output
+
+	err := cmd.Run()
+	if err != nil {
+		return false, fmt.Errorf("failed to execute opkg: %v, output: %s", err, output.String())
+	}
+
+	// Check if the package name exists in the output
+	installedPackages := output.String()
+	return strings.Contains(installedPackages, opkgPackage), nil
+}
+
+func RunMigrations(db *pgxpool.Pool, pluginPath string) (err error) {
+	info, err := sdkpkg.GetInfoFromPath(pluginPath)
+	if err != nil {
+		return
+	}
+
+	name := info.Name
+	migdir := filepath.Join(pluginPath, "resources/migrations")
+	err = migrate.MigrateUp(db, migdir)
+	if err != nil {
+		log.Println("Error in plugin migration "+name, ":", err.Error())
+		return err
+	}
+
+	log.Println("Done migrating plugin:", name)
 	return nil
 }
 

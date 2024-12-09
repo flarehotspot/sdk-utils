@@ -7,7 +7,7 @@ services:
     volumes:
       - ./:/build
       - ./core/build/devkit/extras/config/database.json:/build/config/database.json
-      - /var/tmp/flare.tmp:/var/tmp/flare.tmp
+      - flare_tmp:/build/.tmp
     depends_on:
       postgres15:
         condition: service_healthy
@@ -50,6 +50,7 @@ services:
 
 volumes:
   postgres15:
+  flare_tmp:
 
 networks:
   flare_network:
