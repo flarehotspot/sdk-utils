@@ -20,6 +20,12 @@ func Init(g *plugins.CoreGlobals) {
 	go func() {
 		pkg.LinkNodeModulesLib(sdkpaths.AppDir)
 
+		// delay boot
+		// time.Sleep(1000 * 3 * time.Millisecond)
+
+		bp.AppendLog("Running core migrations...")
+		RunCoreMigrations(g)
+
 		bp.AppendLog("Initializing plugins...")
 		// time.Sleep(1000 * 3 * time.Millisecond)
 		InitPlugins(g)
@@ -29,12 +35,6 @@ func Init(g *plugins.CoreGlobals) {
 
 		bp.AppendLog("Initializing storage...")
 		InitStorage()
-
-		// delay boot
-		// time.Sleep(1000 * 3 * time.Millisecond)
-
-		bp.AppendLog("Running core migrations...")
-		RunCoreMigrations(g)
 
 		// delay boot
 		// time.Sleep(1000 * 3 * time.Millisecond)

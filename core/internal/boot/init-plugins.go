@@ -25,6 +25,7 @@ func (is *InstallStatus) Write(p []byte) (n int, err error) {
 
 func InitPlugins(g *plugins.CoreGlobals) {
 	bp := g.BootProgress
+	db := g.CoreAPI.SqlDb()
 	inst := &InstallStatus{bp: bp}
 
 	for _, def := range pkg.AllPluginSrcDefs() {
@@ -33,6 +34,7 @@ func InitPlugins(g *plugins.CoreGlobals) {
 		recompile := pkg.NeedsRecompile(def)
 		installed = installed && (pkg.ValidateInstallPath(path) == nil)
 		if installed {
+			// TODO: handle error
 			info, _ = sdkpkg.GetInfoFromPath(path)
 		}
 
@@ -76,7 +78,7 @@ func InitPlugins(g *plugins.CoreGlobals) {
 			}
 		}
 
-		info, err := pkg.InstallSrcDef(inst, g.CoreAPI.SqlDb(), def)
+		info, err := pkg.InstallSrcDef(inst, db, def)
 		if err != nil {
 			bp.AppendLog(fmt.Sprintf("%s: Error installing plugin: %s", def.String(), err.Error()))
 			if pkg.HasBackup(info.Package) {
