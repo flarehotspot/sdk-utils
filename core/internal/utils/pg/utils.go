@@ -3,6 +3,7 @@ package pg
 import (
 	"context"
 	"core/internal/config"
+	"fmt"
 	"log"
 	"math"
 	"math/big"
@@ -42,11 +43,10 @@ func Float64ToNumeric(value float64) pgtype.Numeric {
 	return numeric
 }
 
-func CheckPostgresPort(host string) bool {
-	port := "5432"
+func CheckPostgresPort(host string, port int) bool {
 	timeout := 2 * time.Second // Adjust timeout as needed
 
-	address := net.JoinHostPort(host, port)
+	address := net.JoinHostPort(host, fmt.Sprintf("%d", port))
 	conn, err := net.DialTimeout("tcp", address, timeout)
 	if err != nil {
 		return false // Port is not open

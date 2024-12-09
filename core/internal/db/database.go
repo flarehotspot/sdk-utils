@@ -2,7 +2,6 @@ package db
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log"
 	"strings"
@@ -37,7 +36,7 @@ func NewDatabase() (*Database, error) {
 
 	cfg, err := config.ReadDatabaseConfig()
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	// Wait for the postgres server to be ready
@@ -45,7 +44,9 @@ func NewDatabase() (*Database, error) {
 	portCheckIndex := 0
 	portOK := false
 	for portCheckIndex < maxPortCheckTries {
-		ok := pg.CheckPostgresPort(cfg.Host)
+		fmt.Println("Checking if database is up...")
+
+		ok := pg.CheckPostgresPort(cfg.Host, cfg.Port)
 		if ok {
 			portOK = true
 			break
@@ -56,7 +57,7 @@ func NewDatabase() (*Database, error) {
 	}
 
 	if !portOK {
-		return nil, errors.New("Unable to connect to the local postgres server!")
+		return nil, fmt.Errorf("Unable to connect to the %s postgres server!", cfg.Host)
 	}
 
 	var db Database

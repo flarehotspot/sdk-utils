@@ -21,10 +21,6 @@ func (cfg *DbConfig) DbUrlString() string {
 }
 
 func (cfg *DbConfig) BaseConnStr() string {
-	if cfg.Port == 0 {
-		cfg.Port = 5432
-	}
-
 	connStr := fmt.Sprintf("host=%s port=%d user=%s password=%s sslmode=%s", cfg.Host, cfg.Port, cfg.Username, cfg.Password, cfg.SslMode)
 
 	return connStr
@@ -43,6 +39,10 @@ func ReadDatabaseConfig() (*DbConfig, error) {
 
 	if cfg.SslMode == "" {
 		cfg.SslMode = "disable"
+	}
+
+	if cfg.Port == 0 {
+		cfg.Port = 5432
 	}
 
 	cfg.Database = strings.ToLower(cfg.Database)
