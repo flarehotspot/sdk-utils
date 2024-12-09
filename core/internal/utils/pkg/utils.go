@@ -352,25 +352,3 @@ func GetPendingUpdatePath(pkg string) string {
 func GetBackupPath(pkg string) string {
 	return filepath.Join(sdkpaths.PluginsDir, "backup", pkg)
 }
-
-func ListPluginDirs(includeCore bool) []string {
-	searchPaths := []string{"plugins/system", "plugins/local"}
-	pluginDirs := []string{}
-
-	if includeCore {
-		pluginDirs = append(pluginDirs, "core")
-	}
-
-	for _, s := range searchPaths {
-		var list []string
-		if err := sdkfs.LsDirs(s, &list, false); err == nil {
-			for _, pluginPath := range list {
-				if err := ValidateSrcPath(pluginPath); err == nil {
-					pluginDirs = append(pluginDirs, pluginPath)
-				}
-			}
-		}
-	}
-
-	return pluginDirs
-}

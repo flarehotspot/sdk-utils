@@ -16,10 +16,11 @@ import (
 	sdkpkg "github.com/flarehotspot/go-utils/pkg"
 	sdkruntime "github.com/flarehotspot/go-utils/runtime"
 	sdkstr "github.com/flarehotspot/go-utils/strings"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func BuildFromLocal(w io.Writer, def sdkpkg.PluginSrcDef) (sdkpkg.PluginInfo, error) {
-	err := InstallPlugin(def.LocalPath, InstallOpts{Def: def, RemoveSrc: false})
+func BuildFromLocal(w io.Writer, db *pgxpool.Pool, def sdkpkg.PluginSrcDef) (sdkpkg.PluginInfo, error) {
+	err := InstallPlugin(def.LocalPath, db, InstallOpts{Def: def, RemoveSrc: false})
 	if err != nil {
 		return sdkpkg.PluginInfo{}, err
 	}
@@ -38,7 +39,7 @@ func BuildFromLocal(w io.Writer, def sdkpkg.PluginSrcDef) (sdkpkg.PluginInfo, er
 	return info, nil
 }
 
-func BuildFromGit(w io.Writer, def sdkpkg.PluginSrcDef) (sdkpkg.PluginInfo, error) {
+func BuildFromGit(w io.Writer, db *pgxpool.Pool, def sdkpkg.PluginSrcDef) (sdkpkg.PluginInfo, error) {
 	dev := sdkstr.Slugify(sdkstr.Rand(16), "_")
 	parentpath := RandomPluginPath()
 	diskfile := filepath.Join(parentpath, "plugin-clone", "disk", dev)
@@ -56,7 +57,7 @@ func BuildFromGit(w io.Writer, def sdkpkg.PluginSrcDef) (sdkpkg.PluginInfo, erro
 		return sdkpkg.PluginInfo{}, err
 	}
 
-	if err := InstallPlugin(clonepath, InstallOpts{Def: def}); err != nil {
+	if err := InstallPlugin(clonepath, db, InstallOpts{Def: def}); err != nil {
 		return sdkpkg.PluginInfo{}, err
 	}
 

@@ -51,9 +51,6 @@ type IPluginApi interface {
 	// Returns an instance of database/sql package from go standard library.
 	SqlDb() *pgxpool.Pool
 
-	// Run the plugin migration scripts in resources/migrations folder.
-	Migrate() error
-
 	// Returns an instance of accounts api.
 	Acct() sdkacct.AccountsApi
 

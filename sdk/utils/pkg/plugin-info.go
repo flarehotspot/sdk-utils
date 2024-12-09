@@ -7,10 +7,11 @@ import (
 )
 
 type PluginInfo struct {
-	Name        string
-	Package     string
-	Description string
-	Version     string
+	Name           string   `json:"name"`
+	Package        string   `json:"package"`
+	Description    string   `json:"description"`
+	Version        string   `json:"version"`
+	SystemPackages []string `json:"system_packages"`
 }
 
 func GetInfoFromPath(src string) (PluginInfo, error) {

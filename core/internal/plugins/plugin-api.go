@@ -2,13 +2,11 @@ package plugins
 
 import (
 	"log"
-	"path/filepath"
 
 	"core/internal/connmgr"
 	"core/internal/db"
 	"core/internal/db/models"
 	"core/internal/network"
-	"core/internal/utils/migrate"
 	"core/internal/utils/pkg"
 	sdkacct "sdk/api/accounts"
 	sdkads "sdk/api/ads"
@@ -88,18 +86,6 @@ type PluginApi struct {
 func (self *PluginApi) Initialize(coreApi *PluginApi) {
 	self.CoreAPI = coreApi
 	self.HttpAPI.Initialize()
-}
-
-func (self *PluginApi) Migrate() error {
-	migdir := filepath.Join(self.dir, "resources/migrations")
-	err := migrate.MigrateUp(self.db.SqlDB(), migdir)
-	if err != nil {
-		log.Println("Error in plugin migration "+self.Name(), ":", err.Error())
-		return err
-	}
-
-	log.Println("Done migrating plugin:", self.Name())
-	return nil
 }
 
 func (self *PluginApi) Name() string {

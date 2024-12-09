@@ -76,7 +76,7 @@ func InitPlugins(g *plugins.CoreGlobals) {
 			}
 		}
 
-		info, err := pkg.InstallSrcDef(inst, def)
+		info, err := pkg.InstallSrcDef(inst, g.CoreAPI.SqlDb(), def)
 		if err != nil {
 			bp.AppendLog(fmt.Sprintf("%s: Error installing plugin: %s", def.String(), err.Error()))
 			if pkg.HasBackup(info.Package) {
