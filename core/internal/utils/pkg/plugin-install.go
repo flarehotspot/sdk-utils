@@ -1,13 +1,16 @@
 package pkg
 
 import (
+	"bytes"
 	"core/internal/utils/cmd"
 	"core/internal/utils/download"
 	"core/internal/utils/migrate"
 	"errors"
+	"fmt"
 	"io"
 	"log"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 
@@ -266,7 +269,18 @@ func InstallSystemPkgs(packages []string) (err error) {
 		return err
 	}
 
-	if err := cmd.Exec("opkg install "+strings.Join(packages, " "), &cmd.ExecOpts{
+	toBeInstalled := []string{}
+	for _, pkg := range packages {
+		installed, err := IsSystemPackageInstalled(pkg)
+		if err != nil {
+			return err
+		}
+		if !installed {
+			toBeInstalled = append(toBeInstalled, pkg)
+		}
+	}
+
+	if err := cmd.Exec("opkg install "+strings.Join(toBeInstalled, " "), &cmd.ExecOpts{
 		Stdout: os.Stdout,
 		Stderr: os.Stderr,
 	}); err != nil {
@@ -274,6 +288,24 @@ func InstallSystemPkgs(packages []string) (err error) {
 	}
 
 	return nil
+}
+
+// IsPackageInstalled checks if a package is installed on OpenWrt.
+func IsSystemPackageInstalled(opkgPackage string) (bool, error) {
+	// Execute the `opkg list-installed` command
+	cmd := exec.Command("opkg", "list-installed")
+	var output bytes.Buffer
+	cmd.Stdout = &output
+	cmd.Stderr = &output
+
+	err := cmd.Run()
+	if err != nil {
+		return false, fmt.Errorf("failed to execute opkg: %v, output: %s", err, output.String())
+	}
+
+	// Check if the package name exists in the output
+	installedPackages := output.String()
+	return strings.Contains(installedPackages, opkgPackage), nil
 }
 
 func RunMigrations(db *pgxpool.Pool, pluginPath string) (err error) {

@@ -151,3 +151,9 @@ sudo chown -R $USER <flarehotspot dir>
 ```
 
 then, `make devkit`.
+
+# Optimizing `gopls`
+
+Make sure to exclude the following directories from `gopls` LSP:
+
+- `.tmp`
