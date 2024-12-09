@@ -1,10 +1,17 @@
 package pg
 
 import (
+	"context"
+	"core/internal/config"
+	"fmt"
 	"log"
 	"math"
 	"math/big"
+	"net"
+	"strings"
+	"time"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
@@ -34,4 +41,37 @@ func Float64ToNumeric(value float64) pgtype.Numeric {
 	var numeric pgtype.Numeric
 	numeric.Scan(value)
 	return numeric
+}
+
+func CheckPostgresPort(host string, port int) bool {
+	timeout := 2 * time.Second // Adjust timeout as needed
+
+	address := net.JoinHostPort(host, fmt.Sprintf("%d", port))
+	conn, err := net.DialTimeout("tcp", address, timeout)
+	if err != nil {
+		return false // Port is not open
+	}
+	defer conn.Close()
+
+	return true // Port is open
+}
+
+func CreateDb(ctx context.Context, conn *pgx.Conn) (err error) {
+	cfg, err := config.ReadDatabaseConfig()
+	if err != nil {
+		return
+	}
+
+	log.Println("Creating database " + cfg.Database + "...")
+	_, err = conn.Exec(context.Background(), "CREATE DATABASE "+cfg.Database)
+	if err != nil {
+		if strings.Contains(err.Error(), "already exists") {
+			log.Println("Database already exists, skipping creation.")
+			return nil
+		}
+
+		return err
+	}
+
+	return nil
 }

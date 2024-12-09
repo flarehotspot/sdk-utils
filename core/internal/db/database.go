@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"net"
 	"strings"
 	"sync"
 	"time"
@@ -37,7 +36,7 @@ func NewDatabase() (*Database, error) {
 
 	cfg, err := config.ReadDatabaseConfig()
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	// Wait for the postgres server to be ready
@@ -45,7 +44,9 @@ func NewDatabase() (*Database, error) {
 	portCheckIndex := 0
 	portOK := false
 	for portCheckIndex < maxPortCheckTries {
-		ok := CheckPostgresPort(cfg.Host)
+		fmt.Println("Checking if database is up...")
+
+		ok := pg.CheckPostgresPort(cfg.Host, cfg.Port)
 		if ok {
 			portOK = true
 			break
@@ -56,12 +57,20 @@ func NewDatabase() (*Database, error) {
 	}
 
 	if !portOK {
-		panic("Unable to connect to the local postgres server!")
+		return nil, fmt.Errorf("Unable to connect to the %s postgres server!", cfg.Host)
 	}
 
 	var db Database
 
-	err = CreateDb()
+	ctx := context.Background()
+	conn, err := pgx.Connect(ctx, cfg.BaseConnStr())
+	if err != nil {
+		log.Println("Error opening database: ", err)
+		return nil, err
+	}
+	defer conn.Close(ctx)
+
+	err = pg.CreateDb(ctx, conn)
 	if err != nil {
 		return nil, err
 	}
@@ -120,47 +129,4 @@ func (d *Database) SetSql(db *pgxpool.Pool) {
 	d.mu.Lock()
 	defer d.mu.Unlock()
 	d.db = db
-}
-
-func CreateDb() (err error) {
-	cfg, err := config.ReadDatabaseConfig()
-	if err != nil {
-		return
-	}
-
-	ctx := context.Background()
-	log.Println("DB base conn string: ", cfg.BaseConnStr())
-	connPool, err := pgx.Connect(ctx, cfg.BaseConnStr())
-	if err != nil {
-		log.Println("Error opening database: ", err)
-		return
-	}
-	defer connPool.Close(ctx)
-
-	log.Println("Creating database " + cfg.Database + "...")
-	_, err = connPool.Exec(context.Background(), "CREATE DATABASE "+cfg.Database)
-	if err != nil {
-		if strings.Contains(err.Error(), "already exists") {
-			log.Println("Database already exists, skipping creation.")
-			return nil
-		}
-
-		return err
-	}
-
-	return nil
-}
-
-func CheckPostgresPort(host string) bool {
-	port := "5432"
-	timeout := 2 * time.Second // Adjust timeout as needed
-
-	address := net.JoinHostPort(host, port)
-	conn, err := net.DialTimeout("tcp", address, timeout)
-	if err != nil {
-		return false // Port is not open
-	}
-	defer conn.Close()
-
-	return true // Port is open
 }
