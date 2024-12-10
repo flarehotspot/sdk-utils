@@ -2,8 +2,9 @@
   "support": [
     {
       "os": "OpenWrt",
-      "os_version": "23.05.3",
+      "os_version": "23.05.5",
       "os_arch": "x86_64",
+      "os_profile": "generic",
       "go_version": "1.21.13",
       "go_versions": [
         "1.21.13"
