@@ -1,0 +1,8 @@
+---
+OpenWrt:
+  go_versions: [1.21.13]
+  os_versions: [23.05.3, 23.05.5]
+  os_targets:
+    - target: x86_64
+      profiles: [generic]
+      go_arch: amd64
