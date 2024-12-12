@@ -19,6 +19,7 @@
 /go
 /plugins/installed/*
 /bin
+/packages
 .null*
 
 .DS_Store

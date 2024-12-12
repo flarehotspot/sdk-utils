@@ -20,6 +20,8 @@ func Init(g *plugins.CoreGlobals) {
 	go func() {
 		pkg.LinkNodeModulesLib(sdkpaths.AppDir)
 
+		InitOpkg(bp)
+
 		// delay boot
 		// time.Sleep(1000 * 3 * time.Millisecond)
 

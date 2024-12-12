@@ -30,12 +30,12 @@ func InitPlugins(g *plugins.CoreGlobals) {
 
 	for _, def := range pkg.AllPluginSrcDefs() {
 		var info sdkpkg.PluginInfo
-		path, installed := pkg.FindDefInstallPath(def)
+		installPath, installed := pkg.FindDefInstallPath(def)
 		recompile := pkg.NeedsRecompile(def)
-		installed = installed && (pkg.ValidateInstallPath(path) == nil)
+		installed = installed && (pkg.ValidateInstallPath(installPath) == nil)
 		if installed {
 			// TODO: handle error
-			info, _ = sdkpkg.GetInfoFromPath(path)
+			info, _ = sdkpkg.GetInfoFromPath(installPath)
 		}
 
 		if pkg.IsToBeRemoved(info.Package) {
@@ -62,17 +62,18 @@ func InitPlugins(g *plugins.CoreGlobals) {
 		// TODO: handle broken plugins
 
 		if installed && !recompile {
-			bp.AppendLog(fmt.Sprintf("%s: Plugin is already installed", info.Package))
+			bp.AppendLog(fmt.Sprintf("%s: Plugin is already installed, skipping.", info.Package))
 			continue
 		}
 
+		// create backup, since we are going to reinstall or recompile the plugin
 		if installed {
 			if err := pkg.CreateBackup(info.Package); err != nil {
 				bp.AppendLog(fmt.Sprintf("%s: Error creating backup for plugin: %s", info.Package, err.Error()))
 				continue
 			}
 
-			if err := os.RemoveAll(path); err != nil {
+			if err := os.RemoveAll(installPath); err != nil {
 				bp.AppendLog(fmt.Sprintf("%s: Error removing plugin: %s", info.Package, err.Error()))
 				continue
 			}
