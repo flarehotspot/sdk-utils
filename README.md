@@ -3,7 +3,9 @@
 Flare Hotpost core repository.
 
 # System Requirements
+- Make
 - Docker
+- Go
 
 # Installation
 
@@ -13,12 +15,16 @@ git clone git@github.com:flarehotspot/flarehotspot.git
 cd flarehotspot
 git checkout development
 cp go.work.default go.work
-git submodule update --init --recursive
 ```
 
-Pull the latest changes for all the submodules.
+Add these to your `/etc/hosts` file:
+
 ```sh
-for p in $(ls plugins); do echo plugins/$p; for subp in $(ls plugins/${p}); do echo plugins/$p/$subp; cd plugins/$p/$subp; git checkout development && git pull; cd ../../..; done; done
+127.0.0.1    www.flarehotspot-dev.com
+127.0.0.1    superuser.flarehotspot-dev.com
+127.0.0.1    developer.flarehotspot-dev.com
+127.0.0.1    pgadmin4.flarehotspot-dev.com
+127.0.0.1    mailcatcher.flarehotspot-dev.com
 ```
 
 Install node modules.
@@ -36,15 +42,20 @@ unzip openwrt-files.zip -d openwrt-files
 
 # Installing Go
 ```sh
-curl -sSL https://github.com/moovweb/gvm/raw/master/binscripts/gvm-installer | bash
-gvm install "go$(cat .go-version)"
-cd ../flarehotspot # load go version
+git clone https://github.com/go-nv/goenv.git ~/.goenv
+echo 'export GOENV_ROOT="$HOME/.goenv"' >> ~/.bash_profile
+echo 'export PATH="$GOENV_ROOT/bin:$PATH"' >> ~/.bash_profile
+echo 'eval "$(goenv init -)"' >> ~/.bash_profile
+echo 'export PATH="$GOROOT/bin:$PATH"' >> ~/.bash_profile
+echo 'export PATH="$PATH:$GOPATH/bin"' >> ~/.bash_profile
+exec $SHELL
+goenv install $(cat .go-version)
 ```
 
 # Start the server
 
 ```sh
-docker compose up --build
+make
 ```
 Now you can browse the portal at [http://localhost:3000](http://localhost:3000)
 
@@ -55,6 +66,8 @@ The default admin access is:
 username: admin
 password: admin
 ```
+
+The database can be managed at [http://pgadmin4.flarehotspot-dev.com](http://pgadmin4.flarehotspot-dev.com)
 
 # Flare CLI
 
