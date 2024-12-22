@@ -32,15 +32,6 @@ func Init(g *plugins.CoreGlobals) {
 		// time.Sleep(1000 * 3 * time.Millisecond)
 		InitPlugins(g)
 
-		// delay boot
-		// time.Sleep(1000 * 3 * time.Millisecond)
-
-		bp.AppendLog("Initializing storage...")
-		InitStorage()
-
-		// delay boot
-		// time.Sleep(1000 * 3 * time.Millisecond)
-
 		bp.AppendLog("Initializing admin accounts...")
 		InitAccounts()
 
