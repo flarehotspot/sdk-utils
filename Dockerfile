@@ -13,6 +13,8 @@ ENV PATH=${PATH}:${TEMP_PATH}/gopath/bin
 
 WORKDIR /build
 
+COPY ./core/build/devkit/extras/config/database.json /build/config/database.json
+
 CMD cp go.work.default go.work && \
     go run --tags=dev ./core/internal/cli/main.go install-go && \
     go run --tags=dev ./core/cmd/sync-versions/main.go && \

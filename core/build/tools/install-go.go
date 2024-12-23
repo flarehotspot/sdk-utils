@@ -41,7 +41,7 @@ func InstallGo(installPath string) {
 		return
 	}
 
-	EXTRACT_PATH := filepath.Join(sdkpaths.CacheDir, "downloads", fmt.Sprintf("go%s-%s-%s", GOVERSION, GOOS, GOARCH))
+	EXTRACT_PATH := filepath.Join(sdkpaths.CacheDir, "flarehotspot", "downloads", fmt.Sprintf("go%s-%s-%s", GOVERSION, GOOS, GOARCH))
 	err = downloadAndExtractGo(GOOS, GOARCH, GOVERSION, EXTRACT_PATH)
 	if err != nil {
 		panic(err)
