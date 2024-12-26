@@ -45,7 +45,7 @@ func AllPluginSrcDefs() []sdkpkg.PluginSrcDef {
 
 func LocalPluginSrcDefs() []sdkpkg.PluginSrcDef {
 	list := []sdkpkg.PluginSrcDef{}
-	paths := SearchPluginDirs(filepath.Join(sdkpaths.AppDir, "plugins/local"))
+	paths := SearchPluginDirs(filepath.Join("plugins", "local"))
 	for _, p := range paths {
 		list = append(list, sdkpkg.PluginSrcDef{
 			Src:       sdkpkg.PluginSrcLocal,
@@ -58,7 +58,7 @@ func LocalPluginSrcDefs() []sdkpkg.PluginSrcDef {
 
 func SystemPluginSrcDefs() []sdkpkg.PluginSrcDef {
 	list := []sdkpkg.PluginSrcDef{}
-	paths := SearchPluginDirs(filepath.Join(sdkpaths.AppDir, "plugins/system"))
+	paths := SearchPluginDirs(filepath.Join("plugins", "system"))
 	for _, pluginPath := range paths {
 		list = append(list, sdkpkg.PluginSrcDef{
 			Src:       sdkpkg.PluginSrcSystem,
