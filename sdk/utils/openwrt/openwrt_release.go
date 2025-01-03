@@ -9,17 +9,6 @@ const (
 	OpenWrtReleaseFile = "/etc/openwrt_release"
 )
 
-var (
-	MockOpenWrtRelease = OpenWrtRelease{
-		DISTRIB_ID:          "OpenWrt",
-		DISTRIB_RELEASE:     "23.05.3",
-		DISTRIB_REVISION:    "r16279-5cc0535800",
-		DISTRIB_TARGET:      "x86/64",
-		DISTRIB_ARCH:        "x86_64",
-		DISTRIB_DESCRIPTION: "OpenWrt 21.02.0 r16279-5cc0535800",
-	}
-)
-
 type OpenWrtRelease struct {
 	DISTRIB_ID          string
 	DISTRIB_RELEASE     string
