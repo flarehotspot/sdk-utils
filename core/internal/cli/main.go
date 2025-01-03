@@ -64,14 +64,6 @@ func main() {
 		tools.CreateGoWorkspace()
 		return
 
-	case "install-go":
-		var installPath string
-		if len(os.Args) > 2 {
-			installPath = os.Args[2]
-		}
-		tools.InstallGo(installPath)
-		return
-
 	case "update":
 		Update()
 		return
@@ -292,10 +284,6 @@ list of commands:
     build-templates                     Compile templ files to golang.
 
     fix-workspace                       Re-generate the go.work file
-
-    install-go  <install path>          Install Go to the given path. If install path argument is not defined, then it will install in
-                                        the "$GO_CUSTOM_PATH" if defined, else it will install in "go" directory under the
-                                        current working directory.
 
     update                              Updates the flare system
 `

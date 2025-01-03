@@ -56,6 +56,24 @@ func CheckPostgresPort(host string, port int) bool {
 	return true // Port is open
 }
 
+// CheckDBReady checks if the database server is ready to accept connections.
+func CheckDBReady(ctx context.Context, connString string) (bool, error) {
+	// Create a connection to the database
+	conn, err := pgx.Connect(ctx, connString)
+	if err != nil {
+		return false, fmt.Errorf("failed to connect to database: %w", err)
+	}
+	defer conn.Close(ctx)
+
+	// Test readiness by running a simple query
+	err = conn.Ping(ctx)
+	if err != nil {
+		return false, fmt.Errorf("database is not ready: %w", err)
+	}
+
+	return true, nil
+}
+
 func CreateDb(ctx context.Context, conn *pgx.Conn) (err error) {
 	cfg, err := config.ReadDatabaseConfig()
 	if err != nil {

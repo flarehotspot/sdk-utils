@@ -1,33 +1,84 @@
-# This Source Code Form is subject to the terms of the Mozilla Public
-# License, v. 2.0. If a copy of the MPL was not distributed with this
-# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+FROM ubuntu:24.04 AS downloads
 
-# Description: Dockerfile for running the devkit.
-
-FROM ubuntu:24.04
+ARG OPENWRT_VERSION="23.05.5"
+ARG OPENWRT_TARGET="x86/64"
+ARG OPENWRT_ARCH="x86_64"
 
 RUN apt-get update && apt-get install -y \
-        wget curl gcc ca-certificates
+    wget tar gzip
 
-ENV GOPATH=/build/.tmp/gopath
-ENV GOCACHE=/build/.tmp/gocache
-ENV GO_CUSTOM_PATH=/build/.tmp/go
-ENV PATH=${GO_CUSTOM_PATH}/bin:${PATH}
-ENV PATH=${PATH}:/build/.tmp/gopath/bin
+# Download OpenWrt rootfs
+RUN wget \
+    "https://downloads.openwrt.org/releases/${OPENWRT_VERSION}/targets/${OPENWRT_TARGET}/openwrt-${OPENWRT_VERSION}-x86-64-rootfs.tar.gz" \
+    -O /openwrt.tar.gz && \
+    mkdir /rootfs && \
+    tar -xf /openwrt.tar.gz -C /rootfs
 
-WORKDIR /build
+# Download specific go version
+COPY .go-version .go-version
+RUN mkdir -p /packages
+RUN export GO_VERSION="$(cat .go-version)" && \
+        wget \
+        "https://github.com/flarehotspot/golang-releases/releases/download/v${GO_VERSION}/golang_${GO_VERSION}_${OPENWRT_ARCH}.ipk" \
+        -O "/packages/golang_${GO_VERSION}-${OPENWRT_ARCH}.ipk" --progress=dot:mega && \
+        wget \
+        "https://github.com/flarehotspot/golang-releases/releases/download/v${GO_VERSION}/golang-src_${GO_VERSION}_${OPENWRT_ARCH}.ipk" \
+        -O "/packages/golang-src_${GO_VERSION}-${OPENWRT_ARCH}.ipk" --progress=dot:mega
 
-CMD cp go.work.default go.work && \
-    ./tools.sh && \
+# --- Start OpenWrt configuration --------------------
+FROM scratch
+
+ENV PATH="$PATH:/home/openwrt/go/bin"
+ENV GOCACHE=/app/.tmp/go/cache
+ENV GOMODCACHE=/app/.tmp/go/mod
+
+COPY --from=downloads /rootfs /
+COPY --from=downloads /packages /packages
+
+RUN mkdir -p /var/lock
+
+RUN opkg update && opkg install \
+        sudo make shadow-useradd gcc ar shadow-su
+
+RUN opkg install /packages/*.ipk && \
+        rm -rf /packages
+
+# Fix gcc ld errors
+RUN ar -rc /usr/lib/libpthread.a && \
+        ar -rc /usr/lib/libresolv.a && \
+        ar -rc /usr/lib/libdl.a
+
+# Run and own only the runtime files as a non-root user for security
+RUN useradd openwrt --create-home --shell /bin/sh
+USER openwrt
+WORKDIR /app
+
+# Install additional tools
+COPY ./scripts/install-tools.sh .
+RUN ./install-tools.sh
+
+USER root
+
+ENTRYPOINT ["./scripts/entrypoint.sh"]
+
+# Watch and recompile server on file change
+CMD export PATH="$PATH:/home/openwrt/go/bin"; \
+    cp go.work.default go.work && \
     reflex \
-        -r '\.go$' \
-        -R '\.tmp\/*.' \
-        -R 'core\/main\.go' \
-        -R 'plugins\/installed' \
-        -R 'plugins\/system\/.*\/main\.go' \
-        -R 'plugins\/local\/.*\/main\.go' \
-        -R 'plugins\/update\/.*\/main\.go' \
-        -R 'plugins\/backup\/.*\/main\.go' \
+        -r '\.(go|templ|js|css|json)$' \
+        -R 'assets\/dist\/.*' \
+        -R 'db/sqlc/.*' \
+        -R '^config\/.*\.json$' \
+        -R 'node_modules' \
+        -R '_templ\.go$' \
         -R '(.*)mono\.go' \
-        -s -- sh -c './start.sh' -v
-
+        -R '\.tmp\/*.' \
+        -R '^output\/*.' \
+        -R '^bin\/*.' \
+        -R 'core\/main\.go' \
+        -R 'plugins\/system\/.*\/main\.go$' \
+        -R 'plugins\/local\/.*\/main\.go$' \
+        -R 'plugins\/installed\/.*' \
+        -R 'plugins\/update\/.*' \
+        -R 'plugins\/backup\/.*' \
+        -s -- sh -c './scripts/start-devkit.sh' -v

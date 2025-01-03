@@ -48,8 +48,11 @@ func NewDatabase() (*Database, error) {
 
 		ok := pg.CheckPostgresPort(cfg.Host, cfg.Port)
 		if ok {
-			portOK = true
-			break
+			ok, err := pg.CheckDBReady(context.Background(), cfg.BaseConnStr())
+			if ok && err == nil {
+				portOK = true
+				break
+			}
 		} else {
 			portCheckIndex++
 			time.Sleep(1 * time.Second)

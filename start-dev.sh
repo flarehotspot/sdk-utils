@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env ash
 
 BUILD_TAGS="dev"
 BUILD_CORE_MAIN="./core/cmd/build-core"

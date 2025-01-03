@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
-./bin/flare fix-workspace
-./bin/flare build-plugins
-./bin/flare server
+docker compose up --build --remove-orphans

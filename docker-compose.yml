@@ -5,18 +5,17 @@ services:
     build:
       context: .
     volumes:
-      - ./:/build
-      - './core/build/devkit/extras/config/database.json:/build/config/database.json'
-      - flare_tmp:/build/.tmp
-    depends_on:
-      postgres15:
-        condition: service_healthy
+      - ./:/app
+      - './openwrt-files/etc/config:/etc/config'
+      - './core/build/devkit/extras/config/database.json:/app/config/database.json'
+      - app_tmp:/app/.tmp
     ports:
       - 3000:3000
+    environment:
+      - GOCACHE=/app/.tmp/go/cache
+      - GOMODCACHE=/app/.tmp/go/mod
     networks:
       flare_network:
-        aliases:
-          - rpc-machines.flarehotspot-dev.com
 
   postgres15:
     image: postgres:15
@@ -25,14 +24,8 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=flarehotspot_dev  # Customize database name as needed
+      - POSTGRES_DB=flarehotspot_dev
       - PGDATA=/var/lib/postgresql/data/pgdata
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      start_period: 20s
-      interval: 30s
-      timeout: 5s
-      retries: 30
     networks:
       flare_network:
 
@@ -50,7 +43,7 @@ services:
 
 volumes:
   postgres15:
-  flare_tmp:
+  app_tmp:
 
 networks:
   flare_network:
