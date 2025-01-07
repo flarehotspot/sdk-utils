@@ -1,5 +1,5 @@
-
 # Flare Hotspot
+
 Flare Hotpost core repository.
 
 # System Requirements
@@ -14,23 +14,6 @@ Clone the project and prepare the development environment.
 git clone git@github.com:flarehotspot/flarehotspot.git
 cd flarehotspot
 git checkout development
-cp go.work.default go.work
-```
-
-Add these to your `/etc/hosts` file:
-
-```sh
-127.0.0.1    www.flarehotspot-dev.com
-127.0.0.1    superuser.flarehotspot-dev.com
-127.0.0.1    developer.flarehotspot-dev.com
-127.0.0.1    pgadmin4.flarehotspot-dev.com
-127.0.0.1    mailcatcher.flarehotspot-dev.com
-```
-
-Install node modules.
-
-```sh
-npm install
 ```
 
 Unzip the `openwrt-files.zip` file.
@@ -40,17 +23,6 @@ rm -rf ./openwrt-files
 unzip openwrt-files.zip -d openwrt-files
 ```
 
-# Installing Go
-```sh
-git clone https://github.com/go-nv/goenv.git ~/.goenv
-echo 'export GOENV_ROOT="$HOME/.goenv"' >> ~/.bash_profile
-echo 'export PATH="$GOENV_ROOT/bin:$PATH"' >> ~/.bash_profile
-echo 'eval "$(goenv init -)"' >> ~/.bash_profile
-echo 'export PATH="$GOROOT/bin:$PATH"' >> ~/.bash_profile
-echo 'export PATH="$PATH:$GOPATH/bin"' >> ~/.bash_profile
-exec $SHELL
-goenv install $(cat .go-version)
-```
 
 # Start the server
 
@@ -67,22 +39,14 @@ username: admin
 password: admin
 ```
 
-The database can be managed at [http://pgadmin4.flarehotspot-dev.com](http://pgadmin4.flarehotspot-dev.com)
-
-# Flare CLI
-
-Install the `flare` CLI:
-```sh
-go run ./core/cmd/build-cli/main.go
-./bin/flare -h
-```
+The database can be managed at [http://localhost:8081](http://localhost:8081)
 
 # Documentation
 
-Make sure `pipx` is available in your system and install the following packages:
+Make sure `pip` is available in your system and install the following packages:
 
 ```sh
-pipx install mkdocs-material --include-deps
+pip install mkdocs-material --include-deps
 ```
 
 Then you can serve the local documentation server:
@@ -100,7 +64,13 @@ make docs-build
 
 ---
 
-# Steps in implementing git subtree for `go-utils`
+# Git subtree for `go-utils`
+
+## Add the remote url of `flarehotspot/go-utils`
+
+```sh
+git remote add go-utils git@github.com:flarehotspot/go-utils.git
+```
 
 ## Split the utils to a `git subtree`.
 
@@ -110,24 +80,9 @@ git subtree split --prefix sdk/utils -b go-utils
 
 This will create a new branch called `go-utils` which can be pushed to a git repo.
 
-## Add the necessary `go.mod` file for making the `go-utils` a standalone library.
-
-Example:
-```go
-module github.com/flarehotspot/go-utils
-
-go 1.22.0
-```
-
-## Add the remote url of `flarehotspot/go-utils`
-
-```sh
-git remote add go-utils git@github.com:flarehotspot/go-utils.git
-```
-
 ## Push the `go-utils` branch to a remote git repo.
 ```sh
-git push go-utils go-utils:main
+git push go-utils go-utils:remote-branch-name
 ```
 
 # Pushing changes to `go-utils`
@@ -148,7 +103,7 @@ For the changes to persist in other codebases that uses the go library, head ove
 ```sh
 git checkout go-utils
 git tag vx.x.x # creates a tag to the latest commit of the current branch
-git push --tags # pushes the created tag
+git push go-utils --tags # pushes the created tag
 ```
 
 Then, update the `go-utils` library by specifying the version of the newly pushed tag.
@@ -156,17 +111,8 @@ Then, update the `go-utils` library by specifying the version of the newly pushe
 go get -u github.com/flarehotspot/go-utils@vx.x.x
 ```
 
-## Building `dev-kit`
+## Building `devkit`
 
-Change owner to `$USER` the `flarehotspot` dir first:
-```shell
-sudo chown -R $USER <flarehotspot dir>
-```
+Run the command: `make devkit`
 
-then, `make devkit`.
-
-# Optimizing `gopls`
-
-Make sure to exclude the following directories from `gopls` LSP:
-
-- `.tmp`
+Then you can find and test the devkit in `output/devkit` directory.

@@ -1,6 +1,7 @@
 package tools
 
 import (
+	"core/internal/utils/pkg"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -19,7 +20,7 @@ func CreatePlugin(pack string, name string, desc string) {
 		Version:     "0.0.1",
 	}
 
-	goVersion := sdkruntime.GO_VERSION
+	goVersion := sdkruntime.GO_SHORT_VERSION
 	pluginDir := filepath.Join("plugins/local", pack)
 	if sdkfs.Exists(pluginDir) {
 		fmt.Printf("Plugin already exists at %s\n", pluginDir)
@@ -73,7 +74,26 @@ main_mono.go
 		panic(err)
 	}
 
+	licenseFile := filepath.Join(pluginDir, "LICENSE.txt")
+	licenseTxt := `# No License Chosen
+
+This software does not currently have a license.
+
+By default, all rights are reserved. This means:
+- You may view the code.
+- You may not use, modify, or distribute this software for any purpose without explicit written permission from the copyright holder.
+
+The license for this software is still under consideration and will be added in the future. Until then, please contact [YOUR CONTACT INFORMATION] for any inquiries about usage or licensing.
+`
+	if err := os.WriteFile(licenseFile, []byte(licenseTxt), sdkfs.PermFile); err != nil {
+		panic(err)
+	}
+
 	CreateGoWorkspace()
+
+	if err := pkg.ValidateSrcPath(pluginDir); err != nil {
+		panic("Error validating newly created plugin: " + err.Error())
+	}
 
 	fmt.Printf("\n\nPlugin created at %s\n", pluginDir)
 }

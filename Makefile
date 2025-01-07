@@ -1,4 +1,8 @@
 default:
+	# create docker network if not exists
+	docker network inspect flare_network >/dev/null 2>&1 || \
+		docker network create --driver bridge flare_network
+	# start docker services in docker-compose.yml
 	docker compose up --build --remove-orphans
 
 server-dev:
@@ -19,4 +23,4 @@ sync-version:
 	go run ./core/internal/cli/flare-internal.go sync-version
 
 devkit:
-	go run -tags="dev" ./core/internal/cli/flare-internal.go create-devkit
+	docker compose run -it --rm app ash -c 'go run --tags=dev ./core/cmd/create-devkit/main.go'

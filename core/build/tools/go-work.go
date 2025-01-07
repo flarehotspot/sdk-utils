@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 
 	sdkfs "github.com/flarehotspot/go-utils/fs"
+	sdkpkg "github.com/flarehotspot/go-utils/pkg"
 	sdkruntime "github.com/flarehotspot/go-utils/runtime"
 )
 
@@ -35,13 +36,18 @@ use (
 	pluginSearchPaths := []string{"plugins/system", "plugins/local"}
 	for _, searchPath := range pluginSearchPaths {
 		if sdkfs.Exists(searchPath) {
-			entries, err := os.ReadDir(searchPath)
-			if err != nil {
+			var entries []string
+			if err := sdkfs.LsDirs(searchPath, &entries, false); err != nil {
 				continue
 			}
 
 			for _, entry := range entries {
-				pluginDir := filepath.Join(searchPath, entry.Name())
+				pluginDir, err := sdkpkg.FindPluginSrc(entry)
+				if err != nil {
+					fmt.Printf("%s is not a valid plugin path, skipping...\n", pluginDir)
+					continue
+				}
+
 				if pkg.ValidateSrcPath(pluginDir) == nil {
 					goWork += "\n    ./" + pluginDir
 				}
