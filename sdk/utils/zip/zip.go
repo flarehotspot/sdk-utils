@@ -3,11 +3,17 @@ package sdkzip
 import (
 	"fmt"
 	"os/exec"
+	"path/filepath"
 
+	sdkfs "github.com/flarehotspot/go-utils/fs"
 	sdkpaths "github.com/flarehotspot/go-utils/paths"
 )
 
 func Zip(srcDir string, destFile string) error {
+	if err := sdkfs.EnsureDir(filepath.Dir(destFile)); err != nil {
+		return err
+	}
+
 	fmt.Println("Zipping: ", sdkpaths.StripRoot(srcDir), " -> ", sdkpaths.StripRoot(destFile))
 	cmd := exec.Command("zip", "-r", destFile, ".")
 	cmd.Dir = srcDir
