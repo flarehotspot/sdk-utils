@@ -25,7 +25,7 @@ templ IntegerInputField(form sdkhttp.IHttpForm, sec sdkforms.FormSection, fld sd
 func getIntegerInputFieldAttrs(form sdkhttp.IHttpForm, sec sdkforms.FormSection, fld sdkforms.IFormField) (attrs IntegerInputFieldAttrs) {
 	attrs.Label = fld.GetLabel()
 	attrs.Name = fmt.Sprintf("%s:%s", sec.Name, fld.GetName())
-	var val int
+	var val int64
 	val, attrs.Error = form.GetIntValue(sec.Name, fld.GetName())
 	if attrs.Error != nil {
 		return

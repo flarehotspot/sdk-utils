@@ -10,7 +10,7 @@ require (
 	github.com/a-h/templ v0.2.793
 	github.com/digineo/go-uci v0.0.0-20210918132103-37c7b10c14fa
 	github.com/evanw/esbuild v0.24.0
-	github.com/flarehotspot/go-utils v0.0.4
+	github.com/flarehotspot/go-utils v0.0.17
 	github.com/goccy/go-json v0.10.3
 	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/google/uuid v1.6.0

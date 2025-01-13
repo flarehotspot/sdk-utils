@@ -1,9 +1,9 @@
 package sdkforms
 
 type TextField struct {
-	Name       string
-	Label      string
-	DefaultVal string
+	Name    string
+	Label   string
+	ValueFn func() string
 }
 
 func (f TextField) GetName() string {
@@ -18,6 +18,9 @@ func (f TextField) GetType() string {
 	return FormFieldTypeText
 }
 
-func (f TextField) GetDefaultVal() interface{} {
-	return f.DefaultVal
+func (f TextField) GetValue() interface{} {
+	if f.ValueFn != nil {
+		return f.ValueFn()
+	}
+	return ""
 }

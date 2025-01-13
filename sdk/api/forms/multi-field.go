@@ -3,16 +3,16 @@ package sdkforms
 type IMultiField interface {
 	NumRows() int
 	GetStringValue(row int, name string) (string, error)
-	GetIntValue(row int, name string) (int, error)
+	GetIntValue(row int, name string) (int64, error)
 	GetFloatValue(row int, name string) (float64, error)
 	GetBoolValue(row int, name string) (bool, error)
 }
 
 type MultiFieldCol struct {
-	Name       string
-	Label      string
-	Type       string
-	DefaultVal interface{}
+	Name    string
+	Label   string
+	Type    string
+	ValueFn func() interface{}
 }
 
 func (col MultiFieldCol) GetName() string {
@@ -27,15 +27,18 @@ func (col MultiFieldCol) GetType() string {
 	return col.Type
 }
 
-func (col MultiFieldCol) GetDefaultVal() interface{} {
-	return col.DefaultVal
+func (col MultiFieldCol) GetValue() interface{} {
+	if col.ValueFn != nil {
+		return col.ValueFn()
+	}
+	return nil
 }
 
 type MultiField struct {
-	Name       string
-	Label      string
-	Columns    func() []MultiFieldCol
-	DefaultVal MultiFieldData
+	Name    string
+	Label   string
+	Columns func() []MultiFieldCol
+	ValueFn func() [][]FieldData
 }
 
 func (f MultiField) GetName() string {
@@ -50,6 +53,9 @@ func (f MultiField) GetType() string {
 	return FormFieldTypeMulti
 }
 
-func (f MultiField) GetDefaultVal() interface{} {
-	return f.DefaultVal
+func (f MultiField) GetValue() interface{} {
+	if f.ValueFn != nil {
+		return f.ValueFn()
+	}
+	return [][]FieldData{}
 }

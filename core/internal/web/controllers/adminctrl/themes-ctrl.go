@@ -1,6 +1,8 @@
 package adminctrl
 
 import (
+	"errors"
+	"fmt"
 	"net/http"
 	sdkhttp "sdk/api/http"
 
@@ -13,26 +15,14 @@ import (
 func GetAvailableThemes(g *plugins.CoreGlobals) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		res := g.CoreAPI.HttpAPI.HttpResponse()
-
-		themeForm, err := coreforms.GetThemeForm(g)
-		if err != nil {
+		httpForm, ok := g.CoreAPI.HttpAPI.Forms().GetForm(coreforms.ThemesFormName)
+		if !ok {
+			err := errors.New("form not found: themes")
 			res.Error(w, r, err, http.StatusInternalServerError)
 			return
 		}
 
-		err = g.CoreAPI.HttpAPI.Forms().RegisterHttpForms(themeForm)
-		if err != nil {
-			res.Error(w, r, err, http.StatusInternalServerError)
-			return
-		}
-
-		httpForm, err := g.CoreAPI.HttpAPI.Forms().GetForm(themeForm.Name)
-		if err != nil {
-			res.Error(w, r, err, http.StatusInternalServerError)
-			return
-		}
-
-		page := themes.AdminThemesIndex(httpForm.Template(r))
+		page := themes.AdminThemesIndex(httpForm.GetTemplate(r))
 		res.AdminView(w, r, sdkhttp.ViewPage{PageContent: page})
 	}
 }
@@ -40,17 +30,26 @@ func GetAvailableThemes(g *plugins.CoreGlobals) http.HandlerFunc {
 func SaveThemeSettings(g *plugins.CoreGlobals) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		res := g.CoreAPI.HttpAPI.HttpResponse()
-		f, err := coreforms.GetThemeForm(g)
+		httpForm, ok := g.CoreAPI.HttpAPI.Forms().GetForm(coreforms.ThemesFormName)
+		if !ok {
+			err := errors.New("form not found: themes")
+			res.Error(w, r, err, http.StatusInternalServerError)
+			return
+		}
+
+		err := httpForm.ParseForm(r)
 		if err != nil {
 			res.Error(w, r, err, http.StatusInternalServerError)
 			return
 		}
 
-		httpForm, err := g.CoreAPI.HttpAPI.Forms().GetForm(f.Name)
+		mfdata, err := httpForm.GetMultiField("themes", "multi_field")
 		if err != nil {
 			res.Error(w, r, err, http.StatusInternalServerError)
 			return
 		}
+
+		fmt.Printf("mfdata: %+v\n", mfdata)
 
 		portalTheme, err := httpForm.GetStringValue("themes", "portal_theme")
 		if err != nil {

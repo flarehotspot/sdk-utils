@@ -1,71 +1,52 @@
 package plugins
 
 import (
-	formsutl "core/internal/utils/forms"
 	formsview "core/resources/views/forms/bootstrap5"
 	"errors"
 	"fmt"
 	"net/http"
-	"path/filepath"
+	"net/url"
 	"reflect"
 	sdkforms "sdk/api/forms"
 	sdkhttp "sdk/api/http"
-	"sync"
+	"strconv"
 
 	"github.com/a-h/templ"
-	sdkfs "github.com/flarehotspot/go-utils/fs"
-	sdkpaths "github.com/flarehotspot/go-utils/paths"
 )
 
 var (
-	ErrFieldMulti = errors.New("field type is multifield")
+	ErrFieldMulti   = errors.New("field type is multifield")
+	ErrNotBasicType = fmt.Errorf("field type is not a basic type, e.g. string, integer, decimal, bool")
 )
 
 func NewHttpForm(api *PluginApi, form sdkforms.Form) *HttpFormInstance {
-	httpForm := &HttpFormInstance{
+	return &HttpFormInstance{
 		api:  api,
 		form: form,
-		data: nil,
 	}
-	httpForm.LoadFormData()
-	return httpForm
 }
 
 type HttpFormInstance struct {
-	mu   sync.RWMutex
 	api  *PluginApi
 	form sdkforms.Form
 	data []sdkforms.SectionData
 }
 
-func (self *HttpFormInstance) Template(r *http.Request) templ.Component {
+func (self *HttpFormInstance) GetTemplate(r *http.Request) templ.Component {
 	csrfTag := self.api.HttpAPI.Helpers().CsrfHtmlTag(r)
 	submitText := "Submit"
 	if self.form.SubmitLabel != "" {
 		submitText = self.form.SubmitLabel
 	}
-
-	return formsview.HtmlForm(self, csrfTag, self.getSubmitUrl(), submitText)
+	submitUrl := self.api.HttpAPI.httpRouter.UrlForRoute(sdkhttp.PluginRouteName(self.form.CallbackRoute))
+	return formsview.HtmlForm(self, csrfTag, submitUrl, submitText)
 }
 
-func (self *HttpFormInstance) LoadFormData() {
-	if !sdkfs.Exists(self.dataPath()) {
-		return
+func (self *HttpFormInstance) ParseForm(r *http.Request) (err error) {
+	if err := r.ParseForm(); err != nil {
+		return err
 	}
 
-	self.mu.Lock()
-	defer self.mu.Unlock()
-
-	if err := sdkfs.ReadJson(self.dataPath(), &self.data); err != nil {
-		self.data = nil
-	}
-}
-
-func (self *HttpFormInstance) GetSections() []sdkforms.FormSection {
-	return self.form.Sections
-}
-
-func (self *HttpFormInstance) SaveForm(r *http.Request) (err error) {
 	parsedData := make([]sdkforms.SectionData, len(self.form.Sections))
 
 	for sidx, sec := range self.form.Sections {
@@ -84,23 +65,32 @@ func (self *HttpFormInstance) SaveForm(r *http.Request) (err error) {
 				sdkforms.FormFieldTypeInteger,
 				sdkforms.FormFieldTypeDecimal,
 				sdkforms.FormFieldTypeBoolean:
-				field.Value, err = formsutl.ParseBasicValue(fld, valstr)
+				field.Value, err = ParseBasicValue(fld, valstr)
 				if err != nil {
-					return err
+					field.Value = fld.GetValue()
 				}
 
 			case sdkforms.FormFieldTypeList:
-				field.Value, err = formsutl.ParseListFieldValue(fld, valstr)
+				field.Value, err = ParseListFieldValue(fld, valstr)
 				if err != nil {
-					return err
+					field.Value = fld.GetValue()
 				}
 
 			case sdkforms.FormFieldTypeMulti:
-				val, err := formsutl.ParseMultiFieldValue(sec, fld, r.Form)
+				val, err := ParseMultiFieldValue(sec, fld, r.Form)
 				if err != nil {
-					return err
-				}
+					mfld, ok := fld.(sdkforms.MultiField)
+					if !ok {
+						return fmt.Errorf("section %s, field %s type is not multifield, instead %T", sec, fld.GetName(), fld)
+					}
 
+					fldvals := mfld.GetValue()
+					mfldval, ok := fldvals.([][]sdkforms.FieldData)
+					if !ok {
+						return fmt.Errorf("section %s, field %s value is not a slice of sdkforms.FieldData, instead %T", sec, fld.GetName(), fldvals)
+					}
+					val = mfldval
+				}
 				field.Value = sdkforms.MultiFieldData{
 					Fields: val,
 				}
@@ -110,7 +100,7 @@ func (self *HttpFormInstance) SaveForm(r *http.Request) (err error) {
 			}
 
 			if field.Value == nil {
-				field.Value = formsutl.GetTypeDefault(fld)
+				field.Value = GetTypeDefault(fld)
 			}
 
 			sectionData.Fields[fidx] = field
@@ -119,16 +109,12 @@ func (self *HttpFormInstance) SaveForm(r *http.Request) (err error) {
 		parsedData[sidx] = sectionData
 	}
 
-	if err = self.writeData(parsedData); err != nil {
-		self.mu.Lock()
-		self.data = nil
-		self.mu.Unlock()
-		return
-	}
+	self.data = parsedData
+	return nil
+}
 
-	self.LoadFormData()
-
-	return
+func (self *HttpFormInstance) GetSections() []sdkforms.FormSection {
+	return self.form.Sections
 }
 
 func (self *HttpFormInstance) GetStringValue(section string, field string) (val string, err error) {
@@ -138,7 +124,7 @@ func (self *HttpFormInstance) GetStringValue(section string, field string) (val 
 	}
 	str, ok := v.(string)
 	if !ok {
-		return val, errors.New(fmt.Sprintf("section %s, field %s is not a string", section, field))
+		return val, errors.New(fmt.Sprintf("section %s field %s is not a string, instead %T", section, field, v))
 	}
 	return str, nil
 }
@@ -149,47 +135,45 @@ func (self *HttpFormInstance) GetStringValues(section string, field string) (val
 		return nil, err
 	}
 
-	val = make([]string, len(ivals))
-	for i, v := range ivals {
-		val[i] = v.(string)
+	val, ok := ivals.([]string)
+	if !ok {
+		return nil, errors.New(fmt.Sprintf("section %s, field %s is not a slice of strings", section, field))
 	}
 
 	return val, nil
 }
 
-func (self *HttpFormInstance) GetIntValue(section string, field string) (val int, err error) {
+func (self *HttpFormInstance) GetIntValue(section string, field string) (val int64, err error) {
 	v, err := self.getFieldValue(section, field)
 	if err != nil {
 		return
 	}
 	t := reflect.TypeOf(v)
 	switch t.Kind() {
-	case reflect.Float64:
-		return int(v.(float64)), nil
-	case reflect.Int:
-		return v.(int), nil
+	case reflect.Float32, reflect.Float64:
+		return int64(v.(float64)), nil
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		return v.(int64), nil
 	}
 	return val, errors.New(fmt.Sprintf("section %s, field %s is not an int", section, field))
 }
 
-func (self *HttpFormInstance) GetIntValues(section string, field string) (val []int, err error) {
+func (self *HttpFormInstance) GetIntValues(section string, field string) (val []int64, err error) {
 	ivals, err := self.getFieldValues(section, field)
 	if err != nil {
 		return
 	}
 
-	val = make([]int, len(ivals))
-	for i, v := range ivals {
-		t := reflect.TypeOf(v)
-		switch t.Kind() {
-		case reflect.Float64:
-			val[i] = int(v.(float64))
-		case reflect.Int:
-			val[i] = int(v.(int))
-		}
-	}
+	t := reflect.TypeOf(ivals).Elem()
+	val = []int64{}
 
-	return val, nil
+	switch t.Kind() {
+	case reflect.Int64:
+		vals := ivals.([]int64)
+		return vals, nil
+	default:
+		return nil, errors.New(fmt.Sprintf("section %s, field %s is not a slice of int64", section, field))
+	}
 }
 
 func (self *HttpFormInstance) GetFloatValue(section string, field string) (val float64, err error) {
@@ -209,11 +193,14 @@ func (self *HttpFormInstance) GetFloatValues(section string, field string) (val 
 		return
 	}
 
-	val = make([]float64, len(ivals))
-	for i, v := range ivals {
-		val[i] = v.(float64)
+	t := reflect.TypeOf(ivals).Elem()
+	switch t.Kind() {
+	case reflect.Float64:
+		vals := ivals.([]float64)
+		return vals, nil
+	default:
+		return nil, errors.New(fmt.Sprintf("section %s, field %s is not a slice of float64", section, field))
 	}
-	return val, nil
 }
 
 func (self *HttpFormInstance) GetBoolValue(section string, field string) (val bool, err error) {
@@ -233,118 +220,28 @@ func (self *HttpFormInstance) GetBoolValues(section string, field string) (val [
 		return
 	}
 
-	val = make([]bool, len(ivals))
-	for i, v := range ivals {
-		val[i] = v.(bool)
+	t := reflect.TypeOf(ivals).Elem()
+	switch t.Kind() {
+	case reflect.Bool:
+		vals := ivals.([]bool)
+		return vals, nil
+	default:
+		return nil, errors.New(fmt.Sprintf("section %s, field %s is not a slice of boolean", section, field))
 	}
-
-	return val, nil
 }
 
 func (self *HttpFormInstance) GetMultiField(section string, field string) (val sdkforms.IMultiField, err error) {
-	fld, ok := self.getField(section, field)
-	if !ok {
-		return val, fmt.Errorf("multi-field with name %s does not exist", field)
-	}
-
-	mfld, ok := fld.(sdkforms.MultiField)
-	if !ok {
-		return val, fmt.Errorf("form field %s is not a multi-field, instead %T", field, fld)
-	}
-
 	v, err := self.getFieldValue(section, field)
 	if err != nil {
 		return
 	}
 
-	ivals, ok := v.(map[string]interface{})
+	mfd, ok := v.(sdkforms.MultiFieldData)
 	if !ok {
-		if mfdata, ok := v.(sdkforms.MultiFieldData); ok {
-			ivals = map[string]interface{}{"fields": []interface{}{}}
-			for _, row := range mfdata.Fields {
-				vrow := []interface{}{}
-				for _, col := range row {
-					vrow = append(vrow, map[string]interface{}{"name": col.Name, "value": col.Value})
-				}
-				ivals["fields"] = append(ivals["fields"].([]interface{}), vrow)
-			}
-		} else {
-			return val, errors.New(fmt.Sprintf("section %s, field %s is not a multi-field, instead %T", section, field, v))
-		}
-	}
-
-	ifields, ok := ivals["fields"]
-	if !ok {
-		return val, errors.New(fmt.Sprintf("multi-field %s value has no 'fields' field", field))
-	}
-
-	irows, ok := ifields.([]interface{})
-	if !ok {
-		return val, fmt.Errorf("multi-field %s value is not a slice of field data, instead %T", field, ifields)
-	}
-
-	mfd := sdkforms.MultiFieldData{Fields: make([][]sdkforms.FieldData, len(irows))}
-
-	for ridx, irow := range irows {
-		icols, ok := irow.([]interface{})
-		if !ok {
-			return val, fmt.Errorf("multi-field %s row is not a slice of field data, instead %T", field, irow)
-		}
-
-		cols := mfld.Columns()
-		row := make([]sdkforms.FieldData, len(cols))
-
-		for cidx, colfld := range cols {
-			fd := sdkforms.FieldData{Name: colfld.Name}
-
-			if cidx > (len(icols) - 1) {
-				row[cidx] = fd
-				continue
-			}
-
-			icol := icols[cidx]
-
-			colmap, ok := icol.(map[string]interface{})
-			if !ok {
-				return val, fmt.Errorf("multi-field column %s is not a field data, instead %T", colfld.Name, icol)
-			}
-
-			v, ok := colmap["value"]
-			if !ok {
-				return val, fmt.Errorf("multi-field column %s does not have a value field", colfld.Name)
-			}
-
-			fd.Value = v
-
-			row[cidx] = fd
-		}
-
-		mfd.Fields[ridx] = row
+		return val, errors.New(fmt.Sprintf("section %s, field %s value is not sdkforms.MultiFieldData, instead %T", section, field, v))
 	}
 
 	return mfd, nil
-}
-
-func (self *HttpFormInstance) GetRedirectUrl() string {
-	url := self.api.HttpAPI.httpRouter.UrlForRoute(sdkhttp.PluginRouteName(self.form.CallbackRoute))
-	return url
-}
-
-func (self *HttpFormInstance) JsonData() (sdkforms.JsonData, error) {
-	return formsutl.ToJson(self, self.form.Sections)
-}
-
-// start private funcs---------------------
-func (self *HttpFormInstance) dataPath() string {
-	return filepath.Join(sdkpaths.ConfigDir, "plugins", self.api.Pkg(), self.form.Name+".json")
-}
-
-func (self *HttpFormInstance) writeData(parsedData []sdkforms.SectionData) error {
-	savepath := self.dataPath()
-	if err := sdkfs.EnsureDir(filepath.Dir(savepath)); err != nil {
-		return err
-	}
-	return sdkfs.WriteJson(savepath, parsedData)
 }
 
 func (self *HttpFormInstance) getSection(section string) (sec sdkforms.FormSection, ok bool) {
@@ -370,7 +267,7 @@ func (self *HttpFormInstance) getField(section string, field string) (f sdkforms
 }
 
 func (self *HttpFormInstance) getParsedSection(section string) (sec sdkforms.SectionData, ok bool) {
-	data := self.getFormData()
+	data := self.data
 	if data == nil {
 		return
 	}
@@ -380,7 +277,6 @@ func (self *HttpFormInstance) getParsedSection(section string) (sec sdkforms.Sec
 			return s, true
 		}
 	}
-
 	return
 }
 
@@ -391,9 +287,7 @@ func (self *HttpFormInstance) getParsedField(section string, field string) (fld 
 				return f, true
 			}
 		}
-
 	}
-
 	return
 }
 
@@ -404,108 +298,267 @@ func (self *HttpFormInstance) getParsedFieldValue(section string, field string) 
 	return
 }
 
-func (self *HttpFormInstance) getDefaultValue(secname string, field string) (val interface{}, err error) {
-	if f, ok := self.getField(secname, field); ok {
-		val = f.GetDefaultVal()
-		switch f.GetType() {
-		case sdkforms.FormFieldTypeMulti:
-			if v, ok := val.(map[string]interface{}); ok {
-				return v, nil
-			}
-			if v, ok := val.([][]sdkforms.FieldData); ok {
-				vmap := make(map[string]interface{})
-				for _, row := range v {
-					vmap["fields"] = []interface{}{}
-					for _, col := range row {
-						vrow := make(map[string]interface{})
-						vrow["name"] = col.Name
-						vrow["value"] = col.Value
-					}
-				}
-				return vmap, nil
-			}
-			return val, nil
-		default:
-			return val, nil
-		}
-	}
-	return nil, errors.New(fmt.Sprintf("section %s, field %s default value not found", secname, field))
-}
-
-func (self *HttpFormInstance) getDefaultValues(secname string, field string) (val []interface{}, err error) {
-	f, ok := self.getField(secname, field)
-	if !ok {
-		return nil, errors.New(fmt.Sprintf("section %s, field %s default value not found", secname, field))
-	}
-
-	v := f.GetDefaultVal()
-	t := reflect.TypeOf(v)
-
-	if t.Kind() != reflect.Slice {
-		return nil, errors.New(fmt.Sprintf("section %s, field %s default value is not a slice, instead %T", secname, field, v))
-	}
-
-	switch t.Elem().Kind() {
-
-	case reflect.String:
-		vals := v.([]string)
-		val = make([]interface{}, len(vals))
-		for i, v := range vals {
-			val[i] = v
-		}
-
-	case reflect.Int:
-		vals := v.([]int)
-		val = make([]interface{}, len(vals))
-		for i, v := range vals {
-			val[i] = v
-		}
-
-	case reflect.Float64:
-		vals := v.([]float64)
-		val = make([]interface{}, len(vals))
-		for i, v := range vals {
-			val[i] = v
-		}
-
-	case reflect.Bool:
-		vals := v.([]bool)
-		val = make([]interface{}, len(vals))
-		for i, v := range vals {
-			val[i] = v
-		}
-	}
-
-	return val, nil
-}
-
 func (self *HttpFormInstance) getFieldValue(section string, field string) (val interface{}, err error) {
+	if self.data == nil {
+		fld, ok := self.getField(section, field)
+		if !ok {
+			return nil, errors.New(fmt.Sprintf("section %s, field %s value not found", section, field))
+		}
+		return fld.GetValue(), nil
+	}
+
 	if v, ok := self.getParsedFieldValue(section, field); ok {
 		return v, nil
 	}
 
-	return self.getDefaultValue(section, field)
+	return nil, errors.New(fmt.Sprintf("section %s, field %s value not found", section, field))
 }
 
-func (self *HttpFormInstance) getFieldValues(section string, field string) (val []interface{}, err error) {
-	v, ok := self.getParsedFieldValue(section, field)
-	if !ok {
-		return self.getDefaultValues(section, field)
+func (self *HttpFormInstance) getFieldValues(section string, field string) (val interface{}, err error) {
+	var ok bool
+	if self.data == nil {
+		fld, ok := self.getField(section, field)
+		if !ok {
+			return nil, errors.New(fmt.Sprintf("section %s, field %s value not found", section, field))
+		}
+		val = fld.GetValue()
+	} else {
+		val, ok = self.getParsedFieldValue(section, field)
+		if !ok {
+			return nil, errors.New(fmt.Sprintf("section %s, field %s values not found", section, field))
+		}
 	}
 
-	if val, ok = v.([]interface{}); !ok {
-		return self.getDefaultValues(section, field)
+	if reflect.TypeOf(val).Kind() != reflect.Slice {
+		return nil, errors.New(fmt.Sprintf("section %s, field %s values is not a slice", section, field))
 	}
 
 	return val, nil
 }
 
-func (self *HttpFormInstance) getSubmitUrl() string {
-	return self.api.CoreAPI.HttpAPI.httpRouter.UrlForRoute("admin:forms:save", "pkg", self.api.Pkg(), "name", self.form.Name)
+// ----- Parser functions ----
+func ParseBasicValue(fld sdkforms.IFormField, valstr []string) (val interface{}, err error) {
+	switch fld.GetType() {
+	case sdkforms.FormFieldTypeText:
+		if len(valstr) < 1 {
+			return "", nil
+		}
+		val = valstr[0]
+
+	case sdkforms.FormFieldTypeInteger:
+		if len(valstr) < 1 {
+			return 0, nil
+		}
+		val, err = strconv.ParseInt(valstr[0], 10, 64)
+		if err != nil {
+			return 0, nil
+		}
+	case sdkforms.FormFieldTypeDecimal:
+		if len(valstr) < 1 {
+			return 0.0, nil
+		}
+		val, err = strconv.ParseFloat(valstr[0], 64)
+		if err != nil {
+			return 0, nil
+		}
+	case sdkforms.FormFieldTypeBoolean:
+		if len(valstr) < 1 {
+			return false, nil
+		}
+		val, err = strconv.ParseBool(valstr[0])
+		if err != nil {
+			return false, nil
+		}
+	default:
+		err = ErrNotBasicType
+	}
+	return
 }
 
-func (self *HttpFormInstance) getFormData() []sdkforms.SectionData {
-	self.mu.RLock()
-	defer self.mu.RUnlock()
-	return self.data
+func ParseListFieldValue(fld sdkforms.IFormField, valstr []string) (val interface{}, err error) {
+	listField, ok := fld.(sdkforms.ListField)
+	if !ok {
+		err = fmt.Errorf("field %s is not a list field", fld.GetName())
+		return
+	}
+
+	if valstr == nil {
+		return GetTypeDefault(fld), nil
+	}
+
+	switch listField.Type {
+
+	case sdkforms.FormFieldTypeText:
+		vals := valstr
+		val = valstr
+		if !listField.Multiple {
+			if len(vals) > 0 {
+				val = vals[0]
+				return
+			}
+			val = ""
+		}
+		return
+
+	case sdkforms.FormFieldTypeInteger:
+		vals := make([]int64, len(valstr))
+		for i, v := range valstr {
+			vals[i], err = strconv.ParseInt(v, 10, 64)
+			if err != nil {
+				return 0, nil
+			}
+		}
+		val = vals
+		if !listField.Multiple {
+			if len(vals) > 0 {
+				val = vals[0]
+				return
+			}
+			val = 0
+		}
+		return
+
+	case sdkforms.FormFieldTypeDecimal:
+		vals := make([]float64, len(valstr))
+		for i, v := range valstr {
+			vals[i], err = strconv.ParseFloat(v, 64)
+			if err != nil {
+				return 0, nil
+			}
+		}
+		val = vals
+		if !listField.Multiple {
+			if len(vals) > 0 {
+				val = vals[0]
+				return
+			}
+			val = 0.0
+		}
+		return
+
+	case sdkforms.FormFieldTypeBoolean:
+		vals := make([]bool, len(valstr))
+		for i, v := range valstr {
+			vals[i], err = strconv.ParseBool(v)
+			if err != nil {
+				return false, nil
+			}
+		}
+		val = vals
+		if !listField.Multiple {
+			if len(vals) > 0 {
+				val = vals[0]
+				return
+			}
+			val = false
+		}
+		return
+
+	default:
+		err = errors.New(fmt.Sprintf("%s default value %s is not supported list field", fld.GetName(), listField.Type))
+	}
+
+	return
+}
+
+func ParseMultiFieldValue(sec sdkforms.FormSection, f sdkforms.IFormField, form url.Values) (val [][]sdkforms.FieldData, err error) {
+	fld, ok := f.(sdkforms.MultiField)
+	if !ok {
+		err = errors.New(fmt.Sprintf("field %s in section %s is not a multi-field", f.GetName(), sec.Name))
+		return
+	}
+
+	columns := fld.Columns()
+	if len(columns) < 1 {
+		err = errors.New(fmt.Sprintf("multi-field %s in section %s has no columns", fld.Name, sec.Name))
+		return
+	}
+
+	col1 := sec.Name + ":" + fld.Name + ":" + columns[0].Name
+	numRows := len(form[col1])
+
+	vals := make([][]sdkforms.FieldData, numRows)
+
+	for ridx := 0; ridx < numRows; ridx++ {
+		row := make([]sdkforms.FieldData, len(columns))
+		for cidx, colfld := range columns {
+			var value interface{}
+
+			inputName := sec.Name + ":" + fld.Name + ":" + colfld.Name
+			colarr := form[inputName]
+
+			switch colfld.GetType() {
+
+			case sdkforms.FormFieldTypeText,
+				sdkforms.FormFieldTypeInteger,
+				sdkforms.FormFieldTypeDecimal,
+				sdkforms.FormFieldTypeBoolean:
+
+				if ridx >= len(colarr) {
+					value = GetTypeDefault(colfld)
+					break
+				}
+
+				valstr := colarr[ridx]
+				value, err = ParseBasicValue(colfld, []string{valstr})
+				if err != nil {
+					return nil, err
+				}
+
+			default:
+				err = errors.New(fmt.Sprintf("unsupported list field type %s", colfld.GetType()))
+				return
+			}
+
+			row[cidx] = sdkforms.FieldData{
+				Name:  colfld.GetName(),
+				Value: value,
+			}
+		}
+
+		vals[ridx] = row
+	}
+
+	return vals, nil
+
+}
+
+func GetTypeDefault(fld sdkforms.IFormField) interface{} {
+	switch fld.GetType() {
+
+	case sdkforms.FormFieldTypeText,
+		sdkforms.FormFieldTypeInteger,
+		sdkforms.FormFieldTypeDecimal,
+		sdkforms.FormFieldTypeBoolean:
+		return GetBasicTypeDefault(fld.GetType())
+
+	case sdkforms.FormFieldTypeList:
+		lsfld := fld.(sdkforms.ListField)
+		if lsfld.Multiple {
+			return []interface{}{}
+		} else {
+			return GetBasicTypeDefault(fld.GetType())
+		}
+
+	case sdkforms.FormFieldTypeMulti:
+		return map[string]interface{}{}
+
+	default:
+		return nil
+	}
+}
+
+func GetBasicTypeDefault(t string) interface{} {
+	switch t {
+	case sdkforms.FormFieldTypeText:
+		return ""
+	case sdkforms.FormFieldTypeInteger:
+		return int64(0)
+	case sdkforms.FormFieldTypeDecimal:
+		return float64(0.0)
+	case sdkforms.FormFieldTypeBoolean:
+		return false
+	default:
+		return nil
+	}
 }

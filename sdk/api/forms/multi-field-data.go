@@ -43,7 +43,7 @@ func (f MultiFieldData) GetStringValue(row int, name string) (val string, err er
 	return val, nil
 }
 
-func (f MultiFieldData) GetIntValue(row int, name string) (val int, err error) {
+func (f MultiFieldData) GetIntValue(row int, name string) (val int64, err error) {
 	v, err := f.GetValue(row, name)
 	if err != nil {
 		return 0, err
@@ -52,9 +52,9 @@ func (f MultiFieldData) GetIntValue(row int, name string) (val int, err error) {
 	t := reflect.TypeOf(v)
 	switch t.Kind() {
 	case reflect.Float64:
-		return int(v.(float64)), nil
-	case reflect.Int:
-		return v.(int), nil
+		return int64(v.(float64)), nil
+	case reflect.Int64:
+		return v.(int64), nil
 	default:
 		return 0, nil
 	}
