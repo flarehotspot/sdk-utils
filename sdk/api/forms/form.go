@@ -23,7 +23,7 @@ type IFormField interface {
 	GetName() string
 	GetLabel() string
 	GetType() string
-	GetDefaultVal() interface{}
+	GetValue() interface{}
 }
 
 type FormSection struct {
@@ -38,4 +38,4 @@ type Form struct {
 	SubmitLabel   string
 }
 
-type JsonData []JsonSection
+// type JsonData []JsonSection

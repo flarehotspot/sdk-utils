@@ -6,12 +6,12 @@ type ListOption struct {
 }
 
 type ListField struct {
-	Name       string
-	Label      string
-	Type       string
-	Multiple   bool
-	Options    func() []ListOption
-	DefaultVal interface{}
+	Name     string
+	Label    string
+	Type     string
+	Multiple bool
+	Options  func() []ListOption
+	ValueFn  func() interface{}
 }
 
 func (f ListField) GetName() string {
@@ -26,6 +26,9 @@ func (f ListField) GetType() string {
 	return FormFieldTypeList
 }
 
-func (f ListField) GetDefaultVal() interface{} {
-	return f.DefaultVal
+func (f ListField) GetValue() interface{} {
+	if f.ValueFn != nil {
+		return f.ValueFn()
+	}
+	return nil
 }

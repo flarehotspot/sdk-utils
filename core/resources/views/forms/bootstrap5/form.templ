@@ -7,12 +7,7 @@ import (
 )
 
 templ HtmlForm(form sdkhttp.IHttpForm, csrfTag string, submitUrl string, submitText string) {
-	{{ json, err := form.JsonData() }}
-	if err != nil {
-		<p>Error: { err.Error() }</p>
-		{{ return }}
-	}
-	<form id="form" method="POST" action={ templ.SafeURL(submitUrl) } data-json={ templ.JSONString(json) }>
+	<form id="form" method="POST" action={ templ.SafeURL(submitUrl) }>
 		@templ.Raw(csrfTag)
 		for _, sec := range form.GetSections() {
 			<legend>{ sec.Name }</legend>

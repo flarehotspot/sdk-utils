@@ -75,6 +75,8 @@ func isListOptSelected(form sdkhttp.IHttpForm, sec sdkforms.FormSection, lf sdkf
 			v = float64(opt.Value.(int))
 		case reflect.Int32:
 			v = float64(opt.Value.(int32))
+		case reflect.Int64:
+			v = float64(opt.Value.(int64))
 		case reflect.Float32:
 			v = float64(opt.Value.(float32))
 		case reflect.Float64:

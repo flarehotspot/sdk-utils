@@ -1,9 +1,9 @@
 package sdkforms
 
 type IntegerField struct {
-	Name       string
-	Label      string
-	DefaultVal int
+	Name    string
+	Label   string
+	ValueFn func() int64
 }
 
 func (f IntegerField) GetName() string {
@@ -18,6 +18,9 @@ func (f IntegerField) GetType() string {
 	return FormFieldTypeInteger
 }
 
-func (f IntegerField) GetDefaultVal() interface{} {
-	return f.DefaultVal
+func (f IntegerField) GetValue() interface{} {
+	if f.ValueFn != nil {
+		return f.ValueFn()
+	}
+	return 0
 }

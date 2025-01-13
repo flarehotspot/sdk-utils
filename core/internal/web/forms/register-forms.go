@@ -5,11 +5,8 @@ import (
 )
 
 func RegisterForms(g *plugins.CoreGlobals) {
-
-	themesForm, err := GetThemeForm(g)
+	err := RegisterThemesForm(g)
 	if err != nil {
 		panic(err)
 	}
-
-	g.CoreAPI.HttpAPI.Forms().RegisterHttpForms(themesForm)
 }

@@ -1,9 +1,9 @@
 package sdkforms
 
 type BooleanField struct {
-	Name       string
-	Label      string
-	DefaultVal bool
+	Name    string
+	Label   string
+	ValueFn func() bool
 }
 
 func (f BooleanField) GetName() string {
@@ -18,6 +18,9 @@ func (f BooleanField) GetType() string {
 	return FormFieldTypeBoolean
 }
 
-func (f BooleanField) GetDefaultVal() interface{} {
-	return f.DefaultVal
+func (f BooleanField) GetValue() interface{} {
+	if f.ValueFn != nil {
+		return f.ValueFn()
+	}
+	return false
 }

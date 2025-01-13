@@ -10,8 +10,8 @@ github.com/digineo/go-uci v0.0.0-20210918132103-37c7b10c14fa h1:DnJCYIydCaZtyCE4
 github.com/digineo/go-uci v0.0.0-20210918132103-37c7b10c14fa/go.mod h1:KSkTBQD5RmexSxMd1lZXyAa2NOpaVtOPcYcgVcBheUA=
 github.com/evanw/esbuild v0.24.0 h1:GZ78naTLp7FKr+K7eNuM/SLs5maeiHYRPsTg6kmdsSE=
 github.com/evanw/esbuild v0.24.0/go.mod h1:D2vIQZqV/vIf/VRHtViaUtViZmG7o+kKmlBfVQuRi48=
-github.com/flarehotspot/go-utils v0.0.4 h1:6+z04nUJEMFv6INS3tStkGpu5EynENpnOuAgruOLunY=
-github.com/flarehotspot/go-utils v0.0.4/go.mod h1:07Kn/+09u5weHIM8lPYB0oLG/yM5tY5kDihiv523sao=
+github.com/flarehotspot/go-utils v0.0.17 h1:miHiWZnGyYs1bnd7We1VTMHjDzH8kTWP5tcfj8OS7m0=
+github.com/flarehotspot/go-utils v0.0.17/go.mod h1:qCFJJqtBby0Iwngz9Hia/wPcqwm/DztNMxIfesaPaJg=
 github.com/goccy/go-json v0.10.3 h1:KZ5WoDbxAIgm2HNbYckL0se1fHD6rz5j4ywS6ebzDqA=
 github.com/goccy/go-json v0.10.3/go.mod h1:oq7eo15ShAhp70Anwd5lgX2pLfOS3QCiwU/PULtXL6M=
 github.com/golang-jwt/jwt/v5 v5.2.1 h1:OuVbFODueb089Lh128TAcimifWaLhJwVflnrgM17wHk=

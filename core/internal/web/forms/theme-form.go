@@ -7,16 +7,14 @@ import (
 	sdkplugin "sdk/api/plugin"
 )
 
-func GetThemeForm(g *plugins.CoreGlobals) (form sdkforms.Form, err error) {
+const (
+	ThemesFormName = "themes"
+)
 
+func RegisterThemesForm(g *plugins.CoreGlobals) (err error) {
 	allPlugins := g.PluginMgr.All()
 	adminThemes := []sdkplugin.IPluginApi{}
 	portalThemes := []sdkplugin.IPluginApi{}
-
-	cfg, err := config.ReadThemesConfig()
-	if err != nil {
-		return
-	}
 
 	for _, p := range allPlugins {
 		features := p.Features()
@@ -32,10 +30,16 @@ func GetThemeForm(g *plugins.CoreGlobals) (form sdkforms.Form, err error) {
 	}
 
 	portalThemesField := sdkforms.ListField{
-		Name:       "portal_theme",
-		Label:      "Select Portal Theme",
-		Type:       sdkforms.FormFieldTypeText,
-		DefaultVal: cfg.PortalThemePkg,
+		Name:  "portal_theme",
+		Label: "Select Portal Theme",
+		Type:  sdkforms.FormFieldTypeText,
+		ValueFn: func() interface{} {
+			cfg, err := config.ReadThemesConfig()
+			if err != nil {
+				return ""
+			}
+			return cfg.PortalThemePkg
+		},
 		Options: func() []sdkforms.ListOption {
 			opts := []sdkforms.ListOption{}
 			for _, p := range portalThemes {
@@ -49,10 +53,16 @@ func GetThemeForm(g *plugins.CoreGlobals) (form sdkforms.Form, err error) {
 	}
 
 	adminThemesField := sdkforms.ListField{
-		Name:       "admin_theme",
-		Label:      "Select Admin Theme",
-		Type:       sdkforms.FormFieldTypeText,
-		DefaultVal: cfg.AdminThemePkg,
+		Name:  "admin_theme",
+		Label: "Select Admin Theme",
+		Type:  sdkforms.FormFieldTypeText,
+		ValueFn: func() interface{} {
+			cfg, err := config.ReadThemesConfig()
+			if err != nil {
+				return ""
+			}
+			return cfg.AdminThemePkg
+		},
 		Options: func() []sdkforms.ListOption {
 			opts := []sdkforms.ListOption{}
 			for _, p := range adminThemes {
@@ -71,41 +81,47 @@ func GetThemeForm(g *plugins.CoreGlobals) (form sdkforms.Form, err error) {
 		Columns: func() []sdkforms.MultiFieldCol {
 			cols := []sdkforms.MultiFieldCol{
 				{
-					Name:       "col1",
-					Label:      "Column 1 (text)",
-					Type:       sdkforms.FormFieldTypeText,
-					DefaultVal: "default val 1",
+					Name:  "col1",
+					Label: "Column 1 (text)",
+					Type:  sdkforms.FormFieldTypeText,
+					ValueFn: func() interface{} {
+						return "text value"
+					},
 				},
 				{
-					Name:       "col2",
-					Label:      "Column 2 (decimal)",
-					Type:       sdkforms.FormFieldTypeDecimal,
-					DefaultVal: 1.0,
+					Name:  "col2",
+					Label: "Column 2 (decimal)",
+					Type:  sdkforms.FormFieldTypeDecimal,
+					ValueFn: func() interface{} {
+						return 100.1
+					},
 				},
 				{
-					Name:       "col3",
-					Label:      "Column 3 (integer)",
-					Type:       sdkforms.FormFieldTypeInteger,
-					DefaultVal: 2,
+					Name:  "col3",
+					Label: "Column 3 (integer)",
+					Type:  sdkforms.FormFieldTypeInteger,
+					ValueFn: func() interface{} {
+						return 1
+					},
 				},
 				{
-					Name:       "col4",
-					Label:      "Column 4 (boolean)",
-					Type:       sdkforms.FormFieldTypeBoolean,
-					DefaultVal: true,
+					Name:  "col4",
+					Label: "Column 4 (boolean)",
+					Type:  sdkforms.FormFieldTypeBoolean,
+					ValueFn: func() interface{} {
+						return true
+					},
 				},
 			}
 			return cols
 		},
-		DefaultVal: sdkforms.MultiFieldData{},
 	}
 
 	listFieldTxt := sdkforms.ListField{
-		Name:       "list_field_txt",
-		Label:      "List Field (text)",
-		Multiple:   true,
-		Type:       sdkforms.FormFieldTypeText,
-		DefaultVal: []string{"val1"},
+		Name:     "list_field_txt",
+		Label:    "List Field (text)",
+		Multiple: true,
+		Type:     sdkforms.FormFieldTypeText,
 		Options: func() []sdkforms.ListOption {
 			return []sdkforms.ListOption{
 				{
@@ -118,13 +134,16 @@ func GetThemeForm(g *plugins.CoreGlobals) (form sdkforms.Form, err error) {
 				},
 			}
 		},
+		ValueFn: func() interface{} {
+			return []string{"val1", "val2"}
+		},
 	}
 
 	listFieldNum := sdkforms.ListField{
-		Name:       "list_field_num",
-		Label:      "List Field (number)",
-		Type:       sdkforms.FormFieldTypeDecimal,
-		DefaultVal: 100.0,
+		Name:     "list_field_num",
+		Label:    "List Field (number)",
+		Type:     sdkforms.FormFieldTypeDecimal,
+		Multiple: true,
 		Options: func() []sdkforms.ListOption {
 			return []sdkforms.ListOption{
 				{
@@ -137,36 +156,47 @@ func GetThemeForm(g *plugins.CoreGlobals) (form sdkforms.Form, err error) {
 				},
 			}
 		},
+		ValueFn: func() interface{} {
+			return []float64{100.0, 200.0}
+		},
 	}
 
 	textField := sdkforms.TextField{
-		Name:       "text_field",
-		Label:      "Text Field",
-		DefaultVal: "hello",
+		Name:  "text_field",
+		Label: "Text Field",
+		ValueFn: func() string {
+			return "text value"
+		},
 	}
 
 	intField := sdkforms.IntegerField{
-		Name:       "int_field",
-		Label:      "Int Field",
-		DefaultVal: 123,
+		Name:  "int_field",
+		Label: "Int Field",
+		ValueFn: func() int64 {
+			return 124
+		},
 	}
 
 	decimalField := sdkforms.DecimalField{
-		Name:       "decimal_field",
-		Label:      "Decimal Field",
-		Step:       0.1,
-		Precision:  2,
-		DefaultVal: 123,
+		Name:      "decimal_field",
+		Label:     "Decimal Field",
+		Step:      0.1,
+		Precision: 2,
+		ValueFn: func() float64 {
+			return 201.50
+		},
 	}
 
 	boolField := sdkforms.BooleanField{
-		Name:       "boolean_field",
-		Label:      "Boolean Field",
-		DefaultVal: true,
+		Name:  "boolean_field",
+		Label: "Boolean Field",
+		ValueFn: func() bool {
+			return true
+		},
 	}
 
-	form = sdkforms.Form{
-		Name:          "themes",
+	themesForm := sdkforms.Form{
+		Name:          ThemesFormName,
 		CallbackRoute: "admin:themes:save",
 		SubmitLabel:   "Save",
 		Sections: []sdkforms.FormSection{
@@ -187,5 +217,10 @@ func GetThemeForm(g *plugins.CoreGlobals) (form sdkforms.Form, err error) {
 		},
 	}
 
-	return
+	err = g.CoreAPI.HttpAPI.Forms().RegisterForms(themesForm)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

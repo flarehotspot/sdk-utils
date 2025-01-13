@@ -75,7 +75,7 @@ templ multiFieldCol(sec sdkforms.FormSection, fld sdkforms.MultiField, mfval sdk
 					<p class="text text-danger text-small">{ fmt.Sprintf("unable to get string value from field %s, column %s", fld.Name, col.Name) }</p>
 				}
 			case sdkforms.FormFieldTypeInteger:
-				{{ var val int }}
+				{{ var val int64 }}
 				{{ var err error }}
 				if row > -1 {
 					{{ val, err = mfval.GetIntValue(row, col.Name) }}

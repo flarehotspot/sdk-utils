@@ -17,22 +17,22 @@ func AdminRoutes(g *plugins.CoreGlobals) {
 	adminLoginCtrl := controllers.AdminLoginCtrl(g)
 	adminAuthCtrl := controllers.AdminAuthenticateCtrl(g)
 	adminSseCtrl := controllers.AdminSseHandler(g)
-	adminFormsCtrl := adminctrl.NewFormsCtrl(g)
+	// adminFormsCtrl := adminctrl.NewFormsCtrl(g)
 
 	rootR.Handle("/admin", authMw(adminIndexCtrl)).Methods("GET").Name("admin:index")
 	// TODO: enable csrf protection
 	rootR.Handle("/login", adminLoginCtrl).Methods("GET").Name("admin:login")
 	rootR.Handle("/login", adminAuthCtrl).Methods("POST").Name("admin:authenticate")
 
-	adminR.Group("/forms", func(subrouter sdkhttp.IHttpRouterInstance) {
-		subrouter.Post("/save", adminFormsCtrl.SaveForm).Queries("pkg", "{pkg}", "name", "{name}").Name("admin:forms:save")
-	})
+	// adminR.Group("/forms", func(subrouter sdkhttp.IHttpRouterInstance) {
+	// 	subrouter.Post("/save", adminFormsCtrl.SaveForm).Queries("pkg", "{pkg}", "name", "{name}").Name("admin:forms:save")
+	// })
 
 	adminR.Get("/events", adminSseCtrl).Name("admin:sse")
 
 	adminR.Group("/themes", func(subrouter sdkhttp.IHttpRouterInstance) {
 		subrouter.Get("/index", adminctrl.GetAvailableThemes(g)).Name("admin:themes:index")
-		subrouter.Get("/save", adminctrl.SaveThemeSettings(g)).Name("admin:themes:save")
+		subrouter.Post("/save", adminctrl.SaveThemeSettings(g)).Name("admin:themes:save")
 	})
 
 	// adminR.Group("/core", func(subrouter sdkhttp.HttpRouterInstance) {
