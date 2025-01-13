@@ -7,6 +7,7 @@
 package sdkfs
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 )
@@ -68,3 +69,23 @@ func MoveDir(sourceDir, destDir string) error {
 	return nil
 }
 
+// MoveFile moves a file from sourcePath to destPath.
+func MoveFile(sourcePath, destPath string) error {
+	// Attempt to rename the file (this is a quick move if on the same filesystem)
+	if err := os.Rename(sourcePath, destPath); err != nil {
+		// If renaming fails, we check if the error is because the file is on a different filesystem
+		if linkErr, ok := err.(*os.LinkError); ok {
+			fmt.Printf("Link error encountered: %v\n", linkErr)
+			// Attempt to copy and then remove the source file
+			if err := CopyFile(sourcePath, destPath); err != nil {
+				return fmt.Errorf("failed to copy file: %w", err)
+			}
+			if err := os.Remove(sourcePath); err != nil {
+				return fmt.Errorf("failed to remove source file: %w", err)
+			}
+		} else {
+			return fmt.Errorf("failed to move file: %w", err)
+		}
+	}
+	return nil
+}

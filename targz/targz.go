@@ -7,9 +7,15 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+
+	sdkfs "github.com/flarehotspot/go-utils/fs"
 )
 
 func TarGz(sourceDir, outputFile string) error {
+	if err := sdkfs.EnsureDir(filepath.Dir(outputFile)); err != nil {
+		return err
+	}
+
 	// Create the output file
 	file, err := os.Create(outputFile)
 	if err != nil {
@@ -69,6 +75,10 @@ func TarGz(sourceDir, outputFile string) error {
 }
 
 func UntarGz(tarGzFile, outputDir string) error {
+	if err := sdkfs.EnsureDir(filepath.Dir(outputDir)); err != nil {
+		return err
+	}
+
 	// Open the tar.gz file
 	file, err := os.Open(tarGzFile)
 	if err != nil {
@@ -122,8 +132,6 @@ func UntarGz(tarGzFile, outputDir string) error {
 		file.Close() // dont use defer
 
 		fmt.Printf("Extracted: %s\n", outputPath)
-
-		return err
 	}
 
 	return nil

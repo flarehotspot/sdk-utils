@@ -1,6 +1,9 @@
 package sdkpkg
 
-import sdkgit "github.com/flarehotspot/go-utils/git"
+import (
+	sdkgit "github.com/flarehotspot/go-utils/git"
+	sdkpaths "github.com/flarehotspot/go-utils/paths"
+)
 
 const (
 	PluginSrcGit    string = "git"
@@ -10,9 +13,8 @@ const (
 )
 
 type PluginMetadata struct {
-	Package     string
-	Def         PluginSrcDef
-	InstallPath string
+	Package string
+	Def     PluginSrcDef
 }
 
 type PluginSrcDef struct {
@@ -39,7 +41,9 @@ func (def PluginSrcDef) String() string {
 }
 
 func (def PluginSrcDef) Equal(compare PluginSrcDef) bool {
-	if (def.Src == PluginSrcLocal || def.Src == PluginSrcSystem) && compare.Src == def.Src && def.LocalPath == compare.LocalPath {
+	if (def.Src == PluginSrcLocal || def.Src == PluginSrcSystem) &&
+		compare.Src == def.Src &&
+		sdkpaths.StripRoot(def.LocalPath) == sdkpaths.StripRoot(compare.LocalPath) {
 		return true
 	}
 	if def.Src == PluginSrcGit && compare.Src == PluginSrcGit && sdkgit.NeutralizeUrl(def.GitURL) == sdkgit.NeutralizeUrl(compare.GitURL) {
