@@ -1,9 +1,8 @@
 package bootstrap5
 
 import (
-	"sdk/api/forms"
 	"fmt"
-	"sdk/api/http"
+    sdkapi "sdk/api"
 )
 
 type DecimalInputFieldAttrs struct {
@@ -14,7 +13,7 @@ type DecimalInputFieldAttrs struct {
 	Error error
 }
 
-templ DecimalInputField(form sdkhttp.IHttpForm, sec sdkforms.FormSection, fld sdkforms.IFormField) {
+templ DecimalInputField(form sdkapi.IHttpForm, sec sdkapi.FormSection, fld sdkapi.IFormField) {
 	{{ attrs := getDecimalInputFieldAttrs(form, sec, fld) }}
 	<label for={ attrs.Name } class="form-label">{ attrs.Label }</label>
 	<input type="number" step={ attrs.Step } class="form-control" id={ attrs.Name } name={ attrs.Name } value={ attrs.Value }/>
@@ -23,7 +22,7 @@ templ DecimalInputField(form sdkhttp.IHttpForm, sec sdkforms.FormSection, fld sd
 	}
 }
 
-func getDecimalInputFieldAttrs(form sdkhttp.IHttpForm, sec sdkforms.FormSection, fld sdkforms.IFormField) (attrs DecimalInputFieldAttrs) {
+func getDecimalInputFieldAttrs(form sdkapi.IHttpForm, sec sdkapi.FormSection, fld sdkapi.IFormField) (attrs DecimalInputFieldAttrs) {
 	attrs.Label = fld.GetLabel()
 	attrs.Name = fmt.Sprintf("%s:%s", sec.Name, fld.GetName())
 	var val float64
@@ -31,7 +30,7 @@ func getDecimalInputFieldAttrs(form sdkhttp.IHttpForm, sec sdkforms.FormSection,
 	if attrs.Error != nil {
 		return
 	}
-	numfield, ok := fld.(sdkforms.DecimalField)
+	numfield, ok := fld.(sdkapi.FormDecimalField)
 	if !ok {
 		attrs.Error = fmt.Errorf("Field %s in section %s is not a number field", fld.GetName(), sec.Name)
 		return

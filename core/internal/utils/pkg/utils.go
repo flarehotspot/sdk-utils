@@ -10,16 +10,14 @@ import (
 	"path/filepath"
 	"strings"
 
-	sdkfs "github.com/flarehotspot/go-utils/fs"
-	sdkpaths "github.com/flarehotspot/go-utils/paths"
-	sdkpkg "github.com/flarehotspot/go-utils/pkg"
+	sdkutils "github.com/flarehotspot/sdk-utils"
 )
 
 var (
 	ErrNotInstalled = errors.New("Plugin is not installed")
 )
 
-func IsDefInList(defs []sdkpkg.PluginSrcDef, def sdkpkg.PluginSrcDef) bool {
+func IsDefInList(defs []sdkutils.PluginSrcDef, def sdkutils.PluginSrcDef) bool {
 	for _, i := range defs {
 		if i.Equal(def) {
 			return true
@@ -28,7 +26,7 @@ func IsDefInList(defs []sdkpkg.PluginSrcDef, def sdkpkg.PluginSrcDef) bool {
 	return false
 }
 
-func AllPluginSrcDefs() []sdkpkg.PluginSrcDef {
+func AllPluginSrcDefs() []sdkutils.PluginSrcDef {
 	list := InstalledPluginsDef()
 	localPlugins := LocalPluginSrcDefs()
 	systemPlugins := SystemPluginSrcDefs()
@@ -43,12 +41,12 @@ func AllPluginSrcDefs() []sdkpkg.PluginSrcDef {
 	return list
 }
 
-func LocalPluginSrcDefs() []sdkpkg.PluginSrcDef {
-	list := []sdkpkg.PluginSrcDef{}
+func LocalPluginSrcDefs() []sdkutils.PluginSrcDef {
+	list := []sdkutils.PluginSrcDef{}
 	paths := SearchPluginDirs(filepath.Join("plugins", "local"))
 	for _, p := range paths {
-		list = append(list, sdkpkg.PluginSrcDef{
-			Src:       sdkpkg.PluginSrcLocal,
+		list = append(list, sdkutils.PluginSrcDef{
+			Src:       sdkutils.PluginSrcLocal,
 			LocalPath: p,
 		})
 	}
@@ -56,12 +54,12 @@ func LocalPluginSrcDefs() []sdkpkg.PluginSrcDef {
 	return list
 }
 
-func SystemPluginSrcDefs() []sdkpkg.PluginSrcDef {
-	list := []sdkpkg.PluginSrcDef{}
+func SystemPluginSrcDefs() []sdkutils.PluginSrcDef {
+	list := []sdkutils.PluginSrcDef{}
 	paths := SearchPluginDirs(filepath.Join("plugins", "system"))
 	for _, pluginPath := range paths {
-		list = append(list, sdkpkg.PluginSrcDef{
-			Src:       sdkpkg.PluginSrcSystem,
+		list = append(list, sdkutils.PluginSrcDef{
+			Src:       sdkutils.PluginSrcSystem,
 			LocalPath: pluginPath,
 		})
 	}
@@ -69,11 +67,11 @@ func SystemPluginSrcDefs() []sdkpkg.PluginSrcDef {
 	return list
 }
 
-func InstalledPluginsDef() []sdkpkg.PluginSrcDef {
-	list := []sdkpkg.PluginSrcDef{}
+func InstalledPluginsDef() []sdkutils.PluginSrcDef {
+	list := []sdkutils.PluginSrcDef{}
 	paths := InstalledPluginDirs()
 	for _, p := range paths {
-		info, err := sdkpkg.GetInfoFromPath(p)
+		info, err := sdkutils.GetPluginInfoFromPath(p)
 		if err != nil {
 			log.Println("Error reading plugin info: ", err)
 			continue
@@ -93,7 +91,7 @@ func InstalledPluginsDef() []sdkpkg.PluginSrcDef {
 
 func SearchPluginDirs(searchPath string) (pluginDirs []string) {
 	var list []string
-	if err := sdkfs.LsDirs(searchPath, &list, false); err != nil {
+	if err := sdkutils.FsListDirs(searchPath, &list, false); err != nil {
 		log.Println("Error listing directories in ", searchPath, ": ", err)
 		return
 	}
@@ -109,16 +107,16 @@ func SearchPluginDirs(searchPath string) (pluginDirs []string) {
 
 // InstalledPluginDirs returns the list of installed plugins in the plugins directory. The path of each plugin is an aboslute path.
 func InstalledPluginDirs() (pluginDirs []string) {
-	installedPluginsPath := filepath.Join(sdkpaths.PluginsDir, "installed")
+	installedPluginsPath := filepath.Join(sdkutils.PathPluginsDir, "installed")
 
 	// check if plugins/installed directory exists before traversing
-	if !(sdkfs.Exists(installedPluginsPath)) {
+	if !(sdkutils.FsExists(installedPluginsPath)) {
 		return
 	}
 
 	// this lists all directories inside paths.PluginsDir/installed
 	var list []string
-	if err := sdkfs.LsDirs(installedPluginsPath, &list, false); err != nil {
+	if err := sdkutils.FsListDirs(installedPluginsPath, &list, false); err != nil {
 		fmt.Printf("Error listing directories in %s: %v\n", installedPluginsPath, err)
 		return
 	}
@@ -135,16 +133,16 @@ func InstalledPluginDirs() (pluginDirs []string) {
 }
 
 func GetMetaDataPath(pkg string) string {
-	return filepath.Join(sdkpaths.ConfigDir, "plugins", pkg, "metadata.json")
+	return filepath.Join(sdkutils.PathConfigDir, "plugins", pkg, "metadata.json")
 }
 
-func WriteMetadata(def sdkpkg.PluginSrcDef, pkg string) error {
+func WriteMetadata(def sdkutils.PluginSrcDef, pkg string) error {
 	cfg, err := config.ReadPluginsConfig()
 	if err != nil {
 		return err
 	}
 
-	meta := sdkpkg.PluginMetadata{
+	meta := sdkutils.PluginMetadata{
 		Package: pkg,
 		Def:     def,
 	}
@@ -161,7 +159,7 @@ func WriteMetadata(def sdkpkg.PluginSrcDef, pkg string) error {
 	return config.WritePluginsConfig(cfg)
 }
 
-func ReadMetadata(pkg string) (metadata sdkpkg.PluginMetadata, err error) {
+func ReadMetadata(pkg string) (metadata sdkutils.PluginMetadata, err error) {
 	cfg, err := config.ReadPluginsConfig()
 	if err != nil {
 		return
@@ -182,7 +180,7 @@ func IsPackageInstalled(pkg string) bool {
 	return err == nil
 }
 
-func IsSrcDefInstalled(def sdkpkg.PluginSrcDef) bool {
+func IsSrcDefInstalled(def sdkutils.PluginSrcDef) bool {
 	installPath, ok := FindDefInstallPath(def)
 	if !ok {
 		return false
@@ -192,13 +190,13 @@ func IsSrcDefInstalled(def sdkpkg.PluginSrcDef) bool {
 	return err == nil
 }
 
-func InstalledPluginsList() (list []sdkpkg.PluginMetadata) {
+func InstalledPluginsList() (list []sdkutils.PluginMetadata) {
 	cfg, err := config.ReadPluginsConfig()
 	if err != nil {
 		return list
 	}
 
-	list = []sdkpkg.PluginMetadata{}
+	list = []sdkutils.PluginMetadata{}
 	for _, m := range cfg.Metadata {
 		if IsSrcDefInstalled(m.Def) {
 			list = append(list, m)
@@ -208,8 +206,8 @@ func InstalledPluginsList() (list []sdkpkg.PluginMetadata) {
 	return
 }
 
-func NeedsRecompile(def sdkpkg.PluginSrcDef) bool {
-	if env.GO_ENV == env.ENV_DEV && (def.Src == sdkpkg.PluginSrcLocal || def.Src == sdkpkg.PluginSrcSystem) {
+func NeedsRecompile(def sdkutils.PluginSrcDef) bool {
+	if env.GO_ENV == env.ENV_DEV && (def.Src == sdkutils.PluginSrcLocal || def.Src == sdkutils.PluginSrcSystem) {
 		return true
 	}
 
@@ -243,7 +241,7 @@ func MovePendingUpdate(pkg string) error {
 	if err := CreateBackup(pkg); err != nil {
 		return err
 	}
-	if err := sdkfs.Copy(updatePath, GetInstallPath(pkg)); err != nil {
+	if err := sdkutils.FsCopy(updatePath, GetInstallPath(pkg)); err != nil {
 		if err := RestoreBackup(pkg); err != nil {
 			return err
 		}
@@ -263,12 +261,12 @@ func MovePendingUpdate(pkg string) error {
 func CreateBackup(pkg string) error {
 	installPath := GetInstallPath(pkg)
 	backupPath := GetBackupPath(pkg)
-	if sdkfs.Exists(backupPath) {
+	if sdkutils.FsExists(backupPath) {
 		if err := os.RemoveAll(backupPath); err != nil {
 			return err
 		}
 	}
-	return sdkfs.Copy(installPath, backupPath)
+	return sdkutils.FsCopy(installPath, backupPath)
 }
 
 func HasBackup(pkg string) bool {
@@ -279,7 +277,7 @@ func HasBackup(pkg string) bool {
 
 func RestoreBackup(pkg string) error {
 	backupPath := GetBackupPath(pkg)
-	if err := sdkfs.Copy(backupPath, GetInstallPath(pkg)); err != nil {
+	if err := sdkutils.FsCopy(backupPath, GetInstallPath(pkg)); err != nil {
 		return err
 	}
 	if err := os.RemoveAll(backupPath); err != nil {
@@ -300,7 +298,7 @@ func ValidateSrcPath(src string) error {
 	requiredFiles := []string{"plugin.json", "go.mod", "main.go", "LICENSE.txt"}
 
 	for _, f := range requiredFiles {
-		if !sdkfs.Exists(filepath.Join(src, f)) {
+		if !sdkutils.FsExists(filepath.Join(src, f)) {
 			return errors.New(f + " not found in source path")
 		}
 	}
@@ -311,14 +309,14 @@ func ValidateInstallPath(src string) error {
 	requiredFiles := []string{"plugin.json", "go.mod", "plugin.so"}
 
 	for _, f := range requiredFiles {
-		if !sdkfs.Exists(filepath.Join(src, f)) {
+		if !sdkutils.FsExists(filepath.Join(src, f)) {
 			return errors.New(f + " not found in source path")
 		}
 	}
 	return nil
 }
 
-func FindDefInstallPath(def sdkpkg.PluginSrcDef) (installPath string, ok bool) {
+func FindDefInstallPath(def sdkutils.PluginSrcDef) (installPath string, ok bool) {
 	cfg, err := config.ReadPluginsConfig()
 	if err != nil {
 		return
@@ -333,22 +331,22 @@ func FindDefInstallPath(def sdkpkg.PluginSrcDef) (installPath string, ok bool) {
 	return "", false
 }
 
-func GetAuthorNameFromGitUrl(def sdkpkg.PluginSrcDef) string {
+func GetAuthorNameFromGitUrl(def sdkutils.PluginSrcDef) string {
 	return strings.Split(strings.TrimPrefix(def.GitURL, "https://github.com/"), "/")[0]
 }
 
-func GetRepoFromGitUrl(def sdkpkg.PluginSrcDef) string {
+func GetRepoFromGitUrl(def sdkutils.PluginSrcDef) string {
 	return strings.Split(strings.TrimPrefix(def.GitURL, fmt.Sprintf("https://github.com/%s/", GetAuthorNameFromGitUrl(def))), "/")[0]
 }
 
 func GetInstallPath(pkg string) string {
-	return filepath.Join(sdkpaths.PluginsDir, "installed", pkg)
+	return filepath.Join(sdkutils.PathPluginsDir, "installed", pkg)
 }
 
 func GetPendingUpdatePath(pkg string) string {
-	return filepath.Join(sdkpaths.PluginsDir, "update", pkg)
+	return filepath.Join(sdkutils.PathPluginsDir, "update", pkg)
 }
 
 func GetBackupPath(pkg string) string {
-	return filepath.Join(sdkpaths.PluginsDir, "backup", pkg)
+	return filepath.Join(sdkutils.PathPluginsDir, "backup", pkg)
 }

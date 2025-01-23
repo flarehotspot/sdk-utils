@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"plugin"
 
-	"sdk/api/plugin"
+	sdkapi "sdk/api"
 )
 
 func (api *PluginApi) Init() error {
@@ -24,7 +24,7 @@ func (api *PluginApi) Init() error {
 		return err
 	}
 
-	initFn := initSym.(func(sdkplugin.IPluginApi))
+	initFn := initSym.(func(sdkapi.IPluginApi))
 	initFn(api)
 
 	return nil

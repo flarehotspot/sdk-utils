@@ -8,7 +8,7 @@ import (
 	"core/internal/db"
 	"core/internal/db/models"
 	jobque "core/internal/utils/job-que"
-	connmgr "sdk/api/connmgr"
+	sdkapi "sdk/api"
 
 	"github.com/jackc/pgx/v5"
 )
@@ -26,8 +26,8 @@ func NewClientRegister(dtb *db.Database, mdls *models.Models) *ClientRegister {
 	return &ClientRegister{
 		db:           dtb,
 		mdls:         mdls,
-		createdHooks: []connmgr.ClientCreatedHookFn{},
-		changedHooks: []connmgr.ClientChangedHookFn{},
+		createdHooks: []sdkapi.ClientCreatedHookFn{},
+		changedHooks: []sdkapi.ClientChangedHookFn{},
 	}
 }
 
@@ -35,19 +35,19 @@ type ClientRegister struct {
 	db           *db.Database
 	mdls         *models.Models
 	mgr          *SessionsMgr
-	createdHooks []connmgr.ClientCreatedHookFn
-	changedHooks []connmgr.ClientChangedHookFn
+	createdHooks []sdkapi.ClientCreatedHookFn
+	changedHooks []sdkapi.ClientChangedHookFn
 }
 
-func (reg *ClientRegister) ClientCreatedHook(fn ...connmgr.ClientCreatedHookFn) {
+func (reg *ClientRegister) ClientCreatedHook(fn ...sdkapi.ClientCreatedHookFn) {
 	reg.createdHooks = append(reg.createdHooks, fn...)
 }
 
-func (reg *ClientRegister) ClientChangedHook(fn ...connmgr.ClientChangedHookFn) {
+func (reg *ClientRegister) ClientChangedHook(fn ...sdkapi.ClientChangedHookFn) {
 	reg.changedHooks = append(reg.changedHooks, fn...)
 }
 
-func (reg *ClientRegister) Register(r *http.Request, mac string, ip string, hostname string) (connmgr.IClientDevice, error) {
+func (reg *ClientRegister) Register(r *http.Request, mac string, ip string, hostname string) (sdkapi.IClientDevice, error) {
 	ctx := r.Context()
 	dev, err := reg.mdls.Device().FindByMac(ctx, mac)
 	if err != nil {

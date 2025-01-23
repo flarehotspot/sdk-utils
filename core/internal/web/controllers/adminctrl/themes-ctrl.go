@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	sdkhttp "sdk/api/http"
+	sdkapi "sdk/api"
 
 	"core/internal/config"
 	"core/internal/plugins"
@@ -23,7 +23,7 @@ func GetAvailableThemes(g *plugins.CoreGlobals) http.HandlerFunc {
 		}
 
 		page := themes.AdminThemesIndex(httpForm.GetTemplate(r))
-		res.AdminView(w, r, sdkhttp.ViewPage{PageContent: page})
+		res.AdminView(w, r, sdkapi.ViewPage{PageContent: page})
 	}
 }
 

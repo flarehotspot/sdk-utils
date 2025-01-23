@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"core/internal/web/helpers"
-	sdkpayments "sdk/api/payments"
+	sdkapi "sdk/api"
 )
 
 func NewPaymentsApi(api *PluginApi, pmgr *PaymentsMgr) {
@@ -22,12 +22,12 @@ type PaymentsApi struct {
 	paymentsMgr *PaymentsMgr
 }
 
-func (self *PaymentsApi) NewPaymentProvider(provider sdkpayments.IPaymentProvider) {
+func (self *PaymentsApi) NewPaymentProvider(provider sdkapi.IPaymentProvider) {
 	log.Println("Registering payment method:", provider.Name())
 	self.paymentsMgr.NewPaymentProvider(self.api, provider)
 }
 
-func (self *PaymentsApi) Checkout(w http.ResponseWriter, r *http.Request, p sdkpayments.PurchaseRequest) {
+func (self *PaymentsApi) Checkout(w http.ResponseWriter, r *http.Request, p sdkapi.PurchaseRequest) {
 	handler := func(w http.ResponseWriter, r *http.Request) {
 		clnt, err := helpers.CurrentClient(self.api.ClntReg, r)
 		if err != nil {
@@ -44,7 +44,7 @@ func (self *PaymentsApi) Checkout(w http.ResponseWriter, r *http.Request, p sdkp
 			p.Description,
 			p.Price,
 			p.AnyPrice,
-			self.api.Pkg(),
+			self.api.Info().Package,
 			p.CallbackVueRouteName,
 		)
 		if err != nil {
@@ -61,7 +61,7 @@ func (self *PaymentsApi) Checkout(w http.ResponseWriter, r *http.Request, p sdkp
 	purMw(http.HandlerFunc(handler)).ServeHTTP(w, r)
 }
 
-func (self *PaymentsApi) GetPendingPurchase(r *http.Request) (sdkpayments.IPurchase, error) {
+func (self *PaymentsApi) GetPendingPurchase(r *http.Request) (sdkapi.IPurchase, error) {
 	mdls := self.api.models
 	clnt, err := helpers.CurrentClient(self.api.ClntReg, r)
 	if err != nil {

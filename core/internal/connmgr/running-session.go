@@ -10,16 +10,14 @@ import (
 	"core/internal/network"
 	jobque "core/internal/utils/job-que"
 	"core/internal/utils/tc"
-	connmgr "sdk/api/connmgr"
-	sdkconnmgr "sdk/api/connmgr"
-	sdknet "sdk/api/network"
+	sdkapi "sdk/api"
 
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
 var sessionQ *jobque.JobQue = jobque.NewJobQue()
 
-func NewRunningSession(clnt sdkconnmgr.IClientDevice, s connmgr.IClientSession) (*RunningSession, error) {
+func NewRunningSession(clnt sdkapi.IClientDevice, s sdkapi.IClientSession) (*RunningSession, error) {
 	lan, err := network.FindByIp(clnt.IpAddr())
 	if err != nil {
 		return nil, err
@@ -47,7 +45,7 @@ type RunningSession struct {
 	tcFilter   *tc.TcFilter
 	timeTicker *time.Ticker
 	tickerDone chan bool
-	session    connmgr.IClientSession
+	session    sdkapi.IClientSession
 	callbacks  []chan error
 }
 
@@ -57,7 +55,7 @@ func (self *RunningSession) ClientId() pgtype.UUID {
 	return self.clntId
 }
 
-func (self *RunningSession) GetSession() connmgr.IClientSession {
+func (self *RunningSession) GetSession() sdkapi.IClientSession {
 	self.mu.RLock()
 	defer self.mu.RUnlock()
 	return self.session
@@ -78,7 +76,7 @@ func (self *RunningSession) Done() <-chan error {
 	return ch
 }
 
-func (self *RunningSession) Start(ctx context.Context, s connmgr.IClientSession) error {
+func (self *RunningSession) Start(ctx context.Context, s sdkapi.IClientSession) error {
 	_, err := sessionQ.Exec(func() (interface{}, error) {
 		self.mu.Lock()
 		defer self.mu.Unlock()
@@ -161,7 +159,7 @@ func (self *RunningSession) CleanupTc() error {
 	return <-errCh
 }
 
-func (self *RunningSession) UpdateData(stats *sdknet.TrafficData) {
+func (self *RunningSession) UpdateData(stats *sdkapi.TrafficData) {
 	self.mu.Lock()
 	defer self.mu.Unlock()
 

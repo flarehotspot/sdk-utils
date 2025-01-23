@@ -2,7 +2,7 @@ package plugins
 
 import (
 	"net/http"
-	inappur "sdk/api/inappur"
+	sdkapi "sdk/api"
 )
 
 func NewInAppPurchaseApi(plugin *PluginApi) {
@@ -14,15 +14,15 @@ type InAppPurchaseApi struct {
 	plugin *PluginApi
 }
 
-func (self *InAppPurchaseApi) VerifyPurchase(inappur.InAppCheckoutItem) error {
+func (self *InAppPurchaseApi) VerifyPurchase(sdkapi.InAppCheckoutItem) error {
 	return nil
 }
 
-func (self *InAppPurchaseApi) VerifySubscription(inappur.InAppSubscriptionItem) error {
+func (self *InAppPurchaseApi) VerifySubscription(sdkapi.InAppSubscriptionItem) error {
 	return nil
 }
 
-func (self *InAppPurchaseApi) PurchaseGuardMiddleware(inappur.InAppCheckoutItem) func(http.Handler) http.Handler {
+func (self *InAppPurchaseApi) PurchaseGuardMiddleware(sdkapi.InAppCheckoutItem) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			next.ServeHTTP(w, r)
@@ -30,7 +30,7 @@ func (self *InAppPurchaseApi) PurchaseGuardMiddleware(inappur.InAppCheckoutItem)
 	}
 }
 
-func (self *InAppPurchaseApi) SubscriptionGuardMiddleware(inappur.InAppSubscriptionItem) func(http.Handler) http.Handler {
+func (self *InAppPurchaseApi) SubscriptionGuardMiddleware(sdkapi.InAppSubscriptionItem) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			next.ServeHTTP(w, r)

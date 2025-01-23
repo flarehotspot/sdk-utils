@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"os"
 
-	sdkpkg "github.com/flarehotspot/go-utils/pkg"
+	sdkutils "github.com/flarehotspot/sdk-utils"
 )
 
 type FlareCliBuild struct {
@@ -21,14 +21,13 @@ func BuildFlareCLI() {
 	cliFile := "core/internal/cli/main.go"
 	cliPath := "bin/flare"
 	workdir, _ := os.Getwd()
-	opts := sdkpkg.GoBuildOpts{
+	opts := sdkutils.GoBuildOpts{
 		GoBinPath: pkg.GoBin(),
 		WorkDir:   workdir,
-		Env:       os.Environ(),
 		BuildTags: env.BuildTags,
 	}
 
-	if err := sdkpkg.BuildGoModule(cliFile, cliPath, opts); err != nil {
+	if err := sdkutils.BuildGoModule(cliFile, cliPath, opts); err != nil {
 		panic(err)
 	}
 

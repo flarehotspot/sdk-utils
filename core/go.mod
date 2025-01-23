@@ -7,6 +7,7 @@ go 1.21
 toolchain go1.21.13
 
 require (
+	github.com/Masterminds/semver/v3 v3.3.1
 	github.com/a-h/templ v0.2.793
 	github.com/digineo/go-uci v0.0.0-20210918132103-37c7b10c14fa
 	github.com/evanw/esbuild v0.24.0

@@ -5,10 +5,9 @@ package pkg
 import (
 	"path/filepath"
 
-	sdkpaths "github.com/flarehotspot/go-utils/paths"
-	sdkstr "github.com/flarehotspot/go-utils/strings"
+	sdkutils "github.com/flarehotspot/sdk-utils"
 )
 
 func RandomPluginPath() string {
-	return filepath.Join(sdkpaths.TmpDir, "plugins", sdkstr.Rand(16))
+	return filepath.Join(sdkutils.PathTmpDir, "plugins", sdkutils.RandomStr(16))
 }

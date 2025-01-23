@@ -4,12 +4,12 @@ import (
 	"core/internal/plugins"
 	webutil "core/internal/utils/web"
 	"net/http"
-	sdkhttp "sdk/api/http"
+	sdkapi "sdk/api"
 )
 
 func AdminLoginCtrl(g *plugins.CoreGlobals) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if g.CoreAPI.HttpAPI.Auth().IsAuthenticated(r) {
+		if _, err := g.CoreAPI.HttpAPI.Auth().IsAuthenticated(r); err == nil {
 			http.Redirect(w, r, "/admin", http.StatusSeeOther)
 			return
 		}
@@ -24,7 +24,7 @@ func AdminLoginCtrl(g *plugins.CoreGlobals) http.Handler {
 		authRoute := webutil.RootRouter.Get("admin:authenticate")
 		authUrl, _ := authRoute.URL()
 
-		data := sdkhttp.LoginPageData{
+		data := sdkapi.LoginPageData{
 			LoginUrl: authUrl.String(),
 		}
 

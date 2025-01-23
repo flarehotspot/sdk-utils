@@ -15,11 +15,8 @@ import (
 	rpc "core/internal/rpc"
 	"core/internal/utils/pkg"
 
-	sdkextract "github.com/flarehotspot/go-utils/extract"
-	sdkfs "github.com/flarehotspot/go-utils/fs"
-	sdkpaths "github.com/flarehotspot/go-utils/paths"
-	sdkpkg "github.com/flarehotspot/go-utils/pkg"
-	sdksemver "github.com/flarehotspot/go-utils/semver"
+	"github.com/Masterminds/semver/v3"
+	sdkutils "github.com/flarehotspot/sdk-utils"
 )
 
 const (
@@ -30,7 +27,7 @@ const (
 )
 
 type CoreReleaseUpdate struct {
-	Version        sdksemver.Version
+	Version        *semver.Version
 	CoreZipFileUrl string
 	ArchBinFileUrl string
 }
@@ -68,7 +65,7 @@ func Update() error {
 	latestCRPath := filepath.Join(".tmp", "updates", "core", crVersion, "extracted")
 
 	// update/copy and replace
-	if err := sdkfs.CopyDir(latestCRPath, cwd, &sdkfs.CopyOpts{NoOverride: false, NonRecursive: false}); err != nil {
+	if err := sdkutils.FsCopyDir(latestCRPath, cwd, &sdkutils.FsCopyOpts{NoOverride: false, NonRecursive: false}); err != nil {
 		log.Println("Error copying/updating the latest core release to flare path:", err)
 		return err
 	}
@@ -118,7 +115,7 @@ func EnsureUpdateFilesExist() error {
 	}
 	for _, f := range coreAndArchBinFiles {
 		// TODO: find out proper file path
-		if sdkfs.Exists("") {
+		if sdkutils.FsExists("") {
 			fmt.Println(f, " exists")
 			continue
 		}
@@ -134,10 +131,10 @@ func EnsureUpdateFilesExist() error {
 }
 
 // Executes the new flare cli with update params
-func ExecuteUpdater(version sdksemver.Version) error {
+func ExecuteUpdater(version *semver.Version) error {
 	// get the latest path
 	// convention -> ./tmp/udpates/core/<version>/extracted/
-	cliPath := filepath.Join(".tmp", "updates", "core", sdksemver.StringifyVersion(version), "extracted")
+	cliPath := filepath.Join(".tmp", "updates", "core", version.String(), "extracted")
 	flarePath := filepath.Join(cliPath, "bin", "flare")
 	flareCmd := fmt.Sprintf("./%s", flarePath)
 
@@ -148,7 +145,7 @@ func ExecuteUpdater(version sdksemver.Version) error {
 
 	// set env vars
 	updater.Env = append(updater.Env, fmt.Sprintf("%s=%s", EnvSpawner, EnvValFlare))
-	updater.Env = append(updater.Env, fmt.Sprintf("CORE_VERSION=%s", sdksemver.StringifyVersion(version)))
+	updater.Env = append(updater.Env, fmt.Sprintf("CORE_VERSION=%s", version.String()))
 
 	// start
 	if err := updater.Start(); err != nil {
@@ -168,19 +165,17 @@ func FetchLatestCoreRelease() (CoreReleaseUpdate, error) {
 		return CoreReleaseUpdate{}, err
 	}
 
+	version := semver.New(uint64(latestCoreRelease.Major), uint64(latestCoreRelease.Minor), uint64(latestCoreRelease.Patch), "", "")
+
 	return CoreReleaseUpdate{
-		Version: sdksemver.Version{
-			Major: int(latestCoreRelease.Major),
-			Minor: int(latestCoreRelease.Minor),
-			Patch: int(latestCoreRelease.Patch),
-		},
+		Version:        version,
 		CoreZipFileUrl: latestCoreRelease.CoreZipFileUrl,
 		ArchBinFileUrl: latestCoreRelease.ArchBinFileUrl,
 	}, nil
 }
 
 // Returns the installed core release version
-func GetCurrentCoreVersion() (sdksemver.Version, error) {
+func GetCurrentCoreVersion() (*semver.Version, error) {
 	// get file content
 	var meta struct {
 		Name        string `json:"Name"`
@@ -188,17 +183,13 @@ func GetCurrentCoreVersion() (sdksemver.Version, error) {
 		Description string `json:"Description"`
 		Version     string `json:"Version"`
 	}
-	pluginJsonFilePath := filepath.Join(sdkpaths.CoreDir, "plugin.json")
+	pluginJsonFilePath := filepath.Join(sdkutils.PathCoreDir, "plugin.json")
 	if err := readPluginReleaseData(&meta, pluginJsonFilePath); err != nil {
 		log.Printf("Error reading %v: %v", pluginJsonFilePath, err)
-		return sdksemver.Version{}, err
+		return nil, err
 	}
 
-	coreVersion, err := sdksemver.ParseVersion(meta.Version)
-	if err != nil {
-		log.Println("Error parsing plugin version:", err)
-		return sdksemver.Version{}, err
-	}
+	coreVersion := semver.MustParse(meta.Version)
 
 	return coreVersion, nil
 }
@@ -221,11 +212,11 @@ func readPluginReleaseData(meta interface{}, pluginJsonFilePath string) error {
 // Extracts and runs the downloaded core release, flare, with update params
 func UpdateCore(localUpdateFiles UpdateFiles) error {
 	// extract path convention .tmp/updates/core/<version>/extracted
-	extractPath := filepath.Join(sdkpaths.TmpDir, "updates", "core", sdksemver.StringifyVersion(localUpdateFiles.Version), "extracted")
+	extractPath := filepath.Join(sdkutils.PathTmpDir, "updates", "core", localUpdateFiles.Version.String(), "extracted")
 	fmt.Println("Extracting downloaded latest release to: ", extractPath)
 
-	sdkextract.Extract(localUpdateFiles.LocalCoreFilesPath, extractPath)
-	sdkextract.Extract(localUpdateFiles.LocalArchBinFilesPath, extractPath)
+	sdkutils.FsExtract(localUpdateFiles.LocalCoreFilesPath, extractPath)
+	sdkutils.FsExtract(localUpdateFiles.LocalArchBinFilesPath, extractPath)
 
 	if err := ExecuteUpdater(localUpdateFiles.Version); err != nil {
 		log.Println("Error executing updater: ", err)
@@ -235,7 +226,7 @@ func UpdateCore(localUpdateFiles UpdateFiles) error {
 	return nil
 }
 
-func CheckForPluginUpdates(def sdkpkg.PluginSrcDef, info sdkpkg.PluginInfo) (bool, error) {
+func CheckForPluginUpdates(def sdkutils.PluginSrcDef, info sdkutils.PluginInfo) (bool, error) {
 	switch def.Src {
 	case "git":
 		hasUpdates, err := CheckUpdatesFromGithub(def, info)
@@ -256,11 +247,11 @@ func CheckForPluginUpdates(def sdkpkg.PluginSrcDef, info sdkpkg.PluginInfo) (boo
 	}
 }
 
-func CheckUpdatesFromGithub(def sdkpkg.PluginSrcDef, info sdkpkg.PluginInfo) (bool, error) {
+func CheckUpdatesFromGithub(def sdkutils.PluginSrcDef, info sdkutils.PluginInfo) (bool, error) {
 	author := pkg.GetAuthorNameFromGitUrl(def)
 	repo := pkg.GetRepoFromGitUrl(def)
 
-	// NOTE: release tags should adhere to semver
+	// NOTE: release tags should adhere to sdkutils
 
 	// build github api url
 	// https://api.github.com/repos/<author>/<repo>/releases/latest
@@ -288,24 +279,21 @@ func CheckUpdatesFromGithub(def sdkpkg.PluginSrcDef, info sdkpkg.PluginInfo) (bo
 	}
 	fmt.Printf("Latest plugin release: %v\n", latestPR)
 
-	// parse json to semver
-	latestPRVersion, err := sdksemver.ParseVersion(latestPR.TagName)
-	if err != nil {
-		log.Println("Error parsing latest pr version: ", err)
-		return false, err
-	}
+	// parse json to sdkutils
+	latestPRVersion := semver.MustParse(latestPR.TagName)
 	fmt.Printf("Latest plugin release version: %v\n", latestPRVersion)
 
-	currentPRVersion, err := sdksemver.ParseVersion(info.Version)
+	currentPRVersion := semver.MustParse(info.Version)
 	if err != nil {
-		log.Println("Error parsing string version to semver version: ", err)
+		log.Println("Error parsing string version to sdkutils version: ", err)
 		return false, err
 	}
 
-	return sdksemver.HasUpdates(currentPRVersion, latestPRVersion), nil
+	hasUpdates := currentPRVersion.LessThan(latestPRVersion)
+	return hasUpdates, nil
 }
 
-func CheckUpdatesFromStore(def sdkpkg.PluginSrcDef, info sdkpkg.PluginInfo) (bool, error) {
+func CheckUpdatesFromStore(def sdkutils.PluginSrcDef, info sdkutils.PluginInfo) (bool, error) {
 	// fetch latest plugin release from flare-server rpc
 	srv, ctx := rpc.GetCoreMachineTwirpServiceAndCtx()
 	qPlugins, err := srv.FetchLatestValidPRByPackage(ctx, &rpc.FetchLatestValidPRByPackageRequest{
@@ -316,7 +304,7 @@ func CheckUpdatesFromStore(def sdkpkg.PluginSrcDef, info sdkpkg.PluginInfo) (boo
 		return false, err
 	}
 
-	currVersion, err := sdksemver.ParseVersion(info.Version)
+	currVersion := semver.MustParse(info.Version)
 	if err != nil {
 		log.Printf("Error parsing raw version of plugin: %s: %s\n", info.Package, err.Error())
 		return false, err
@@ -325,11 +313,8 @@ func CheckUpdatesFromStore(def sdkpkg.PluginSrcDef, info sdkpkg.PluginInfo) (boo
 	// update plugin release zip file url def temporarily
 	// def.StoreZipUrl = qPlugins.PluginRelease.ZipFileUrl
 
-	latestVersion := sdksemver.Version{
-		Major: int(qPlugins.PluginRelease.Major),
-		Minor: int(qPlugins.PluginRelease.Minor),
-		Patch: int(qPlugins.PluginRelease.Patch),
-	}
+	release := qPlugins.PluginRelease
+	latestVersion := semver.New(uint64(release.Major), uint64(release.Minor), uint64(release.Patch), "", "")
 
-	return sdksemver.HasUpdates(currVersion, latestVersion), nil
+	return currVersion.LessThan(latestVersion), nil
 }

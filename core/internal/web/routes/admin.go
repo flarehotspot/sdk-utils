@@ -5,7 +5,7 @@ import (
 	webutil "core/internal/utils/web"
 	"core/internal/web/controllers"
 	"core/internal/web/controllers/adminctrl"
-	sdkhttp "sdk/api/http"
+	sdkapi "sdk/api"
 )
 
 func AdminRoutes(g *plugins.CoreGlobals) {
@@ -30,7 +30,7 @@ func AdminRoutes(g *plugins.CoreGlobals) {
 
 	adminR.Get("/events", adminSseCtrl).Name("admin:sse")
 
-	adminR.Group("/themes", func(subrouter sdkhttp.IHttpRouterInstance) {
+	adminR.Group("/themes", func(subrouter sdkapi.IHttpRouterInstance) {
 		subrouter.Get("/index", adminctrl.GetAvailableThemes(g)).Name("admin:themes:index")
 		subrouter.Post("/save", adminctrl.SaveThemeSettings(g)).Name("admin:themes:save")
 	})

@@ -1,7 +1,7 @@
 package app
 
 import (
-	sdkplugin "sdk/api/plugin"
+	sdkapi "sdk/api"
 
 	"com.flarego.default-theme/app/controllers"
 )
@@ -14,7 +14,7 @@ const (
 	RoutePayments    = "save.settings"
 )
 
-func SetupRoutes(api sdkplugin.IPluginApi) {
+func SetupRoutes(api sdkapi.IPluginApi) {
 	// pluginRouter := api.Http().HttpRouter().PluginRouter()
 	adminRouter := api.Http().HttpRouter().AdminRouter()
 	// pluginRouter.Get("/test", controllers.IndexCtrl(api)).Name("index")

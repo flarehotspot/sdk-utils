@@ -5,13 +5,12 @@ import (
 	"net/http"
 	"path"
 
-	sdkhttp "sdk/api/http"
-	plugin "sdk/api/plugin"
+	sdkapi "sdk/api"
 
 	"github.com/gorilla/csrf"
 )
 
-func NewHttpHelpers(api *PluginApi) sdkhttp.IHttpHelpers {
+func NewHttpHelpers(api *PluginApi) sdkapi.IHttpHelpers {
 	return &HttpHelpers{api: api}
 }
 
@@ -29,10 +28,15 @@ func (self *HttpHelpers) Translate(msgtype string, msgk string, pairs ...interfa
 }
 
 func (self *HttpHelpers) AssetPath(p string) string {
-	return path.Join("/plugin", self.api.Pkg(), self.api.Version(), "assets/dist", p)
+	// TODO: refer to the dist manifest file
+	return path.Join("/plugin", self.api.info.Package, self.api.info.Version, "assets/dist", p)
 }
 
-func (self *HttpHelpers) PluginMgr() plugin.IPluginsMgrApi {
+func (self *HttpHelpers) ResourcePath(p string) string {
+	return path.Join("/plugin", self.api.info.Package, self.api.info.Version, "resources", p)
+}
+
+func (self *HttpHelpers) PluginMgr() sdkapi.IPluginsMgrApi {
 	return self.api.PluginsMgrApi
 }
 
@@ -41,7 +45,7 @@ func (self *HttpHelpers) AdsView() (html template.HTML) {
 }
 
 func (self *HttpHelpers) UrlForRoute(name string, pairs ...string) string {
-	return self.api.HttpAPI.httpRouter.UrlForRoute(sdkhttp.PluginRouteName(name), pairs...)
+	return self.api.HttpAPI.httpRouter.UrlForRoute(sdkapi.PluginRouteName(name), pairs...)
 }
 
 func (self *HttpHelpers) UrlForPkgRoute(pkg string, name string, pairs ...string) string {

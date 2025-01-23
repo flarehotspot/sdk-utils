@@ -4,8 +4,7 @@ import (
 	"core/internal/utils/pkg"
 	"path/filepath"
 
-	sdkpaths "github.com/flarehotspot/go-utils/paths"
-	sdkpkg "github.com/flarehotspot/go-utils/pkg"
+	sdkutils "github.com/flarehotspot/sdk-utils"
 )
 
 func BuildTemplates() {
@@ -13,12 +12,12 @@ func BuildTemplates() {
 
 	defs := pkg.AllPluginSrcDefs()
 	for _, def := range defs {
-		if def.Src == sdkpkg.PluginSrcLocal || def.Src == sdkpkg.PluginSrcSystem {
+		if def.Src == sdkutils.PluginSrcLocal || def.Src == sdkutils.PluginSrcSystem {
 			pluginDirs = append(pluginDirs, def.LocalPath)
 		}
 	}
 
-	corePath := filepath.Join(sdkpaths.AppDir, "core")
+	corePath := filepath.Join(sdkutils.PathAppDir, "core")
 	pluginDirs = append(pluginDirs, corePath)
 
 	for _, p := range pluginDirs {

@@ -8,18 +8,18 @@ import (
 
 	"github.com/a-h/templ/generator"
 	"github.com/a-h/templ/parser/v2"
-	sdkfs "github.com/flarehotspot/go-utils/fs"
+	sdkutils "github.com/flarehotspot/sdk-utils"
 )
 
 func BuildTemplates(pluginDir string) (err error) {
 	var templateFiles []string
 	templatesPath := filepath.Join(pluginDir, "resources/views")
-	if !sdkfs.Exists(templatesPath) {
+	if !sdkutils.FsExists(templatesPath) {
 		fmt.Println("No templates found in", templatesPath)
 		return nil
 	}
 
-	if err = sdkfs.LsFiles(templatesPath, &templateFiles, true); err != nil {
+	if err = sdkutils.FsListFiles(templatesPath, &templateFiles, true); err != nil {
 		return
 	}
 
@@ -36,7 +36,7 @@ func BuildTemplates(pluginDir string) (err error) {
 				return err
 			}
 
-			if sdkfs.Exists(out) {
+			if sdkutils.FsExists(out) {
 				if err = os.Remove(out); err != nil {
 					return err
 				}
@@ -68,7 +68,7 @@ func BuildTemplates(pluginDir string) (err error) {
 
 func removeDanglingTemplFile(templgoFile string) (err error) {
 	templFile := strings.Replace(templgoFile, "_templ.go", ".templ", 1)
-	if !sdkfs.Exists(templFile) {
+	if !sdkutils.FsExists(templFile) {
 		err = os.Remove(templgoFile)
 	}
 	return

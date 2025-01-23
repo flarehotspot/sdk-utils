@@ -1,17 +1,16 @@
 package plugins
 
 import (
-	payments "sdk/api/payments"
-	plugin "sdk/api/plugin"
+	sdkapi "sdk/api"
 )
 
-func NewPaymentOpt(api plugin.IPluginApi, opt payments.PaymentOpt) PaymentOption {
-	uuid := api.Pkg() + "::" + opt.OptName
+func NewPaymentOpt(api sdkapi.IPluginApi, opt sdkapi.PaymentOpt) PaymentOption {
+	uuid := api.Info().Package + "::" + opt.OptName
 	return PaymentOption{api, opt, uuid}
 }
 
 type PaymentOption struct {
-	api  plugin.IPluginApi
-	Opt  payments.PaymentOpt
+	api  sdkapi.IPluginApi
+	Opt  sdkapi.PaymentOpt
 	UUID string
 }

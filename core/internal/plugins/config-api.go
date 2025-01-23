@@ -1,8 +1,9 @@
 package plugins
 
 import (
+	"core/internal/config"
 	cfgapi "core/internal/config/api"
-	sdkcfg "sdk/api/config"
+	sdkapi "sdk/api"
 )
 
 func NewConfigApi(api *PluginApi) {
@@ -14,10 +15,14 @@ type ConfigApi struct {
 	api *PluginApi
 }
 
-func (self *ConfigApi) Application() sdkcfg.IAppCfgApi {
+func (self *ConfigApi) Application() sdkapi.IAppCfgApi {
 	return cfgapi.NewAppCfgApi()
 }
 
-func (self *ConfigApi) Bandwidth(ifname string) sdkcfg.IBandwidthCfgApi {
-	return cfgapi.NewBandwdCfgApi(ifname)
+func (self *ConfigApi) Bandwidth() sdkapi.IBandwidthCfgApi {
+	return cfgapi.NewBandwdCfgApi()
+}
+
+func (self *ConfigApi) Plugin() sdkapi.IPluginCfgApi {
+	return config.NewPluginCfgApi(self.api.info.Package)
 }

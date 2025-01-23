@@ -10,7 +10,7 @@ import (
 	"core/internal/plugins"
 	"core/internal/utils/pkg"
 
-	sdkpkg "github.com/flarehotspot/go-utils/pkg"
+	sdkutils "github.com/flarehotspot/sdk-utils"
 )
 
 type InstallStatus struct {
@@ -29,13 +29,13 @@ func InitPlugins(g *plugins.CoreGlobals) {
 	inst := &InstallStatus{bp: bp}
 
 	for _, def := range pkg.AllPluginSrcDefs() {
-		var info sdkpkg.PluginInfo
+		var info sdkutils.PluginInfo
 		installPath, installed := pkg.FindDefInstallPath(def)
 		recompile := pkg.NeedsRecompile(def)
 		installed = installed && (pkg.ValidateInstallPath(installPath) == nil)
 		if installed {
 			// TODO: handle error
-			info, _ = sdkpkg.GetInfoFromPath(installPath)
+			info, _ = sdkutils.GetPluginInfoFromPath(installPath)
 		}
 
 		if pkg.IsToBeRemoved(info.Package) {
@@ -106,7 +106,14 @@ func InitPlugins(g *plugins.CoreGlobals) {
 	log.Println("Installed plugin directories:", pluginDirs)
 	for _, dir := range pluginDirs {
 		log.Println("Loading plugin from :", dir)
-		p := plugins.NewPluginApi(dir, g.PluginMgr, g.TrafficMgr)
-		g.PluginMgr.RegisterPlugin(p)
+		info, err := sdkutils.GetPluginInfoFromPath(dir)
+		if err != nil {
+			fmt.Println("Error getting plugin info: ", err)
+			fmt.Println("Plugin not loaded: ", dir)
+			continue
+		} else {
+			p := plugins.NewPluginApi(dir, info, g.PluginMgr, g.TrafficMgr)
+			g.PluginMgr.RegisterPlugin(p)
+		}
 	}
 }

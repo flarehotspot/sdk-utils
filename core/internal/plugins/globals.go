@@ -7,7 +7,7 @@ import (
 	"core/internal/network"
 	"sync/atomic"
 
-	sdkpaths "github.com/flarehotspot/go-utils/paths"
+	sdkutils "github.com/flarehotspot/sdk-utils"
 )
 
 type AppState struct {
@@ -34,6 +34,11 @@ func NewGlobals() *CoreGlobals {
 		panic(err)
 	}
 
+	info, err := sdkutils.GetPluginInfoFromPath(sdkutils.PathCoreDir)
+	if err != nil {
+		panic(err)
+	}
+
 	bp := NewBootProgress()
 	mdls := models.New(db)
 	clntReg := connmgr.NewClientRegister(db, mdls)
@@ -45,7 +50,7 @@ func NewGlobals() *CoreGlobals {
 	clntMgr.ListenTraffic(trfcMgr)
 
 	plgnMgr := NewPluginMgr(db, mdls, pmtMgr, clntReg, clntMgr, trfcMgr)
-	coreApi := NewPluginApi(sdkpaths.CoreDir, plgnMgr, trfcMgr)
+	coreApi := NewPluginApi(sdkutils.PathCoreDir, info, plgnMgr, trfcMgr)
 	plgnMgr.InitCoreApi(coreApi)
 
 	return &CoreGlobals{

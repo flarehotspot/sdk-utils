@@ -6,15 +6,14 @@ import (
 	"path/filepath"
 
 	"github.com/evanw/esbuild/pkg/api"
-	sdkfs "github.com/flarehotspot/go-utils/fs"
-	sdkpaths "github.com/flarehotspot/go-utils/paths"
+	sdkutils "github.com/flarehotspot/sdk-utils"
 )
 
 var (
-	CoreAssetsDir             = filepath.Join(sdkpaths.CoreDir, "resources/assets")
+	CoreAssetsDir             = filepath.Join(sdkutils.PathCoreDir, "resources/assets")
 	CoreGlobalsDist           = filepath.Join(CoreAssetsDir, "dist/globals")
-	CoreAdminGlobalsManifest  = filepath.Join(sdkpaths.CoreDir, "resources/assets/globals.admin.json")
-	CorePortalGlobalsManifest = filepath.Join(sdkpaths.CoreDir, "resources/assets/globals.portal.json")
+	CoreAdminGlobalsManifest  = filepath.Join(sdkutils.PathCoreDir, "resources/assets/globals.admin.json")
+	CorePortalGlobalsManifest = filepath.Join(sdkutils.PathCoreDir, "resources/assets/globals.portal.json")
 	CoreGlobalsBundleManifest = filepath.Join(CoreGlobalsDist, "globals.manifest.json")
 )
 
@@ -31,22 +30,22 @@ type GlobalBundleManifest struct {
 }
 
 func ReadGlobalAssetsManifest() (g GlobalBundleManifest) {
-	sdkfs.ReadJson(CoreGlobalsBundleManifest, &g)
+	sdkutils.FsReadJson(CoreGlobalsBundleManifest, &g)
 	return
 }
 
 func BuildGlobalAssets() (err error) {
-	if sdkfs.Exists(CoreGlobalsDist) {
+	if sdkutils.FsExists(CoreGlobalsDist) {
 		if err = os.RemoveAll(CoreGlobalsDist); err != nil {
 			return
 		}
 	}
 
 	bundleFile := GlobalBundleManifest{}
-	if sdkfs.Exists(CoreAdminGlobalsManifest) {
+	if sdkutils.FsExists(CoreAdminGlobalsManifest) {
 		var manifest GlobalAssetsManifest
 		var resultFile string
-		if err = sdkfs.ReadJson(CoreAdminGlobalsManifest, &manifest); err != nil {
+		if err = sdkutils.FsReadJson(CoreAdminGlobalsManifest, &manifest); err != nil {
 			return
 		}
 
@@ -61,10 +60,10 @@ func BuildGlobalAssets() (err error) {
 		bundleFile.AdminCssFile = resultFile
 	}
 
-	if sdkfs.Exists(CorePortalGlobalsManifest) {
+	if sdkutils.FsExists(CorePortalGlobalsManifest) {
 		var manifest GlobalAssetsManifest
 		var resultFile string
-		if err = sdkfs.ReadJson(CorePortalGlobalsManifest, &manifest); err != nil {
+		if err = sdkutils.FsReadJson(CorePortalGlobalsManifest, &manifest); err != nil {
 			return
 		}
 
@@ -79,7 +78,7 @@ func BuildGlobalAssets() (err error) {
 		bundleFile.PortalCssFile = resultFile
 	}
 
-	if err = sdkfs.WriteJson(CoreGlobalsBundleManifest, bundleFile); err != nil {
+	if err = sdkutils.FsWriteJson(CoreGlobalsBundleManifest, bundleFile); err != nil {
 		return
 	}
 
@@ -88,7 +87,7 @@ func BuildGlobalAssets() (err error) {
 
 func compileGlobalJsAssets(jsfiles []string, target api.Target) (resultFile string, err error) {
 	distPath := filepath.Join(CoreGlobalsDist, "js")
-	if err = sdkfs.EnsureDir(distPath); err != nil {
+	if err = sdkutils.FsEnsureDir(distPath); err != nil {
 		return
 	}
 
@@ -97,14 +96,14 @@ func compileGlobalJsAssets(jsfiles []string, target api.Target) (resultFile stri
 	for _, js := range jsfiles {
 		var relPath string
 		jsPath := filepath.Join(CoreAssetsDir, js)
-		relPath, err = sdkpaths.RelativeFromTo(indexFile, jsPath)
+		relPath, err = sdkutils.FsRelativeFromTo(indexFile, jsPath)
 		if err != nil {
 			return
 		}
 		indexjs += "require('" + relPath + "');\n"
 	}
 
-	if err = os.WriteFile(indexFile, []byte(indexjs), sdkfs.PermFile); err != nil {
+	if err = os.WriteFile(indexFile, []byte(indexjs), sdkutils.PermFile); err != nil {
 		return
 	}
 	defer os.Remove(indexFile)
@@ -125,10 +124,10 @@ func compileGlobalJsAssets(jsfiles []string, target api.Target) (resultFile stri
 	for _, outfile := range result.OutputFiles {
 		f := filepath.Base(outfile.Path)
 		outpath := filepath.Join(distPath, f)
-		if err = sdkfs.EnsureDir(filepath.Dir(outpath)); err != nil {
+		if err = sdkutils.FsEnsureDir(filepath.Dir(outpath)); err != nil {
 			return
 		}
-		if err = os.WriteFile(outpath, outfile.Contents, sdkfs.PermFile); err != nil {
+		if err = os.WriteFile(outpath, outfile.Contents, sdkutils.PermFile); err != nil {
 			return
 		}
 		fmt.Printf("Outputfile written to: %s\n", outpath)
@@ -143,7 +142,7 @@ func compileGlobalJsAssets(jsfiles []string, target api.Target) (resultFile stri
 
 func compileGlobalCssAssets(cssFiles []string) (resultFile string, err error) {
 	distPath := filepath.Join(CoreGlobalsDist, "css")
-	if err = sdkfs.EnsureDir(distPath); err != nil {
+	if err = sdkutils.FsEnsureDir(distPath); err != nil {
 		return
 	}
 
@@ -152,14 +151,14 @@ func compileGlobalCssAssets(cssFiles []string) (resultFile string, err error) {
 	for _, css := range cssFiles {
 		var relPath string
 		cssPath := filepath.Join(CoreAssetsDir, css)
-		relPath, err = sdkpaths.RelativeFromTo(indexFile, cssPath)
+		relPath, err = sdkutils.FsRelativeFromTo(indexFile, cssPath)
 		if err != nil {
 			return
 		}
 		indexCss += "import '" + relPath + "';\n"
 	}
 
-	if err = os.WriteFile(indexFile, []byte(indexCss), sdkfs.PermFile); err != nil {
+	if err = os.WriteFile(indexFile, []byte(indexCss), sdkutils.PermFile); err != nil {
 		return
 	}
 	defer os.Remove(indexFile)
@@ -180,10 +179,10 @@ func compileGlobalCssAssets(cssFiles []string) (resultFile string, err error) {
 	for _, outfile := range result.OutputFiles {
 		f := filepath.Base(outfile.Path)
 		outpath := filepath.Join(distPath, f)
-		if err = sdkfs.EnsureDir(filepath.Dir(outpath)); err != nil {
+		if err = sdkutils.FsEnsureDir(filepath.Dir(outpath)); err != nil {
 			return
 		}
-		if err = os.WriteFile(outpath, outfile.Contents, sdkfs.PermFile); err != nil {
+		if err = os.WriteFile(outpath, outfile.Contents, sdkutils.PermFile); err != nil {
 			return
 		}
 		fmt.Printf("Outputfile written to: %s\n", outpath)
