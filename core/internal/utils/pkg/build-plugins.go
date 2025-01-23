@@ -4,19 +4,18 @@ import (
 	"os"
 	"path/filepath"
 
-	sdkpaths "github.com/flarehotspot/go-utils/paths"
-	sdkpkg "github.com/flarehotspot/go-utils/pkg"
+	sdkutils "github.com/flarehotspot/sdk-utils"
 )
 
 func BuildLocalPlugins() error {
 	pluginDefs := LocalPluginSrcDefs()
 	for _, def := range pluginDefs {
-		pluginPath, err := sdkpkg.FindPluginSrc(def.LocalPath)
+		pluginPath, err := sdkutils.FindPluginSrc(def.LocalPath)
 		if err != nil {
 			return err
 		}
 
-		workdir := filepath.Join(sdkpaths.TmpDir, "builds", filepath.Base(pluginPath))
+		workdir := filepath.Join(sdkutils.PathTmpDir, "builds", filepath.Base(pluginPath))
 		defer os.RemoveAll(workdir)
 
 		if err := BuildTemplates(pluginPath); err != nil {
@@ -27,18 +26,18 @@ func BuildLocalPlugins() error {
 			return err
 		}
 
-		info, err := sdkpkg.GetInfoFromPath(pluginPath)
+		info, err := sdkutils.GetPluginInfoFromPath(pluginPath)
 		if err != nil {
 			return err
 		}
 
-		pluginInstallDir := filepath.Join(sdkpaths.PluginsDir, "installed", info.Package)
+		pluginInstallDir := filepath.Join(sdkutils.PathPluginsDir, "installed", info.Package)
 
 		if err := os.RemoveAll(pluginInstallDir); err != nil {
 			return err
 		}
 
-		if err := sdkpkg.CopyPluginFiles(pluginPath, pluginInstallDir); err != nil {
+		if err := sdkutils.CopyPluginFiles(pluginPath, pluginInstallDir); err != nil {
 			return err
 		}
 

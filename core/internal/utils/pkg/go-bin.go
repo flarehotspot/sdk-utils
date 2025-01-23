@@ -6,13 +6,13 @@ import (
 	"os/exec"
 	"path/filepath"
 
-	sdkfs "github.com/flarehotspot/go-utils/fs"
+	sdkutils "github.com/flarehotspot/sdk-utils"
 )
 
 func GoBin() string {
 	goCustomPath := os.Getenv("GO_CUSTOM_PATH")
 	goCustomBin := filepath.Join(goCustomPath, "bin", "go")
-	if sdkfs.Exists(goCustomBin) {
+	if sdkutils.FsExists(goCustomBin) {
 		fmt.Println("Testing go binary: ", goCustomBin)
 		testGo := exec.Command(goCustomBin, "env")
 		err := testGo.Run()

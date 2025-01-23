@@ -15,8 +15,7 @@ import (
 	"core/internal/utils/pkg"
 	"core/internal/utils/updates"
 
-	sdkpaths "github.com/flarehotspot/go-utils/paths"
-	sdkpkg "github.com/flarehotspot/go-utils/pkg"
+	sdkutils "github.com/flarehotspot/sdk-utils"
 )
 
 var (
@@ -92,17 +91,22 @@ func CreatePlugin() {
 		pluginDesc string
 	)
 
+	var (
+		domainSample     = "com.mydomain.myplugin"
+		pluginNameSample = "My Plugin"
+	)
+
 	for len(strings.Split(pluginPkg, ".")) < 3 {
-		pluginPkg, err = tools.AskCmdInput("Enter the plugin package name, e.g. com.mydomain.plugin")
+		pluginPkg, err = tools.AskCmdInput(fmt.Sprintf("Enter the plugin package name, for example \"%s\"", domainSample))
 		if err != nil {
 			panic(err)
 		}
 		if len(strings.Split(pluginPkg, ".")) < 3 {
-			fmt.Println("Error: Package name must be at least 3 segments. For example: com.my-domain.my-plugin")
+			fmt.Printf("\nError: Package name must be at least 3 segments, for example \"%s\".\n", domainSample)
 		}
 	}
 
-	pluginName, err = tools.AskCmdInput("Enter the plugin name, e.g. MyPlugin")
+	pluginName, err = tools.AskCmdInput(fmt.Sprintf("Enter the plugin name, for example: \"%s\"", pluginNameSample))
 	if err != nil {
 		panic(err)
 	}
@@ -120,7 +124,7 @@ func CreateMigration() {
 	pluginPkgs := make([]string, len(pluginDefs))
 
 	for i, def := range pluginDefs {
-		info, err := sdkpkg.GetInfoFromPath(def.LocalPath)
+		info, err := sdkutils.GetPluginInfoFromPath(def.LocalPath)
 		if err != nil {
 			fmt.Println("Warning: Error getting plugin info:", err)
 			continue
@@ -167,13 +171,13 @@ func BuildPlugin() {
 		err = pkg.BuildLocalPlugins()
 	} else {
 		searchPath := os.Args[2]
-		pluginPath, err := sdkpkg.FindPluginSrc(searchPath)
+		pluginPath, err := sdkutils.FindPluginSrc(searchPath)
 		if err != nil {
 			log.Fatalf("Error finding plugin source in %s: %s\n", searchPath, err.Error())
 			return
 		}
 
-		workdir := filepath.Join(sdkpaths.TmpDir, "builds", filepath.Base(pluginPath))
+		workdir := filepath.Join(sdkutils.PathTmpDir, "builds", filepath.Base(pluginPath))
 		err = pkg.BuildPluginSo(pluginPath, workdir)
 		if err != nil {
 			log.Fatalf("Error building plugin: %s\n", err.Error())
@@ -187,7 +191,7 @@ func BuildPlugin() {
 }
 
 func Server() {
-	corePath := filepath.Join(sdkpaths.AppDir, "core/plugin.so")
+	corePath := filepath.Join(sdkutils.PathAppDir, "core/plugin.so")
 	p, err := plugin.Open(corePath)
 	if err != nil {
 		log.Println("Error loading core plugin:", err)

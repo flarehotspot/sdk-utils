@@ -3,10 +3,10 @@ package controllers
 import (
 	"net/http"
 
-	sdkplugin "sdk/api/plugin"
+	sdkapi "sdk/api"
 )
 
-func GetAdminNavs(api sdkplugin.IPluginApi) http.HandlerFunc {
+func GetAdminNavs(api sdkapi.IPluginApi) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// res := api.Http().VueResponse()
 		// acct, err := api.Http().Auth().CurrentAcct(r)

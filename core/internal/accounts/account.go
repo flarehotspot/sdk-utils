@@ -3,18 +3,17 @@ package accounts
 import (
 	"os"
 	"path/filepath"
+	sdkapi "sdk/api"
 
+	sdkutils "github.com/flarehotspot/sdk-utils"
 	"github.com/goccy/go-json"
 
 	"core/internal/utils/events"
 	sse "core/internal/utils/sse"
-
-	sdkfs "github.com/flarehotspot/go-utils/fs"
-	paths "github.com/flarehotspot/go-utils/paths"
 )
 
 var (
-	AcctDir = filepath.Join(paths.ConfigDir, "accounts")
+	AcctDir = filepath.Join(sdkutils.PathConfigDir, "accounts")
 )
 
 type Account struct {
@@ -43,10 +42,10 @@ func (acct *Account) Permissions() []string {
 	return acct.Perms
 }
 
-// IsAdmin returns true if the account is admin
-func (acct *Account) IsAdmin() bool {
+// IsMaster returns true if the account is admin
+func (acct *Account) IsMaster() bool {
 	for _, p := range acct.Perms {
-		if p == PermAdmin {
+		if p == sdkapi.AcctPermMaster {
 			return true
 		}
 	}
@@ -79,7 +78,7 @@ func (acct *Account) Save() error {
 	if err != nil {
 		return err
 	}
-	return os.WriteFile(acct.JsonFile(), b, sdkfs.PermFile)
+	return os.WriteFile(acct.JsonFile(), b, sdkutils.PermFile)
 }
 
 // Update updates the account with new username, password and permissions

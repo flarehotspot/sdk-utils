@@ -1,10 +1,10 @@
 package portal
 
 import (
-	"sdk/api/http"
+	"sdk/api"
 )
 
-templ PortalLayout(data sdkhttp.PortalLayoutData) {
+templ PortalLayout(data sdkapi.PortalLayoutData) {
 <html>
     <head>
         <script src={data.Layout.Assets.GlobalJsSrc}></script>

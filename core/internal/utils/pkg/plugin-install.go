@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"core/internal/utils/cmd"
 	"core/internal/utils/download"
+	"core/internal/utils/encdisk"
 	"core/internal/utils/migrate"
 	"errors"
 	"fmt"
@@ -14,41 +15,34 @@ import (
 	"path/filepath"
 	"strings"
 
-	sdkextract "github.com/flarehotspot/go-utils/extract"
-	sdkgit "github.com/flarehotspot/go-utils/git"
-	sdkpkg "github.com/flarehotspot/go-utils/pkg"
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	"core/internal/utils/encdisk"
-
-	sdkfs "github.com/flarehotspot/go-utils/fs"
-	sdkpaths "github.com/flarehotspot/go-utils/paths"
-	sdkstr "github.com/flarehotspot/go-utils/strings"
+	sdkutils "github.com/flarehotspot/sdk-utils"
 )
 
 type PluginMetadata struct {
-	Def sdkpkg.PluginSrcDef
+	Def sdkutils.PluginSrcDef
 }
 
-func InstallSrcDef(w io.Writer, db *pgxpool.Pool, def sdkpkg.PluginSrcDef) (info sdkpkg.PluginInfo, err error) {
+func InstallSrcDef(w io.Writer, db *pgxpool.Pool, def sdkutils.PluginSrcDef) (info sdkutils.PluginInfo, err error) {
 	switch def.Src {
-	case sdkpkg.PluginSrcGit:
+	case sdkutils.PluginSrcGit:
 		info, err = InstallFromGitSrc(w, db, def)
-	case sdkpkg.PluginSrcLocal, sdkpkg.PluginSrcSystem:
+	case sdkutils.PluginSrcLocal, sdkutils.PluginSrcSystem:
 		info, err = InstallFromLocalPath(w, db, def)
-	case sdkpkg.PluginSrcStore:
+	case sdkutils.PluginSrcStore:
 		info, err = InstallFromPluginStore(w, db, def)
 	default:
-		return sdkpkg.PluginInfo{}, errors.New("Invalid plugin source: " + def.Src)
+		return sdkutils.PluginInfo{}, errors.New("Invalid plugin source: " + def.Src)
 	}
 
 	return info, err
 }
 
-func InstallFromLocalPath(w io.Writer, db *pgxpool.Pool, def sdkpkg.PluginSrcDef) (info sdkpkg.PluginInfo, err error) {
+func InstallFromLocalPath(w io.Writer, db *pgxpool.Pool, def sdkutils.PluginSrcDef) (info sdkutils.PluginInfo, err error) {
 	w.Write([]byte("Installing plugin from local path: " + def.LocalPath))
 
-	info, err = sdkpkg.GetInfoFromPath(def.LocalPath)
+	info, err = sdkutils.GetPluginInfoFromPath(def.LocalPath)
 	if err != nil {
 		return
 	}
@@ -61,7 +55,7 @@ func InstallFromLocalPath(w io.Writer, db *pgxpool.Pool, def sdkpkg.PluginSrcDef
 	return
 }
 
-// func InstallFromZipFile(w io.Writer, def config.PluginSrcDef) (info sdkpkg.PluginInfo, err error) {
+// func InstallFromZipFile(w io.Writer, def config.PluginSrcDef) (info sdkutils.PluginInfo, err error) {
 // 	w.Write([]byte("Installing zipped plugin from local path: " + def.LocalPath))
 
 // 	// prepare path
@@ -80,7 +74,7 @@ func InstallFromLocalPath(w io.Writer, db *pgxpool.Pool, def sdkpkg.PluginSrcDef
 // 	if err != nil {
 // 		err = errors.New("Unable to find plugin source in: " + workPath)
 // 		log.Println("Error: ", err)
-// 		return sdkpkg.PluginInfo{}, err
+// 		return sdkutils.PluginInfo{}, err
 // 	}
 
 // 	// read the plugin.json
@@ -93,13 +87,13 @@ func InstallFromLocalPath(w io.Writer, db *pgxpool.Pool, def sdkpkg.PluginSrcDef
 // 	def.LocalPath = filepath.Join(GetInstallPath(info.Package))
 
 // 	if err := InstallPlugin(newWorkPath, InstallOpts{Def: def, RemoveSrc: false}); err != nil {
-// 		return sdkpkg.PluginInfo{}, err
+// 		return sdkutils.PluginInfo{}, err
 // 	}
 
 // 	return info, nil
 // }
 
-func InstallFromPluginStore(w io.Writer, db *pgxpool.Pool, def sdkpkg.PluginSrcDef) (sdkpkg.PluginInfo, error) {
+func InstallFromPluginStore(w io.Writer, db *pgxpool.Pool, def sdkutils.PluginSrcDef) (sdkutils.PluginInfo, error) {
 	w.Write([]byte("Installing plugin from store: " + def.StorePackage))
 
 	// prepare path
@@ -110,11 +104,11 @@ func InstallFromPluginStore(w io.Writer, db *pgxpool.Pool, def sdkpkg.PluginSrcD
 	workPath := filepath.Join(mountpath, "clone", "1")  // need extra sub dir
 
 	// prepare encrypted virtual disk path
-	dev := sdkstr.Rand(8)
+	dev := sdkutils.RandomStr(8)
 	mnt := encdisk.NewEncrypedDisk(diskfile, mountpath, dev)
 	if err := mnt.Mount(); err != nil {
 		log.Println("Error mounting disk: ", err)
-		return sdkpkg.PluginInfo{}, err
+		return sdkutils.PluginInfo{}, err
 	}
 	defer mnt.Unmount()
 
@@ -123,66 +117,66 @@ func InstallFromPluginStore(w io.Writer, db *pgxpool.Pool, def sdkpkg.PluginSrcD
 	downloader := download.NewDownloader(def.StoreZipUrl, clonePath)
 	if err := downloader.Download(); err != nil {
 		log.Println("Error: ", err)
-		return sdkpkg.PluginInfo{}, err
+		return sdkutils.PluginInfo{}, err
 	}
 
 	// extract compressed plugin release
-	sdkextract.Extract(clonePath, workPath)
+	sdkutils.FsExtract(clonePath, workPath)
 
 	// clear StoreZipUrl def
 	def.StoreZipUrl = ""
 
-	newWorkPath, err := sdkpkg.FindPluginSrc(workPath)
+	newWorkPath, err := sdkutils.FindPluginSrc(workPath)
 	if err != nil {
 		err = errors.New("Unable to find plugin source in: " + workPath)
 		log.Println("Error: ", err)
-		return sdkpkg.PluginInfo{}, err
+		return sdkutils.PluginInfo{}, err
 	}
-	info, err := sdkpkg.GetInfoFromPath(newWorkPath)
+	info, err := sdkutils.GetPluginInfoFromPath(newWorkPath)
 	if err != nil {
 		log.Println("Error getting plugin info: ", err)
-		return sdkpkg.PluginInfo{}, err
+		return sdkutils.PluginInfo{}, err
 	}
 
 	if err := InstallPlugin(newWorkPath, db, InstallOpts{Def: def, RemoveSrc: false}); err != nil {
-		return sdkpkg.PluginInfo{}, err
+		return sdkutils.PluginInfo{}, err
 	}
 
 	return info, nil
 }
 
-func InstallFromGitSrc(w io.Writer, db *pgxpool.Pool, def sdkpkg.PluginSrcDef) (sdkpkg.PluginInfo, error) {
+func InstallFromGitSrc(w io.Writer, db *pgxpool.Pool, def sdkutils.PluginSrcDef) (sdkutils.PluginInfo, error) {
 	log.Println("Installing plugin from git source: " + def.String())
 	randomPath := RandomPluginPath()
 	diskfile := filepath.Join(randomPath, "disk")
 	mountpath := filepath.Join(randomPath, "mount")
 	clonePath := filepath.Join(mountpath, "clone", "0") // need extra sub dir
 
-	dev := sdkstr.Rand(8)
+	dev := sdkutils.RandomStr(8)
 	mnt := encdisk.NewEncrypedDisk(diskfile, mountpath, dev)
 	if err := mnt.Mount(); err != nil {
 		log.Println("Error mounting disk: ", err)
-		return sdkpkg.PluginInfo{}, err
+		return sdkutils.PluginInfo{}, err
 	}
 
 	defer mnt.Unmount()
 
-	repo := sdkgit.RepoSource{URL: def.GitURL, Ref: def.GitRef}
+	repo := sdkutils.GitRepoSource{URL: def.GitURL, Ref: def.GitRef}
 
 	log.Println("Cloning plugin from git: " + def.GitURL)
-	if err := sdkgit.Clone(w, repo, clonePath); err != nil {
+	if err := sdkutils.GitClone(w, repo, clonePath); err != nil {
 		log.Println("Error cloning: ", err)
-		return sdkpkg.PluginInfo{}, err
+		return sdkutils.PluginInfo{}, err
 	}
 
-	info, err := sdkpkg.GetInfoFromPath(clonePath)
+	info, err := sdkutils.GetPluginInfoFromPath(clonePath)
 	if err != nil {
 		log.Println("Error getting plugin info: ", err)
-		return sdkpkg.PluginInfo{}, err
+		return sdkutils.PluginInfo{}, err
 	}
 
 	if err := InstallPlugin(clonePath, db, InstallOpts{Def: def, RemoveSrc: false}); err != nil {
-		return sdkpkg.PluginInfo{}, err
+		return sdkutils.PluginInfo{}, err
 	}
 
 	return info, nil
@@ -194,7 +188,7 @@ func InstallPlugin(src string, db *pgxpool.Pool, opts InstallOpts) error {
 	var buildpath string
 
 	if opts.Encrypt {
-		dev := sdkstr.Rand(8)
+		dev := sdkutils.RandomStr(8)
 		parentPath := RandomPluginPath()
 		diskfile := filepath.Join(parentPath, "disk")
 		mountpath := filepath.Join(parentPath, "mount")
@@ -207,12 +201,17 @@ func InstallPlugin(src string, db *pgxpool.Pool, opts InstallOpts) error {
 
 		defer mnt.Unmount()
 	} else {
-		parentpath := filepath.Join(sdkpaths.TmpDir, "b", sdkstr.Rand(16))
+		parentpath := filepath.Join(sdkutils.PathTmpDir, "b", sdkutils.RandomStr(16))
 		buildpath = filepath.Join(parentpath, "0")
-		if err := sdkfs.EmptyDir(buildpath); err != nil {
+		if err := sdkutils.FsEmptyDir(buildpath); err != nil {
 			return err
 		}
 		defer os.RemoveAll(parentpath)
+	}
+
+	if err := BuildTemplates(src); err != nil {
+		log.Println("Error building plugin templates: ", err)
+		return err
 	}
 
 	if err := BuildPluginSo(src, buildpath); err != nil {
@@ -220,7 +219,7 @@ func InstallPlugin(src string, db *pgxpool.Pool, opts InstallOpts) error {
 		return err
 	}
 
-	info, err := sdkpkg.GetInfoFromPath(src)
+	info, err := sdkutils.GetPluginInfoFromPath(src)
 	if err != nil {
 		log.Println("Error building plugin: ", err)
 		return err
@@ -241,7 +240,7 @@ func InstallPlugin(src string, db *pgxpool.Pool, opts InstallOpts) error {
 	}
 
 	log.Println("Copying plugin files to: ", installPath)
-	if err := sdkpkg.CopyPluginFiles(src, installPath); err != nil {
+	if err := sdkutils.CopyPluginFiles(src, installPath); err != nil {
 		return err
 	}
 
@@ -309,7 +308,7 @@ func IsSystemPackageInstalled(opkgPackage string) (bool, error) {
 }
 
 func RunMigrations(db *pgxpool.Pool, pluginPath string) (err error) {
-	info, err := sdkpkg.GetInfoFromPath(pluginPath)
+	info, err := sdkutils.GetPluginInfoFromPath(pluginPath)
 	if err != nil {
 		return
 	}
@@ -328,16 +327,16 @@ func RunMigrations(db *pgxpool.Pool, pluginPath string) (err error) {
 
 func MarkToRemove(pkg string) error {
 	installPath := GetInstallPath(pkg)
-	if !sdkfs.Exists(installPath) {
+	if !sdkutils.FsExists(installPath) {
 		return errors.New("Plugin not installed: " + pkg)
 	}
 	uninstallFile := filepath.Join(installPath, "uninstall")
-	return os.WriteFile(uninstallFile, []byte(""), sdkfs.PermFile)
+	return os.WriteFile(uninstallFile, []byte(""), sdkutils.PermFile)
 }
 
 func IsToBeRemoved(pkg string) bool {
 	uninstallFile := filepath.Join(GetInstallPath(pkg), "uninstall")
-	return sdkfs.Exists(uninstallFile)
+	return sdkutils.FsExists(uninstallFile)
 }
 
 func RemovePlugin(pkg string) error {
@@ -345,7 +344,7 @@ func RemovePlugin(pkg string) error {
 	if err != nil {
 		return err
 	}
-	if meta.Def.Src == sdkpkg.PluginSrcLocal || meta.Def.Src == sdkpkg.PluginSrcSystem {
+	if meta.Def.Src == sdkutils.PluginSrcLocal || meta.Def.Src == sdkutils.PluginSrcSystem {
 		return os.RemoveAll(meta.Def.LocalPath)
 	}
 	if err := os.RemoveAll(GetInstallPath(pkg)); err != nil {

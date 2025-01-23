@@ -3,18 +3,17 @@ package connmgr
 import (
 	"context"
 	"log"
+	sdkapi "sdk/api"
 	"sync"
 	"time"
 
 	"core/internal/db"
 	"core/internal/db/models"
-	connmgr "sdk/api/connmgr"
-	sdkconnmgr "sdk/api/connmgr"
 
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-func NewLocalSession(dtb *db.Database, mdls *models.Models, s *models.Session) connmgr.ISessionSource {
+func NewLocalSession(dtb *db.Database, mdls *models.Models, s *models.Session) sdkapi.ISessionSource {
 	ls := &LocalSession{db: dtb, mdls: mdls}
 	ls.load(s)
 	return ls
@@ -39,11 +38,11 @@ type LocalSession struct {
 	createdAt time.Time
 }
 
-func (self *LocalSession) Data() sdkconnmgr.SessionData {
+func (self *LocalSession) Data() sdkapi.SessionData {
 	self.mu.RLock()
 	defer self.mu.RUnlock()
 
-	return sdkconnmgr.SessionData{
+	return sdkapi.SessionData{
 		Provider:       "local",
 		Type:           self.t,
 		TimeSecs:       self.timeSecs,
@@ -59,7 +58,7 @@ func (self *LocalSession) Data() sdkconnmgr.SessionData {
 	}
 }
 
-func (self *LocalSession) Save(ctx context.Context, data sdkconnmgr.SessionData) error {
+func (self *LocalSession) Save(ctx context.Context, data sdkapi.SessionData) error {
 	self.mu.RLock()
 	defer self.mu.RUnlock()
 
@@ -84,7 +83,7 @@ func (self *LocalSession) Save(ctx context.Context, data sdkconnmgr.SessionData)
 	return err
 }
 
-func (self *LocalSession) Reload(ctx context.Context) (sdkconnmgr.SessionData, error) {
+func (self *LocalSession) Reload(ctx context.Context) (sdkapi.SessionData, error) {
 	self.mu.Lock()
 	defer self.mu.Unlock()
 
@@ -98,8 +97,8 @@ func (self *LocalSession) Reload(ctx context.Context) (sdkconnmgr.SessionData, e
 	return self.data(), nil
 }
 
-func (self *LocalSession) data() sdkconnmgr.SessionData {
-	return sdkconnmgr.SessionData{
+func (self *LocalSession) data() sdkapi.SessionData {
+	return sdkapi.SessionData{
 		Provider:       "local",
 		Type:           self.t,
 		TimeSecs:       self.timeSecs,

@@ -7,8 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"reflect"
-	sdkforms "sdk/api/forms"
-	sdkhttp "sdk/api/http"
+	sdkapi "sdk/api"
 	"strconv"
 
 	"github.com/a-h/templ"
@@ -19,7 +18,7 @@ var (
 	ErrNotBasicType = fmt.Errorf("field type is not a basic type, e.g. string, integer, decimal, bool")
 )
 
-func NewHttpForm(api *PluginApi, form sdkforms.Form) *HttpFormInstance {
+func NewHttpForm(api *PluginApi, form sdkapi.HttpForm) *HttpFormInstance {
 	return &HttpFormInstance{
 		api:  api,
 		form: form,
@@ -28,8 +27,8 @@ func NewHttpForm(api *PluginApi, form sdkforms.Form) *HttpFormInstance {
 
 type HttpFormInstance struct {
 	api  *PluginApi
-	form sdkforms.Form
-	data []sdkforms.SectionData
+	form sdkapi.HttpForm
+	data []sdkapi.SectionData
 }
 
 func (self *HttpFormInstance) GetTemplate(r *http.Request) templ.Component {
@@ -38,7 +37,7 @@ func (self *HttpFormInstance) GetTemplate(r *http.Request) templ.Component {
 	if self.form.SubmitLabel != "" {
 		submitText = self.form.SubmitLabel
 	}
-	submitUrl := self.api.HttpAPI.httpRouter.UrlForRoute(sdkhttp.PluginRouteName(self.form.CallbackRoute))
+	submitUrl := self.api.HttpAPI.httpRouter.UrlForRoute(sdkapi.PluginRouteName(self.form.CallbackRoute))
 	return formsview.HtmlForm(self, csrfTag, submitUrl, submitText)
 }
 
@@ -47,51 +46,51 @@ func (self *HttpFormInstance) ParseForm(r *http.Request) (err error) {
 		return err
 	}
 
-	parsedData := make([]sdkforms.SectionData, len(self.form.Sections))
+	parsedData := make([]sdkapi.SectionData, len(self.form.Sections))
 
 	for sidx, sec := range self.form.Sections {
-		sectionData := sdkforms.SectionData{
+		sectionData := sdkapi.SectionData{
 			Name:   sec.Name,
-			Fields: make([]sdkforms.FieldData, len(sec.Fields)),
+			Fields: make([]sdkapi.FormFieldData, len(sec.Fields)),
 		}
 
 		for fidx, fld := range sec.Fields {
-			field := sdkforms.FieldData{Name: fld.GetName()}
+			field := sdkapi.FormFieldData{Name: fld.GetName()}
 			valstr := r.Form[sec.Name+":"+fld.GetName()]
 
 			switch fld.GetType() {
 
-			case sdkforms.FormFieldTypeText,
-				sdkforms.FormFieldTypeInteger,
-				sdkforms.FormFieldTypeDecimal,
-				sdkforms.FormFieldTypeBoolean:
+			case sdkapi.FormFieldTypeText,
+				sdkapi.FormFieldTypeInteger,
+				sdkapi.FormFieldTypeDecimal,
+				sdkapi.FormFieldTypeBoolean:
 				field.Value, err = ParseBasicValue(fld, valstr)
 				if err != nil {
 					field.Value = fld.GetValue()
 				}
 
-			case sdkforms.FormFieldTypeList:
+			case sdkapi.FormFieldTypeList:
 				field.Value, err = ParseListFieldValue(fld, valstr)
 				if err != nil {
 					field.Value = fld.GetValue()
 				}
 
-			case sdkforms.FormFieldTypeMulti:
+			case sdkapi.FormFieldTypeMulti:
 				val, err := ParseMultiFieldValue(sec, fld, r.Form)
 				if err != nil {
-					mfld, ok := fld.(sdkforms.MultiField)
+					mfld, ok := fld.(sdkapi.FormMultiField)
 					if !ok {
 						return fmt.Errorf("section %s, field %s type is not multifield, instead %T", sec, fld.GetName(), fld)
 					}
 
 					fldvals := mfld.GetValue()
-					mfldval, ok := fldvals.([][]sdkforms.FieldData)
+					mfldval, ok := fldvals.([][]sdkapi.FormFieldData)
 					if !ok {
-						return fmt.Errorf("section %s, field %s value is not a slice of sdkforms.FieldData, instead %T", sec, fld.GetName(), fldvals)
+						return fmt.Errorf("section %s, field %s value is not a slice of sdkapi.FieldData, instead %T", sec, fld.GetName(), fldvals)
 					}
 					val = mfldval
 				}
-				field.Value = sdkforms.MultiFieldData{
+				field.Value = sdkapi.FormMultiFieldData{
 					Fields: val,
 				}
 
@@ -113,7 +112,7 @@ func (self *HttpFormInstance) ParseForm(r *http.Request) (err error) {
 	return nil
 }
 
-func (self *HttpFormInstance) GetSections() []sdkforms.FormSection {
+func (self *HttpFormInstance) GetSections() []sdkapi.FormSection {
 	return self.form.Sections
 }
 
@@ -230,21 +229,21 @@ func (self *HttpFormInstance) GetBoolValues(section string, field string) (val [
 	}
 }
 
-func (self *HttpFormInstance) GetMultiField(section string, field string) (val sdkforms.IMultiField, err error) {
+func (self *HttpFormInstance) GetMultiField(section string, field string) (val sdkapi.IFormMultiField, err error) {
 	v, err := self.getFieldValue(section, field)
 	if err != nil {
 		return
 	}
 
-	mfd, ok := v.(sdkforms.MultiFieldData)
+	mfd, ok := v.(sdkapi.FormMultiFieldData)
 	if !ok {
-		return val, errors.New(fmt.Sprintf("section %s, field %s value is not sdkforms.MultiFieldData, instead %T", section, field, v))
+		return val, errors.New(fmt.Sprintf("section %s, field %s value is not sdkapi.MultiFieldData, instead %T", section, field, v))
 	}
 
 	return mfd, nil
 }
 
-func (self *HttpFormInstance) getSection(section string) (sec sdkforms.FormSection, ok bool) {
+func (self *HttpFormInstance) getSection(section string) (sec sdkapi.FormSection, ok bool) {
 	for _, s := range self.form.Sections {
 		if s.Name == section {
 			return s, true
@@ -253,7 +252,7 @@ func (self *HttpFormInstance) getSection(section string) (sec sdkforms.FormSecti
 	return
 }
 
-func (self *HttpFormInstance) getField(section string, field string) (f sdkforms.IFormField, ok bool) {
+func (self *HttpFormInstance) getField(section string, field string) (f sdkapi.IFormField, ok bool) {
 	for _, s := range self.form.Sections {
 		if s.Name == section {
 			for _, fld := range s.Fields {
@@ -266,7 +265,7 @@ func (self *HttpFormInstance) getField(section string, field string) (f sdkforms
 	return
 }
 
-func (self *HttpFormInstance) getParsedSection(section string) (sec sdkforms.SectionData, ok bool) {
+func (self *HttpFormInstance) getParsedSection(section string) (sec sdkapi.SectionData, ok bool) {
 	data := self.data
 	if data == nil {
 		return
@@ -280,7 +279,7 @@ func (self *HttpFormInstance) getParsedSection(section string) (sec sdkforms.Sec
 	return
 }
 
-func (self *HttpFormInstance) getParsedField(section string, field string) (fld sdkforms.FieldData, ok bool) {
+func (self *HttpFormInstance) getParsedField(section string, field string) (fld sdkapi.FormFieldData, ok bool) {
 	if s, ok := self.getParsedSection(section); ok {
 		for _, f := range s.Fields {
 			if f.Name == field {
@@ -337,15 +336,15 @@ func (self *HttpFormInstance) getFieldValues(section string, field string) (val 
 }
 
 // ----- Parser functions ----
-func ParseBasicValue(fld sdkforms.IFormField, valstr []string) (val interface{}, err error) {
+func ParseBasicValue(fld sdkapi.IFormField, valstr []string) (val interface{}, err error) {
 	switch fld.GetType() {
-	case sdkforms.FormFieldTypeText:
+	case sdkapi.FormFieldTypeText:
 		if len(valstr) < 1 {
 			return "", nil
 		}
 		val = valstr[0]
 
-	case sdkforms.FormFieldTypeInteger:
+	case sdkapi.FormFieldTypeInteger:
 		if len(valstr) < 1 {
 			return 0, nil
 		}
@@ -353,7 +352,7 @@ func ParseBasicValue(fld sdkforms.IFormField, valstr []string) (val interface{},
 		if err != nil {
 			return 0, nil
 		}
-	case sdkforms.FormFieldTypeDecimal:
+	case sdkapi.FormFieldTypeDecimal:
 		if len(valstr) < 1 {
 			return 0.0, nil
 		}
@@ -361,7 +360,7 @@ func ParseBasicValue(fld sdkforms.IFormField, valstr []string) (val interface{},
 		if err != nil {
 			return 0, nil
 		}
-	case sdkforms.FormFieldTypeBoolean:
+	case sdkapi.FormFieldTypeBoolean:
 		if len(valstr) < 1 {
 			return false, nil
 		}
@@ -375,8 +374,8 @@ func ParseBasicValue(fld sdkforms.IFormField, valstr []string) (val interface{},
 	return
 }
 
-func ParseListFieldValue(fld sdkforms.IFormField, valstr []string) (val interface{}, err error) {
-	listField, ok := fld.(sdkforms.ListField)
+func ParseListFieldValue(fld sdkapi.IFormField, valstr []string) (val interface{}, err error) {
+	listField, ok := fld.(sdkapi.FormListField)
 	if !ok {
 		err = fmt.Errorf("field %s is not a list field", fld.GetName())
 		return
@@ -388,7 +387,7 @@ func ParseListFieldValue(fld sdkforms.IFormField, valstr []string) (val interfac
 
 	switch listField.Type {
 
-	case sdkforms.FormFieldTypeText:
+	case sdkapi.FormFieldTypeText:
 		vals := valstr
 		val = valstr
 		if !listField.Multiple {
@@ -400,7 +399,7 @@ func ParseListFieldValue(fld sdkforms.IFormField, valstr []string) (val interfac
 		}
 		return
 
-	case sdkforms.FormFieldTypeInteger:
+	case sdkapi.FormFieldTypeInteger:
 		vals := make([]int64, len(valstr))
 		for i, v := range valstr {
 			vals[i], err = strconv.ParseInt(v, 10, 64)
@@ -418,7 +417,7 @@ func ParseListFieldValue(fld sdkforms.IFormField, valstr []string) (val interfac
 		}
 		return
 
-	case sdkforms.FormFieldTypeDecimal:
+	case sdkapi.FormFieldTypeDecimal:
 		vals := make([]float64, len(valstr))
 		for i, v := range valstr {
 			vals[i], err = strconv.ParseFloat(v, 64)
@@ -436,7 +435,7 @@ func ParseListFieldValue(fld sdkforms.IFormField, valstr []string) (val interfac
 		}
 		return
 
-	case sdkforms.FormFieldTypeBoolean:
+	case sdkapi.FormFieldTypeBoolean:
 		vals := make([]bool, len(valstr))
 		for i, v := range valstr {
 			vals[i], err = strconv.ParseBool(v)
@@ -461,8 +460,8 @@ func ParseListFieldValue(fld sdkforms.IFormField, valstr []string) (val interfac
 	return
 }
 
-func ParseMultiFieldValue(sec sdkforms.FormSection, f sdkforms.IFormField, form url.Values) (val [][]sdkforms.FieldData, err error) {
-	fld, ok := f.(sdkforms.MultiField)
+func ParseMultiFieldValue(sec sdkapi.FormSection, f sdkapi.IFormField, form url.Values) (val [][]sdkapi.FormFieldData, err error) {
+	fld, ok := f.(sdkapi.FormMultiField)
 	if !ok {
 		err = errors.New(fmt.Sprintf("field %s in section %s is not a multi-field", f.GetName(), sec.Name))
 		return
@@ -477,10 +476,10 @@ func ParseMultiFieldValue(sec sdkforms.FormSection, f sdkforms.IFormField, form 
 	col1 := sec.Name + ":" + fld.Name + ":" + columns[0].Name
 	numRows := len(form[col1])
 
-	vals := make([][]sdkforms.FieldData, numRows)
+	vals := make([][]sdkapi.FormFieldData, numRows)
 
 	for ridx := 0; ridx < numRows; ridx++ {
-		row := make([]sdkforms.FieldData, len(columns))
+		row := make([]sdkapi.FormFieldData, len(columns))
 		for cidx, colfld := range columns {
 			var value interface{}
 
@@ -489,10 +488,10 @@ func ParseMultiFieldValue(sec sdkforms.FormSection, f sdkforms.IFormField, form 
 
 			switch colfld.GetType() {
 
-			case sdkforms.FormFieldTypeText,
-				sdkforms.FormFieldTypeInteger,
-				sdkforms.FormFieldTypeDecimal,
-				sdkforms.FormFieldTypeBoolean:
+			case sdkapi.FormFieldTypeText,
+				sdkapi.FormFieldTypeInteger,
+				sdkapi.FormFieldTypeDecimal,
+				sdkapi.FormFieldTypeBoolean:
 
 				if ridx >= len(colarr) {
 					value = GetTypeDefault(colfld)
@@ -510,7 +509,7 @@ func ParseMultiFieldValue(sec sdkforms.FormSection, f sdkforms.IFormField, form 
 				return
 			}
 
-			row[cidx] = sdkforms.FieldData{
+			row[cidx] = sdkapi.FormFieldData{
 				Name:  colfld.GetName(),
 				Value: value,
 			}
@@ -523,24 +522,24 @@ func ParseMultiFieldValue(sec sdkforms.FormSection, f sdkforms.IFormField, form 
 
 }
 
-func GetTypeDefault(fld sdkforms.IFormField) interface{} {
+func GetTypeDefault(fld sdkapi.IFormField) interface{} {
 	switch fld.GetType() {
 
-	case sdkforms.FormFieldTypeText,
-		sdkforms.FormFieldTypeInteger,
-		sdkforms.FormFieldTypeDecimal,
-		sdkforms.FormFieldTypeBoolean:
+	case sdkapi.FormFieldTypeText,
+		sdkapi.FormFieldTypeInteger,
+		sdkapi.FormFieldTypeDecimal,
+		sdkapi.FormFieldTypeBoolean:
 		return GetBasicTypeDefault(fld.GetType())
 
-	case sdkforms.FormFieldTypeList:
-		lsfld := fld.(sdkforms.ListField)
+	case sdkapi.FormFieldTypeList:
+		lsfld := fld.(sdkapi.FormListField)
 		if lsfld.Multiple {
 			return []interface{}{}
 		} else {
 			return GetBasicTypeDefault(fld.GetType())
 		}
 
-	case sdkforms.FormFieldTypeMulti:
+	case sdkapi.FormFieldTypeMulti:
 		return map[string]interface{}{}
 
 	default:
@@ -550,13 +549,13 @@ func GetTypeDefault(fld sdkforms.IFormField) interface{} {
 
 func GetBasicTypeDefault(t string) interface{} {
 	switch t {
-	case sdkforms.FormFieldTypeText:
+	case sdkapi.FormFieldTypeText:
 		return ""
-	case sdkforms.FormFieldTypeInteger:
+	case sdkapi.FormFieldTypeInteger:
 		return int64(0)
-	case sdkforms.FormFieldTypeDecimal:
+	case sdkapi.FormFieldTypeDecimal:
 		return float64(0.0)
-	case sdkforms.FormFieldTypeBoolean:
+	case sdkapi.FormFieldTypeBoolean:
 		return false
 	default:
 		return nil

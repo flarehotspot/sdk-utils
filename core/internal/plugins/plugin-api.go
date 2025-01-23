@@ -8,23 +8,13 @@ import (
 	"core/internal/db/models"
 	"core/internal/network"
 	"core/internal/utils/pkg"
-	sdkacct "sdk/api/accounts"
-	sdkads "sdk/api/ads"
-	sdkcfg "sdk/api/config"
-	sdkconnmgr "sdk/api/connmgr"
-	sdkhttp "sdk/api/http"
-	sdkinappur "sdk/api/inappur"
-	sdklogger "sdk/api/logger"
-	sdknet "sdk/api/network"
-	sdkpayments "sdk/api/payments"
-	sdkplugin "sdk/api/plugin"
-	sdkuci "sdk/api/uci"
+	sdkapi "sdk/api"
 
-	sdkpkg "github.com/flarehotspot/go-utils/pkg"
+	sdkutils "github.com/flarehotspot/sdk-utils"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func NewPluginApi(dir string, pmgr *PluginsMgr, trfkMgr *network.TrafficMgr) *PluginApi {
+func NewPluginApi(dir string, info sdkutils.PluginInfo, pmgr *PluginsMgr, trfkMgr *network.TrafficMgr) *PluginApi {
 	pluginApi := &PluginApi{
 		dir:           dir,
 		db:            pmgr.db,
@@ -35,13 +25,13 @@ func NewPluginApi(dir string, pmgr *PluginsMgr, trfkMgr *network.TrafficMgr) *Pl
 
 	pluginApi.Utl = NewPluginUtils(pluginApi)
 
-	info, err := sdkpkg.GetInfoFromPath(dir)
+	info, err := sdkutils.GetPluginInfoFromPath(dir)
 	if err != nil {
 		log.Println("Error getting plugin info: ", err.Error())
 		return nil
 	}
 
-	pluginApi.info = &info
+	pluginApi.info = info
 	pluginApi.models = pmgr.models
 
 	NewAcctApi(pluginApi)
@@ -61,7 +51,7 @@ func NewPluginApi(dir string, pmgr *PluginsMgr, trfkMgr *network.TrafficMgr) *Pl
 }
 
 type PluginApi struct {
-	info             *sdkpkg.PluginInfo
+	info             sdkutils.PluginInfo
 	dir              string
 	db               *db.Database
 	models           *models.Models
@@ -70,7 +60,7 @@ type PluginApi struct {
 	HttpAPI          *HttpApi
 	ConfigAPI        *ConfigApi
 	PaymentsAPI      *PaymentsApi
-	ThemesAPI        *HttpThemesApi
+	ThemesAPI        *ThemesApi
 	NetworkAPI       *NetworkApi
 	AdsAPI           *AdsApi
 	InAppPurchaseAPI *InAppPurchaseApi
@@ -88,24 +78,8 @@ func (self *PluginApi) Initialize(coreApi *PluginApi) {
 	self.HttpAPI.Initialize()
 }
 
-func (self *PluginApi) Name() string {
-	return self.info.Name
-}
-
-func (self *PluginApi) Pkg() string {
-	return self.info.Package
-}
-
-func (self *PluginApi) Version() string {
-	return self.info.Version
-}
-
-func (self *PluginApi) Description() string {
-	info, err := sdkpkg.GetInfoFromPath(self.dir)
-	if err != nil {
-		return ""
-	}
-	return info.Description
+func (self *PluginApi) Info() sdkutils.PluginInfo {
+	return self.info
 }
 
 func (self *PluginApi) Dir() string {
@@ -124,51 +98,51 @@ func (self *PluginApi) SqlDb() *pgxpool.Pool {
 	return self.db.SqlDB()
 }
 
-func (self *PluginApi) Acct() sdkacct.AccountsApi {
+func (self *PluginApi) Acct() sdkapi.IAccountsApi {
 	return self.AcctAPI
 }
 
-func (self *PluginApi) Http() sdkhttp.IHttpApi {
+func (self *PluginApi) Http() sdkapi.IHttpApi {
 	return self.HttpAPI
 }
 
-func (self *PluginApi) Config() sdkcfg.IConfigApi {
+func (self *PluginApi) Config() sdkapi.IConfigApi {
 	return self.ConfigAPI
 }
 
-func (self *PluginApi) Payments() sdkpayments.IPaymentsApi {
+func (self *PluginApi) Payments() sdkapi.IPaymentsApi {
 	return self.PaymentsAPI
 }
 
-func (self *PluginApi) Ads() sdkads.IAdsApi {
+func (self *PluginApi) Ads() sdkapi.IAdsApi {
 	return self.AdsAPI
 }
 
-func (self *PluginApi) InAppPurchases() sdkinappur.IInAppPurchasesApi {
+func (self *PluginApi) InAppPurchases() sdkapi.IInAppPurchasesApi {
 	return self.InAppPurchaseAPI
 }
 
-func (self *PluginApi) PluginsMgr() sdkplugin.IPluginsMgrApi {
+func (self *PluginApi) PluginsMgr() sdkapi.IPluginsMgrApi {
 	return self.PluginsMgrApi
 }
 
-func (self *PluginApi) Network() sdknet.INetworkApi {
+func (self *PluginApi) Network() sdkapi.INetworkApi {
 	return self.NetworkAPI
 }
 
-func (self *PluginApi) DeviceHooks() sdkconnmgr.IDeviceHooksApi {
+func (self *PluginApi) DeviceHooks() sdkapi.IDeviceHooksApi {
 	return self.ClntReg
 }
 
-func (self *PluginApi) SessionsMgr() sdkconnmgr.ISessionsMgrApi {
+func (self *PluginApi) SessionsMgr() sdkapi.ISessionsMgrApi {
 	return self.ClntMgr
 }
 
-func (self *PluginApi) Uci() sdkuci.IUciApi {
+func (self *PluginApi) Uci() sdkapi.IUciApi {
 	return self.UciAPI
 }
 
-func (self *PluginApi) Themes() sdkhttp.IHttpThemesApi {
+func (self *PluginApi) Themes() sdkapi.IThemesApi {
 	return self.ThemesAPI
 }
 
@@ -183,7 +157,7 @@ func (self *PluginApi) Features() []string {
 	return features
 }
 
-func (self *PluginApi) Logger() sdklogger.ILoggerApi {
+func (self *PluginApi) Logger() sdkapi.ILoggerApi {
 	return self.LoggerAPI
 }
 

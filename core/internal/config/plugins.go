@@ -3,7 +3,7 @@ package config
 import (
 	jobque "core/internal/utils/job-que"
 
-	sdkpkg "github.com/flarehotspot/go-utils/pkg"
+	sdkutils "github.com/flarehotspot/sdk-utils"
 )
 
 var (
@@ -12,12 +12,12 @@ var (
 )
 
 type PluginsConfig struct {
-	Recompile []string                `json:"recompile"`
-	Metadata  []sdkpkg.PluginMetadata `json:"metadata"`
+	Recompile []string                  `json:"recompile"`
+	Metadata  []sdkutils.PluginMetadata `json:"metadata"`
 }
 
 func ReadPluginsConfig() (PluginsConfig, error) {
-	empTyCfg := PluginsConfig{Recompile: []string{}, Metadata: []sdkpkg.PluginMetadata{}}
+	empTyCfg := PluginsConfig{Recompile: []string{}, Metadata: []sdkutils.PluginMetadata{}}
 	cfg, err := q.Exec(func() (interface{}, error) {
 		var cfg PluginsConfig
 		err := readConfigFile(jsonFile, &cfg)

@@ -7,8 +7,7 @@ import (
 	"core/internal/db"
 	"core/internal/db/models"
 	"core/internal/web/helpers"
-	sdkconnmgr "sdk/api/connmgr"
-	sdkhttp "sdk/api/http"
+	sdkapi "sdk/api"
 
 	"github.com/gorilla/mux"
 )
@@ -41,6 +40,7 @@ type HttpApi struct {
 	navsApi     *HttpNavsApi
 	formsApi    *HttpFormApi
 	httpResp    *HttpResponse
+	httpCookie  *HttpCookie
 	middlewares *PluginMiddlewares
 }
 
@@ -48,31 +48,35 @@ func (self *HttpApi) Initialize() {
 	self.httpRouter.Initialize()
 }
 
-func (self *HttpApi) GetClientDevice(r *http.Request) (sdkconnmgr.IClientDevice, error) {
+func (self *HttpApi) GetClientDevice(r *http.Request) (sdkapi.IClientDevice, error) {
 	return helpers.CurrentClient(self.api.ClntReg, r)
 }
 
-func (self *HttpApi) Auth() sdkhttp.IHttpAuth {
+func (self *HttpApi) Cookie() sdkapi.IHttpCookie {
+	return self.httpCookie
+}
+
+func (self *HttpApi) Auth() sdkapi.IHttpAuth {
 	return self.auth
 }
 
-func (self *HttpApi) HttpRouter() sdkhttp.IHttpRouterApi {
+func (self *HttpApi) HttpRouter() sdkapi.IHttpRouterApi {
 	return self.httpRouter
 }
 
-func (self *HttpApi) Forms() sdkhttp.IHttpFormApi {
+func (self *HttpApi) Forms() sdkapi.IHttpFormsApi {
 	return self.formsApi
 }
 
-func (self *HttpApi) Helpers() sdkhttp.IHttpHelpers {
+func (self *HttpApi) Helpers() sdkapi.IHttpHelpers {
 	return NewHttpHelpers(self.api)
 }
 
-func (self *HttpApi) Middlewares() sdkhttp.IHttpMiddlewares {
+func (self *HttpApi) Middlewares() sdkapi.IHttpMiddlewares {
 	return self.middlewares
 }
 
-func (self *HttpApi) HttpResponse() sdkhttp.IHttpResponse {
+func (self *HttpApi) HttpResponse() sdkapi.IHttpResponse {
 	return self.httpResp
 }
 
@@ -80,6 +84,6 @@ func (self *HttpApi) MuxVars(r *http.Request) map[string]string {
 	return mux.Vars(r)
 }
 
-func (self *HttpApi) Navs() sdkhttp.INavpsApi {
+func (self *HttpApi) Navs() sdkapi.INavpsApi {
 	return self.navsApi
 }

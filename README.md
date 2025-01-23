@@ -14,6 +14,7 @@ Clone the project and prepare the development environment.
 git clone git@github.com:flarehotspot/flarehotspot.git
 cd flarehotspot
 git checkout development
+cp go.work.default go.work
 ```
 
 Unzip the `openwrt-files.zip` file.
@@ -33,34 +34,19 @@ Now you can browse the portal at [http://localhost:3000](http://localhost:3000)
 
 The admin dashboard can be accessed at [http://localhost:3000/admin](http://localhost:3000/admin)
 
-The default admin access is:
-```
-username: admin
-password: admin
-```
-
-The database can be managed at [http://localhost:8081](http://localhost:8081)
+The database can be managed at [http://localhost:8081](http://localhost:3001)
 
 # Documentation
 
-Make sure `pip` is available in your system and install the following packages:
-
-```sh
-pip install mkdocs-material --include-deps
-```
-
-Then you can serve the local documentation server:
-
-```sh
-cd flarehotspot
-make docs-serve
-```
+To view the documentation locally, visit [http://localhost:8000](http://localhost:3002).
 
 To build the documentation to be uploaded to the docs website:
 
 ```sh
 make docs-build
 ```
+
+Then you can find the built documentation in the `sdk/mkdocs/site` directory.
 
 ---
 

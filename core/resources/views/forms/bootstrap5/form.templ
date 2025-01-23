@@ -2,28 +2,27 @@ package bootstrap5
 
 import (
 	"fmt"
-	"sdk/api/forms"
-	"sdk/api/http"
+	sdkapi "sdk/api"
 )
 
-templ HtmlForm(form sdkhttp.IHttpForm, csrfTag string, submitUrl string, submitText string) {
+templ HtmlForm(form sdkapi.IHttpForm, csrfTag string, submitUrl string, submitText string) {
 	<form id="form" method="POST" action={ templ.SafeURL(submitUrl) }>
 		@templ.Raw(csrfTag)
 		for _, sec := range form.GetSections() {
 			<legend>{ sec.Name }</legend>
 			for _, fld := range sec.Fields {
 				switch fld.GetType() {
-					case sdkforms.FormFieldTypeText:
+					case sdkapi.FormFieldTypeText:
 						@TextInputField(form, sec, fld)
-					case sdkforms.FormFieldTypeInteger:
+					case sdkapi.FormFieldTypeInteger:
 						@IntegerInputField(form, sec, fld)
-					case sdkforms.FormFieldTypeDecimal:
+					case sdkapi.FormFieldTypeDecimal:
 						@DecimalInputField(form, sec, fld)
-					case sdkforms.FormFieldTypeBoolean:
+					case sdkapi.FormFieldTypeBoolean:
 						@BooleanInputField(form, sec, fld)
-					case sdkforms.FormFieldTypeList:
+					case sdkapi.FormFieldTypeList:
 						@ListInputField(form, sec, fld)
-					case sdkforms.FormFieldTypeMulti:
+					case sdkapi.FormFieldTypeMulti:
 						@MultiInputField(form, sec, fld)
 					default:
 						<p>{ fmt.Sprintf("unsupported field type: %s", fld.GetType()) }</p>

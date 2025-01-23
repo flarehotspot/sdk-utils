@@ -6,16 +6,15 @@ import (
 	"os"
 	"path/filepath"
 
-	sdkfs "github.com/flarehotspot/go-utils/fs"
-	sdkpaths "github.com/flarehotspot/go-utils/paths"
+	sdkutils "github.com/flarehotspot/sdk-utils"
 )
 
 func main() {
 	tools.SyncCoreVersion()
 	tools.SyncGoVersion()
 	version := pkg.GetCoreInfo().Version
-	releaseNotePath := filepath.Join(sdkpaths.CoreDir, "build", "release-notes", version+".md")
-	if !sdkfs.Exists(releaseNotePath) {
+	releaseNotePath := filepath.Join(sdkutils.PathCoreDir, "build", "release-notes", version+".md")
+	if !sdkutils.FsExists(releaseNotePath) {
 		if err := os.WriteFile(releaseNotePath, []byte("## "+version+"\n\n"), 0644); err != nil {
 			panic(err)
 		}

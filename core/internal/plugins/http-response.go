@@ -2,13 +2,12 @@ package plugins
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
-	sdkhttp "sdk/api/http"
+	sdkapi "sdk/api"
 
 	"core/resources/views"
 
-	paths "github.com/flarehotspot/go-utils/paths"
+	sdkutils "github.com/flarehotspot/sdk-utils"
 )
 
 type HttpResponse struct {
@@ -17,11 +16,11 @@ type HttpResponse struct {
 }
 
 func NewHttpResponse(api *PluginApi) *HttpResponse {
-	viewroot := paths.StripRoot(api.Utl.Resource("views"))
+	viewroot := sdkutils.StripRootPath(api.Utl.Resource("views"))
 	return &HttpResponse{api, viewroot}
 }
 
-func (self *HttpResponse) AdminView(w http.ResponseWriter, r *http.Request, v sdkhttp.ViewPage) {
+func (self *HttpResponse) AdminView(w http.ResponseWriter, r *http.Request, v sdkapi.ViewPage) {
 	_, themeApi, err := self.api.PluginsMgrApi.GetAdminTheme()
 	if err != nil {
 		self.Error(w, r, err, http.StatusInternalServerError)
@@ -30,8 +29,8 @@ func (self *HttpResponse) AdminView(w http.ResponseWriter, r *http.Request, v sd
 
 	navs := self.api.HttpAPI.navsApi.GetAdminNavs(r)
 	assets := self.api.Utl.GetAdminAssetsForPage(v)
-	data := sdkhttp.AdminLayoutData{
-		Layout: sdkhttp.LayoutData{
+	data := sdkapi.AdminLayoutData{
+		Layout: sdkapi.LayoutData{
 			Assets:      assets,
 			PageContent: v.PageContent,
 		},
@@ -43,7 +42,7 @@ func (self *HttpResponse) AdminView(w http.ResponseWriter, r *http.Request, v sd
 	page.Render(r.Context(), w)
 }
 
-func (self *HttpResponse) PortalView(w http.ResponseWriter, r *http.Request, v sdkhttp.ViewPage) {
+func (self *HttpResponse) PortalView(w http.ResponseWriter, r *http.Request, v sdkapi.ViewPage) {
 	_, themeApi, err := self.api.PluginsMgrApi.GetPortalTheme()
 	if err != nil {
 		self.Error(w, r, err, http.StatusInternalServerError)
@@ -51,8 +50,8 @@ func (self *HttpResponse) PortalView(w http.ResponseWriter, r *http.Request, v s
 	}
 
 	assets := self.api.Utl.GetPortalAssetsForPage(v)
-	data := sdkhttp.PortalLayoutData{
-		Layout: sdkhttp.LayoutData{
+	data := sdkapi.PortalLayoutData{
+		Layout: sdkapi.LayoutData{
 			Assets:      assets,
 			PageContent: v.PageContent,
 		},
@@ -63,19 +62,9 @@ func (self *HttpResponse) PortalView(w http.ResponseWriter, r *http.Request, v s
 	page.Render(r.Context(), w)
 }
 
-func (self *HttpResponse) View(w http.ResponseWriter, r *http.Request, v sdkhttp.ViewPage) {
+func (self *HttpResponse) View(w http.ResponseWriter, r *http.Request, v sdkapi.ViewPage) {
 	w.Header().Set("Content-Type", "text/html")
 	v.PageContent.Render(r.Context(), w)
-}
-
-func (self *HttpResponse) File(w http.ResponseWriter, r *http.Request, file string, data interface{}) {
-	if data == nil {
-		data = map[string]interface{}{}
-	}
-
-	file = self.api.Utl.Resource(file)
-
-	fmt.Fprintf(w, "TODO: respond with file download")
 }
 
 func (self *HttpResponse) Json(w http.ResponseWriter, r *http.Request, data interface{}, status int) {

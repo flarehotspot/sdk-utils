@@ -3,8 +3,9 @@ package plugins
 import (
 	"log"
 	"path/filepath"
-	sdkhttp "sdk/api/http"
 	"strings"
+
+	sdkapi "sdk/api"
 
 	"core/internal/config"
 	"core/internal/utils/flaretmpl"
@@ -57,7 +58,7 @@ func (self *PluginUtils) Resource(path string) string {
 	return filepath.Join(self.api.dir, "resources", path)
 }
 
-func (self *PluginUtils) GetAdminAssetsForPage(v sdkhttp.ViewPage) (assets sdkhttp.PageAssets) {
+func (self *PluginUtils) GetAdminAssetsForPage(v sdkapi.ViewPage) (assets sdkapi.PageAssets) {
 	_, themesApi, err := self.api.PluginsMgrApi.GetAdminTheme()
 	if err != nil {
 		return
@@ -86,7 +87,7 @@ func (self *PluginUtils) GetAdminAssetsForPage(v sdkhttp.ViewPage) (assets sdkht
 	return
 }
 
-func (self *PluginUtils) GetPortalAssetsForPage(v sdkhttp.ViewPage) (assets sdkhttp.PageAssets) {
+func (self *PluginUtils) GetPortalAssetsForPage(v sdkapi.ViewPage) (assets sdkapi.PageAssets) {
 	_, themesApi, err := self.api.PluginsMgrApi.GetPortalTheme()
 	if err != nil {
 		return

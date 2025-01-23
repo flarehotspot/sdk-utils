@@ -7,15 +7,14 @@ import (
 	"os"
 	"path/filepath"
 
-	sdkfs "github.com/flarehotspot/go-utils/fs"
-	sdkpaths "github.com/flarehotspot/go-utils/paths"
+	sdkutils "github.com/flarehotspot/sdk-utils"
 )
 
 func InitOpkg(bp *plugins.BootProgress) {
 	var files []string
 
-	packagesDir := filepath.Join(sdkpaths.AppDir, "packages")
-	if err := sdkfs.LsFiles(packagesDir, &files, true); err != nil {
+	packagesDir := filepath.Join(sdkutils.PathAppDir, "packages")
+	if err := sdkutils.FsListFiles(packagesDir, &files, true); err != nil {
 		bp.AppendLog(fmt.Sprintf("Error listing files in packages in %s: %v", packagesDir, err.Error()))
 		return
 	}

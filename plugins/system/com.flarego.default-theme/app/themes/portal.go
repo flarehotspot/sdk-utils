@@ -2,31 +2,30 @@ package themes
 
 import (
 	"net/http"
-	sdkhttp "sdk/api/http"
-	sdkplugin "sdk/api/plugin"
+	sdkapi "sdk/api"
 
 	"com.flarego.default-theme/resources/views/auth"
 	"com.flarego.default-theme/resources/views/portal"
 	"github.com/a-h/templ"
 )
 
-func SetPortalTheme(api sdkplugin.IPluginApi) {
+func SetPortalTheme(api sdkapi.IPluginApi) {
 
-	api.Themes().NewPortalTheme(sdkhttp.PortalThemeOpts{
+	api.Themes().NewPortalTheme(sdkapi.PortalThemeOpts{
 		JsFile:  "theme.js",
 		CssFile: "theme.css",
-		LayoutFactory: func(w http.ResponseWriter, r *http.Request, data sdkhttp.PortalLayoutData) templ.Component {
+		LayoutFactory: func(w http.ResponseWriter, r *http.Request, data sdkapi.PortalLayoutData) templ.Component {
 			layout := portal.PortalLayout(data)
 			return layout
 		},
-		LoginPageFactory: func(w http.ResponseWriter, r *http.Request, data sdkhttp.LoginPageData) sdkhttp.ViewPage {
+		LoginPageFactory: func(w http.ResponseWriter, r *http.Request, data sdkapi.LoginPageData) sdkapi.ViewPage {
 			csrfHtml := api.Http().Helpers().CsrfHtmlTag(r)
 			page := auth.LoginPage(csrfHtml, data)
-			return sdkhttp.ViewPage{PageContent: page}
+			return sdkapi.ViewPage{PageContent: page}
 		},
-		IndexPageFactory: func(w http.ResponseWriter, r *http.Request, data sdkhttp.PortalIndexData) sdkhttp.ViewPage {
+		IndexPageFactory: func(w http.ResponseWriter, r *http.Request, data sdkapi.PortalIndexData) sdkapi.ViewPage {
 			page := portal.PortalIndexPage()
-			return sdkhttp.ViewPage{PageContent: page}
+			return sdkapi.ViewPage{PageContent: page}
 		},
 	})
 

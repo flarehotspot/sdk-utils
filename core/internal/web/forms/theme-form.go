@@ -3,8 +3,7 @@ package coreforms
 import (
 	"core/internal/config"
 	"core/internal/plugins"
-	sdkforms "sdk/api/forms"
-	sdkplugin "sdk/api/plugin"
+	sdkapi "sdk/api"
 )
 
 const (
@@ -13,8 +12,8 @@ const (
 
 func RegisterThemesForm(g *plugins.CoreGlobals) (err error) {
 	allPlugins := g.PluginMgr.All()
-	adminThemes := []sdkplugin.IPluginApi{}
-	portalThemes := []sdkplugin.IPluginApi{}
+	adminThemes := []sdkapi.IPluginApi{}
+	portalThemes := []sdkapi.IPluginApi{}
 
 	for _, p := range allPlugins {
 		features := p.Features()
@@ -29,10 +28,10 @@ func RegisterThemesForm(g *plugins.CoreGlobals) (err error) {
 		}
 	}
 
-	portalThemesField := sdkforms.ListField{
+	portalThemesField := sdkapi.FormListField{
 		Name:  "portal_theme",
 		Label: "Select Portal Theme",
-		Type:  sdkforms.FormFieldTypeText,
+		Type:  sdkapi.FormFieldTypeText,
 		ValueFn: func() interface{} {
 			cfg, err := config.ReadThemesConfig()
 			if err != nil {
@@ -40,22 +39,23 @@ func RegisterThemesForm(g *plugins.CoreGlobals) (err error) {
 			}
 			return cfg.PortalThemePkg
 		},
-		Options: func() []sdkforms.ListOption {
-			opts := []sdkforms.ListOption{}
+		Options: func() []sdkapi.FormListOption {
+			opts := []sdkapi.FormListOption{}
 			for _, p := range portalThemes {
-				opts = append(opts, sdkforms.ListOption{
-					Label: p.Name(),
-					Value: p.Pkg(),
+				info := p.Info()
+				opts = append(opts, sdkapi.FormListOption{
+					Label: info.Name,
+					Value: info.Package,
 				})
 			}
 			return opts
 		},
 	}
 
-	adminThemesField := sdkforms.ListField{
+	adminThemesField := sdkapi.FormListField{
 		Name:  "admin_theme",
 		Label: "Select Admin Theme",
-		Type:  sdkforms.FormFieldTypeText,
+		Type:  sdkapi.FormFieldTypeText,
 		ValueFn: func() interface{} {
 			cfg, err := config.ReadThemesConfig()
 			if err != nil {
@@ -63,27 +63,28 @@ func RegisterThemesForm(g *plugins.CoreGlobals) (err error) {
 			}
 			return cfg.AdminThemePkg
 		},
-		Options: func() []sdkforms.ListOption {
-			opts := []sdkforms.ListOption{}
+		Options: func() []sdkapi.FormListOption {
+			opts := []sdkapi.FormListOption{}
 			for _, p := range adminThemes {
-				opts = append(opts, sdkforms.ListOption{
-					Label: p.Name(),
-					Value: p.Pkg(),
+				info := p.Info()
+				opts = append(opts, sdkapi.FormListOption{
+					Label: info.Name,
+					Value: info.Package,
 				})
 			}
 			return opts
 		},
 	}
 
-	multiField := sdkforms.MultiField{
+	multiField := sdkapi.FormMultiField{
 		Name:  "multi_field",
 		Label: "Multi Field",
-		Columns: func() []sdkforms.MultiFieldCol {
-			cols := []sdkforms.MultiFieldCol{
+		Columns: func() []sdkapi.FormMultiFieldCol {
+			cols := []sdkapi.FormMultiFieldCol{
 				{
 					Name:  "col1",
 					Label: "Column 1 (text)",
-					Type:  sdkforms.FormFieldTypeText,
+					Type:  sdkapi.FormFieldTypeText,
 					ValueFn: func() interface{} {
 						return "text value"
 					},
@@ -91,7 +92,7 @@ func RegisterThemesForm(g *plugins.CoreGlobals) (err error) {
 				{
 					Name:  "col2",
 					Label: "Column 2 (decimal)",
-					Type:  sdkforms.FormFieldTypeDecimal,
+					Type:  sdkapi.FormFieldTypeDecimal,
 					ValueFn: func() interface{} {
 						return 100.1
 					},
@@ -99,7 +100,7 @@ func RegisterThemesForm(g *plugins.CoreGlobals) (err error) {
 				{
 					Name:  "col3",
 					Label: "Column 3 (integer)",
-					Type:  sdkforms.FormFieldTypeInteger,
+					Type:  sdkapi.FormFieldTypeInteger,
 					ValueFn: func() interface{} {
 						return 1
 					},
@@ -107,7 +108,7 @@ func RegisterThemesForm(g *plugins.CoreGlobals) (err error) {
 				{
 					Name:  "col4",
 					Label: "Column 4 (boolean)",
-					Type:  sdkforms.FormFieldTypeBoolean,
+					Type:  sdkapi.FormFieldTypeBoolean,
 					ValueFn: func() interface{} {
 						return true
 					},
@@ -117,13 +118,13 @@ func RegisterThemesForm(g *plugins.CoreGlobals) (err error) {
 		},
 	}
 
-	listFieldTxt := sdkforms.ListField{
+	listFieldTxt := sdkapi.FormListField{
 		Name:     "list_field_txt",
 		Label:    "List Field (text)",
 		Multiple: true,
-		Type:     sdkforms.FormFieldTypeText,
-		Options: func() []sdkforms.ListOption {
-			return []sdkforms.ListOption{
+		Type:     sdkapi.FormFieldTypeText,
+		Options: func() []sdkapi.FormListOption {
+			return []sdkapi.FormListOption{
 				{
 					Label: "Value 1",
 					Value: "val1",
@@ -139,13 +140,13 @@ func RegisterThemesForm(g *plugins.CoreGlobals) (err error) {
 		},
 	}
 
-	listFieldNum := sdkforms.ListField{
+	listFieldNum := sdkapi.FormListField{
 		Name:     "list_field_num",
 		Label:    "List Field (number)",
-		Type:     sdkforms.FormFieldTypeDecimal,
+		Type:     sdkapi.FormFieldTypeDecimal,
 		Multiple: true,
-		Options: func() []sdkforms.ListOption {
-			return []sdkforms.ListOption{
+		Options: func() []sdkapi.FormListOption {
+			return []sdkapi.FormListOption{
 				{
 					Label: "100",
 					Value: 100.0,
@@ -161,7 +162,7 @@ func RegisterThemesForm(g *plugins.CoreGlobals) (err error) {
 		},
 	}
 
-	textField := sdkforms.TextField{
+	textField := sdkapi.FormTextField{
 		Name:  "text_field",
 		Label: "Text Field",
 		ValueFn: func() string {
@@ -169,7 +170,7 @@ func RegisterThemesForm(g *plugins.CoreGlobals) (err error) {
 		},
 	}
 
-	intField := sdkforms.IntegerField{
+	intField := sdkapi.FormIntegerField{
 		Name:  "int_field",
 		Label: "Int Field",
 		ValueFn: func() int64 {
@@ -177,7 +178,7 @@ func RegisterThemesForm(g *plugins.CoreGlobals) (err error) {
 		},
 	}
 
-	decimalField := sdkforms.DecimalField{
+	decimalField := sdkapi.FormDecimalField{
 		Name:      "decimal_field",
 		Label:     "Decimal Field",
 		Step:      0.1,
@@ -187,7 +188,7 @@ func RegisterThemesForm(g *plugins.CoreGlobals) (err error) {
 		},
 	}
 
-	boolField := sdkforms.BooleanField{
+	boolField := sdkapi.FormBooleanField{
 		Name:  "boolean_field",
 		Label: "Boolean Field",
 		ValueFn: func() bool {
@@ -195,14 +196,14 @@ func RegisterThemesForm(g *plugins.CoreGlobals) (err error) {
 		},
 	}
 
-	themesForm := sdkforms.Form{
+	themesForm := sdkapi.HttpForm{
 		Name:          ThemesFormName,
 		CallbackRoute: "admin:themes:save",
 		SubmitLabel:   "Save",
-		Sections: []sdkforms.FormSection{
+		Sections: []sdkapi.FormSection{
 			{
 				Name: "themes",
-				Fields: []sdkforms.IFormField{
+				Fields: []sdkapi.IFormField{
 					textField,
 					intField,
 					decimalField,

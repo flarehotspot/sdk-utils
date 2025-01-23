@@ -3,7 +3,7 @@ package plugins
 import (
 	cnet "core/internal/network"
 	"core/internal/utils/ubus"
-	sdknet "sdk/api/network"
+	sdkapi "sdk/api"
 )
 
 func NewNetworkApi(api *PluginApi, trfk *cnet.TrafficMgr) {
@@ -15,13 +15,13 @@ type NetworkApi struct {
 	trfk *cnet.TrafficMgr
 }
 
-func (self *NetworkApi) ListDevices() (netdevs []sdknet.INetworkDevice, err error) {
+func (self *NetworkApi) ListDevices() (netdevs []sdkapi.INetworkDevice, err error) {
 	devices, err := ubus.GetNetworkDevices()
 	if err != nil {
 		return nil, err
 	}
 
-	netdevs = []sdknet.INetworkDevice{}
+	netdevs = []sdkapi.INetworkDevice{}
 	for _, v := range devices {
 		dev := cnet.NewNetworkDevice(v)
 		netdevs = append(netdevs, dev)
@@ -30,7 +30,7 @@ func (self *NetworkApi) ListDevices() (netdevs []sdknet.INetworkDevice, err erro
 	return netdevs, nil
 }
 
-func (self *NetworkApi) ListInterfaces() (interfaces []sdknet.INetworkInterface, err error) {
+func (self *NetworkApi) ListInterfaces() (interfaces []sdkapi.INetworkInterface, err error) {
 	ifaces, err := ubus.GetNetworkInterfaces()
 	if err != nil {
 		return nil, err
@@ -44,7 +44,7 @@ func (self *NetworkApi) ListInterfaces() (interfaces []sdknet.INetworkInterface,
 	return interfaces, nil
 }
 
-func (self *NetworkApi) GetDevice(name string) (sdknet.INetworkDevice, error) {
+func (self *NetworkApi) GetDevice(name string) (sdkapi.INetworkDevice, error) {
 	dev, err := ubus.GetNetworkDevice(name)
 	if err != nil {
 		return nil, err
@@ -52,7 +52,7 @@ func (self *NetworkApi) GetDevice(name string) (sdknet.INetworkDevice, error) {
 	return cnet.NewNetworkDevice(dev), nil
 }
 
-func (self *NetworkApi) GetInterface(name string) (sdknet.INetworkInterface, error) {
+func (self *NetworkApi) GetInterface(name string) (sdkapi.INetworkInterface, error) {
 	_, err := ubus.GetNetworkInterface(name)
 	if err != nil {
 		return nil, err
@@ -60,7 +60,7 @@ func (self *NetworkApi) GetInterface(name string) (sdknet.INetworkInterface, err
 	return cnet.NewNetworkInterface(name), nil
 }
 
-func (self *NetworkApi) FindByIp(clientIp string) (sdknet.INetworkInterface, error) {
+func (self *NetworkApi) FindByIp(clientIp string) (sdkapi.INetworkInterface, error) {
 	iface, err := cnet.FindByIp(clientIp)
 	if err != nil {
 		return nil, err
@@ -69,6 +69,6 @@ func (self *NetworkApi) FindByIp(clientIp string) (sdknet.INetworkInterface, err
 	return cnet.NewNetworkInterface(iface.Name()), nil
 }
 
-func (self *NetworkApi) Traffic() sdknet.ITrafficApi {
+func (self *NetworkApi) Traffic() sdkapi.ITrafficApi {
 	return self.trfk
 }

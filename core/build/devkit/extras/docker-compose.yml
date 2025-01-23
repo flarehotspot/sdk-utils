@@ -14,10 +14,10 @@ services:
     ports:
       - 3000:3000
 
-  postgres15:
-    image: postgres:15
+  pg:
+    image: postgres:17
     volumes:
-      - postgres15:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql/data
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
@@ -27,13 +27,26 @@ services:
   pgadmin:
     image: dpage/pgadmin4
     ports:
-      - 8081:80
+      - 3001:80
     depends_on:
-      - postgres15
+      - pg
     environment:
-      - PGADMIN_DEFAULT_EMAIL=admin@pg.com
+      - PGADMIN_DEFAULT_EMAIL=pgadmin4@pgadmin.com
       - PGADMIN_DEFAULT_PASSWORD=admin
+      - PGADMIN_CONFIG_SERVER_MODE=False
+      - PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED=False
+      - PGPASS_FILE=/pgpass
+    volumes:
+      - ./pgadmin4/servers.json:/pgadmin4/servers.json
+
+  docs:
+    build:
+      context: ./sdk/mkdocs
+    volumes:
+      - ./sdk/mkdocs:/docs
+    ports:
+      - 3002:8000
 
 volumes:
-  postgres15:
+  pgdata:
   app_tmp:
