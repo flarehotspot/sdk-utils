@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"net/http"
-	sdkplugin "sdk/api/plugin"
+	sdkplugin "sdk/api"
 )
 
 func TestCtrl(api sdkplugin.IPluginApi) http.HandlerFunc {

@@ -2,8 +2,7 @@ package plugins
 
 import (
 	"errors"
-	sdkforms "sdk/api/forms"
-	sdkhttp "sdk/api/http"
+	sdkapi "sdk/api"
 	"sync"
 )
 
@@ -19,7 +18,7 @@ type HttpFormApi struct {
 	forms sync.Map
 }
 
-func (self *HttpFormApi) RegisterForms(forms ...sdkforms.Form) error {
+func (self *HttpFormApi) RegisterForms(forms ...sdkapi.HttpForm) error {
 	for _, form := range forms {
 		if form.Name == "" {
 			return errors.New("form name key is required")
@@ -31,13 +30,13 @@ func (self *HttpFormApi) RegisterForms(forms ...sdkforms.Form) error {
 	return nil
 }
 
-func (self *HttpFormApi) GetForm(name string) (form sdkhttp.IHttpForm, ok bool) {
+func (self *HttpFormApi) GetForm(name string) (form sdkapi.IHttpForm, ok bool) {
 	f, ok := self.forms.Load(name)
 	if !ok {
 		return form, false
 	}
 
-	form, ok = f.(sdkhttp.IHttpForm)
+	form, ok = f.(sdkapi.IHttpForm)
 	if !ok {
 		return form, false
 	}

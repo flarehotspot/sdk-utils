@@ -1,34 +1,51 @@
-# Saving and Retrieving Data
+# Saving Data
 
-## 1. Saving Data
+## Saving Data
 
-To save your plugin data like plugin settings, configuration and statistics, use the `Get` and `Save` methods from the [ConfigApi.Custom](../api/config-api.md#custom):
+To save the plugin data like plugin settings, configuration and statistics, we use the  [IPluginCfgApi.Write](../api/config-api.md#write):
 
 ```go
+import "encoding/json"
+// ...
+
 type MyPluginConfig struct {
     MySetting       string  `json:"my_setting"`
     OtherSetting    int     `json:"other_setting"`
 }
 
-my_key := "my_config"
-my_config := MyPluginConfig{
+myConfig := MyPluginConfig{
     MySetting:      "my_value",
     OtherSetting:   123,
 }
 
-err := api.Config().Custom(config_key).Save(my_config)
+data, err := json.Marshal(myConfig)
+if err != nil {
+    // handle error
+}
+
+err := api.Config().Plugin().Write("my_key", data)
 ```
 
 Plugin configuration is separated into different keys for ease of management. The data must be serializable to JSON.
 
-## 2. Retreiving Data
+## Retreiving Data
 
-To get your plugin data for a specific key, use the [ConfigApi.Custom.Get](../api/config-api.md#custom) method:
+To get the plugin data for a specific key, use the [IPluginCfgApi.Read](../api/config-api.md#read) method:
 ```go
-var my_config MyPluginConfig
-err := api.Config().Custom(my_key).Get(&my_config)
+import "encoding/json"
+// ...
 
-fmt.Println(my_config) // {MySetting: "my_value", OtherSetting: 123}
+data, err := api.Config().Plugin().Read("my_key")
+if err != nil {
+    // handle error
+}
+
+var myConfig MyPluginConfig
+if err := json.Unmarshal(data, &myConfig); err != nil {
+    // handle error
+}
+
+fmt.Println(myConfig) // {MySetting: "my_value", OtherSetting: 123}
 ```
 
 

@@ -4,33 +4,32 @@ import (
 	// "net/http"
 
 	"net/http"
-	sdkhttp "sdk/api/http"
-	plugin "sdk/api/plugin"
+	sdkapi "sdk/api"
 
 	"com.flarego.default-theme/resources/views/admin"
 	"github.com/a-h/templ"
 )
 
-func SetAdminTheme(api plugin.IPluginApi) {
-	api.Themes().NewAdminTheme(sdkhttp.AdminThemeOpts{
+func SetAdminTheme(api sdkapi.IPluginApi) {
+	api.Themes().NewAdminTheme(sdkapi.AdminThemeOpts{
 		JsFile:  "theme.js",
 		CssFile: "theme.css",
-		CssLib:  sdkhttp.CssLibBootstrap5,
-		LayoutFactory: func(w http.ResponseWriter, r *http.Request, data sdkhttp.AdminLayoutData) templ.Component {
+		CssLib:  sdkapi.CssLibBootstrap5,
+		LayoutFactory: func(w http.ResponseWriter, r *http.Request, data sdkapi.AdminLayoutData) templ.Component {
 			layout := admin.AdminLayout(api, data)
 			return layout
 		},
-		IndexPageFactory: func(w http.ResponseWriter, r *http.Request) sdkhttp.ViewPage {
+		IndexPageFactory: func(w http.ResponseWriter, r *http.Request) sdkapi.ViewPage {
 			page := admin.AdminIndexPage()
-			return sdkhttp.ViewPage{PageContent: page}
+			return sdkapi.ViewPage{PageContent: page}
 		},
 	})
 
-	api.Http().Navs().AdminNavsFactory(func(r *http.Request) []sdkhttp.AdminNavItemOpt {
-		return []sdkhttp.AdminNavItemOpt{
+	api.Http().Navs().AdminNavsFactory(func(r *http.Request) []sdkapi.AdminNavItemOpt {
+		return []sdkapi.AdminNavItemOpt{
 			{
 				Label:     "Test",
-				Category:  sdkhttp.NavCategorySystem,
+				Category:  sdkapi.NavCategorySystem,
 				RouteName: "test",
 			},
 		}

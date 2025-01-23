@@ -1,9 +1,7 @@
 package plugins
 
 import (
-	connmgr "sdk/api/connmgr"
-	payments "sdk/api/payments"
-	plugin "sdk/api/plugin"
+	sdkapi "sdk/api"
 )
 
 func NewPaymentMgr() *PaymentsMgr {
@@ -14,7 +12,7 @@ type PaymentsMgr struct {
 	providers []*PaymentProvider
 }
 
-func (self *PaymentsMgr) Options(clnt connmgr.IClientDevice) []PaymentOption {
+func (self *PaymentsMgr) Options(clnt sdkapi.IClientDevice) []PaymentOption {
 	opts := []PaymentOption{}
 	for _, prvdr := range self.providers {
 		for _, opt := range prvdr.PaymentOpts(clnt) {
@@ -24,7 +22,7 @@ func (self *PaymentsMgr) Options(clnt connmgr.IClientDevice) []PaymentOption {
 	return opts
 }
 
-func (self *PaymentsMgr) FindByUuid(clnt connmgr.IClientDevice, uuid string) (PaymentOption, bool) {
+func (self *PaymentsMgr) FindByUuid(clnt sdkapi.IClientDevice, uuid string) (PaymentOption, bool) {
 	methods := self.Options(clnt)
 	for _, opt := range methods {
 		if opt.UUID == uuid {
@@ -34,7 +32,7 @@ func (self *PaymentsMgr) FindByUuid(clnt connmgr.IClientDevice, uuid string) (Pa
 	return PaymentOption{}, false
 }
 
-func (self *PaymentsMgr) NewPaymentProvider(api plugin.IPluginApi, provider payments.IPaymentProvider) {
+func (self *PaymentsMgr) NewPaymentProvider(api sdkapi.IPluginApi, provider sdkapi.IPaymentProvider) {
 	prvdr := NewPaymentProvider(api, provider)
 	self.providers = append(self.providers, prvdr)
 }

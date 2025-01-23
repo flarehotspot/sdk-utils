@@ -2,16 +2,16 @@ package plugins
 
 import (
 	"net/http"
-	sdkhttp "sdk/api/http"
+	sdkapi "sdk/api"
 )
 
 func NewNavsApi(api *PluginApi) *HttpNavsApi {
 	return &HttpNavsApi{
 		api: api,
-		adminNavsFn: func(r *http.Request) (navs []sdkhttp.AdminNavItemOpt) {
+		adminNavsFn: func(r *http.Request) (navs []sdkapi.AdminNavItemOpt) {
 			return
 		},
-		portalNavsFn: func(r *http.Request) (navs []sdkhttp.PortalNavItemOpt) {
+		portalNavsFn: func(r *http.Request) (navs []sdkapi.PortalNavItemOpt) {
 			return
 		},
 	}
@@ -19,30 +19,30 @@ func NewNavsApi(api *PluginApi) *HttpNavsApi {
 
 type HttpNavsApi struct {
 	api          *PluginApi
-	adminNavsFn  func(r *http.Request) []sdkhttp.AdminNavItemOpt
-	portalNavsFn func(r *http.Request) []sdkhttp.PortalNavItemOpt
+	adminNavsFn  func(r *http.Request) []sdkapi.AdminNavItemOpt
+	portalNavsFn func(r *http.Request) []sdkapi.PortalNavItemOpt
 }
 
-func (self *HttpNavsApi) AdminNavsFactory(fn func(r *http.Request) []sdkhttp.AdminNavItemOpt) {
+func (self *HttpNavsApi) AdminNavsFactory(fn func(r *http.Request) []sdkapi.AdminNavItemOpt) {
 	self.adminNavsFn = fn
 }
 
-func (self *HttpNavsApi) PortalNavsFactory(fn func(r *http.Request) []sdkhttp.PortalNavItemOpt) {
+func (self *HttpNavsApi) PortalNavsFactory(fn func(r *http.Request) []sdkapi.PortalNavItemOpt) {
 	self.portalNavsFn = fn
 }
 
-func (self *HttpNavsApi) GetAdminNavs(r *http.Request) []sdkhttp.AdminNavList {
-	categories := []sdkhttp.INavCategory{
-		sdkhttp.NavCategorySystem,
-		sdkhttp.NavCategoryPayments,
-		sdkhttp.NavCategoryNetwork,
-		sdkhttp.NavCategoryThemes,
-		sdkhttp.NavCategoryTools,
+func (self *HttpNavsApi) GetAdminNavs(r *http.Request) []sdkapi.AdminNavList {
+	categories := []sdkapi.INavCategory{
+		sdkapi.NavCategorySystem,
+		sdkapi.NavCategoryPayments,
+		sdkapi.NavCategoryNetwork,
+		sdkapi.NavCategoryThemes,
+		sdkapi.NavCategoryTools,
 	}
 
-	navs := []sdkhttp.AdminNavList{}
+	navs := []sdkapi.AdminNavList{}
 	for _, category := range categories {
-		navItems := []sdkhttp.AdminNavItem{}
+		navItems := []sdkapi.AdminNavItem{}
 
 		for _, p := range self.api.PluginsMgrApi.All() {
 			navapi := p.Http().Navs().(*HttpNavsApi)
@@ -53,7 +53,7 @@ func (self *HttpNavsApi) GetAdminNavs(r *http.Request) []sdkhttp.AdminNavList {
 					for k, v := range nav.RouteParams {
 						routePairs = append(routePairs, k, v)
 					}
-					navItems = append(navItems, sdkhttp.AdminNavItem{
+					navItems = append(navItems, sdkapi.AdminNavItem{
 						Label:    nav.Label,
 						RouteUrl: p.Http().Helpers().UrlForRoute(nav.RouteName, routePairs...),
 					})
@@ -61,17 +61,17 @@ func (self *HttpNavsApi) GetAdminNavs(r *http.Request) []sdkhttp.AdminNavList {
 			}
 		}
 
-		navs = append(navs, sdkhttp.AdminNavList{
-			Label: self.api.CoreAPI.Utl.Translate("label", string(category)),
-			Items: navItems,
+		navs = append(navs, sdkapi.AdminNavList{
+			Category: self.api.CoreAPI.Utl.Translate("label", string(category)),
+			Items:    navItems,
 		})
 	}
 
 	return navs
 }
 
-func (self *HttpNavsApi) GetPortalItems(r *http.Request) []sdkhttp.PortalNavItem {
-	items := []sdkhttp.PortalNavItem{}
+func (self *HttpNavsApi) GetPortalItems(r *http.Request) []sdkapi.PortalNavItem {
+	items := []sdkapi.PortalNavItem{}
 	for _, p := range self.api.PluginsMgrApi.All() {
 		navsapi := p.Http().Navs().(*HttpNavsApi)
 		portalItems := navsapi.portalNavsFn(r)
@@ -80,7 +80,7 @@ func (self *HttpNavsApi) GetPortalItems(r *http.Request) []sdkhttp.PortalNavItem
 			for k, v := range item.RouteParams {
 				routePairs = append(routePairs, k, v)
 			}
-			items = append(items, sdkhttp.PortalNavItem{
+			items = append(items, sdkapi.PortalNavItem{
 				Label:    item.Label,
 				RouteUrl: p.Http().Helpers().UrlForRoute(item.RouteName, routePairs...),
 			})

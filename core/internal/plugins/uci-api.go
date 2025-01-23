@@ -2,7 +2,7 @@ package plugins
 
 import (
 	"core/internal/utils/uci"
-	sdkuci "sdk/api/uci"
+	sdkapi "sdk/api"
 
 	gouci "github.com/digineo/go-uci"
 )
@@ -18,15 +18,15 @@ func NewUciApi(pluginApi *PluginApi) {
 	pluginApi.UciAPI = uciApi
 }
 
-func (self *UciApi) Network() sdkuci.INetworkApi {
+func (self *UciApi) Network() sdkapi.IUciNetworkApi {
 	return self.networkApi
 }
 
-func (self *UciApi) Dhcp() sdkuci.IDhcpApi {
+func (self *UciApi) Dhcp() sdkapi.IDhcpApi {
 	return self.dhcpApi
 }
 
-func (self *UciApi) Wireless() sdkuci.IWirelessApi {
+func (self *UciApi) Wireless() sdkapi.IWirelessApi {
 	return self.wirelessApi
 }
 

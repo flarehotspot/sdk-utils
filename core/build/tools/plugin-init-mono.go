@@ -8,10 +8,7 @@ import (
 	"regexp"
 	"strings"
 
-	sdkfs "github.com/flarehotspot/go-utils/fs"
-	sdkpaths "github.com/flarehotspot/go-utils/paths"
-	sdkpkg "github.com/flarehotspot/go-utils/pkg"
-	sdkstr "github.com/flarehotspot/go-utils/strings"
+	sdkutils "github.com/flarehotspot/sdk-utils"
 )
 
 type PluginModule struct {
@@ -26,7 +23,7 @@ func CreateMonoFiles() {
 	localDefs := pkg.LocalPluginSrcDefs()
 	systemDefs := pkg.SystemPluginSrcDefs()
 
-	pluginDirs := []string{filepath.Join(sdkpaths.AppDir, "core")}
+	pluginDirs := []string{filepath.Join(sdkutils.PathAppDir, "core")}
 	for _, def := range append(systemDefs, localDefs...) {
 		pluginDirs = append(pluginDirs, def.LocalPath)
 	}
@@ -53,7 +50,7 @@ func MakePluginInitMono() {
 
 	pluginMods := []PluginModule{}
 	for _, dir := range pluginDirs {
-		modVar := sdkstr.Slugify(filepath.Base(dir), "_")
+		modVar := sdkutils.Slugify(filepath.Base(dir), "_")
 		modPath := getGoModule(dir)
 		pkgName := getPackage(dir)
 		mod := PluginModule{modVar, modPath, pkgName}
@@ -92,9 +89,17 @@ func (p *PluginApi) Init() error {
 }`, AUTO_GENERATED_HEADER, importModules, coreInfo.Package, pluginSwitchCases)
 
 	pluginInitMonoPath := filepath.Join("core/internal/plugins/plugin-init_mono.go")
-	err := os.WriteFile(pluginInitMonoPath, []byte(pluginMonoInit), 0644)
-	if err != nil {
-		panic(err)
+
+	var pluginInitMonoContent string
+	if b, err := os.ReadFile(pluginInitMonoPath); err == nil {
+		pluginInitMonoContent = string(b)
+	}
+
+	if pluginMonoInit != pluginInitMonoContent {
+		err := os.WriteFile(pluginInitMonoPath, []byte(pluginMonoInit), 0644)
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	fmt.Println(pluginInitMonoPath, "has been created.")
@@ -102,7 +107,7 @@ func (p *PluginApi) Init() error {
 
 func getGoModule(pluginDir string) string {
 	goModFile := filepath.Join(pluginDir, "go.mod")
-	modContent, err := sdkfs.ReadFile(goModFile)
+	modContent, err := sdkutils.FsReadFile(goModFile)
 	if err != nil {
 		panic(err)
 	}
@@ -117,7 +122,7 @@ func getGoModule(pluginDir string) string {
 }
 
 func getPackage(pluginDir string) string {
-	info, err := sdkpkg.GetInfoFromPath(pluginDir)
+	info, err := sdkutils.GetPluginInfoFromPath(pluginDir)
 	if err != nil {
 		panic(err)
 	}

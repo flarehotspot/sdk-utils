@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"net/http"
-	sdkhttp "sdk/api/http"
+	sdkapi "sdk/api"
 
 	"core/internal/connmgr"
 	"core/internal/db/models"
@@ -28,7 +28,7 @@ type PluginMiddlewares struct {
 func (self *PluginMiddlewares) AdminAuth() func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			acct, err := webutil.IsAdminAuthenticated(r)
+			acct, err := self.api.CoreAPI.HttpAPI.auth.IsAuthenticated(r)
 			if err != nil {
 				loginRoute := webutil.RootRouter.Get("admin:login")
 				loginUrl, _ := loginRoute.URL()
@@ -36,7 +36,7 @@ func (self *PluginMiddlewares) AdminAuth() func(http.Handler) http.Handler {
 				return
 			}
 
-			ctx := context.WithValue(r.Context(), sdkhttp.SysAcctCtxKey, acct)
+			ctx := context.WithValue(r.Context(), sdkapi.SysAcctCtxKey, acct)
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})
 	}

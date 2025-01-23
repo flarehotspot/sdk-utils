@@ -11,8 +11,7 @@ import (
 	"core/internal/db/models"
 	"core/internal/network"
 	"core/internal/utils/nftables"
-	sdkconnmgr "sdk/api/connmgr"
-	sdknet "sdk/api/network"
+	sdkapi "sdk/api"
 
 	sdkslices "github.com/flarehotspot/go-utils/slices"
 	"github.com/jackc/pgx/v5/pgtype"
@@ -29,7 +28,7 @@ func NewSessionsMgr(dtb *db.Database, mdl *models.Models) *SessionsMgr {
 		db:        dtb,
 		mdl:       mdl,
 		sessions:  []*RunningSession{},
-		providers: []sdkconnmgr.ISessionProvider{},
+		providers: []sdkapi.ISessionProvider{},
 	}
 }
 
@@ -38,13 +37,13 @@ type SessionsMgr struct {
 	db        *db.Database
 	mdl       *models.Models
 	sessions  []*RunningSession
-	providers []sdkconnmgr.ISessionProvider
+	providers []sdkapi.ISessionProvider
 }
 
 func (self *SessionsMgr) ListenTraffic(trfk *network.TrafficMgr) {
 	go func() {
 		for data := range trfk.Listen() {
-			go func(data *sdknet.TrafficData) {
+			go func(data *sdkapi.TrafficData) {
 				self.mu.RLock()
 				defer self.mu.RUnlock()
 
@@ -114,7 +113,7 @@ func (self *SessionsMgr) StopSessions(ctx context.Context, iface string, reason 
 	<-done
 }
 
-func (self *SessionsMgr) Connect(ctx context.Context, clnt sdkconnmgr.IClientDevice, notify string) error {
+func (self *SessionsMgr) Connect(ctx context.Context, clnt sdkapi.IClientDevice, notify string) error {
 	errCh := make(chan error)
 
 	go func() {
@@ -147,7 +146,7 @@ func (self *SessionsMgr) Connect(ctx context.Context, clnt sdkconnmgr.IClientDev
 	return <-errCh
 }
 
-func (self *SessionsMgr) Disconnect(ctx context.Context, clnt sdkconnmgr.IClientDevice, notify string) error {
+func (self *SessionsMgr) Disconnect(ctx context.Context, clnt sdkapi.IClientDevice, notify string) error {
 	err := self.endSession(ctx, clnt)
 	if err != nil {
 		return err
@@ -158,11 +157,11 @@ func (self *SessionsMgr) Disconnect(ctx context.Context, clnt sdkconnmgr.IClient
 	return nil
 }
 
-func (self *SessionsMgr) IsConnected(clnt sdkconnmgr.IClientDevice) (connected bool) {
+func (self *SessionsMgr) IsConnected(clnt sdkapi.IClientDevice) (connected bool) {
 	return nftables.IsConnected(clnt.MacAddr())
 }
 
-func (self *SessionsMgr) CurrSession(clnt sdkconnmgr.IClientDevice) (cs sdkconnmgr.IClientSession, ok bool) {
+func (self *SessionsMgr) CurrSession(clnt sdkapi.IClientDevice) (cs sdkapi.IClientSession, ok bool) {
 	self.mu.RLock()
 	defer self.mu.RUnlock()
 
@@ -175,7 +174,7 @@ func (self *SessionsMgr) CurrSession(clnt sdkconnmgr.IClientDevice) (cs sdkconnm
 	return nil, false
 }
 
-func (self *SessionsMgr) loopSessions(clnt sdkconnmgr.IClientDevice) {
+func (self *SessionsMgr) loopSessions(clnt sdkapi.IClientDevice) {
 	ctx := context.Background()
 
 	for nftables.IsConnected(clnt.MacAddr()) {
@@ -237,7 +236,7 @@ func (self *SessionsMgr) loopSessions(clnt sdkconnmgr.IClientDevice) {
 	}
 }
 
-func (self *SessionsMgr) getRunningSession(clnt sdkconnmgr.IClientDevice) (rs *RunningSession, ok bool) {
+func (self *SessionsMgr) getRunningSession(clnt sdkapi.IClientDevice) (rs *RunningSession, ok bool) {
 	for _, rs := range self.sessions {
 		if rs.ClientId() == clnt.Id() {
 			return rs, true
@@ -246,7 +245,7 @@ func (self *SessionsMgr) getRunningSession(clnt sdkconnmgr.IClientDevice) (rs *R
 	return nil, false
 }
 
-func (self *SessionsMgr) endSession(ctx context.Context, clnt sdkconnmgr.IClientDevice) error {
+func (self *SessionsMgr) endSession(ctx context.Context, clnt sdkapi.IClientDevice) error {
 	errCh := make(chan error)
 
 	go func() {
@@ -303,7 +302,7 @@ func (self *SessionsMgr) CreateSession(
 	return err
 }
 
-func (self *SessionsMgr) GetSession(ctx context.Context, clnt sdkconnmgr.IClientDevice) (sdkconnmgr.IClientSession, error) {
+func (self *SessionsMgr) GetSession(ctx context.Context, clnt sdkapi.IClientDevice) (sdkapi.IClientSession, error) {
 	self.mu.RLock()
 	defer self.mu.RUnlock()
 
@@ -328,7 +327,7 @@ func (self *SessionsMgr) GetSession(ctx context.Context, clnt sdkconnmgr.IClient
 	return NewClientSession(localSrc), nil
 }
 
-func (self *SessionsMgr) RegisterSessionProvider(provider sdkconnmgr.ISessionProvider) {
+func (self *SessionsMgr) RegisterSessionProvider(provider sdkapi.ISessionProvider) {
 	self.mu.Lock()
 	defer self.mu.Unlock()
 	self.providers = append(self.providers, provider)

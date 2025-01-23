@@ -3,15 +3,14 @@ package bootstrap5
 import (
 	"fmt"
 
-	"sdk/api/http"
-	"sdk/api/forms"
+	sdkapi "sdk/api"
 
-	"github.com/flarehotspot/go-utils/slices"
+	"github.com/flarehotspot/sdk-utils"
 	"reflect"
 )
 
-templ ListInputField(form sdkhttp.IHttpForm, sec sdkforms.FormSection, fld sdkforms.IFormField) {
-	{{ lf, ok := fld.(sdkforms.ListField) }}
+templ ListInputField(form sdkapi.IHttpForm, sec sdkapi.FormSection, fld sdkapi.IFormField) {
+	{{ lf, ok := fld.(sdkapi.FormListField) }}
 	if ok {
 		@listOptionFields(form, sec, lf)
 	} else {
@@ -19,7 +18,7 @@ templ ListInputField(form sdkhttp.IHttpForm, sec sdkforms.FormSection, fld sdkfo
 	}
 }
 
-templ listOptionFields(form sdkhttp.IHttpForm, sec sdkforms.FormSection, lf sdkforms.ListField) {
+templ listOptionFields(form sdkapi.IHttpForm, sec sdkapi.FormSection, lf sdkapi.FormListField) {
 	<legend>{ lf.Label }</legend>
 	{{
 	var optType string
@@ -45,9 +44,9 @@ templ listOptionFields(form sdkhttp.IHttpForm, sec sdkforms.FormSection, lf sdkf
 	}
 }
 
-func isListOptSelected(form sdkhttp.IHttpForm, sec sdkforms.FormSection, lf sdkforms.ListField, opt sdkforms.ListOption) bool {
+func isListOptSelected(form sdkapi.IHttpForm, sec sdkapi.FormSection, lf sdkapi.FormListField, opt sdkapi.FormListOption) bool {
 	switch lf.Type {
-	case sdkforms.FormFieldTypeText:
+	case sdkapi.FormFieldTypeText:
 		v, ok := opt.Value.(string)
 		if !ok {
 			return false
@@ -58,7 +57,7 @@ func isListOptSelected(form sdkhttp.IHttpForm, sec sdkforms.FormSection, lf sdkf
 			if err != nil {
 				return false
 			}
-			return sdkslices.Contains(vals, v)
+			return sdkutils.SliceContains(vals, v)
 		} else {
 			val, err := form.GetStringValue(sec.Name, lf.Name)
 			if err != nil {
@@ -66,7 +65,7 @@ func isListOptSelected(form sdkhttp.IHttpForm, sec sdkforms.FormSection, lf sdkf
 			}
 			return val == v
 		}
-	case sdkforms.FormFieldTypeDecimal:
+	case sdkapi.FormFieldTypeDecimal:
 		var v float64
 		k := reflect.TypeOf(opt.Value).Kind()
 
@@ -88,7 +87,7 @@ func isListOptSelected(form sdkhttp.IHttpForm, sec sdkforms.FormSection, lf sdkf
 			if err != nil {
 				return false
 			}
-			return sdkslices.Contains(vals, v)
+			return sdkutils.SliceContains(vals, v)
 		} else {
 			val, err := form.GetFloatValue(sec.Name, lf.Name)
 			if err != nil {
@@ -99,15 +98,16 @@ func isListOptSelected(form sdkhttp.IHttpForm, sec sdkforms.FormSection, lf sdkf
 	}
 	return false
 }
-func parseListOptValue(lf sdkforms.ListField, opt sdkforms.ListOption) (val string) {
+
+func parseListOptValue(lf sdkapi.FormListField, opt sdkapi.FormListOption) (val string) {
 	switch lf.Type {
-	case sdkforms.FormFieldTypeText:
+	case sdkapi.FormFieldTypeText:
 		v, ok := opt.Value.(string)
 		if !ok {
 			return ""
 		}
 		return v
-	case sdkforms.FormFieldTypeDecimal:
+	case sdkapi.FormFieldTypeDecimal:
 		t := reflect.TypeOf(opt.Value)
 		switch t.Kind() {
 		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32:
@@ -120,14 +120,16 @@ func parseListOptValue(lf sdkforms.ListField, opt sdkforms.ListOption) (val stri
 	}
 	return
 }
-func getListInputField(fld sdkforms.IFormField) (lf sdkforms.ListField) {
-	lf, _ = fld.(sdkforms.ListField)
+
+func getListInputField(fld sdkapi.IFormField) (lf sdkapi.FormListField) {
+	lf, _ = fld.(sdkapi.FormListField)
 	return lf
 }
-func getListFieldInputType(fld sdkforms.IFormField) string {
-	listField, ok := fld.(sdkforms.ListField)
-	if !ok {
+
+func getListFieldInputType(fld sdkapi.IFormField) string {
+    listField, ok := fld.(sdkapi.FormListField); if !ok {
 		return "not a list field"
 	}
+
 	return listField.Type
 }

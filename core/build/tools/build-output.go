@@ -5,10 +5,7 @@ import (
 	"fmt"
 	"path/filepath"
 
-	sdkfs "github.com/flarehotspot/go-utils/fs"
-	sdkpaths "github.com/flarehotspot/go-utils/paths"
-	sdkruntime "github.com/flarehotspot/go-utils/runtime"
-	sdktargz "github.com/flarehotspot/go-utils/targz"
+	sdkutils "github.com/flarehotspot/sdk-utils"
 )
 
 type BuildOutput struct {
@@ -31,13 +28,13 @@ type metajson struct {
 }
 
 func (b *BuildOutput) Run() error {
-	if err := sdkfs.EmptyDir(b.outputPath()); err != nil {
+	if err := sdkutils.FsEmptyDir(b.outputPath()); err != nil {
 		return err
 	}
 
 	contentList := []string{}
 	for _, entry := range b.Files {
-		srcPath := filepath.Join(sdkpaths.AppDir, entry)
+		srcPath := filepath.Join(sdkutils.PathAppDir, entry)
 		destPath := filepath.Join(b.outputPath(), entry)
 		if err := b.copy(srcPath, destPath); err != nil {
 			panic(err)
@@ -46,7 +43,7 @@ func (b *BuildOutput) Run() error {
 	}
 
 	for _, entry := range b.CustomFiles {
-		srcPath := filepath.Join(sdkpaths.AppDir, entry.Src)
+		srcPath := filepath.Join(sdkutils.PathAppDir, entry.Src)
 		destPath := filepath.Join(b.outputPath(), entry.Dest)
 		if err := b.copy(srcPath, destPath); err != nil {
 			panic(err)
@@ -55,19 +52,19 @@ func (b *BuildOutput) Run() error {
 	}
 
 	// new implementation using tar.gz
-	if err := sdktargz.TarGz(b.outputPath(), b.targzFilePath()); err != nil {
+	if err := sdkutils.CompressTar(b.outputPath(), b.targzFilePath()); err != nil {
 		return err
 	}
 
 	md := metajson{
-		GoVersion: sdkruntime.GO_VERSION,
-		GoArch:    sdkruntime.GOARCH,
+		GoVersion: sdkutils.GO_VERSION,
+		GoArch:    sdkutils.GOARCH,
 		OutputDir: b.outputPath(),
 		OutputZip: b.targzFilePath(),
 		Files:     contentList,
 	}
 
-	if err := sdkfs.WriteJson(b.metadataPath(), md); err != nil {
+	if err := sdkutils.FsWriteJson(b.metadataPath(), md); err != nil {
 		return err
 	}
 
@@ -77,16 +74,16 @@ func (b *BuildOutput) Run() error {
 func (b *BuildOutput) copy(srcPath string, destPath string) error {
 	fmt.Printf("Copying '%s' -> '%s'\n", srcPath, destPath)
 
-	if !sdkfs.Exists(srcPath) {
+	if !sdkutils.FsExists(srcPath) {
 		return errors.New("File does not exist: " + srcPath)
 	}
 
-	if sdkfs.IsFile(srcPath) {
-		if err := sdkfs.CopyFile(srcPath, destPath); err != nil {
+	if sdkutils.FsIsFile(srcPath) {
+		if err := sdkutils.FsCopyFile(srcPath, destPath); err != nil {
 			return err
 		}
-	} else if sdkfs.IsDir(srcPath) {
-		if err := sdkfs.CopyDir(srcPath, destPath, nil); err != nil {
+	} else if sdkutils.FsIsDir(srcPath) {
+		if err := sdkutils.FsCopyDir(srcPath, destPath, nil); err != nil {
 			return err
 		}
 	} else {
@@ -96,7 +93,7 @@ func (b *BuildOutput) copy(srcPath string, destPath string) error {
 }
 
 func (b *BuildOutput) outputPath() string {
-	return filepath.Join(sdkpaths.AppDir, "output", b.OutputDirName)
+	return filepath.Join(sdkutils.PathAppDir, "output", b.OutputDirName)
 }
 
 func (b *BuildOutput) targzFilePath() string {
@@ -104,5 +101,5 @@ func (b *BuildOutput) targzFilePath() string {
 }
 
 func (b *BuildOutput) metadataPath() string {
-	return filepath.Join(sdkpaths.AppDir, "output/metadata.json")
+	return filepath.Join(sdkutils.PathAppDir, "output/metadata.json")
 }

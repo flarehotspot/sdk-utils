@@ -7,13 +7,11 @@ import (
 	"os"
 	"path/filepath"
 
-	sdkfs "github.com/flarehotspot/go-utils/fs"
-	sdkpkg "github.com/flarehotspot/go-utils/pkg"
-	sdkruntime "github.com/flarehotspot/go-utils/runtime"
+	sdkutils "github.com/flarehotspot/sdk-utils"
 )
 
 func CreateGoWorkspace() {
-	goVersion := sdkruntime.GO_SHORT_VERSION
+	goVersion := sdkutils.GO_SHORT_VERSION
 	goWork := fmt.Sprintf(`go %s
 
 use (
@@ -24,7 +22,7 @@ use (
 
 	// insert libs paths
 	libs := []string{}
-	if err := sdkfs.LsDirs("sdk/libs", &libs, false); err != nil {
+	if err := sdkutils.FsListDirs("sdk/libs", &libs, false); err != nil {
 		log.Println(err)
 	}
 
@@ -35,14 +33,14 @@ use (
 	// insert plugin paths
 	pluginSearchPaths := []string{"plugins/system", "plugins/local"}
 	for _, searchPath := range pluginSearchPaths {
-		if sdkfs.Exists(searchPath) {
+		if sdkutils.FsExists(searchPath) {
 			var entries []string
-			if err := sdkfs.LsDirs(searchPath, &entries, false); err != nil {
+			if err := sdkutils.FsListDirs(searchPath, &entries, false); err != nil {
 				continue
 			}
 
 			for _, entry := range entries {
-				pluginDir, err := sdkpkg.FindPluginSrc(entry)
+				pluginDir, err := sdkutils.FindPluginSrc(entry)
 				if err != nil {
 					fmt.Printf("%s is not a valid plugin path, skipping...\n", pluginDir)
 					continue

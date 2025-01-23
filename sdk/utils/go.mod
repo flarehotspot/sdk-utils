@@ -1,4 +1,4 @@
-module github.com/flarehotspot/go-utils
+module github.com/flarehotspot/sdk-utils
 
 go 1.19
 

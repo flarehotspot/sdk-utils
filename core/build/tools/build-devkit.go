@@ -8,13 +8,9 @@ import (
 
 	"core/env"
 	"core/internal/utils/pkg"
-	sdkcfg "sdk/api/config"
+	sdkapi "sdk/api"
 
-	sdkfs "github.com/flarehotspot/go-utils/fs"
-	sdkpaths "github.com/flarehotspot/go-utils/paths"
-	sdkruntime "github.com/flarehotspot/go-utils/runtime"
-	sdkstr "github.com/flarehotspot/go-utils/strings"
-	sdktargz "github.com/flarehotspot/go-utils/targz"
+	sdkutils "github.com/flarehotspot/sdk-utils"
 
 	"github.com/goccy/go-json"
 )
@@ -32,20 +28,19 @@ var (
 		"go.work.default",
 		"main/go.mod",
 		"plugins/system",
-		"scripts/install-tools.sh",
 		"sdk",
 	}
 )
 
 func init() {
-	goversion := sdkruntime.GO_VERSION
-	tags := sdkstr.Slugify(env.BuildTags, "-")
-	devkitReleaseDir = filepath.Join(sdkpaths.AppDir, "output/devkit", fmt.Sprintf("devkit-%s-%s-go%s-%s", pkg.GetCoreInfo().Version, runtime.GOARCH, goversion, tags))
+	goversion := sdkutils.GO_VERSION
+	tags := sdkutils.Slugify(env.BuildTags, "-")
+	devkitReleaseDir = filepath.Join(sdkutils.PathAppDir, "output/devkit", fmt.Sprintf("devkit-%s-%s-go%s-%s", pkg.GetCoreInfo().Version, runtime.GOARCH, goversion, tags))
 }
 
 func CreateDevkit() {
 	// Clean up output path
-	if err := sdkfs.EmptyDir(filepath.Dir(devkitReleaseDir)); err != nil {
+	if err := sdkutils.FsEmptyDir(filepath.Dir(devkitReleaseDir)); err != nil {
 		panic(err)
 	}
 
@@ -57,29 +52,37 @@ func CreateDevkit() {
 
 	// Copy devkit files
 	for _, entry := range devkitFiles {
-		srcPath := filepath.Join(sdkpaths.AppDir, entry)
+		srcPath := filepath.Join(sdkutils.PathAppDir, entry)
 		destPath := filepath.Join(devkitReleaseDir, entry)
-		fmt.Println("Copying: ", sdkpaths.StripRoot(srcPath), " -> ", sdkpaths.StripRoot(destPath))
+		fmt.Println("Copying: ", sdkutils.StripRootPath(srcPath), " -> ", sdkutils.StripRootPath(destPath))
 
-		if err := sdkfs.Copy(srcPath, destPath); err != nil {
+		if err := sdkutils.FsCopy(srcPath, destPath); err != nil {
 			panic(err)
 		}
 	}
 
 	// Copy extra devkit files to the release directory
-	extrasPath := filepath.Join(sdkpaths.AppDir, "core/build/devkit/extras")
-	fmt.Printf("Copying:  %s -> %s\n", sdkpaths.StripRoot(extrasPath), sdkpaths.StripRoot(devkitReleaseDir))
-	err := sdkfs.CopyDir(extrasPath, devkitReleaseDir, nil)
+	extrasPath := filepath.Join(sdkutils.PathAppDir, "core/build/devkit/extras")
+	fmt.Printf("Copying:  %s -> %s\n", sdkutils.StripRootPath(extrasPath), sdkutils.StripRootPath(devkitReleaseDir))
+	err := sdkutils.FsCopyDir(extrasPath, devkitReleaseDir, nil)
 	if err != nil {
+		panic(err)
+	}
+
+	// Copy default go.work
+	goWorkDefaultPath := filepath.Join(sdkutils.PathAppDir, "go.work.default")
+	goWorkPath := filepath.Join(devkitReleaseDir, "go.work")
+	fmt.Println("Copying: ", sdkutils.StripRootPath(goWorkDefaultPath), " -> ", sdkutils.StripRootPath(goWorkPath))
+	if err := sdkutils.FsCopyFile(goWorkDefaultPath, goWorkPath); err != nil {
 		panic(err)
 	}
 
 	// Generate default application config
 	appConfigFile := filepath.Join(devkitReleaseDir, "config/application.json")
-	appConfig := sdkcfg.AppCfg{
+	appConfig := sdkapi.AppCfg{
 		Lang:     "en",
 		Currency: "php",
-		Secret:   sdkstr.Rand(16),
+		Secret:   sdkutils.RandomStr(16),
 	}
 
 	b, err := json.MarshalIndent(appConfig, "", "  ")
@@ -91,16 +94,16 @@ func CreateDevkit() {
 		panic(err)
 	}
 
-	fmt.Println("Application config created: ", sdkpaths.StripRoot(appConfigFile))
+	fmt.Println("Application config created: ", sdkutils.StripRootPath(appConfigFile))
 
 	// Compress devkit release files
-	tarname := filepath.Base(devkitReleaseDir) + ".tar.gz"
+	file := filepath.Base(devkitReleaseDir) + ".zip"
 	dir := filepath.Dir(devkitReleaseDir)
-	tarfile := filepath.Join(dir, tarname)
-	err = sdktargz.TarGz(devkitReleaseDir, tarfile)
+	filepath := filepath.Join(dir, file)
+	err = sdkutils.CompressZip(devkitReleaseDir, filepath)
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Println("Devkit created: ", sdkpaths.StripRoot(tarfile))
+	fmt.Println("Devkit created: ", sdkutils.StripRootPath(filepath))
 }

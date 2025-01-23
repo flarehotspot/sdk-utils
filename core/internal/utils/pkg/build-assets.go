@@ -8,9 +8,7 @@ import (
 	"strings"
 
 	"github.com/evanw/esbuild/pkg/api"
-	sdkfs "github.com/flarehotspot/go-utils/fs"
-	sdkpaths "github.com/flarehotspot/go-utils/paths"
-	sdkslices "github.com/flarehotspot/go-utils/slices"
+	sdkutils "github.com/flarehotspot/sdk-utils"
 )
 
 const (
@@ -45,7 +43,7 @@ func GetAssetManifest(pluginDir string) OutputManifest {
 	}
 
 	var manifest OutputManifest
-	if err := sdkfs.ReadJson(manifestFile, &manifest); err != nil {
+	if err := sdkutils.FsReadJson(manifestFile, &manifest); err != nil {
 		return emptyManifest
 	}
 
@@ -68,9 +66,9 @@ func BuildAssets(pluginDir string) (err error) {
 	outManifest := OutputManifest{}
 
 	adminManifestPath := filepath.Join(pluginDir, AdminManifestJson)
-	if sdkfs.Exists(adminManifestPath) {
+	if sdkutils.FsExists(adminManifestPath) {
 		var manifest Manifest
-		if err = sdkfs.ReadJson(adminManifestPath, &manifest); err != nil {
+		if err = sdkutils.FsReadJson(adminManifestPath, &manifest); err != nil {
 			return err
 		}
 		fmt.Printf("Compiling assets manifest: %+v\n", manifest)
@@ -83,9 +81,9 @@ func BuildAssets(pluginDir string) (err error) {
 	}
 
 	portalManifestPath := filepath.Join(pluginDir, PortalManifestJson)
-	if sdkfs.Exists(portalManifestPath) {
+	if sdkutils.FsExists(portalManifestPath) {
 		var manifest Manifest
-		if err = sdkfs.ReadJson(portalManifestPath, &manifest); err != nil {
+		if err = sdkutils.FsReadJson(portalManifestPath, &manifest); err != nil {
 			return err
 		}
 		fmt.Printf("Compiling assets manifest: %+v\n", manifest)
@@ -98,11 +96,11 @@ func BuildAssets(pluginDir string) (err error) {
 	}
 
 	outManifestFile := filepath.Join(pluginDir, OutManifestJson)
-	if err = sdkfs.EnsureDir(filepath.Dir(outManifestFile)); err != nil {
+	if err = sdkutils.FsEnsureDir(filepath.Dir(outManifestFile)); err != nil {
 		return err
 	}
 
-	if err = sdkfs.WriteJson(outManifestFile, outManifest); err != nil {
+	if err = sdkutils.FsWriteJson(outManifestFile, outManifest); err != nil {
 		return err
 	}
 
@@ -134,7 +132,7 @@ func compileManifest(pluginDir string, manifest Manifest, target api.Target) (re
 		// TODO: check if scripts is directory and loadd all files inside it
 		ext := filepath.Ext(filename)
 		supportedExts := []string{".js", ".css"}
-		if !sdkslices.Contains(supportedExts, ext) {
+		if !sdkutils.SliceContains(supportedExts, ext) {
 			err = errors.New("Unsupported asset format: " + ext)
 			return
 		}
@@ -157,7 +155,7 @@ func compileManifest(pluginDir string, manifest Manifest, target api.Target) (re
 		indexContent := ""
 		for _, f := range files {
 			f = filepath.Join(pluginDir, AssetsDir, f)
-			rel, err := sdkpaths.RelativeFromTo(indexFile, f)
+			rel, err := sdkutils.FsRelativeFromTo(indexFile, f)
 			if err != nil {
 				return results, err
 			}
@@ -169,10 +167,10 @@ func compileManifest(pluginDir string, manifest Manifest, target api.Target) (re
 			}
 		}
 
-		if err = sdkfs.EnsureDir(filepath.Dir(indexFile)); err != nil {
+		if err = sdkutils.FsEnsureDir(filepath.Dir(indexFile)); err != nil {
 			return
 		}
-		if err = os.WriteFile(indexFile, []byte(indexContent), sdkfs.PermFile); err != nil {
+		if err = os.WriteFile(indexFile, []byte(indexContent), sdkutils.PermFile); err != nil {
 			return
 		}
 		defer os.Remove(indexFile)
@@ -201,10 +199,10 @@ func compileManifest(pluginDir string, manifest Manifest, target api.Target) (re
 		for _, out := range result.OutputFiles {
 			f := filepath.Base(out.Path)
 			outpath := filepath.Join(distPath, f)
-			if err = sdkfs.EnsureDir(filepath.Dir(outpath)); err != nil {
+			if err = sdkutils.FsEnsureDir(filepath.Dir(outpath)); err != nil {
 				return
 			}
-			if err = os.WriteFile(outpath, out.Contents, sdkfs.PermFile); err != nil {
+			if err = os.WriteFile(outpath, out.Contents, sdkutils.PermFile); err != nil {
 				return
 			}
 			if filepath.Ext(out.Path) == ext {

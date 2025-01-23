@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"core/internal/db/models"
-	sdkpayments "sdk/api/payments"
+	sdkapi "sdk/api"
 
 	"github.com/jackc/pgx/v5/pgtype"
 )
@@ -46,8 +46,8 @@ func (self *Purchase) PayWithWallet(dbt float64) error {
 	return err
 }
 
-func (self *Purchase) State() (sdkpayments.PurchaseState, error) {
-	state := sdkpayments.PurchaseState{}
+func (self *Purchase) State() (sdkapi.PurchaseState, error) {
+	state := sdkapi.PurchaseState{}
 
 	device, err := self.api.models.Device().Find(self.ctx, self.deviceId)
 	if err != nil {

@@ -5,10 +5,10 @@ import (
 	"sync"
 	"time"
 
-	sdkconnmgr "sdk/api/connmgr"
+	sdkapi "sdk/api"
 )
 
-func NewClientSession(src sdkconnmgr.ISessionSource) *ClientSession {
+func NewClientSession(src sdkapi.ISessionSource) *ClientSession {
 	s := src.Data()
 	return &ClientSession{
 		provider:  s.Provider,
@@ -42,8 +42,8 @@ type ClientSession struct {
 	upMbits   int
 	useGlobal bool
 	createdAt time.Time
-	save      func(context.Context, sdkconnmgr.SessionData) error
-	reload    func(context.Context) (sdkconnmgr.SessionData, error)
+	save      func(context.Context, sdkapi.SessionData) error
+	reload    func(context.Context) (sdkapi.SessionData, error)
 }
 
 func (self *ClientSession) Provider() string {
@@ -215,7 +215,7 @@ func (self *ClientSession) Save(ctx context.Context) error {
 	self.mu.RLock()
 	defer self.mu.RUnlock()
 
-	data := sdkconnmgr.SessionData{
+	data := sdkapi.SessionData{
 		Provider:       self.provider,
 		Type:           self.t,
 		TimeSecs:       self.timeSecs,

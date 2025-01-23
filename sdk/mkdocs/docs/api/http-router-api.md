@@ -1,27 +1,30 @@
-# HttpRouterApi
-The `HttpRouterApi` is the backend for http routing in Flare Hotspot. The [VueRouterApi](./vue-router-api.md) uses the `HttpRouterApi` to generate the routes for the frontend. Each plugin are provided with a `HttpRouterApi` instance to generate their own routes.
+# IHttpRouterApi
+The `IHttpRouterApi` is the backend for http routing in Flare Hotspot. There are two (2) kinds of http routers:
 
-## 1. HttpRouterApi Methods {#httprouterapi-methods}
+- `AdminRouter` - a router for the admin pages of the plugin that uses the [AdminAuth](./http-middlewares.md#admin-auth) middleware.
+- `PluginRouter` - a router for general purpose routing within the plugin
 
-Below are the available methods in `HttpRouterApi`:
+## IHttpRouterApi methods {#http-router-api}
 
-### AdminRouter
-This method returns the [admin router instance](#router-instance) for the admin routes. Routes generated from the admin router are prefixed with `/admin` and are only accessible to authenticated user [accounts](./accounts-api.md#account-instance). To get the admin router instance, you can use the following code:
+Below are the available methods in `IHttpRouterApi`:
 
-```go
-router := api.Http().HttpRouter().AdminRouter()
-```
-
-### PluginRouter
-This method returns the [plugin router instance](#router-instance) for the plugin routes. Routes generated from the plugin router are accessible to all users. To get the pugin router instance, you can use the following code:
+### Admin Router {#admin-router}
+This method returns the [admin router](#router-instance) for the admin routes. Routes generated from the admin router are prefixed with `/admin` and are only accessible to authenticated user [accounts](./accounts-api.md#account-instance). To get the admin router instance:
 
 ```go
-router := api.Http().HttpRouter().PluginRouter()
+adminRouter := api.Http().HttpRouter().AdminRouter()
 ```
 
-### UseMiddleware
+### Plugin Router {#plugin-router}
+This method returns the [plugin router](#router-instance) of the plugin. Routes generated from the plugin router are accessible to all users. To get the plugin router instance:
 
-This method is used to add a global [middleware](#middlewares) to all routes. It accepts a list of middlewares.
+```go
+pluginRouter := api.Http().HttpRouter().PluginRouter()
+```
+
+### Use {#use}
+
+This method is used to add a global [middleware](#middlewares) to all routes. It accepts a list of [middlewares](./http-middlewares.md).
 ```go
 middleware := func (next http.Handler) http.Handler {
     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -30,7 +33,7 @@ middleware := func (next http.Handler) http.Handler {
     })
 }
 
-api.Http().HttpRouter().UseMiddleware(middleware)
+api.Http().HttpRouter().Use(middleware)
 ```
 
 ### UrlForRoute
@@ -43,15 +46,15 @@ url := api.Http().HttpRouter().UrlForRoute("portal.welcome", "name", "John")
 
 ### UrlForPkgRoute
 
-This method is used to generate the url for third-party plugin route name. This method accepts three arguments, the first argument is the plugin package name (e.g `com.flarego.core`), the second argument is the route name and the third argument is the route parameters, similar to [UrlForRoute](#urlforroute) method.
+This method is used to generate the url for third-party plugin route name. This method accepts three arguments, the first argument is the plugin package name (e.g `com.mydomain.myplugin`) in which the route name belongs to, the second argument is the route name and the third argument is the route parameters, similar to [UrlForRoute](#urlforroute) method.
 
 ```go
-url := api.Http().HttpRouter().UrlForPkgRoute("com.flarego.core", "portal.welcome", "name", "John")
+url := api.Http().HttpRouter().UrlForPkgRoute("com.mydomain.myplugin", "portal.welcome", "name", "John")
 ```
 
-## 2. Router Instance {#router-instance}
+## IHttpRouterInstance {#router-instance}
 
-Router instance is used to generate routes for the plugin. Below are the methods available in the router instance:
+Router instance is used to generate routes for the plugin. It can be a [PluginRouter](#plugin-router) or an [AdminRouter](#admin-router). Below are the methods available in the router instance:
 
 ### Group
 
@@ -97,9 +100,9 @@ router.Post("/settings/save", func(w http.ResponseWriter, r *http.Request) {
 This method is used to add a [middleware](#middlewares) to the router. It accepts a list of middlewares.
 All routes defined after the `Use` method will use the middleware.
 
-## 3. Middlewares {#middlewares}
+## Middlewares {#middlewares}
 
-A middleware is a function of type `func(next http.Handler) http.Handler`. It is used to perform operations on the request before it reaches the handler function. Middlewares are functions that accept a http handler function and returns another http handler function.
+A [middleware](./http-middlewares.md) is a function of type `func(next http.Handler) http.Handler`. It is used to perform operations on the request before it reaches the handler function. Middlewares are functions that accept a http handler function and returns another http handler function.
 
 ### Declaring a middleware
 
@@ -132,6 +135,4 @@ api.Http().HttpRouter().AdminRouter().Group("/settings", func (subrouter sdkhttp
 })
 ```
 
-In the examples above, the middleware is used to perform operations on the request before it reaches the handler function inside the sub-router.
-
-See this [guide](../guides/routes-and-links.md) for using a middleware in vue components.
+In the examples above, the middleware is used to perform operations on the request before it reaches the handler function inside the sub-router. But it can also be used directly on the [PluginRouter](#plugin-router) or the [AdminRouter](#admin-router).

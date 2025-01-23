@@ -8,7 +8,7 @@ import (
 	"core/internal/connmgr"
 	"core/internal/db"
 	webutil "core/internal/utils/web"
-	sdkhttp "sdk/api/http"
+	sdkapi "sdk/api"
 
 	"github.com/gorilla/mux"
 )
@@ -20,7 +20,7 @@ type HttpRouterApi struct {
 }
 
 func NewHttpRouterApi(api *PluginApi, db *db.Database, clnt *connmgr.ClientRegister) *HttpRouterApi {
-	prefix := fmt.Sprintf("/%s/%s", api.Pkg(), api.Version())
+	prefix := fmt.Sprintf("/%s/%s", api.info.Package, api.info.Version)
 	pluginMux := webutil.PluginRouter.PathPrefix(prefix).Subrouter()
 	adminMux := pluginMux.PathPrefix("/admin").Subrouter()
 
@@ -34,26 +34,26 @@ func (self *HttpRouterApi) Initialize() {
 	self.adminRouter.Use(self.api.HttpAPI.middlewares.AdminAuth())
 }
 
-func (self *HttpRouterApi) AdminRouter() sdkhttp.IHttpRouterInstance {
+func (self *HttpRouterApi) AdminRouter() sdkapi.IHttpRouterInstance {
 	return self.adminRouter
 }
 
-func (self *HttpRouterApi) PluginRouter() sdkhttp.IHttpRouterInstance {
+func (self *HttpRouterApi) PluginRouter() sdkapi.IHttpRouterInstance {
 	return self.pluginRouter
 }
 
-func (self *HttpRouterApi) UseMiddleware(middleware ...func(http.Handler) http.Handler) {
+func (self *HttpRouterApi) Use(middleware ...func(http.Handler) http.Handler) {
 	for _, mw := range middleware {
 		webutil.RootRouter.Use(mux.MiddlewareFunc(mw))
 	}
 }
 
-func (self *HttpRouterApi) MuxRouteName(name sdkhttp.PluginRouteName) sdkhttp.MuxRouteName {
-	muxname := fmt.Sprintf("%s.%s", self.api.Pkg(), string(name))
-	return sdkhttp.MuxRouteName(muxname)
+func (self *HttpRouterApi) MuxRouteName(name sdkapi.PluginRouteName) sdkapi.MuxRouteName {
+	muxname := fmt.Sprintf("%s.%s", self.api.info.Package, string(name))
+	return sdkapi.MuxRouteName(muxname)
 }
 
-func (self *HttpRouterApi) UrlForMuxRoute(muxname sdkhttp.MuxRouteName, pairs ...string) string {
+func (self *HttpRouterApi) UrlForMuxRoute(muxname sdkapi.MuxRouteName, pairs ...string) string {
 	route := webutil.RootRouter.Get(string(muxname))
 	if route == nil {
 		log.Println("Error: route not found for " + string(muxname))
@@ -69,7 +69,7 @@ func (self *HttpRouterApi) UrlForMuxRoute(muxname sdkhttp.MuxRouteName, pairs ..
 	return url.String()
 }
 
-func (self *HttpRouterApi) UrlForRoute(name sdkhttp.PluginRouteName, pairs ...string) string {
+func (self *HttpRouterApi) UrlForRoute(name sdkapi.PluginRouteName, pairs ...string) string {
 	muxname := self.MuxRouteName(name)
 	return self.UrlForMuxRoute(muxname, pairs...)
 }

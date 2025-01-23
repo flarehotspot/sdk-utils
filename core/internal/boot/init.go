@@ -8,7 +8,7 @@ import (
 	"core/internal/plugins"
 	"core/internal/utils/pkg"
 
-	sdkpaths "github.com/flarehotspot/go-utils/paths"
+	sdkutils "github.com/flarehotspot/sdk-utils"
 )
 
 func Init(g *plugins.CoreGlobals) {
@@ -18,7 +18,7 @@ func Init(g *plugins.CoreGlobals) {
 	InitDirs()
 
 	go func() {
-		pkg.LinkNodeModulesLib(sdkpaths.AppDir)
+		pkg.LinkNodeModulesLib(sdkutils.PathAppDir)
 
 		InitOpkg(bp)
 

@@ -1,7 +1,7 @@
 package plugins
 
 import (
-	sdkhttp "sdk/api/http"
+	sdkapi "sdk/api"
 
 	"github.com/gorilla/mux"
 )
@@ -15,12 +15,12 @@ type HttpRoute struct {
 	mux *mux.Route
 }
 
-func (self *HttpRoute) Queries(pairs ...string) sdkhttp.IHttpRoute {
+func (self *HttpRoute) Queries(pairs ...string) sdkapi.IHttpRoute {
 	self.mux.Queries(pairs...)
 	return self
 }
 
-func (self *HttpRoute) Name(name sdkhttp.PluginRouteName) sdkhttp.IHttpRoute {
+func (self *HttpRoute) Name(name sdkapi.PluginRouteName) sdkapi.IHttpRoute {
 	muxname := self.api.HttpAPI.httpRouter.MuxRouteName(name)
 	self.mux.Name(string(muxname))
 	return self

@@ -4,7 +4,7 @@ import (
 	"core/internal/plugins"
 	"net/http"
 
-	sdkpkg "github.com/flarehotspot/go-utils/pkg"
+	sdkutils "github.com/flarehotspot/sdk-utils"
 )
 
 type PluginRelease struct {
@@ -17,8 +17,8 @@ type PluginRelease struct {
 
 type PluginData struct {
 	Id                 int
-	Info               sdkpkg.PluginInfo
-	Src                sdkpkg.PluginSrcDef
+	Info               sdkutils.PluginInfo
+	Src                sdkutils.PluginSrcDef
 	HasPendingUpdate   bool
 	HasUpdates         bool
 	ToBeRemoved        bool

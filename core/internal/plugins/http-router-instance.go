@@ -2,8 +2,7 @@ package plugins
 
 import (
 	"net/http"
-
-	sdkhttp "sdk/api/http"
+	sdkapi "sdk/api"
 
 	"github.com/gorilla/mux"
 )
@@ -21,7 +20,7 @@ func (self *HttpRouterInstance) Router() *mux.Router {
 	return self.mux
 }
 
-func (self *HttpRouterInstance) Get(path string, h http.HandlerFunc, mw ...func(next http.Handler) http.Handler) sdkhttp.IHttpRoute {
+func (self *HttpRouterInstance) Get(path string, h http.HandlerFunc, mw ...func(next http.Handler) http.Handler) sdkapi.IHttpRoute {
 	finalHandler := http.Handler(h)
 	for i := len(mw) - 1; i >= 0; i-- {
 		finalHandler = mw[i](finalHandler)
@@ -30,7 +29,7 @@ func (self *HttpRouterInstance) Get(path string, h http.HandlerFunc, mw ...func(
 	return NewHttpRoute(self.api, route)
 }
 
-func (self *HttpRouterInstance) Post(path string, h http.HandlerFunc, mw ...func(next http.Handler) http.Handler) sdkhttp.IHttpRoute {
+func (self *HttpRouterInstance) Post(path string, h http.HandlerFunc, mw ...func(next http.Handler) http.Handler) sdkapi.IHttpRoute {
 	finalHandler := http.Handler(h)
 	for i := len(mw) - 1; i >= 0; i-- {
 		finalHandler = mw[i](finalHandler)
@@ -39,7 +38,7 @@ func (self *HttpRouterInstance) Post(path string, h http.HandlerFunc, mw ...func
 	return NewHttpRoute(self.api, route)
 }
 
-func (self *HttpRouterInstance) Group(path string, fn func(sdkhttp.IHttpRouterInstance)) {
+func (self *HttpRouterInstance) Group(path string, fn func(sdkapi.IHttpRouterInstance)) {
 	router := self.mux.PathPrefix(path).Subrouter()
 	newrouter := NewHttpRouterInstance(self.api, router)
 	fn(newrouter)
