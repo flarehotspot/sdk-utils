@@ -50,51 +50,51 @@ Then you can find the built documentation in the `sdk/mkdocs/site` directory.
 
 ---
 
-# Git subtree for `go-utils`
+# Git subtree for `sdk-utils`
 
-## Add the remote url of `flarehotspot/go-utils`
+## Add the remote url of `flarehotspot/sdk-utils`
 
 ```sh
-git remote add go-utils git@github.com:flarehotspot/go-utils.git
+git remote add sdk-utils git@github.com:flarehotspot/sdk-utils.git
 ```
 
 ## Split the utils to a `git subtree`.
 
 ```sh
-git subtree split --prefix sdk/utils -b go-utils
+git subtree split --prefix sdk/utils -b sdk-utils
 ```
 
-This will create a new branch called `go-utils` which can be pushed to a git repo.
+This will create a new branch called `sdk-utils` which can be pushed to a git repo.
 
-## Push the `go-utils` branch to a remote git repo.
+## Push the `sdk-utils` branch to a remote git repo.
 ```sh
-git push go-utils go-utils:remote-branch-name
+git push sdk-utils sdk-utils:remote-branch-name
 ```
 
-# Pushing changes to `go-utils`
+# Pushing changes to `sdk-utils`
 
 ```sh
 # command guide
-# git subtree push --prefix <utils dir name> <go-utils remote name or url> <desired local branch to push>
+# git subtree push --prefix <utils dir name> <sdk-utils remote name or url> <desired local branch to push>
 # don't worry, this will only push the changes inside the `utils` and not the entire local branch
 
 # actual command
-git subtree push --prefix sdk/utils go-utils development # or your desired local branch e.g. feat/utils-subtree
+git subtree push --prefix sdk/utils sdk-utils development # or your desired local branch e.g. feat/utils-subtree
 ```
 
 # Persist changes
 
-For the changes to persist in other codebases that uses the go library, head over to the github or even to the local cloned repo of `go-utils` and create a git tag.
+For the changes to persist in other codebases that uses the go library, head over to the github or even to the local cloned repo of `sdk-utils` and create a git tag.
 
 ```sh
-git checkout go-utils
+git checkout sdk-utils
 git tag vx.x.x # creates a tag to the latest commit of the current branch
-git push go-utils --tags # pushes the created tag
+git push sdk-utils --tags # pushes the created tag
 ```
 
-Then, update the `go-utils` library by specifying the version of the newly pushed tag.
+Then, update the `sdk-utils` library by specifying the version of the newly pushed tag.
 ```sh
-go get -u github.com/flarehotspot/go-utils@vx.x.x
+go get -u github.com/flarehotspot/sdk-utils@vx.x.x
 ```
 
 ## Building `devkit`
