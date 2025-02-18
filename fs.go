@@ -112,9 +112,11 @@ func FsAppendFile(filename string, data []byte, perm os.FileMode) error {
 	return err
 }
 
-func FsExists(p string) bool {
-	if _, err := os.Stat(p); errors.Is(err, os.ErrNotExist) {
-		return false
+func FsExists(paths ...string) bool {
+	for _, path := range paths {
+		if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
+			return false
+		}
 	}
 	return true
 }
@@ -241,7 +243,7 @@ func FsCopy(src string, dst string) error {
 	}
 }
 
-func FsWriteJson(f string, v any) error {
+func JsonWrite(f string, v any) error {
 	b, err := json.MarshalIndent(v, "", "  ")
 	if err != nil {
 		return err
@@ -249,7 +251,7 @@ func FsWriteJson(f string, v any) error {
 	return os.WriteFile(f, b, PermFile)
 }
 
-func FsReadJson(f string, v any) error {
+func JsonRead(f string, v any) error {
 	b, err := os.ReadFile(f)
 	if err != nil {
 		return err
