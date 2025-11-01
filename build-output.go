@@ -90,8 +90,8 @@ func (b *BuildOutput) copy(srcPath string, destPath string) error {
 
 func (b *BuildOutput) targzFilePath() string {
 	basename := filepath.Base(b.OutputDir)
-	p := filepath.Join(PathTmpDir, basename)
-	return filepath.Join(p, fmt.Sprintf("%s-%s.tar.gz", basename, RandomStr(8)))
+	basedir := filepath.Dir(b.OutputDir)
+	return filepath.Join(basedir, basename+".tar.gz")
 }
 
 func (b *BuildOutput) metadataPath() string {
