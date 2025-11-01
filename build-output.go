@@ -7,9 +7,9 @@ import (
 )
 
 type BuildOutput struct {
-	OutputDirName string
-	Files         []string
-	CustomFiles   []BuildOutputCustomEntry
+	OutputDir string
+	Files     []string
+	Custom    []BuildOutputCustomEntry
 }
 
 type BuildOutputCustomEntry struct {
@@ -25,29 +25,33 @@ type BuildOutputMeta struct {
 	Files     []string `json:"files"`
 }
 
-func ReadBuildOutput(outputDir string) (meta BuildOutputMeta, err error) {
-	err = JsonRead(filepath.Join(outputDir, "metadata.json"), &meta)
+func ReadBuildOutput(outdir string) (meta BuildOutputMeta, err error) {
+	if !FsExists(outdir) {
+		return meta, errors.New("Output directory does not exist: " + outdir)
+	}
+
+	err = JsonRead(filepath.Join(outdir, "metadata.json"), &meta)
 	return
 }
 
 func (b *BuildOutput) Run() error {
-	if err := FsEmptyDir(b.outputPath()); err != nil {
+	if err := FsEmptyDir(b.OutputDir); err != nil {
 		return err
 	}
 
 	contentList := []string{}
 	for _, entry := range b.Files {
 		srcPath := filepath.Join(PathAppDir, entry)
-		destPath := filepath.Join(b.outputPath(), entry)
+		destPath := filepath.Join(b.OutputDir, entry)
 		if err := b.copy(srcPath, destPath); err != nil {
 			panic(err)
 		}
 		contentList = append(contentList, entry)
 	}
 
-	for _, entry := range b.CustomFiles {
+	for _, entry := range b.Custom {
 		srcPath := filepath.Join(PathAppDir, entry.Src)
-		destPath := filepath.Join(b.outputPath(), entry.Dest)
+		destPath := filepath.Join(b.OutputDir, entry.Dest)
 		if err := b.copy(srcPath, destPath); err != nil {
 			panic(err)
 		}
@@ -55,14 +59,14 @@ func (b *BuildOutput) Run() error {
 	}
 
 	// new implementation using tar.gz
-	if err := CompressTar(b.outputPath(), b.targzFilePath()); err != nil {
+	if err := CompressTar(b.OutputDir, b.targzFilePath()); err != nil {
 		return err
 	}
 
 	md := BuildOutputMeta{
 		GoVersion: GO_VERSION,
 		GoArch:    GOARCH,
-		OutputDir: b.outputPath(),
+		OutputDir: b.OutputDir,
 		OutputZip: b.targzFilePath(),
 		Files:     contentList,
 	}
@@ -84,14 +88,12 @@ func (b *BuildOutput) copy(srcPath string, destPath string) error {
 	return FsCopy(srcPath, destPath)
 }
 
-func (b *BuildOutput) outputPath() string {
-	return filepath.Join(PathAppDir, "output", b.OutputDirName)
-}
-
 func (b *BuildOutput) targzFilePath() string {
-	return filepath.Join(b.outputPath() + ".tar.gz")
+	basename := filepath.Base(b.OutputDir)
+	p := filepath.Join(PathTmpDir, basename)
+	return filepath.Join(p, fmt.Sprintf("%s-%s.tar.gz", basename, RandomStr(8)))
 }
 
 func (b *BuildOutput) metadataPath() string {
-	return filepath.Join(PathAppDir, "output/metadata.json")
+	return filepath.Join(b.OutputDir, "metadata.json")
 }
