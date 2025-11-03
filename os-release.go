@@ -9,6 +9,8 @@ type OsRelease struct {
 	OsConfig  string `json:"os_config"`
 }
 
+const OsReleaseFile = "os_release.json"
+
 func ReadOsRelease(file string) (OsRelease, error) {
 	var release OsRelease
 	err := JsonRead(file, &release)
