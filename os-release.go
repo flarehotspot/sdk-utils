@@ -1,9 +1,5 @@
 package sdkutils
 
-import (
-	"path/filepath"
-)
-
 type OsRelease struct {
 	Os        string `json:"os"`
 	OsVersion string `json:"os_version"`
@@ -13,12 +9,12 @@ type OsRelease struct {
 	OsConfig  string `json:"os_config"`
 }
 
-func ReadOsRelease() (OsRelease, error) {
+func ReadOsRelease(file string) (OsRelease, error) {
 	var release OsRelease
-	err := JsonRead(filepath.Join(PathAppDir, "os_release.json"), &release)
+	err := JsonRead(file, &release)
 	return release, err
 }
 
-func WriteOsRelease(release OsRelease) error {
-	return JsonWrite(filepath.Join(PathAppDir, "os_release.json"), &release)
+func WriteOsRelease(file string, release OsRelease) error {
+	return JsonWrite(file, &release)
 }
