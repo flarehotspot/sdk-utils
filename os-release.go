@@ -11,7 +11,6 @@ type OsRelease struct {
 	OsArch    string `json:"os_arch"`
 	OsProfile string `json:"os_profile"`
 	OsConfig  string `json:"os_config"`
-	IsMono    bool   `json:"is_mono"`
 }
 
 func ReadOsRelease() (OsRelease, error) {
