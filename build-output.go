@@ -7,6 +7,7 @@ import (
 )
 
 type BuildOutput struct {
+	SourceDir string
 	OutputDir string
 	Files     []string
 	Custom    []BuildOutputCustomEntry
@@ -35,13 +36,18 @@ func ReadBuildOutput(outdir string) (meta BuildOutputMeta, err error) {
 }
 
 func (b *BuildOutput) Run() error {
+	srcDir := PathAppDir
+	if b.SourceDir != "" {
+		srcDir = b.SourceDir
+	}
+
 	if err := FsEmptyDir(b.OutputDir); err != nil {
 		return err
 	}
 
 	contentList := []string{}
 	for _, entry := range b.Files {
-		srcPath := filepath.Join(PathAppDir, entry)
+		srcPath := filepath.Join(srcDir, entry)
 		destPath := filepath.Join(b.OutputDir, entry)
 		if err := b.copy(srcPath, destPath); err != nil {
 			panic(err)

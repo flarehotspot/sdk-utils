@@ -1,6 +1,7 @@
 package sdkutils
 
 type OsRelease struct {
+	BrandId   string `json:"brand_id"`
 	Os        string `json:"os"`
 	OsVersion string `json:"os_version"`
 	OsTarget  string `json:"os_target"`
