@@ -29,7 +29,7 @@ func CompressZip(srcDir string, destFile string) error {
 	return nil
 }
 
-// CompressTar compresses files into a tar file
+// CompressTar compresses files into a tar.gz file
 func CompressTar(sourceDir, outputFile string) error {
 	if err := FsEnsureDir(filepath.Dir(outputFile)); err != nil {
 		return err
@@ -40,28 +40,15 @@ func CompressTar(sourceDir, outputFile string) error {
 	if err != nil {
 		return err
 	}
-	defer file.Close()
 
 	// Create a gzip writer
 	gw := gzip.NewWriter(file)
-	defer func() {
-		// Always close gzip writer to flush data
-		if closeErr := gw.Close(); closeErr != nil && err == nil {
-			err = closeErr
-		}
-	}()
 
 	// Create a tar writer
 	tw := tar.NewWriter(gw)
-	defer func() {
-		// Always close tar writer to flush data
-		if closeErr := tw.Close(); closeErr != nil && err == nil {
-			err = closeErr
-		}
-	}()
 
 	// Walk through the directory
-	err = filepath.Walk(sourceDir, func(path string, info os.FileInfo, err error) error {
+	walkErr := filepath.Walk(sourceDir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
@@ -75,6 +62,12 @@ func CompressTar(sourceDir, outputFile string) error {
 		// Skip the root directory itself (when relPath is ".")
 		if relPath == "." {
 			return nil
+		}
+
+		// Use Lstat to get info without following symlinks
+		info, err = os.Lstat(path)
+		if err != nil {
+			return err
 		}
 
 		// Handle symlinks properly
@@ -102,22 +95,41 @@ func CompressTar(sourceDir, outputFile string) error {
 
 		// If the file is not a directory and not a symlink, write the file content
 		if !info.IsDir() && info.Mode()&os.ModeSymlink == 0 {
-			file, err := os.Open(path)
+			f, err := os.Open(path)
 			if err != nil {
 				return err
 			}
 
-			if _, err = io.Copy(tw, file); err != nil {
-				file.Close() // dont use defer
+			if _, err = io.Copy(tw, f); err != nil {
+				f.Close()
 				return err
 			}
-			file.Close() // dont use defer
+			f.Close()
 		}
 
 		return nil
 	})
 
-	return err
+	// Close writers in correct order: tar -> gzip -> file
+	// Must close tar first to write final block
+	if err := tw.Close(); err != nil {
+		gw.Close()
+		file.Close()
+		return err
+	}
+
+	// Must close gzip to write gzip footer
+	if err := gw.Close(); err != nil {
+		file.Close()
+		return err
+	}
+
+	// Close the file
+	if err := file.Close(); err != nil {
+		return err
+	}
+
+	return walkErr
 }
 
 // Untar extracts tar file to a output directory
