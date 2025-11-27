@@ -44,11 +44,21 @@ func CompressTar(sourceDir, outputFile string) error {
 
 	// Create a gzip writer
 	gw := gzip.NewWriter(file)
-	defer gw.Close()
+	defer func() {
+		// Always close gzip writer to flush data
+		if closeErr := gw.Close(); closeErr != nil && err == nil {
+			err = closeErr
+		}
+	}()
 
 	// Create a tar writer
 	tw := tar.NewWriter(gw)
-	defer tw.Close()
+	defer func() {
+		// Always close tar writer to flush data
+		if closeErr := tw.Close(); closeErr != nil && err == nil {
+			err = closeErr
+		}
+	}()
 
 	// Walk through the directory
 	err = filepath.Walk(sourceDir, func(path string, info os.FileInfo, err error) error {
@@ -56,25 +66,42 @@ func CompressTar(sourceDir, outputFile string) error {
 			return err
 		}
 
+		// Get the relative path for the tar header
+		relPath, err := filepath.Rel(sourceDir, path)
+		if err != nil {
+			return err
+		}
+
+		// Skip the root directory itself (when relPath is ".")
+		if relPath == "." {
+			return nil
+		}
+
+		// Handle symlinks properly
+		linkTarget := ""
+		if info.Mode()&os.ModeSymlink != 0 {
+			linkTarget, err = os.Readlink(path)
+			if err != nil {
+				return err
+			}
+		}
+
 		// Create a header for the current file
-		header, err := tar.FileInfoHeader(info, info.Name())
+		header, err := tar.FileInfoHeader(info, linkTarget)
 		if err != nil {
 			return err
 		}
 
 		// Update the name to reflect the correct path in the archive
-		header.Name, err = filepath.Rel(sourceDir, path)
-		if err != nil {
-			return err
-		}
+		header.Name = relPath
 
 		// Write the header
 		if err := tw.WriteHeader(header); err != nil {
 			return err
 		}
 
-		// If the file is not a directory, write the file content
-		if !info.IsDir() {
+		// If the file is not a directory and not a symlink, write the file content
+		if !info.IsDir() && info.Mode()&os.ModeSymlink == 0 {
 			file, err := os.Open(path)
 			if err != nil {
 				return err
